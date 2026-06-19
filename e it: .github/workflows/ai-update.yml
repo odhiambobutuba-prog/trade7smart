@@ -14,6 +14,28 @@ jobs:
           echo "User instruction: ${{ github.event.issue.title }}"
           echo "AI will generate code changes based on this instruction."
 
+      - name: Generate code with AI
+        run: |
+          echo "Generating code for: ${{ github.event.issue.title }}"
+          # Example: create a recovery calculator panel automatically
+          cat << 'EOF' > recovery-calculator.html
+          <div class="feature-card">
+            <h3>Recovery Calculator</h3>
+            <p>Next Stake: <span id="nextStake">$0.00</span></p>
+            <input type="number" id="lossInput" placeholder="Enter cumulative loss">
+            <input type="number" id="payoutInput" placeholder="Enter payout ratio">
+            <button onclick="calculateRecovery()">Calculate</button>
+          </div>
+          <script>
+          function calculateRecovery() {
+            const loss = parseFloat(document.getElementById("lossInput").value);
+            const payout = parseFloat(document.getElementById("payoutInput").value);
+            const stake = loss / payout;
+            document.getElementById("nextStake").innerText = "$" + stake.toFixed(2);
+          }
+          </script>
+          EOF
+
       - name: Commit changes
         run: |
           git config user.name "AI Bot"
@@ -21,3 +43,4 @@ jobs:
           git add .
           git commit -m "Applied instruction: ${{ github.event.issue.title }}"
           git push
+

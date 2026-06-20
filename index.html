@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#060a10" />
     <title>Trade7Smart — AI Volatility Console</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=ai-rec-20260620" />
-    <link rel="stylesheet" href="./styles.css?v=ai-rec-20260620" />
+    <link rel="manifest" href="./manifest.webmanifest?v=tabbed-ui-20260620" />
+    <link rel="stylesheet" href="./styles.css?v=tabbed-ui-20260620" />
   </head>
   <body>
     <div id="app-loader" class="app-loader">
@@ -38,11 +38,11 @@
       </header>
 
       <nav class="section-nav" aria-label="Console sections">
-        <button type="button" class="nav-pill active" data-scroll="ai-scanner-hero">Scanner</button>
-        <button type="button" class="nav-pill" data-scroll="hero-grid">Analyzer</button>
-        <button type="button" class="nav-pill" data-scroll="charts-section">Charts</button>
-        <button type="button" class="nav-pill" data-scroll="bot-panel-anchor">Contracts</button>
-        <button type="button" class="nav-pill" data-scroll="risk-grid">Recovery</button>
+        <button type="button" class="nav-pill active" data-tab="ai-scanner-hero">Scanner</button>
+        <button type="button" class="nav-pill" data-tab="hero-grid">Analyzer</button>
+        <button type="button" class="nav-pill" data-tab="charts-section">Charts</button>
+        <button type="button" class="nav-pill" data-tab="recovery">Recovery</button>
+        <button type="button" class="nav-pill" data-tab="stats">Stats</button>
       </nav>
 
       <section class="control-strip">
@@ -97,19 +97,6 @@
       </section>
 
       <section class="charts-section" id="charts-section">
-        <article class="panel chart-panel">
-          <div class="panel-head">
-            <div><span>Price stream</span><strong>Live tick chart</strong></div>
-          </div>
-          <canvas id="tick-chart" class="chart-canvas" height="180"></canvas>
-        </article>
-        <article class="panel chart-panel">
-          <div class="panel-head">
-            <div><span>Digit distribution</span><strong>Last 400 ticks heatmap</strong></div>
-          </div>
-          <div id="digit-heatmap" class="digit-heatmap"></div>
-        </article>
-
         <article class="panel digit-analysis-panel">
           <div class="panel-head">
             <div><span>✨ Smart Digit Analysis</span><strong>Last digits, streaks &amp; predictions</strong></div>
@@ -200,15 +187,9 @@
 
           <div id="digit-pattern-heatmap" class="digit-pattern-heatmap"></div>
         </article>
-        <article class="panel chart-panel">
-          <div class="panel-head">
-            <div><span>Session P&amp;L</span><strong>Profit curve</strong></div>
-          </div>
-          <canvas id="profit-chart" class="chart-canvas" height="180"></canvas>
-        </article>
       </section>
 
-      <section class="hero-grid">
+      <section class="hero-grid" id="hero-grid">
         <article class="panel signal-panel ai-analyzer-panel">
           <div class="analyzer-head">
             <div class="score-ring-wrap">
@@ -442,7 +423,7 @@
         </article>
       </section>
 
-      <section class="pro-grid">
+      <section class="pro-grid" id="pro-grid">
         <article class="panel best-market-panel">
           <div class="panel-head">
             <div><span>Best market auto-pick</span><strong id="best-market-title">Scanning markets</strong></div>
@@ -484,7 +465,7 @@
         </article>
       </section>
 
-      <section class="risk-grid">
+      <section class="risk-grid" id="risk-grid">
         <article class="panel recovery-settings-panel">
           <div class="panel-head">
             <div><span>Recovery settings</span><strong>Risk boundaries</strong></div>
@@ -542,7 +523,7 @@
         </article>
       </section>
 
-      <section class="analytics-grid">
+      <section class="analytics-grid" id="analytics-grid">
         <article class="panel stats-panel">
           <div class="panel-head">
             <div><span>Statistics</span><strong>Session performance</strong></div>
@@ -611,7 +592,7 @@
         </article>
       </section>
 
-      <section class="scanner-grid">
+      <section class="scanner-grid" id="scanner-grid">
         <article class="panel scanner-panel">
           <div class="panel-head">
             <div><span>Market scanner</span><strong>Volatility rank table</strong></div>
@@ -640,7 +621,7 @@
         </article>
       </section>
 
-      <section class="bottom-grid">
+      <section class="bottom-grid" id="bottom-grid">
         <article class="panel market-panel">
           <div class="panel-head">
             <div><span>Watchlist</span><strong>Market pulse</strong></div>
@@ -664,6 +645,6 @@
     </aside>
 
     <div id="toast-layer" class="toast-layer" aria-live="polite"></div>
-    <script src="./app.js?v=ai-rec-20260620"></script>
+    <script src="./app.js?v=tabbed-ui-20260620"></script>
   </body>
 </html>

@@ -1817,16 +1817,37 @@ function startLiveClock() {
   setInterval(tick, 1000);
 }
 
+const TAB_GROUPS = {
+  "ai-scanner-hero": ["ai-scanner-hero"],
+  "hero-grid": ["hero-grid"],
+  "charts-section": ["charts-section"],
+  recovery: ["pro-grid", "risk-grid"],
+  stats: ["analytics-grid", "scanner-grid", "bottom-grid"],
+};
+
 function initSectionNav() {
+  const allSectionIds = Object.values(TAB_GROUPS).flat();
+
+  function showTab(tabKey) {
+    const activeIds = TAB_GROUPS[tabKey] || [];
+    allSectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle("tab-hidden", !activeIds.includes(id));
+    });
+    document.querySelector(".terminal-shell").scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+  }
+
   document.querySelectorAll(".nav-pill").forEach((pill) => {
     pill.addEventListener("click", () => {
       document.querySelectorAll(".nav-pill").forEach((p) => p.classList.remove("active"));
       pill.classList.add("active");
-      const target = document.getElementById(pill.dataset.scroll);
-      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      showTab(pill.dataset.tab);
     });
   });
+
+  showTab("ai-scanner-hero");
 }
+
 
 function hideLoader() {
   document.body.classList.add("loaded");

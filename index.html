@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#060a10" />
+    <title>Trade7Smart — AI Volatility Console</title>
+    <link rel="manifest" href="./manifest.webmanifest?v=ai-rec-20260620" />
+    <link rel="stylesheet" href="./styles.css?v=ai-rec-20260620" />
+  </head>
+  <body>
+    <div id="app-loader" class="app-loader">
+      <div>
+        <strong>Trade7Smart</strong>
+        <span>Initializing AI volatility scanner</span>
+        <i></i>
+      </div>
+    </div>
+    <main class="terminal-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <p class="eyebrow">Trade7Smart by Butuba</p>
+          <h1>AI Volatility Command</h1>
+          <div class="brand-meta">
+            <small class="build-badge">Pro AI build</small>
+            <small id="active-contract-badge" class="mode-badge">Odd / Even</small>
+            <small id="live-clock" class="clock-badge">--:--:--</small>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button id="compact-toggle" class="text-button" type="button">Compact</button>
+          <button id="mini-toggle" class="text-button" type="button">Mini</button>
+          <button id="sound-toggle" class="text-button" type="button">Sound On</button>
+          <button id="notify-toggle" class="text-button" type="button">Notify</button>
+          <button id="ai-auto-toggle" class="text-button" type="button">AI Auto</button>
+          <div class="status-pill" id="connection-state">Offline</div>
+        </div>
+      </header>
+
+      <nav class="section-nav" aria-label="Console sections">
+        <button type="button" class="nav-pill active" data-scroll="ai-scanner-hero">Scanner</button>
+        <button type="button" class="nav-pill" data-scroll="hero-grid">Analyzer</button>
+        <button type="button" class="nav-pill" data-scroll="charts-section">Charts</button>
+        <button type="button" class="nav-pill" data-scroll="bot-panel-anchor">Contracts</button>
+        <button type="button" class="nav-pill" data-scroll="risk-grid">Recovery</button>
+      </nav>
+
+      <section class="control-strip">
+        <label>
+          <span>Account</span>
+          <select id="account-target">
+            <option value="demo" selected>Demo account</option>
+            <option value="real">Real account</option>
+          </select>
+        </label>
+        <label class="token-field">
+          <span>Deriv API token</span>
+          <input id="api-token" type="password" autocomplete="off" placeholder="Paste demo or real token" />
+        </label>
+        <label class="save-token">
+          <input id="save-token" type="checkbox" />
+          <span>Save token</span>
+        </label>
+        <label>
+          <span>App ID</span>
+          <input id="app-id" inputmode="numeric" value="1089" />
+        </label>
+        <label>
+          <span>Market</span>
+          <select id="symbol">
+            <option value="R_100">Volatility 100</option>
+            <option value="R_75">Volatility 75</option>
+            <option value="R_50">Volatility 50</option>
+            <option value="R_25">Volatility 25</option>
+            <option value="R_10">Volatility 10</option>
+          </select>
+        </label>
+        <button id="connect-button" class="ghost-button" type="button">Connect</button>
+      </section>
+
+      <section class="ai-scanner-hero" id="ai-scanner-hero">
+        <article class="panel ai-scanner-panel">
+          <div class="panel-head">
+            <div>
+              <span>Smart AI scanner</span>
+              <strong>Volatility markets only — Vol 10 to Vol 100</strong>
+            </div>
+            <div class="scanner-head-meta">
+              <span id="scanner-pulse" class="scan-pulse">Live scan</span>
+              <b id="scanner-live-count">5 markets</b>
+            </div>
+          </div>
+          <p class="panel-intro">Neural ranking across all Deriv volatility indices. Entry quality, contract signal, and recovery readiness updated every tick.</p>
+          <div id="ai-market-grid" class="ai-market-grid"></div>
+          <div id="scanner-insight" class="scanner-insight">Connect or wait — public tick stream loads market data automatically.</div>
+        </article>
+      </section>
+
+      <section class="charts-section" id="charts-section">
+        <article class="panel chart-panel">
+          <div class="panel-head">
+            <div><span>Price stream</span><strong>Live tick chart</strong></div>
+          </div>
+          <canvas id="tick-chart" class="chart-canvas" height="180"></canvas>
+        </article>
+        <article class="panel chart-panel">
+          <div class="panel-head">
+            <div><span>Digit distribution</span><strong>Last 400 ticks heatmap</strong></div>
+          </div>
+          <div id="digit-heatmap" class="digit-heatmap"></div>
+        </article>
+
+        <article class="panel digit-analysis-panel">
+          <div class="panel-head">
+            <div><span>✨ Smart Digit Analysis</span><strong>Last digits, streaks &amp; predictions</strong></div>
+          </div>
+
+          <div class="da-ai-card" id="da-ai-card">
+            <div class="da-ai-head">
+              <span>✨ AI Recommendation</span>
+              <small id="da-ai-confidence-tag">BETA</small>
+            </div>
+            <p class="da-ai-sub">AI-powered trading recommendation using pattern analysis of recent digit streaks.</p>
+            <div class="da-ai-body">
+              <div class="da-ai-score-ring">
+                <svg viewBox="0 0 80 80" aria-hidden="true">
+                  <circle class="da-ring-track" cx="40" cy="40" r="34" />
+                  <circle class="da-ring-fill" id="da-ai-ring" cx="40" cy="40" r="34" />
+                </svg>
+                <b id="da-ai-score">0%</b>
+              </div>
+              <div class="da-ai-text">
+                <strong id="da-ai-recommend">Recommend: WAITING</strong>
+                <span id="da-ai-reason">Analyzing patterns...</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="digit-strip-wrap">
+            <span class="da-label">Recent digits</span>
+            <div id="digit-strip" class="digit-strip"></div>
+          </div>
+
+          <div class="da-streaks">
+            <div class="da-streak-card">
+              <span>Even / Odd streak</span>
+              <strong id="da-eo-streak">--</strong>
+            </div>
+            <div class="da-streak-card">
+              <span>High / Low streak</span>
+              <strong id="da-hl-streak">--</strong>
+            </div>
+          </div>
+
+          <div class="da-predict-grid">
+            <div class="da-predict-card">
+              <div class="da-predict-head">
+                <span>Even / Odd Prediction</span>
+                <small id="da-eo-confidence">Confidence: Low</small>
+              </div>
+              <div class="da-bar-row">
+                <span>EVEN</span>
+                <div class="da-bar"><i id="da-even-bar"></i></div>
+                <b id="da-even-pct">50%</b>
+              </div>
+              <div class="da-bar-row">
+                <span>ODD</span>
+                <div class="da-bar"><i id="da-odd-bar"></i></div>
+                <b id="da-odd-pct">50%</b>
+              </div>
+            </div>
+
+            <div class="da-predict-card">
+              <div class="da-predict-head">
+                <span>Over / Under Prediction</span>
+                <small id="da-ou-confidence">Confidence: Low</small>
+              </div>
+              <div class="da-bar-row">
+                <span>0-4</span>
+                <div class="da-bar"><i id="da-under-bar"></i></div>
+                <b id="da-under-pct">50%</b>
+              </div>
+              <div class="da-bar-row">
+                <span>5-9</span>
+                <div class="da-bar"><i id="da-over-bar"></i></div>
+                <b id="da-over-pct">50%</b>
+              </div>
+            </div>
+          </div>
+
+          <div class="da-trend">
+            <span>Recent digit trend</span>
+            <strong id="da-trend-copy">Flat trend - no clear direction</strong>
+            <div class="da-trend-meta">
+              <span>Last <b id="da-last-digit">-</b></span>
+              <span>Avg <b id="da-avg-digit">-</b></span>
+              <span>Mode <b id="da-mode-digit">-</b></span>
+            </div>
+          </div>
+
+          <div id="digit-pattern-heatmap" class="digit-pattern-heatmap"></div>
+        </article>
+        <article class="panel chart-panel">
+          <div class="panel-head">
+            <div><span>Session P&amp;L</span><strong>Profit curve</strong></div>
+          </div>
+          <canvas id="profit-chart" class="chart-canvas" height="180"></canvas>
+        </article>
+      </section>
+
+      <section class="hero-grid">
+        <article class="panel signal-panel ai-analyzer-panel">
+          <div class="analyzer-head">
+            <div class="score-ring-wrap">
+              <div class="score-ring" id="score-ring">
+                <svg viewBox="0 0 120 120" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#3b82f6" />
+                      <stop offset="50%" stop-color="#8b5cf6" />
+                      <stop offset="100%" stop-color="#22d3ee" />
+                    </linearGradient>
+                  </defs>
+                  <circle class="ring-track" cx="60" cy="60" r="52" />
+                  <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52" />
+                </svg>
+                <div class="score-ring-center">
+                  <b id="signal-score">0%</b>
+                  <small>AI score</small>
+                </div>
+              </div>
+            </div>
+            <div class="analyzer-copy">
+              <span class="analyzer-label">Neural signal engine</span>
+              <strong id="signal-title">Scanning volatility pressure</strong>
+              <p id="signal-copy">Waiting for a clean setup before entry.</p>
+              <div class="signal-tags">
+                <span id="signal-type-tag" class="signal-tag">ODDS</span>
+                <span id="signal-market-tag" class="signal-tag muted">R_100</span>
+                <span id="entry-ready" class="entry-state">WAITING</span>
+              </div>
+            </div>
+          </div>
+          <div class="tick-readout">
+            <span id="tick-display">----.--</span>
+            <b id="digit-display">Digit --</b>
+          </div>
+          <div class="digit-cursor-wrap">
+            <div id="digit-cursor-track" class="digit-cursor-track"></div>
+            <div class="digit-cursor-meta">
+              <span id="contract-cursor-copy">Waiting for contract entry</span>
+              <b id="contract-end-digit">End digit --</b>
+            </div>
+          </div>
+          <div class="streak-visual">
+            <div id="streak-digits" class="streak-digits"></div>
+            <strong id="streak-progress">0/5 Odds Found</strong>
+          </div>
+          <div id="ou-analysis" class="ou-analysis hidden">
+            <div class="ou-header">
+              <span>Barrier analysis tool</span>
+              <button id="ou-auto-barrier" class="text-button ou-auto-btn" type="button">AI pick barrier</button>
+            </div>
+            <div class="ou-bar">
+              <span>Under barrier</span>
+              <i id="ou-under-bar"></i>
+              <b id="ou-under-pct">0%</b>
+            </div>
+            <div class="ou-bar">
+              <span>Over barrier</span>
+              <i id="ou-over-bar"></i>
+              <b id="ou-over-pct">0%</b>
+            </div>
+            <p id="ou-analysis-copy">Barrier bias analysis</p>
+            <div id="ou-recommendation" class="ou-recommendation">AI recommendation pending</div>
+          </div>
+          <div id="differ-analysis" class="differ-analysis hidden">
+            <div class="differ-header">
+              <span>Differ repeat bot</span>
+              <b id="differ-status-pill" class="differ-pill">Watching</b>
+            </div>
+            <div class="differ-repeat-row">
+              <div class="differ-digit-box">
+                <small>Repeat digit</small>
+                <strong id="differ-display-digit">--</strong>
+              </div>
+              <div class="differ-count-box">
+                <small>Streak</small>
+                <strong id="differ-display-count">0/4</strong>
+              </div>
+              <div class="differ-recovery-box">
+                <small>Recovery step</small>
+                <strong id="differ-recovery-step">0</strong>
+              </div>
+            </div>
+            <div id="differ-repeat-visual" class="differ-repeat-visual"></div>
+            <p id="differ-analysis-copy">When a digit hits 4 times, Differ trades the next tick — recovery ladder handles losses.</p>
+          </div>
+        </article>
+
+        <article class="panel account-panel">
+          <div class="panel-head">
+            <div>
+              <span>Account balance</span>
+              <strong id="balance">--</strong>
+            </div>
+            <b id="account-badge">DEMO</b>
+          </div>
+          <div class="mini-stats">
+            <div><span>Odd streak</span><strong id="odd-streak">0</strong></div>
+            <div><span>Digit repeat</span><strong id="digit-streak">0</strong></div>
+            <div><span>Loss count</span><strong id="loss-count">0</strong></div>
+            <div><span>Cumulative loss</span><strong id="cum-loss">0.00</strong></div>
+            <div><span>Next stake</span><strong id="next-stake">0.35</strong></div>
+            <div><span>AI rank</span><strong id="market-rank">--</strong></div>
+          </div>
+        </article>
+
+        <article class="panel bot-panel" id="bot-panel-anchor">
+          <div class="panel-head">
+            <div>
+              <span>Bot controls</span>
+              <strong id="bot-state">Waiting</strong>
+            </div>
+          </div>
+          <div class="contract-tabs" id="contract-tabs">
+            <button type="button" class="contract-tab active" data-mode="odds_even">Odd / Even</button>
+            <button type="button" class="contract-tab" data-mode="over_under">Over / Under</button>
+            <button type="button" class="contract-tab" data-mode="differ">Differ</button>
+          </div>
+          <input id="contract-mode" type="hidden" value="odds_even" />
+          <div class="settings-grid mode-panel" id="mode-odds_even">
+            <label>
+              <span>PreferredOdds</span>
+              <select id="preferred-odds">
+                <option value="3">3 Odds</option>
+                <option value="4">4 Odds</option>
+                <option value="5" selected>5 Odds</option>
+                <option value="6">6 Odds</option>
+                <option value="7">7 Odds</option>
+                <option value="8">8 Odds</option>
+                <option value="9">9 Odds</option>
+              </select>
+            </label>
+            <label>
+              <span>Trade Direction</span>
+              <select id="trade-direction">
+                <option value="DIGITEVEN" selected>Even</option>
+                <option value="DIGITODD">Odd</option>
+              </select>
+            </label>
+          </div>
+          <div class="settings-grid mode-panel hidden" id="mode-over_under">
+            <label>
+              <span>Barrier digit</span>
+              <select id="ou-barrier">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5" selected>5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+              </select>
+            </label>
+            <label>
+              <span>Direction</span>
+              <select id="ou-direction">
+                <option value="DIGITOVER" selected>Over</option>
+                <option value="DIGITUNDER">Under</option>
+              </select>
+            </label>
+            <label>
+              <span>Min bias %</span>
+              <input id="ou-min-bias" type="number" min="50" max="90" step="5" value="58" />
+            </label>
+            <label>
+              <span>Sample ticks</span>
+              <input id="ou-sample" type="number" min="10" max="50" step="5" value="20" />
+            </label>
+          </div>
+          <div class="settings-grid mode-panel hidden" id="mode-differ">
+            <label>
+              <span>Repeat trigger</span>
+              <select id="differ-trigger">
+                <option value="3">3 repeats</option>
+                <option value="4" selected>4 repeats</option>
+                <option value="5">5 repeats</option>
+                <option value="6">6 repeats</option>
+              </select>
+            </label>
+            <label>
+              <span>Repeat digit</span>
+              <strong id="differ-repeat-digit" class="inline-value">--</strong>
+            </label>
+          </div>
+          <div class="settings-grid shared-settings">
+            <label>
+              <span>Stake</span>
+              <input id="stake" type="number" inputmode="decimal" min="0.35" step="0.01" value="0.35" />
+            </label>
+            <label>
+              <span>Shield</span>
+              <input id="shield" type="number" inputmode="decimal" min="1" step="1" value="50" />
+            </label>
+            <label>
+              <span>Execution</span>
+              <select id="execution-mode">
+                <option value="live" selected>Trade selected Deriv account</option>
+                <option value="paper">Paper test only</option>
+              </select>
+            </label>
+            <label>
+              <span>Profit Buffer</span>
+              <input id="profit-buffer" type="number" inputmode="decimal" min="0" step="0.01" value="0.35" />
+            </label>
+            <label>
+              <span>Recovery Start</span>
+              <input id="recovery-start-losses" type="number" inputmode="numeric" min="0" max="5" step="1" value="4" />
+            </label>
+            <label>
+              <span>Max Recovery</span>
+              <input id="max-recovery-steps" type="number" inputmode="numeric" min="1" step="1" value="7" />
+            </label>
+            <label>
+              <span>Max Stake</span>
+              <input id="max-stake" type="number" inputmode="decimal" min="0.35" step="0.01" value="100" />
+            </label>
+          </div>
+          <label class="real-confirm">
+            <input id="real-confirm" type="checkbox" />
+            <span>I understand Real account trades use real money.</span>
+          </label>
+          <div class="action-row">
+            <button id="start-bot" class="run-button" type="button">Run Bot</button>
+            <button id="ai-run-bot" class="run-button ai-run-button" type="button">AI Run</button>
+            <button id="stop-bot" class="stop-button" type="button">Stop</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="pro-grid">
+        <article class="panel best-market-panel">
+          <div class="panel-head">
+            <div><span>Best market auto-pick</span><strong id="best-market-title">Scanning markets</strong></div>
+            <button id="use-best-market" class="text-button" type="button">Use</button>
+          </div>
+          <p id="best-market-copy">The scanner will recommend the closest market to entry.</p>
+        </article>
+
+        <article class="panel session-panel">
+          <div class="panel-head">
+            <div><span>Session goal mode</span><strong>Auto stop targets</strong></div>
+          </div>
+          <div class="settings-grid">
+            <label>
+              <span>Target Profit</span>
+              <input id="session-target-profit" type="number" inputmode="decimal" step="0.01" value="2" />
+            </label>
+            <label>
+              <span>Max Loss</span>
+              <input id="session-max-loss" type="number" inputmode="decimal" step="0.01" value="5" />
+            </label>
+          </div>
+          <p id="session-copy">Bot will stop when the session target or max loss is reached.</p>
+        </article>
+
+        <article class="panel replay-panel">
+          <div class="panel-head">
+            <div><span>Trade replay</span><strong id="replay-title">No completed cycle yet</strong></div>
+          </div>
+          <div id="trade-replay" class="trade-replay"></div>
+        </article>
+
+        <article class="panel real-lock-panel">
+          <div class="panel-head">
+            <div><span>Real account lock</span><strong id="real-lock-title">Protected</strong></div>
+            <b id="real-countdown">--</b>
+          </div>
+          <p id="real-lock-copy">Real trading requires checkbox confirmation and a countdown before start.</p>
+        </article>
+      </section>
+
+      <section class="risk-grid">
+        <article class="panel recovery-settings-panel">
+          <div class="panel-head">
+            <div><span>Recovery settings</span><strong>Risk boundaries</strong></div>
+          </div>
+          <div class="settings-grid">
+            <label>
+              <span>Daily Profit Target</span>
+              <input id="daily-profit-target" type="number" inputmode="decimal" step="0.01" value="10" />
+            </label>
+            <label>
+              <span>Daily Loss Limit</span>
+              <input id="daily-loss-limit" type="number" inputmode="decimal" step="0.01" value="10" />
+            </label>
+            <label>
+              <span>Min Balance Protection</span>
+              <input id="min-balance-protection" type="number" inputmode="decimal" step="0.01" value="5" />
+            </label>
+            <label>
+              <span>Preset</span>
+              <select id="strategy-preset">
+                <option value="custom" selected>Custom</option>
+                <option value="immediate">Immediate recovery after loss</option>
+                <option value="verysafe">Very Safe</option>
+                <option value="normal">Normal</option>
+                <option value="fast">Fast</option>
+                <option value="conservative">Conservative</option>
+                <option value="balanced">Balanced</option>
+                <option value="aggressive">Aggressive</option>
+                <option value="recovery3">Recovery 3</option>
+                <option value="recovery5">Recovery 5</option>
+              </select>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel ladder-panel">
+          <div class="panel-head">
+            <div><span>Recovery ladder</span><strong id="ladder-summary">Base stake ready</strong></div>
+          </div>
+          <div id="recovery-ladder" class="ladder-list"></div>
+          <div class="ladder-meta">
+            <span>Current <b id="ladder-current">0.35</b></span>
+            <span>Next <b id="ladder-next">0.35</b></span>
+            <span>Cycle losses <b id="ladder-losses">0.00</b></span>
+          </div>
+        </article>
+
+        <article class="panel risk-panel">
+          <div class="panel-head">
+            <div><span>Risk meter</span><strong id="risk-label">LOW</strong></div>
+            <b id="risk-score">0%</b>
+          </div>
+          <div class="risk-meter"><i id="risk-bar"></i></div>
+          <p id="risk-copy">Exposure is inside the configured limits.</p>
+        </article>
+      </section>
+
+      <section class="analytics-grid">
+        <article class="panel stats-panel">
+          <div class="panel-head">
+            <div><span>Statistics</span><strong>Session performance</strong></div>
+          </div>
+          <div class="stats-grid">
+            <div><span>Total Trades</span><strong id="stat-total-trades">0</strong></div>
+            <div><span>Wins</span><strong id="stat-wins">0</strong></div>
+            <div><span>Losses</span><strong id="stat-losses">0</strong></div>
+            <div><span>Win Rate</span><strong id="stat-win-rate">0%</strong></div>
+            <div><span>Net Profit</span><strong id="stat-net-profit">0.00</strong></div>
+            <div><span>Longest Recovery</span><strong id="stat-longest-recovery">0</strong></div>
+            <div><span>Average Recovery</span><strong id="stat-average-recovery">0.0</strong></div>
+            <div><span>Cycles Completed</span><strong id="stat-cycles">0</strong></div>
+          </div>
+        </article>
+
+        <article class="panel strategy-panel">
+          <div class="panel-head">
+            <div><span>Strategy builder</span><strong>Trigger and recovery</strong></div>
+          </div>
+          <div class="settings-grid">
+            <label>
+              <span>Trigger Count</span>
+              <select id="trigger-count">
+                <option value="3">3 Odds</option>
+                <option value="4">4 Odds</option>
+                <option value="5" selected>5 Odds</option>
+                <option value="6">6 Odds</option>
+                <option value="7">7 Odds</option>
+                <option value="8">8 Odds</option>
+                <option value="9">9 Odds</option>
+              </select>
+            </label>
+            <label>
+              <span>Contract mode</span>
+              <select id="strategy-contract-mode">
+                <option value="odds_even" selected>Odd / Even</option>
+                <option value="over_under">Over / Under</option>
+                <option value="differ">Differ</option>
+              </select>
+            </label>
+            <label>
+              <span>Recovery Start</span>
+              <input id="strategy-recovery-start" type="number" inputmode="numeric" min="0" max="5" value="4" />
+            </label>
+            <label>
+              <span>Max Recovery</span>
+              <input id="strategy-max-recovery" type="number" inputmode="numeric" min="1" value="7" />
+            </label>
+            <label>
+              <span>Profit Buffer</span>
+              <input id="strategy-profit-buffer" type="number" inputmode="decimal" min="0" step="0.01" value="0.35" />
+            </label>
+          </div>
+        </article>
+
+        <article class="panel simulator-panel">
+          <div class="panel-head">
+            <div><span>Recovery simulator</span><strong>Exposure plan</strong></div>
+          </div>
+          <div class="sim-grid">
+            <div><span>Maximum Exposure</span><strong id="sim-max-exposure">0.00</strong></div>
+            <div><span>Recommended Balance</span><strong id="sim-recommended-balance">0.00</strong></div>
+          </div>
+          <div id="sim-ladder" class="sim-ladder"></div>
+        </article>
+      </section>
+
+      <section class="scanner-grid">
+        <article class="panel scanner-panel">
+          <div class="panel-head">
+            <div><span>Market scanner</span><strong>Volatility rank table</strong></div>
+          </div>
+          <div id="scanner-list" class="scanner-list"></div>
+        </article>
+        <article class="panel queue-panel">
+          <div class="panel-head">
+            <div><span>Live setup queue</span><strong>Closest to entry</strong></div>
+          </div>
+          <div id="setup-queue" class="setup-queue"></div>
+        </article>
+        <article class="panel backtest-panel">
+          <div class="panel-head">
+            <div><span>Backtest mode</span><strong>Historical tick sample</strong></div>
+            <button id="run-backtest" class="text-button" type="button">Run</button>
+          </div>
+          <div id="backtest-results" class="backtest-results">
+            <span>Triggers --</span>
+            <span>Wins --</span>
+            <span>Losses --</span>
+            <span>Win Rate --</span>
+            <span>Net Profit --</span>
+            <span>Max Drawdown --</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="bottom-grid">
+        <article class="panel market-panel">
+          <div class="panel-head">
+            <div><span>Watchlist</span><strong>Market pulse</strong></div>
+          </div>
+          <div id="watchlist" class="watchlist"></div>
+        </article>
+        <article class="panel journal-panel">
+          <div class="journal-header">
+            <div><span>Bot journal</span><strong>Live events</strong></div>
+            <button id="clear-journal" class="text-button" type="button">Clear</button>
+          </div>
+          <ol id="journal" class="journal"></ol>
+        </article>
+      </section>
+    </main>
+
+    <aside class="performance-float">
+      <span>Today</span>
+      <strong id="float-profit">0.00</strong>
+      <small>Win <b id="float-win-rate">0%</b> | Cycles <b id="float-cycles">0</b></small>
+    </aside>
+
+    <div id="toast-layer" class="toast-layer" aria-live="polite"></div>
+    <script src="./app.js?v=ai-rec-20260620"></script>
+  </body>
+</html>

@@ -1,10 +1,10 @@
-const CACHE = "trade7smart-round1-features-20260620";
+const CACHE = "trade7smart-round2-macd-20260620";
 const FILES = [
   "./",
   "./index.html",
-  "./styles.css?v=round1-features-20260620",
-  "./app.js?v=round1-features-20260620",
-  "./manifest.webmanifest?v=round1-features-20260620",
+  "./styles.css?v=round2-macd-20260620",
+  "./app.js?v=round2-macd-20260620",
+  "./manifest.webmanifest?v=round2-macd-20260620",
   "./icon.svg"
 ];
 

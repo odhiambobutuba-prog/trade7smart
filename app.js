@@ -1,10 +1,10 @@
 const WS_URL = "wss://ws.derivws.com/websockets/v3";
 const WATCHLIST = [
-  ["R_100", "Volatility 100"],
-  ["R_75", "Volatility 75"],
-  ["R_50", "Volatility 50"],
-  ["R_25", "Volatility 25"],
-  ["R_10", "Volatility 10"],
+  ["1HZ100V", "Volatility 100 (1s)"],
+  ["1HZ75V", "Volatility 75 (1s)"],
+  ["1HZ50V", "Volatility 50 (1s)"],
+  ["1HZ25V", "Volatility 25 (1s)"],
+  ["1HZ10V", "Volatility 10 (1s)"],
 ];
 
 const state = {
@@ -14,7 +14,7 @@ const state = {
   running: false,
   activeTrade: false,
   appId: "1089",
-  symbol: "R_100",
+  symbol: "1HZ100V",
   loginid: "",
   currency: "USD",
   balance: null,
@@ -182,6 +182,7 @@ function bindSocket() {
     if (data.msg_type === "proposal") handleProposal(data.proposal);
     if (data.msg_type === "buy") handleBuy(data.buy);
     if (data.msg_type === "proposal_open_contract") handleContract(data.proposal_open_contract);
+    if (data.msg_type === "candles") handleCandles(data);
     updateDashboard();
   };
 
@@ -285,6 +286,9 @@ function subscribeCoreStreams() {
   send({ balance: 1, subscribe: 1 }, "balance");
   send({ forget_all: "ticks" }, "forget");
   WATCHLIST.forEach(([symbol]) => send({ ticks: symbol, subscribe: 1 }, `watch:${symbol}`));
+  refreshRiseFallSignals();
+  if (state.riseFallTimer) clearInterval(state.riseFallTimer);
+  state.riseFallTimer = setInterval(refreshRiseFallSignals, 45000);
 }
 
 function handleBalance(balance) {
@@ -1159,26 +1163,27 @@ function renderContractCursor() {
   const holder = $("digit-cursor-track");
   if (!holder) return;
   holder.innerHTML = "";
-  const activeDigit = state.activeTrade
-    ? state.tradeCursorDigit
-    : state.tradeEndDigit ?? state.lastDigit;
+  const endDigit = state.tradeEndDigit ?? state.lastDigit;
   for (let digit = 0; digit <= 9; digit += 1) {
     const item = document.createElement("i");
     item.textContent = digit;
     item.className = [
       digit % 2 === 1 ? "odd" : "even",
-      activeDigit === digit ? "active" : "",
       state.tradeEndDigit === digit ? "ended" : "",
     ].filter(Boolean).join(" ");
-    if (state.activeTrade && activeDigit === digit) {
-      item.setAttribute("data-badge", "1/1");
-    } else if (!state.activeTrade && state.tradeEndDigit === digit) {
+    if (!state.activeTrade && state.tradeEndDigit === digit) {
       item.setAttribute("data-badge", state.tradeEndDigit % 2 === 0 ? "EVEN" : "ODD");
     }
     holder.appendChild(item);
   }
+  holder.classList.toggle("sweeping", !!state.activeTrade);
+  if (state.activeTrade) {
+    const dot = document.createElement("span");
+    dot.className = "cursor-sweep-dot";
+    holder.appendChild(dot);
+  }
   $("contract-cursor-copy").textContent = state.activeTrade
-    ? `Buying contract... moving digit ${state.tradeCursorDigit ?? "--"}`
+    ? "Buying contract..."
     : state.tradeEndDigit === null
       ? "Waiting for contract entry"
       : `Contract ended on digit ${state.tradeEndDigit}`;
@@ -1187,16 +1192,7 @@ function renderContractCursor() {
 
 function startContractCursor() {
   stopContractCursor();
-  state.tradeCursorDigit = Number.isInteger(state.tradeEntryDigit) ? state.tradeEntryDigit : 0;
   renderContractCursor();
-  state.tradeCursorTimer = setInterval(() => {
-    if (!state.activeTrade) {
-      stopContractCursor();
-      return;
-    }
-    state.tradeCursorDigit = ((Number(state.tradeCursorDigit) || 0) + 1) % 10;
-    renderContractCursor();
-  }, 120);
 }
 
 function stopContractCursor() {
@@ -1293,6 +1289,140 @@ function renderStats() {
   $("stat-longest-recovery").textContent = state.longestRecovery;
   $("stat-average-recovery").textContent = avgRecovery.toFixed(1);
   $("stat-cycles").textContent = state.cyclesCompleted;
+}
+
+const RISEFALL_TIMEFRAMES = [
+  { granularity: 60, label: "1m" },
+  { granularity: 120, label: "2m" },
+  { granularity: 180, label: "3m" },
+  { granularity: 300, label: "5m" },
+  { granularity: 600, label: "10m" },
+];
+
+state.riseFallData = state.riseFallData || {}; // { symbol: { granularity: candles[] } }
+state.riseFallReqMeta = state.riseFallReqMeta || {}; // { reqId: {symbol, granularity} }
+state.lastCleanSignalKey = state.lastCleanSignalKey || null;
+
+function requestCandles(symbol, granularity) {
+  if (!state.ws || state.ws.readyState !== WebSocket.OPEN) return;
+  const reqId = send(
+    {
+      ticks_history: symbol,
+      style: "candles",
+      granularity,
+      count: 60,
+      end: "latest",
+    },
+    "candles"
+  );
+  if (reqId) state.riseFallReqMeta[reqId] = { symbol, granularity };
+}
+
+function refreshRiseFallSignals() {
+  if (!state.ws || state.ws.readyState !== WebSocket.OPEN) return;
+  WATCHLIST.forEach(([symbol]) => {
+    RISEFALL_TIMEFRAMES.forEach(({ granularity }) => {
+      requestCandles(symbol, granularity);
+    });
+  });
+}
+
+function handleCandles(data) {
+  const meta = state.riseFallReqMeta[data.req_id];
+  if (!meta || !data.candles) return;
+  delete state.riseFallReqMeta[data.req_id];
+  state.riseFallData[meta.symbol] = state.riseFallData[meta.symbol] || {};
+  state.riseFallData[meta.symbol][meta.granularity] = data.candles;
+  renderRiseFallPanel();
+}
+
+function emaSeries(values, period) {
+  const k = 2 / (period + 1);
+  const out = [values[0]];
+  for (let i = 1; i < values.length; i++) {
+    out.push(values[i] * k + out[i - 1] * (1 - k));
+  }
+  return out;
+}
+
+function computeMacd(closes) {
+  if (closes.length < 30) return null;
+  const ema12 = emaSeries(closes, 12);
+  const ema26 = emaSeries(closes, 26);
+  const macdLine = ema12.map((v, i) => v - ema26[i]);
+  const signalLine = emaSeries(macdLine, 9);
+  const histogram = macdLine.map((v, i) => v - signalLine[i]);
+  const last = histogram.length - 1;
+  const direction = histogram[last] > 0 ? "RISE" : "FALL";
+  const strengthening = Math.abs(histogram[last]) > Math.abs(histogram[last - 1] || 0);
+  return { direction, histogram: histogram[last], strengthening };
+}
+
+function analyzeSymbolTimeframes(symbol) {
+  const data = state.riseFallData[symbol] || {};
+  const frames = RISEFALL_TIMEFRAMES.map(({ granularity, label }) => {
+    const candles = data[granularity];
+    if (!candles || candles.length < 30) return { label, signal: null };
+    const closes = candles.map((c) => Number(c.close));
+    const macd = computeMacd(closes);
+    return { label, signal: macd };
+  });
+  const valid = frames.filter((f) => f.signal);
+  const riseCount = valid.filter((f) => f.signal.direction === "RISE").length;
+  const fallCount = valid.length - riseCount;
+  const agreement = valid.length ? Math.max(riseCount, fallCount) / valid.length : 0;
+  const direction = riseCount >= fallCount ? "RISE" : "FALL";
+  const cleanSignal = valid.length === RISEFALL_TIMEFRAMES.length && agreement >= 0.8;
+  return { frames, direction, agreement, cleanSignal, validCount: valid.length };
+}
+
+function renderRiseFallPanel() {
+  const holder = $("risefall-grid");
+  if (!holder) return;
+
+  let best = null;
+  const rows = WATCHLIST.map(([symbol, name]) => {
+    const analysis = analyzeSymbolTimeframes(symbol);
+    if (!best || analysis.agreement > best.analysis.agreement) best = { symbol, name, analysis };
+    return { symbol, name, analysis };
+  });
+
+  holder.innerHTML = "";
+  rows.forEach(({ symbol, name, analysis }) => {
+    const row = document.createElement("div");
+    row.className = "rf-row";
+    const tfCells = RISEFALL_TIMEFRAMES.map(({ label }) => {
+      const f = analysis.frames.find((x) => x.label === label);
+      const cls = !f?.signal ? "rf-pending" : f.signal.direction === "RISE" ? "rf-rise" : "rf-fall";
+      const txt = !f?.signal ? "..." : f.signal.direction === "RISE" ? "↑" : "↓";
+      return `<span class="rf-tf ${cls}" title="${label}">${txt}</span>`;
+    }).join("");
+    row.innerHTML = `
+      <span class="rf-name">${name}</span>
+      <span class="rf-tfs">${tfCells}</span>
+      <span class="rf-verdict ${analysis.direction === "RISE" ? "rf-rise" : "rf-fall"}">${analysis.direction}</span>
+      <span class="rf-agreement">${Math.round(analysis.agreement * 100)}%</span>
+    `;
+    holder.appendChild(row);
+  });
+
+  if (best && $("rf-best-market")) {
+    $("rf-best-market").textContent = best.name;
+    $("rf-best-direction").textContent = best.analysis.direction;
+    $("rf-best-direction").className = best.analysis.direction === "RISE" ? "rf-rise" : "rf-fall";
+    $("rf-best-confidence").textContent = `${Math.round(best.analysis.agreement * 100)}% agreement across ${best.analysis.validCount}/5 timeframes`;
+  }
+
+  if (best && best.analysis.cleanSignal) {
+    const key = `${best.symbol}:${best.analysis.direction}`;
+    if (state.lastCleanSignalKey !== key) {
+      state.lastCleanSignalKey = key;
+      toast(`Clean ${best.analysis.direction} signal on ${best.name} (all 5 timeframes agree).`, "good");
+      if (state.notificationsEnabled) {
+        phoneNotify("Clean Rise/Fall entry", `${best.name}: ${best.analysis.direction} confirmed on 1m-10m MACD.`, "good");
+      }
+    }
+  }
 }
 
 function renderAiRecommendation(digits) {
@@ -1871,7 +2001,7 @@ function initButubaPreloader() {
       pre.classList.add("hide");
       setTimeout(() => pre.remove(), 600);
     }
-  }, 1800);
+  }, 5000);
 }
 
 function initConnectionDrawer() {
@@ -1957,7 +2087,7 @@ function updateRiskGauge(pct) {
 }
 
 function syncHomeTab() {
-  const balanceEl = $("balance-value") || $("account-balance");
+  const balanceEl = $("balance");
   if (balanceEl && $("home-balance")) $("home-balance").textContent = balanceEl.textContent;
   if ($("home-account-type")) {
     const acc = $("account-target");

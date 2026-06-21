@@ -1495,10 +1495,10 @@ function renderRiseFallPanel() {
   });
 
   if (best && $("rf-best-market")) {
-    $("rf-best-market").textContent = best.name;
-    $("rf-best-direction").textContent = best.analysis.direction;
-    $("rf-best-direction").className = best.analysis.direction === "RISE" ? "rf-rise" : "rf-fall";
-    $("rf-best-confidence").textContent = `${Math.round(best.analysis.agreement * 100)}% agreement across ${best.analysis.validCount}/5 timeframes`;
+    if ($("rf-best-market")) $("rf-best-market").textContent = best.name;
+    if ($("rf-best-direction")) $("rf-best-direction").textContent = best.analysis.direction;
+    if ($("rf-best-direction")) $("rf-best-direction").className = best.analysis.direction === "RISE" ? "rf-rise" : "rf-fall";
+    if ($("rf-best-confidence")) $("rf-best-confidence").textContent = `${Math.round(best.analysis.agreement * 100)}% agreement across ${best.analysis.validCount}/5 timeframes`;
   }
 
   if (best && $("rf-engine-market")) {
@@ -1599,10 +1599,10 @@ function renderAiRecommendation(digits) {
     }
   }
 
-  $("da-ai-score").textContent = `${score}%`;
-  $("da-ai-recommend").textContent = `Recommend: ${recommend}`;
-  $("da-ai-reason").textContent = reason;
-  $("da-ai-confidence-tag").textContent = score >= 70 ? "HIGH" : score >= 45 ? "MEDIUM" : "BETA";
+  if ($("da-ai-score")) $("da-ai-score").textContent = `${score}%`;
+  if ($("da-ai-recommend")) $("da-ai-recommend").textContent = `Recommend: ${recommend}`;
+  if ($("da-ai-reason")) $("da-ai-reason").textContent = reason;
+  if ($("da-ai-confidence-tag")) $("da-ai-confidence-tag").textContent = score >= 70 ? "HIGH" : score >= 45 ? "MEDIUM" : "BETA";
 
   const ring = $("da-ai-ring");
   const circumference = 2 * Math.PI * 34;
@@ -1636,7 +1636,7 @@ function renderDigitAnalysis() {
     if (digits[i] % 2 === lastParity) eoStreak++;
     else break;
   }
-  $("da-eo-streak").textContent = `${eoStreak}x ${lastParity === 1 ? "Odd" : "Even"}`;
+  if ($("da-eo-streak")) $("da-eo-streak").textContent = `${eoStreak}x ${lastParity === 1 ? "Odd" : "Even"}`;
 
   // high/low streak
   let hlStreak = 1;
@@ -1646,31 +1646,31 @@ function renderDigitAnalysis() {
     if (hl === lastHL) hlStreak++;
     else break;
   }
-  $("da-hl-streak").textContent = `${hlStreak}x ${lastHL === "high" ? "High" : "Low"}`;
+  if ($("da-hl-streak")) $("da-hl-streak").textContent = `${hlStreak}x ${lastHL === "high" ? "High" : "Low"}`;
 
   // even/odd prediction
   const evenCount = digits.filter((d) => d % 2 === 0).length;
   const oddCount = digits.length - evenCount;
   const evenPct = Math.round((evenCount / digits.length) * 100);
   const oddPct = 100 - evenPct;
-  $("da-even-bar").style.width = `${evenPct}%`;
-  $("da-odd-bar").style.width = `${oddPct}%`;
-  $("da-even-pct").textContent = `${evenPct}%`;
-  $("da-odd-pct").textContent = `${oddPct}%`;
+  if ($("da-even-bar")) $("da-even-bar").style.width = `${evenPct}%`;
+  if ($("da-odd-bar")) $("da-odd-bar").style.width = `${oddPct}%`;
+  if ($("da-even-pct")) $("da-even-pct").textContent = `${evenPct}%`;
+  if ($("da-odd-pct")) $("da-odd-pct").textContent = `${oddPct}%`;
   const eoSkew = Math.abs(evenPct - 50);
-  $("da-eo-confidence").textContent = `Confidence: ${eoSkew >= 15 ? "High" : eoSkew >= 7 ? "Medium" : "Low"}`;
+  if ($("da-eo-confidence")) $("da-eo-confidence").textContent = `Confidence: ${eoSkew >= 15 ? "High" : eoSkew >= 7 ? "Medium" : "Low"}`;
 
   // over/under prediction
   const underCount = digits.filter((d) => d <= 4).length;
   const overCount = digits.length - underCount;
   const underPct = Math.round((underCount / digits.length) * 100);
   const overPct = 100 - underPct;
-  $("da-under-bar").style.width = `${underPct}%`;
-  $("da-over-bar").style.width = `${overPct}%`;
-  $("da-under-pct").textContent = `${underPct}%`;
-  $("da-over-pct").textContent = `${overPct}%`;
+  if ($("da-under-bar")) $("da-under-bar").style.width = `${underPct}%`;
+  if ($("da-over-bar")) $("da-over-bar").style.width = `${overPct}%`;
+  if ($("da-under-pct")) $("da-under-pct").textContent = `${underPct}%`;
+  if ($("da-over-pct")) $("da-over-pct").textContent = `${overPct}%`;
   const ouSkew = Math.abs(underPct - 50);
-  $("da-ou-confidence").textContent = `Confidence: ${ouSkew >= 15 ? "High" : ouSkew >= 7 ? "Medium" : "Low"}`;
+  if ($("da-ou-confidence")) $("da-ou-confidence").textContent = `Confidence: ${ouSkew >= 15 ? "High" : ouSkew >= 7 ? "Medium" : "Low"}`;
 
   // trend
   const last10 = digits.slice(-10);
@@ -1678,13 +1678,13 @@ function renderDigitAnalysis() {
   const counts = {};
   digits.forEach((d) => (counts[d] = (counts[d] || 0) + 1));
   const mode = Object.keys(counts).reduce((a, b) => (counts[a] > counts[b] ? a : b));
-  $("da-last-digit").textContent = digits[digits.length - 1];
-  $("da-avg-digit").textContent = avg.toFixed(1);
-  $("da-mode-digit").textContent = mode;
+  if ($("da-last-digit")) $("da-last-digit").textContent = digits[digits.length - 1];
+  if ($("da-avg-digit")) $("da-avg-digit").textContent = avg.toFixed(1);
+  if ($("da-mode-digit")) $("da-mode-digit").textContent = mode;
   const firstHalfAvg = last10.slice(0, 5).reduce((a, b) => a + b, 0) / 5;
   const secondHalfAvg = last10.slice(5).reduce((a, b) => a + b, 0) / 5;
   const diff = secondHalfAvg - firstHalfAvg;
-  $("da-trend-copy").textContent =
+  if ($("da-trend-copy")) $("da-trend-copy").textContent =
     diff > 0.8 ? "Rising trend - digits trending higher" : diff < -0.8 ? "Falling trend - digits trending lower" : "Flat trend - no clear direction";
 
   renderDigitPatternHeatmap(digits);
@@ -2386,7 +2386,7 @@ function runBacktest() {
   });
 
   const total = wins + losses;
-  $("backtest-results").innerHTML = `
+  if ($("backtest-results")) $("backtest-results").innerHTML = `
     <span>Triggers ${triggers}</span>
     <span>Wins ${wins}</span>
     <span>Losses ${losses}</span>
@@ -2731,7 +2731,7 @@ $("trade-direction").addEventListener("change", updateDashboard);
 $("strategy-recovery-start").addEventListener("input", () => syncStrategyBuilder("builder"));
 $("strategy-max-recovery").addEventListener("input", () => syncStrategyBuilder("builder"));
 $("strategy-profit-buffer").addEventListener("input", () => syncStrategyBuilder("builder"));
-$("run-backtest").addEventListener("click", runBacktest);
+if($("run-backtest")) $("run-backtest").addEventListener("click", runBacktest);
 $("compact-toggle").addEventListener("click", toggleCompactMode);
 $("mini-toggle").addEventListener("click", toggleMiniMode);
 $("sound-toggle").addEventListener("click", toggleSound);

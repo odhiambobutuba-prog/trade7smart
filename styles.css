@@ -2353,3 +2353,19 @@ body.light-theme small {
   font-size: 0.7rem;
   color: var(--muted, #8b95a7);
 }
+
+.rf-buy-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.rf-buy-row .qa-btn {
+  flex: 1;
+  text-align: center;
+}
+
+.rf-buy-note {
+  color: var(--muted, #8b95a7);
+  font-size: 0.64rem;
+}

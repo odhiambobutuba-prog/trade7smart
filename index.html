@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#060a10" />
     <title>Trade7Smart — AI Volatility Console</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=round2-macd-20260620" />
-    <link rel="stylesheet" href="./styles.css?v=round2-macd-20260620" />
+    <link rel="manifest" href="./manifest.webmanifest?v=round2-buy-fix-20260620" />
+    <link rel="stylesheet" href="./styles.css?v=round2-buy-fix-20260620" />
   </head>
   <body>
     <div id="butuba-preloader" class="butuba-preloader">
@@ -246,6 +246,11 @@
               <span id="rf-best-direction" class="rf-pending">--</span>
               <small id="rf-best-confidence">Waiting for candle data</small>
             </div>
+            <div class="rf-buy-row">
+              <button id="rf-buy-rise" class="qa-btn qa-rise" type="button">Buy Rise</button>
+              <button id="rf-buy-fall" class="qa-btn qa-fall" type="button">Buy Fall</button>
+            </div>
+            <small class="rf-buy-note">Manual buy uses the current market shown in the Settings drawer · 5 min duration</small>
           </div>
 
           <div class="rf-grid-head">
@@ -744,6 +749,6 @@
     </aside>
 
     <div id="toast-layer" class="toast-layer" aria-live="polite"></div>
-    <script src="./app.js?v=round2-macd-20260620"></script>
+    <script src="./app.js?v=round2-buy-fix-20260620"></script>
   </body>
 </html>

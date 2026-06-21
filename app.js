@@ -1425,6 +1425,39 @@ function renderRiseFallPanel() {
   }
 }
 
+function buyRiseFall(direction) {
+  if (!state.authorized) {
+    toast("Connect your account first.", "danger");
+    return;
+  }
+  if (state.activeTrade) {
+    toast("Wait for the current contract to finish.", "warn");
+    return;
+  }
+  const settings = getSettings();
+  const stake = Math.max(settings.stake || 0.35, 0.35);
+  state.currentStake = stake;
+  state.activeTrade = true;
+  state.tradeEndDigit = null;
+  startContractCursor();
+  send(
+    {
+      proposal: 1,
+      amount: stake,
+      basis: "stake",
+      currency: state.currency,
+      duration: 5,
+      duration_unit: "m",
+      symbol: state.symbol,
+      contract_type: direction === "RISE" ? "CALL" : "PUT",
+    },
+    "proposal"
+  );
+  toast(`Buying ${direction} on ${state.symbol}...`, "good");
+  journal(`Manual ${direction} (Rise/Fall) buy on ${state.symbol}, stake ${stake.toFixed(2)}.`, "trade");
+  updateDashboard();
+}
+
 function renderAiRecommendation(digits) {
   const last20 = digits.slice(-20);
   const evenPct = (last20.filter((d) => d % 2 === 0).length / last20.length) * 100;
@@ -2055,21 +2088,19 @@ function initQuickActions() {
   fab.addEventListener("click", () => menu.classList.toggle("open"));
 
   $("qa-buy-rise")?.addEventListener("click", () => {
-    const btn = document.querySelector('[data-direction="CALL"], #buy-call, #buy-rise');
-    if (btn) btn.click();
-    else toast("Open the Analyzer tab to buy Rise.", "warn");
+    buyRiseFall("RISE");
     menu.classList.remove("open");
   });
   $("qa-buy-fall")?.addEventListener("click", () => {
-    const btn = document.querySelector('[data-direction="PUT"], #buy-put, #buy-fall');
-    if (btn) btn.click();
-    else toast("Open the Analyzer tab to buy Fall.", "warn");
+    buyRiseFall("FALL");
     menu.classList.remove("open");
   });
   $("qa-stop-bot")?.addEventListener("click", () => {
-    const btn = document.getElementById("stop-bot") || document.querySelector(".stop-button");
-    if (btn) btn.click();
-    else toast("Bot stop control not found on this build.", "warn");
+    state.running = false;
+    $("bot-state") && ($("bot-state").textContent = "Stopped");
+    toast("Bot stopped.", "warn");
+    journal("Bot stopped via Quick Actions.", "warn");
+    updateDashboard();
     menu.classList.remove("open");
   });
 }
@@ -2225,6 +2256,12 @@ initConnectionDrawer();
 initOptionsMenu();
 initThemeToggle();
 initQuickActions();
+initRiseFallButtons();
+
+function initRiseFallButtons() {
+  $("rf-buy-rise")?.addEventListener("click", () => buyRiseFall("RISE"));
+  $("rf-buy-fall")?.addEventListener("click", () => buyRiseFall("FALL"));
+}
 connectPublicScanner();
 setTimeout(hideLoader, 850);
 

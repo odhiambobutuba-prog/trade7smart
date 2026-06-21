@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#060a10" />
     <title>Trade7Smart — AI Volatility Console</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=round3-engine-20260620" />
-    <link rel="stylesheet" href="./styles.css?v=round3-engine-20260620" />
+    <link rel="manifest" href="./manifest.webmanifest?v=round4-strategybot-20260620" />
+    <link rel="stylesheet" href="./styles.css?v=round4-strategybot-20260620" />
   </head>
   <body>
     <div id="butuba-preloader" class="butuba-preloader">
@@ -123,6 +123,7 @@
         <button type="button" class="nav-pill" data-tab="charts-section">Charts</button>
         <button type="button" class="nav-pill" data-tab="recovery">Recovery</button>
         <button type="button" class="nav-pill" data-tab="stats">Stats</button>
+        <button type="button" class="nav-pill" data-tab="strategy">Strategy</button>
       </nav>
       <section class="ai-scanner-hero" id="ai-scanner-hero">
         <article class="panel ai-scanner-panel">
@@ -143,6 +144,22 @@
       </section>
 
       <section class="charts-section" id="charts-section">
+        <article class="panel price-chart-panel">
+          <div class="panel-head">
+            <div><span>Price stream</span><strong id="price-chart-symbol-label">Live market chart</strong></div>
+            <div class="chart-type-toggle">
+              <button type="button" class="chart-type-btn active" data-chart-type="area">Area</button>
+              <button type="button" class="chart-type-btn" data-chart-type="line">Line</button>
+              <button type="button" class="chart-type-btn" data-chart-type="candles">Candles</button>
+            </div>
+          </div>
+          <canvas id="price-chart" class="chart-canvas" height="220"></canvas>
+
+          <div class="digit-prob-row" id="digit-prob-row">
+            <div class="digit-prob-cursor" id="digit-prob-cursor"></div>
+          </div>
+        </article>
+
         <article class="panel digit-analysis-panel">
           <div class="panel-head">
             <div><span>✨ Smart Digit Analysis</span><strong>Last digits, streaks &amp; predictions</strong></div>
@@ -261,97 +278,6 @@
           </div>
           <div id="risefall-grid" class="rf-grid"></div>
         </article>
-
-        <article class="panel technical-analysis-panel">
-          <div class="panel-head">
-            <div><span>🔬 Technical Analysis</span><strong>RSI, Bollinger Bands, Stochastic &amp; More</strong></div>
-          </div>
-
-          <div class="ta-overview-card" id="ta-overview-card">
-            <span class="da-label">Overall Technical Signal</span>
-            <strong id="ta-overall-signal">Analyzing...</strong>
-            <div class="ta-overview-meta">
-              <span id="ta-trend-badge" class="ta-badge">--</span>
-              <small id="ta-strength">Strength: --</small>
-            </div>
-          </div>
-
-          <div class="ta-indicators-grid">
-            <div class="ta-indicator-card">
-              <span class="ta-ind-label">RSI (14)</span>
-              <strong id="ta-rsi-value">--</strong>
-              <small id="ta-rsi-status">Waiting for data</small>
-              <div class="ta-gauge-wrap">
-                <div class="ta-gauge">
-                  <div class="ta-gauge-fill" id="ta-rsi-gauge"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="ta-indicator-card">
-              <span class="ta-ind-label">Bollinger Bands</span>
-              <strong id="ta-bb-value">--</strong>
-              <small id="ta-bb-status">Waiting for data</small>
-              <div class="ta-bb-visual">
-                <div class="ta-bb-band ta-bb-upper" id="ta-bb-upper"></div>
-                <div class="ta-bb-band ta-bb-middle" id="ta-bb-middle"></div>
-                <div class="ta-bb-band ta-bb-lower" id="ta-bb-lower"></div>
-                <div class="ta-bb-price" id="ta-bb-price"></div>
-              </div>
-            </div>
-
-            <div class="ta-indicator-card">
-              <span class="ta-ind-label">Stochastic (14,3)</span>
-              <strong id="ta-stoch-value">--</strong>
-              <small id="ta-stoch-status">Waiting for data</small>
-              <div class="ta-gauge-wrap">
-                <div class="ta-gauge">
-                  <div class="ta-gauge-fill" id="ta-stoch-gauge"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="ta-indicator-card">
-              <span class="ta-ind-label">ATR (14)</span>
-              <strong id="ta-atr-value">--</strong>
-              <small id="ta-atr-volatility">Volatility: --</small>
-              <div class="ta-volatility-bar">
-                <div class="ta-vol-fill" id="ta-vol-fill"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="ta-signals-list" id="ta-signals-list">
-            <span class="da-label">Active Trading Signals</span>
-            <div id="ta-signals-container" class="ta-signals-container">
-              <small class="ta-no-signals">Waiting for technical analysis data...</small>
-            </div>
-          </div>
-
-          <div class="ta-moving-averages">
-            <span class="da-label">Moving Averages</span>
-            <div class="ta-ma-row">
-              <span>SMA (20)</span>
-              <strong id="ta-sma20">--</strong>
-              <span id="ta-sma20-diff" class="ta-diff">--</span>
-            </div>
-            <div class="ta-ma-row">
-              <span>SMA (50)</span>
-              <strong id="ta-sma50">--</strong>
-              <span id="ta-sma50-diff" class="ta-diff">--</span>
-            </div>
-            <div class="ta-ma-row">
-              <span>EMA (12)</span>
-              <strong id="ta-ema12">--</strong>
-              <span id="ta-ema12-diff" class="ta-diff">--</span>
-            </div>
-            <div class="ta-ma-row">
-              <span>EMA (26)</span>
-              <strong id="ta-ema26">--</strong>
-              <span id="ta-ema26-diff" class="ta-diff">--</span>
-            </div>
-          </div>
-        </article>
       </section>
 
       <section class="hero-grid" id="hero-grid">
@@ -385,6 +311,8 @@
                 <span id="signal-market-tag" class="signal-tag muted">1HZ100V</span>
                 <span id="entry-ready" class="entry-state">WAITING</span>
               </div>
+              <div id="strategy-watch-tag" class="strategy-watch-tag hidden">Watching: --</div>
+              <div id="triple-detect-banner" class="triple-detect-banner"></div>
             </div>
           </div>
           <div class="tick-readout">
@@ -530,22 +458,7 @@
             </label>
             <label class="save-token">
               <input id="ou-auto-triple-enable" type="checkbox" />
-              <span>Auto-trade Over on triple repeat</span>
-            </label>
-            <label>
-              <span>Trigger digit</span>
-              <select id="ou-auto-triple-digit">
-                <option value="0">0</option>
-                <option value="1" selected>1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-              </select>
+              <span>Auto-buy Over 1 when 1,1,1 or 0,0,0 appears</span>
             </label>
           </div>
           <div class="settings-grid mode-panel hidden" id="mode-differ">
@@ -774,6 +687,7 @@
                 <option value="odds_even" selected>Odd / Even</option>
                 <option value="over_under">Over / Under</option>
                 <option value="differ">Differ</option>
+                <option value="rise_fall">Rise / Fall</option>
               </select>
             </label>
             <label>
@@ -847,6 +761,20 @@
           <ol id="journal" class="journal"></ol>
         </article>
       </section>
+
+      <section class="strategy-section" id="strategy">
+        <article class="panel strategy-intro-panel">
+          <div class="panel-head">
+            <div><span>🧩 Strategy Bot</span><strong>Your imported DBot strategies</strong></div>
+          </div>
+          <p class="strategy-intro-copy">
+            These are mapped from your Deriv DBot XML files onto Trade7Smart's engine (same proposal/buy pipeline,
+            matching contract type, market, and trigger logic where possible). Tap <b>Run</b> to start one —
+            the Analyzer tab will show <b>"Watching: [bot name]"</b> while it's active.
+          </p>
+        </article>
+        <div id="strategy-bot-grid" class="strategy-bot-grid"></div>
+      </section>
     </main>
 
     <nav class="bottom-tab-bar" aria-label="Bottom navigation">
@@ -868,6 +796,9 @@
       <button type="button" class="bt-tab" data-tab="stats">
         <span class="bt-icon">📊</span><span class="bt-label">Stats</span>
       </button>
+      <button type="button" class="bt-tab" data-tab="strategy">
+        <span class="bt-icon">🧩</span><span class="bt-label">Strategy</span>
+      </button>
     </nav>
 
     <div class="quick-actions-wrap">
@@ -886,6 +817,6 @@
     </aside>
 
     <div id="toast-layer" class="toast-layer" aria-live="polite"></div>
-    <script src="./app.js?v=round3-engine-20260620"></script>
+    <script src="./app.js?v=round4-strategybot-20260620"></script>
   </body>
 </html>

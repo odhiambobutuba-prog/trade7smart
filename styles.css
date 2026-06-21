@@ -1951,3 +1951,295 @@ body {
     padding: 8px 10px;
   }
 }
+
+/* ===== Butuba Preloader ===== */
+.butuba-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: #060a10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  transition: opacity 0.6s ease;
+}
+
+.butuba-preloader.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bp-welcome {
+  color: #e7ecf5;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.bp-letters {
+  display: flex;
+  gap: 10px;
+}
+
+.bp-letters span {
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #22d3ee);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0;
+  transform: translateY(14px);
+  animation: bpPop 0.5s ease forwards;
+}
+
+@keyframes bpPop {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bp-powered {
+  color: var(--muted, #8b95a7);
+  font-size: 0.78rem;
+  margin: 0;
+}
+
+/* ===== Connection Drawer ===== */
+.connection-drawer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+  flex-shrink: 0;
+}
+
+.connection-drawer.open {
+  max-height: 400px;
+}
+
+.connection-drawer .control-strip {
+  margin-bottom: 12px;
+}
+
+/* ===== Options Menu ===== */
+.options-menu-wrap {
+  position: relative;
+}
+
+.options-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: rgba(10, 14, 22, 0.97);
+  border: 1px solid var(--line, rgba(255,255,255,0.08));
+  border-radius: 10px;
+  padding: 6px;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+  z-index: 40;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+}
+
+.options-menu.open {
+  display: flex;
+}
+
+.options-menu .text-button {
+  text-align: left;
+  width: 100%;
+}
+
+/* ===== Home Tab ===== */
+.home-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.home-balance-card,
+.home-signal-card,
+.home-ai-card,
+.home-risk-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.home-balance-card strong,
+.home-signal-card strong,
+.home-ai-card strong {
+  font-size: 1.2rem;
+}
+
+.home-connect-btn {
+  align-self: flex-start;
+}
+
+.risk-gauge-wrap {
+  position: relative;
+  width: 120px;
+  margin: 4px auto 0;
+}
+
+.risk-gauge-track {
+  fill: none;
+  stroke: rgba(255,255,255,0.08);
+  stroke-width: 10;
+}
+
+.risk-gauge-fill {
+  fill: none;
+  stroke: #22d3ee;
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 157;
+  stroke-dashoffset: 157;
+  transition: stroke-dashoffset 0.4s ease, stroke 0.4s ease;
+}
+
+.risk-gauge-wrap strong {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.95rem;
+}
+
+/* ===== Bottom Tab Bar ===== */
+.bottom-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: rgba(8, 12, 18, 0.97);
+  border-top: 1px solid var(--line, rgba(255,255,255,0.08));
+  backdrop-filter: blur(14px);
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.bt-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 2px 10px;
+  background: none;
+  border: none;
+  color: var(--muted, #8b95a7);
+}
+
+.bt-tab.active {
+  color: #22d3ee;
+}
+
+.bt-icon {
+  font-size: 1.1rem;
+}
+
+.bt-label {
+  font-size: 0.6rem;
+}
+
+/* hide old top nav-pills row on mobile, bottom bar takes over */
+@media (max-width: 720px) {
+  .section-nav {
+    display: none;
+  }
+  .terminal-shell {
+    padding-bottom: 70px;
+  }
+}
+
+@media (min-width: 721px) {
+  .bottom-tab-bar {
+    display: none;
+  }
+}
+
+/* ===== Quick Actions FAB ===== */
+.quick-actions-wrap {
+  position: fixed;
+  right: 16px;
+  bottom: 78px;
+  z-index: 55;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.quick-actions-fab {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #fff;
+  font-size: 1.3rem;
+  box-shadow: 0 10px 24px rgba(59, 130, 246, 0.4);
+}
+
+.quick-actions-menu {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.quick-actions-menu.open {
+  display: flex;
+}
+
+.qa-btn {
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.qa-rise { background: #22c55e; }
+.qa-fall { background: #f87171; }
+.qa-stop { background: #475569; }
+
+@media (min-width: 721px) {
+  .quick-actions-wrap {
+    bottom: 16px;
+  }
+}
+
+/* ===== Light Theme ===== */
+body.light-theme {
+  background: #f4f6fb;
+  color: #1a2030;
+}
+
+body.light-theme .panel,
+body.light-theme .control-strip,
+body.light-theme .options-menu,
+body.light-theme .bottom-tab-bar {
+  background: #ffffff;
+  border-color: rgba(0,0,0,0.08);
+  color: #1a2030;
+}
+
+body.light-theme .da-label,
+body.light-theme .muted,
+body.light-theme small {
+  color: #64748b;
+}

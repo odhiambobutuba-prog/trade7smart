@@ -935,6 +935,7 @@ function updateDashboard() {
   renderStats();
   if ($("digit-heatmap")) renderDigitHeatmap();
   if ($("digit-strip")) renderDigitAnalysis();
+  syncHomeTab();
   renderAiMarketGrid(settings);
   renderScannerInsight(settings);
   renderDifferAnalysis(settings);
@@ -1818,6 +1819,7 @@ function startLiveClock() {
 }
 
 const TAB_GROUPS = {
+  "home-tab-key": ["home-tab"],
   "ai-scanner-hero": ["ai-scanner-hero"],
   "hero-grid": ["hero-grid"],
   "charts-section": ["charts-section"],
@@ -1834,23 +1836,149 @@ function initSectionNav() {
       const el = document.getElementById(id);
       if (el) el.classList.toggle("tab-hidden", !activeIds.includes(id));
     });
-    document.querySelector(".terminal-shell").scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+    document.querySelectorAll(".nav-pill").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
+    document.querySelectorAll(".bt-tab").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
+    const shell = document.querySelector(".terminal-shell");
+    if (shell) shell.scrollTo({ top: 0 });
   }
 
-  document.querySelectorAll(".nav-pill").forEach((pill) => {
-    pill.addEventListener("click", () => {
-      document.querySelectorAll(".nav-pill").forEach((p) => p.classList.remove("active"));
-      pill.classList.add("active");
-      showTab(pill.dataset.tab);
-    });
+  document.querySelectorAll(".nav-pill, .bt-tab").forEach((pill) => {
+    pill.addEventListener("click", () => showTab(pill.dataset.tab));
   });
 
-  showTab("ai-scanner-hero");
+  showTab("home-tab-key");
 }
+
 
 
 function hideLoader() {
   document.body.classList.add("loaded");
+}
+
+function initButubaPreloader() {
+  const letters = "BUTUBA".split("");
+  const holder = $("bp-letters");
+  if (!holder) return;
+  letters.forEach((ch, i) => {
+    const span = document.createElement("span");
+    span.textContent = ch;
+    span.style.animationDelay = `${i * 0.12}s`;
+    holder.appendChild(span);
+  });
+  setTimeout(() => {
+    const pre = $("butuba-preloader");
+    if (pre) {
+      pre.classList.add("hide");
+      setTimeout(() => pre.remove(), 600);
+    }
+  }, 1800);
+}
+
+function initConnectionDrawer() {
+  const toggle = $("connection-drawer-toggle");
+  const drawer = $("connection-drawer");
+  if (!toggle || !drawer) return;
+  toggle.addEventListener("click", () => drawer.classList.toggle("open"));
+  const homeBtn = $("home-connect-button");
+  if (homeBtn) {
+    homeBtn.addEventListener("click", () => {
+      drawer.classList.add("open");
+      const real = $("connect-button");
+      if (real) real.click();
+    });
+  }
+}
+
+function initOptionsMenu() {
+  const toggle = $("options-menu-toggle");
+  const menu = $("options-menu");
+  if (!toggle || !menu) return;
+  toggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    menu.classList.toggle("open");
+  });
+  document.addEventListener("click", (e) => {
+    if (!menu.contains(e.target) && e.target !== toggle) menu.classList.remove("open");
+  });
+}
+
+function initThemeToggle() {
+  const btn = $("theme-toggle");
+  if (!btn) return;
+  const saved = localStorage.getItem("trade7smart_theme");
+  if (saved === "light") {
+    document.body.classList.add("light-theme");
+    btn.textContent = "☀️";
+  }
+  btn.addEventListener("click", () => {
+    document.body.classList.toggle("light-theme");
+    const isLight = document.body.classList.contains("light-theme");
+    btn.textContent = isLight ? "☀️" : "🌙";
+    localStorage.setItem("trade7smart_theme", isLight ? "light" : "dark");
+  });
+}
+
+function initQuickActions() {
+  const fab = $("quick-actions-toggle");
+  const menu = $("quick-actions-menu");
+  if (!fab || !menu) return;
+  fab.addEventListener("click", () => menu.classList.toggle("open"));
+
+  $("qa-buy-rise")?.addEventListener("click", () => {
+    const btn = document.querySelector('[data-direction="CALL"], #buy-call, #buy-rise');
+    if (btn) btn.click();
+    else toast("Open the Analyzer tab to buy Rise.", "warn");
+    menu.classList.remove("open");
+  });
+  $("qa-buy-fall")?.addEventListener("click", () => {
+    const btn = document.querySelector('[data-direction="PUT"], #buy-put, #buy-fall');
+    if (btn) btn.click();
+    else toast("Open the Analyzer tab to buy Fall.", "warn");
+    menu.classList.remove("open");
+  });
+  $("qa-stop-bot")?.addEventListener("click", () => {
+    const btn = document.getElementById("stop-bot") || document.querySelector(".stop-button");
+    if (btn) btn.click();
+    else toast("Bot stop control not found on this build.", "warn");
+    menu.classList.remove("open");
+  });
+}
+
+function updateRiskGauge(pct) {
+  const fill = $("risk-gauge-fill");
+  const label = $("risk-gauge-value");
+  if (!fill || !label) return;
+  const clamped = Math.max(0, Math.min(100, pct || 0));
+  const length = 157; // approx path length of the arc
+  fill.style.strokeDasharray = `${length}`;
+  fill.style.strokeDashoffset = `${length - (clamped / 100) * length}`;
+  fill.style.stroke = clamped > 70 ? "#f87171" : clamped > 40 ? "#fbbf24" : "#22d3ee";
+  label.textContent = `${Math.round(clamped)}%`;
+}
+
+function syncHomeTab() {
+  const balanceEl = $("balance-value") || $("account-balance");
+  if (balanceEl && $("home-balance")) $("home-balance").textContent = balanceEl.textContent;
+  if ($("home-account-type")) {
+    const acc = $("account-target");
+    $("home-account-type").textContent = acc && acc.value === "real" ? "Real account" : "Demo account";
+  }
+  if ($("da-ai-recommend") && $("home-ai-recommend")) {
+    $("home-ai-recommend").textContent = $("da-ai-recommend").textContent;
+  }
+  if ($("da-ai-confidence-tag") && $("home-ai-confidence")) {
+    $("home-ai-confidence").textContent = `Confidence: ${$("da-ai-confidence-tag").textContent}`;
+  }
+  if ($("signal-copy") && $("home-signal-copy")) {
+    $("home-signal-copy").textContent = $("signal-copy").textContent;
+  }
+  const maxLossEl = $("session-max-loss");
+  const lossSoFarEl = $("float-profit");
+  if (maxLossEl && lossSoFarEl) {
+    const maxLoss = parseFloat(maxLossEl.value) || 1;
+    const lossSoFar = Math.abs(Math.min(0, parseFloat(lossSoFarEl.textContent) || 0));
+    updateRiskGauge((lossSoFar / maxLoss) * 100);
+  }
 }
 
 function useBestMarket() {
@@ -1962,6 +2090,11 @@ syncStrategyBuilder("main");
 updateDashboard();
 startLiveClock();
 initSectionNav();
+initButubaPreloader();
+initConnectionDrawer();
+initOptionsMenu();
+initThemeToggle();
+initQuickActions();
 connectPublicScanner();
 setTimeout(hideLoader, 850);
 

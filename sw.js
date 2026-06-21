@@ -1,10 +1,10 @@
-const CACHE = "trade7smart-tabbed-ui-20260620";
+const CACHE = "trade7smart-round1-features-20260620";
 const FILES = [
   "./",
   "./index.html",
-  "./styles.css?v=tabbed-ui-20260620",
-  "./app.js?v=tabbed-ui-20260620",
-  "./manifest.webmanifest?v=tabbed-ui-20260620",
+  "./styles.css?v=round1-features-20260620",
+  "./app.js?v=round1-features-20260620",
+  "./manifest.webmanifest?v=round1-features-20260620",
   "./icon.svg"
 ];
 

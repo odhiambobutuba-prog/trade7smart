@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#060a10" />
     <title>Trade7Smart — AI Volatility Console</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=tabbed-ui-20260620" />
-    <link rel="stylesheet" href="./styles.css?v=tabbed-ui-20260620" />
+    <link rel="manifest" href="./manifest.webmanifest?v=round1-features-20260620" />
+    <link rel="stylesheet" href="./styles.css?v=round1-features-20260620" />
   </head>
   <body>
+    <div id="butuba-preloader" class="butuba-preloader">
+      <p class="bp-welcome">Welcome to Trade7Smart</p>
+      <div class="bp-letters" id="bp-letters"></div>
+      <p class="bp-powered">powered by Butuba</p>
+    </div>
+
     <div id="app-loader" class="app-loader">
       <div>
         <strong>Trade7Smart</strong>
@@ -28,56 +34,96 @@
           </div>
         </div>
         <div class="top-actions">
-          <button id="compact-toggle" class="text-button" type="button">Compact</button>
-          <button id="mini-toggle" class="text-button" type="button">Mini</button>
-          <button id="sound-toggle" class="text-button" type="button">Sound On</button>
-          <button id="notify-toggle" class="text-button" type="button">Notify</button>
-          <button id="ai-auto-toggle" class="text-button" type="button">AI Auto</button>
+          <button id="theme-toggle" class="text-button" type="button">🌙</button>
+          <button id="connection-drawer-toggle" class="text-button" type="button">⚙️ Connection</button>
           <div class="status-pill" id="connection-state">Offline</div>
+          <div class="options-menu-wrap">
+            <button id="options-menu-toggle" class="text-button" type="button">⋮ Options</button>
+            <div id="options-menu" class="options-menu">
+              <button id="compact-toggle" class="text-button" type="button">Compact</button>
+              <button id="mini-toggle" class="text-button" type="button">Mini</button>
+              <button id="sound-toggle" class="text-button" type="button">Sound On</button>
+              <button id="notify-toggle" class="text-button" type="button">Notify</button>
+              <button id="ai-auto-toggle" class="text-button" type="button">AI Auto</button>
+            </div>
+          </div>
         </div>
       </header>
 
+      <div id="connection-drawer" class="connection-drawer">
+        <section class="control-strip">
+          <label>
+            <span>Account</span>
+            <select id="account-target">
+              <option value="demo" selected>Demo account</option>
+              <option value="real">Real account</option>
+            </select>
+          </label>
+          <label class="token-field">
+            <span>Deriv API token</span>
+            <input id="api-token" type="password" autocomplete="off" placeholder="Paste demo or real token" />
+          </label>
+          <label class="save-token">
+            <input id="save-token" type="checkbox" />
+            <span>Save token</span>
+          </label>
+          <label>
+            <span>App ID</span>
+            <input id="app-id" inputmode="numeric" value="1089" />
+          </label>
+          <label>
+            <span>Market</span>
+            <select id="symbol">
+              <option value="R_100">Volatility 100</option>
+              <option value="R_75">Volatility 75</option>
+              <option value="R_50">Volatility 50</option>
+              <option value="R_25">Volatility 25</option>
+              <option value="R_10">Volatility 10</option>
+            </select>
+          </label>
+          <button id="connect-button" class="ghost-button" type="button">Connect</button>
+        </section>
+      </div>
+
+      <section class="home-tab" id="home-tab">
+        <div class="home-grid">
+          <article class="panel home-balance-card">
+            <span class="da-label">Balance</span>
+            <strong id="home-balance">--</strong>
+            <small id="home-account-type">Demo account</small>
+          </article>
+          <article class="panel home-signal-card">
+            <span class="da-label">Current signal</span>
+            <strong id="home-signal">Waiting for signal</strong>
+            <small id="home-signal-copy">Connect to start scanning.</small>
+          </article>
+          <article class="panel home-ai-card">
+            <span class="da-label">AI Recommendation</span>
+            <strong id="home-ai-recommend">Recommend: WAITING</strong>
+            <small id="home-ai-confidence">Confidence: --</small>
+          </article>
+          <article class="panel home-risk-card">
+            <span class="da-label">Risk exposure</span>
+            <div class="risk-gauge-wrap">
+              <svg viewBox="0 0 120 70" class="risk-gauge">
+                <path d="M10,65 A50,50 0 0 1 110,65" class="risk-gauge-track" />
+                <path d="M10,65 A50,50 0 0 1 110,65" class="risk-gauge-fill" id="risk-gauge-fill" />
+              </svg>
+              <strong id="risk-gauge-value">0%</strong>
+            </div>
+          </article>
+        </div>
+        <button id="home-connect-button" class="ghost-button home-connect-btn" type="button">Connect</button>
+      </section>
+
       <nav class="section-nav" aria-label="Console sections">
-        <button type="button" class="nav-pill active" data-tab="ai-scanner-hero">Scanner</button>
+        <button type="button" class="nav-pill active" data-tab="home-tab-key">Home</button>
+        <button type="button" class="nav-pill" data-tab="ai-scanner-hero">Scanner</button>
         <button type="button" class="nav-pill" data-tab="hero-grid">Analyzer</button>
         <button type="button" class="nav-pill" data-tab="charts-section">Charts</button>
         <button type="button" class="nav-pill" data-tab="recovery">Recovery</button>
         <button type="button" class="nav-pill" data-tab="stats">Stats</button>
       </nav>
-
-      <section class="control-strip">
-        <label>
-          <span>Account</span>
-          <select id="account-target">
-            <option value="demo" selected>Demo account</option>
-            <option value="real">Real account</option>
-          </select>
-        </label>
-        <label class="token-field">
-          <span>Deriv API token</span>
-          <input id="api-token" type="password" autocomplete="off" placeholder="Paste demo or real token" />
-        </label>
-        <label class="save-token">
-          <input id="save-token" type="checkbox" />
-          <span>Save token</span>
-        </label>
-        <label>
-          <span>App ID</span>
-          <input id="app-id" inputmode="numeric" value="1089" />
-        </label>
-        <label>
-          <span>Market</span>
-          <select id="symbol">
-            <option value="R_100">Volatility 100</option>
-            <option value="R_75">Volatility 75</option>
-            <option value="R_50">Volatility 50</option>
-            <option value="R_25">Volatility 25</option>
-            <option value="R_10">Volatility 10</option>
-          </select>
-        </label>
-        <button id="connect-button" class="ghost-button" type="button">Connect</button>
-      </section>
-
       <section class="ai-scanner-hero" id="ai-scanner-hero">
         <article class="panel ai-scanner-panel">
           <div class="panel-head">
@@ -638,6 +684,36 @@
       </section>
     </main>
 
+    <nav class="bottom-tab-bar" aria-label="Bottom navigation">
+      <button type="button" class="bt-tab active" data-tab="home-tab-key">
+        <span class="bt-icon">🏠</span><span class="bt-label">Home</span>
+      </button>
+      <button type="button" class="bt-tab" data-tab="ai-scanner-hero">
+        <span class="bt-icon">📡</span><span class="bt-label">Scanner</span>
+      </button>
+      <button type="button" class="bt-tab" data-tab="hero-grid">
+        <span class="bt-icon">🎯</span><span class="bt-label">Analyzer</span>
+      </button>
+      <button type="button" class="bt-tab" data-tab="charts-section">
+        <span class="bt-icon">📈</span><span class="bt-label">Charts</span>
+      </button>
+      <button type="button" class="bt-tab" data-tab="recovery">
+        <span class="bt-icon">🛡️</span><span class="bt-label">Recovery</span>
+      </button>
+      <button type="button" class="bt-tab" data-tab="stats">
+        <span class="bt-icon">📊</span><span class="bt-label">Stats</span>
+      </button>
+    </nav>
+
+    <div class="quick-actions-wrap">
+      <button id="quick-actions-toggle" class="quick-actions-fab" type="button">⚡</button>
+      <div id="quick-actions-menu" class="quick-actions-menu">
+        <button id="qa-buy-rise" class="qa-btn qa-rise" type="button">Buy Rise</button>
+        <button id="qa-buy-fall" class="qa-btn qa-fall" type="button">Buy Fall</button>
+        <button id="qa-stop-bot" class="qa-btn qa-stop" type="button">Stop Bot</button>
+      </div>
+    </div>
+
     <aside class="performance-float">
       <span>Today</span>
       <strong id="float-profit">0.00</strong>
@@ -645,6 +721,6 @@
     </aside>
 
     <div id="toast-layer" class="toast-layer" aria-live="polite"></div>
-    <script src="./app.js?v=tabbed-ui-20260620"></script>
+    <script src="./app.js?v=round1-features-20260620"></script>
   </body>
 </html>

@@ -61,6 +61,16 @@ const state = {
 
 const $ = (id) => document.getElementById(id);
 
+// Runs an init step in isolation so one bug (e.g. a missing element) can never
+// stop the rest of startup from running and leave the app stuck behind the splash screen.
+function safeInit(fn, label) {
+  try {
+    fn();
+  } catch (err) {
+    console.error(`[Trade7Smart] init step "${label}" failed:`, err);
+  }
+}
+
 function toast(message, type = "") {
   const item = document.createElement("div");
   item.className = `toast ${type}`;
@@ -1300,6 +1310,7 @@ function renderSessionGoal() {
 
 function renderWatchlist() {
   const list = $("watchlist");
+  if (!list) return; // no watchlist panel in this build, nothing to render into
   list.innerHTML = "";
   WATCHLIST.forEach(([symbol, name]) => {
     const row = document.createElement("div");
@@ -2748,17 +2759,21 @@ $("save-token").addEventListener("change", () => {
   }
 });
 
-loadSavedSettings();
-renderWatchlist();
-syncStrategyBuilder("main");
-updateDashboard();
-startLiveClock();
-initSectionNav();
-initButubaPreloader();
-initConnectionDrawer();
-initOptionsMenu();
-initThemeToggle();
-initQuickActions();
+// Dismiss the splash/loader screens unconditionally and first, so a failure in any
+// step below can never leave the user stuck looking at them.
+safeInit(initButubaPreloader, "initButubaPreloader");
+setTimeout(hideLoader, 850);
+
+safeInit(loadSavedSettings, "loadSavedSettings");
+safeInit(renderWatchlist, "renderWatchlist");
+safeInit(() => syncStrategyBuilder("main"), "syncStrategyBuilder");
+safeInit(updateDashboard, "updateDashboard");
+safeInit(startLiveClock, "startLiveClock");
+safeInit(initSectionNav, "initSectionNav");
+safeInit(initConnectionDrawer, "initConnectionDrawer");
+safeInit(initOptionsMenu, "initOptionsMenu");
+safeInit(initThemeToggle, "initThemeToggle");
+safeInit(initQuickActions, "initQuickActions");
 
 const STRATEGY_BOTS = [
   {
@@ -3006,12 +3021,11 @@ function initRiseFallButtons() {
   $("rf-buy-fall")?.addEventListener("click", () => buyRiseFall("FALL"));
 }
 initRiseFallButtons();
-renderStrategyBotGrid();
-initChartTypeToggle();
-initHomeChart();
+safeInit(renderStrategyBotGrid, "renderStrategyBotGrid");
+safeInit(initChartTypeToggle, "initChartTypeToggle");
+safeInit(initHomeChart, "initHomeChart");
 
-connectPublicScanner();
-setTimeout(hideLoader, 850);
+safeInit(connectPublicScanner, "connectPublicScanner");
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js?v=v5-fresh-20260621")

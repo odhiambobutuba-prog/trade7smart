@@ -2476,9 +2476,6 @@ initConnectionDrawer();
 initOptionsMenu();
 initThemeToggle();
 initQuickActions();
-initRiseFallButtons();
-renderStrategyBotGrid();
-initChartTypeToggle();
 
 const STRATEGY_BOTS = [
   {
@@ -2634,6 +2631,10 @@ function initRiseFallButtons() {
   $("rf-buy-rise")?.addEventListener("click", () => buyRiseFall("RISE"));
   $("rf-buy-fall")?.addEventListener("click", () => buyRiseFall("FALL"));
 }
+initRiseFallButtons();
+renderStrategyBotGrid();
+initChartTypeToggle();
+
 connectPublicScanner();
 setTimeout(hideLoader, 850);
 

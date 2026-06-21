@@ -1805,11 +1805,39 @@ function initChartTypeToggle() {
 }
 
 // ── HOME CHART ──────────────────────────────────────────────
+const HOME_CHART_ZOOM_DEFAULT = 40; // candles visible by default
+const HOME_CHART_ZOOM_MIN = 12;     // most zoomed in
+const HOME_CHART_ZOOM_MAX = 120;    // most zoomed out (full buffer)
+const HOME_CHART_ZOOM_STEP = 8;
+
 function initHomeChart() {
   state.homeChartType = "candles";
   state.homeChartCandles = []; // {o,h,l,c,t}
   state.homeChartTickBuffer = [];
   state.homeChartCandleSeconds = 10; // build 10s candles from ticks
+  state.homeChartZoom = HOME_CHART_ZOOM_DEFAULT;
+
+  const zoomIn = $("home-chart-zoom-in");
+  const zoomOut = $("home-chart-zoom-out");
+  const zoomReset = $("home-chart-zoom-reset");
+  if (zoomIn) {
+    zoomIn.addEventListener("click", () => {
+      state.homeChartZoom = Math.max(HOME_CHART_ZOOM_MIN, (state.homeChartZoom || HOME_CHART_ZOOM_DEFAULT) - HOME_CHART_ZOOM_STEP);
+      renderHomeChart();
+    });
+  }
+  if (zoomOut) {
+    zoomOut.addEventListener("click", () => {
+      state.homeChartZoom = Math.min(HOME_CHART_ZOOM_MAX, (state.homeChartZoom || HOME_CHART_ZOOM_DEFAULT) + HOME_CHART_ZOOM_STEP);
+      renderHomeChart();
+    });
+  }
+  if (zoomReset) {
+    zoomReset.addEventListener("click", () => {
+      state.homeChartZoom = HOME_CHART_ZOOM_DEFAULT;
+      renderHomeChart();
+    });
+  }
 
   const sel = $("home-market-select");
   if (sel) {
@@ -1893,7 +1921,9 @@ function renderHomeChart() {
   const macdCanvas = $("home-macd-chart");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
-  const candles = state.homeChartCandles || [];
+  const allCandles = state.homeChartCandles || [];
+  const zoomWindow = Math.max(HOME_CHART_ZOOM_MIN, Math.min(state.homeChartZoom || HOME_CHART_ZOOM_DEFAULT, HOME_CHART_ZOOM_MAX));
+  const candles = allCandles.slice(-zoomWindow);
 
   const W = canvas.offsetWidth || 380;
   const H = canvas.height || 200;

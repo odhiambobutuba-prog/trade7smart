@@ -86,6 +86,8 @@
       </div>
 
       <section class="home-tab" id="home-tab">
+        <button id="home-connect-button" class="ghost-button home-connect-btn" type="button">Connect</button>
+
         <!-- Top stat cards -->
         <div class="home-grid">
           <article class="panel home-balance-card">
@@ -143,7 +145,14 @@
             </div>
           </div>
           <!-- Main price canvas -->
-          <canvas id="home-price-chart" class="home-chart-canvas" height="200"></canvas>
+          <div class="home-chart-canvas-wrap">
+            <canvas id="home-price-chart" class="home-chart-canvas" height="180"></canvas>
+            <div class="chart-zoom-controls">
+              <button type="button" id="home-chart-zoom-in" class="chart-zoom-btn" title="Zoom in">+</button>
+              <button type="button" id="home-chart-zoom-reset" class="chart-zoom-btn" title="Reset view">⊙</button>
+              <button type="button" id="home-chart-zoom-out" class="chart-zoom-btn" title="Zoom out">−</button>
+            </div>
+          </div>
           <!-- MACD sub-chart -->
           <div class="home-indicator-label">MACD (12,26,9)</div>
           <canvas id="home-macd-chart" class="home-macd-canvas" height="70"></canvas>
@@ -154,8 +163,6 @@
             <span id="home-chandelier-value" class="home-chandelier-value"></span>
           </div>
         </article>
-
-        <button id="home-connect-button" class="ghost-button home-connect-btn" type="button">Connect</button>
       </section>
 
       <nav class="section-nav" aria-label="Console sections">
@@ -200,6 +207,8 @@
             <div class="digit-prob-cursor" id="digit-prob-cursor"></div>
           </div>
         </article>
+      </section>
+
       <section class="hero-grid" id="hero-grid">
         <article class="panel signal-panel ai-analyzer-panel">
           <div class="analyzer-head">

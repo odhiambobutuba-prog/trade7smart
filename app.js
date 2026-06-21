@@ -517,53 +517,125 @@ function contractModeLabel(mode) {
 
 function computeMarketAi(stat, settings) {
   const mode = settings.contractMode;
+  const technicalAnalysis = state.technicalAnalysisData[settings.symbol] || state.technicalAnalysisData[state.symbol];
+  
+  let baseScore = 0;
+  let baseSignal = "";
+  let baseSignalType = "";
+  let baseReady = false;
+  let baseEntryLabel = "";
+  
   if (mode === "odds_even") {
     const target = settings.preferredOdds;
     const progress = stat.oddStreak / Math.max(target, 1);
-    const score = Math.min(100, Math.round(progress * 88 + (stat.digit === stat.repeatDigit ? 4 : 0)));
-    return {
-      score,
-      progress: Math.min(100, Math.round(progress * 100)),
-      signal: `${stat.oddStreak}/${target} Odds`,
-      signalType: "ODDS",
-      ready: stat.oddStreak >= target,
-      entryLabel: settings.tradeDirection === "DIGITEVEN" ? "EVEN" : "ODD",
-    };
-  }
-
-  if (mode === "differ") {
+    baseScore = Math.min(100, Math.round(progress * 88 + (stat.digit === stat.repeatDigit ? 4 : 0)));
+    baseSignal = `${stat.oddStreak}/${target} Odds`;
+    baseSignalType = "ODDS";
+    baseReady = stat.oddStreak >= target;
+    baseEntryLabel = settings.tradeDirection === "DIGITEVEN" ? "EVEN" : "ODD";
+  } else if (mode === "differ") {
     const target = settings.differTrigger;
     const progress = stat.digitStreak / Math.max(target, 1);
-    const score = Math.min(100, Math.round(progress * 92));
-    return {
-      score,
-      progress: Math.min(100, Math.round(progress * 100)),
-      signal: `${stat.digitStreak}x digit ${stat.repeatDigit ?? "--"}`,
-      signalType: "DIFFER",
-      ready: stat.digitStreak >= target,
-      entryLabel: "DIFFER",
-    };
+    baseScore = Math.min(100, Math.round(progress * 92));
+    baseSignal = `${stat.digitStreak}x digit ${stat.repeatDigit ?? "--"}`;
+    baseSignalType = "DIFFER";
+    baseReady = stat.digitStreak >= target;
+    baseEntryLabel = "DIFFER";
+  } else {
+    const sample = stat.recentDigits.slice(-settings.ouSample);
+    const total = sample.length || 1;
+    const under = sample.filter((d) => d < settings.barrier).length;
+    const over = sample.filter((d) => d > settings.barrier).length;
+    const underPct = Math.round((under / total) * 100);
+    const overPct = Math.round((over / total) * 100);
+    const biasSide = underPct >= overPct ? "OVER" : "UNDER";
+    const biasPct = Math.max(underPct, overPct);
+    baseScore = Math.min(100, Math.round(Math.max(0, biasPct - 50) * 2.1));
+    baseReady = biasPct >= settings.ouMinBias;
+    baseSignal = `${biasSide} ${biasPct}% vs ${settings.barrier}`;
+    baseSignalType = biasSide;
+    baseEntryLabel = biasSide;
   }
-
-  const sample = stat.recentDigits.slice(-settings.ouSample);
-  const total = sample.length || 1;
-  const under = sample.filter((d) => d < settings.barrier).length;
-  const over = sample.filter((d) => d > settings.barrier).length;
-  const underPct = Math.round((under / total) * 100);
-  const overPct = Math.round((over / total) * 100);
-  const biasSide = underPct >= overPct ? "OVER" : "UNDER";
-  const biasPct = Math.max(underPct, overPct);
-  const score = Math.min(100, Math.round(Math.max(0, biasPct - 50) * 2.1));
-  const ready = biasPct >= settings.ouMinBias;
+  
+  // Enhance with technical analysis
+  let enhancedScore = baseScore;
+  let technicalBoost = 0;
+  let technicalReasons = [];
+  
+  if (technicalAnalysis) {
+    // Add technical analysis boost
+    if (technicalAnalysis.trend.includes('bullish') && mode !== 'rise_fall') {
+      technicalBoost += 5;
+      technicalReasons.push('Bullish trend');
+    }
+    if (technicalAnalysis.trend.includes('bearish') && mode !== 'rise_fall') {
+      technicalBoost -= 3;
+      technicalReasons.push('Bearish trend');
+    }
+    
+    // RSI confirmation
+    if (technicalAnalysis.rsi) {
+      if (technicalAnalysis.rsi.oversold && baseReady) {
+        technicalBoost += 8;
+        technicalReasons.push('RSI oversold confirmation');
+      }
+      if (technicalAnalysis.rsi.overbought && baseReady) {
+        technicalBoost -= 5;
+        technicalReasons.push('RSI overbought warning');
+      }
+    }
+    
+    // Bollinger Bands confirmation
+    if (technicalAnalysis.bollinger) {
+      if (technicalAnalysis.bollinger.position === 'below_lower' && baseReady) {
+        technicalBoost += 7;
+        technicalReasons.push('Price at lower Bollinger Band');
+      }
+      if (technicalAnalysis.bollinger.squeeze) {
+        technicalBoost += 3;
+        technicalReasons.push('Bollinger squeeze alert');
+      }
+    }
+    
+    // Moving average alignment
+    if (technicalAnalysis.sma20 && technicalAnalysis.sma50) {
+      if (technicalAnalysis.sma20 > technicalAnalysis.sma50) {
+        technicalBoost += 4;
+        technicalReasons.push('SMA golden cross');
+      } else {
+        technicalBoost -= 2;
+        technicalReasons.push('SMA death cross');
+      }
+    }
+    
+    // Pattern recognition boost
+    if (technicalAnalysis.patterns && technicalAnalysis.patterns.length > 0) {
+      technicalBoost += technicalAnalysis.patterns.length * 3;
+      technicalReasons.push(`${technicalAnalysis.patterns.length} patterns detected`);
+    }
+    
+    // Stochastic confirmation
+    if (technicalAnalysis.stochastic) {
+      if (technicalAnalysis.stochastic.oversold && baseReady) {
+        technicalBoost += 5;
+        technicalReasons.push('Stochastic oversold');
+      }
+    }
+  }
+  
+  enhancedScore = Math.min(100, Math.max(0, baseScore + technicalBoost));
+  
   return {
-    score,
-    progress: score,
-    signal: `${biasSide} ${biasPct}% vs ${settings.barrier}`,
-    signalType: biasSide,
-    ready,
-    entryLabel: biasSide,
-    underPct,
-    overPct,
+    score: enhancedScore,
+    progress: Math.min(100, Math.round((baseScore / 100) * 100)),
+    signal: baseSignal,
+    signalType: baseSignalType,
+    ready: baseReady,
+    entryLabel: baseEntryLabel,
+    technicalBoost,
+    technicalReasons,
+    baseScore,
+    hasTechnicalData: !!technicalAnalysis
   };
 }
 
@@ -1008,7 +1080,7 @@ function updateDashboard() {
   renderTradeReplay();
   renderContractCursor();
   renderSessionGoal();
-  drawCharts();
+  renderTechnicalAnalysis();
 }
 
 function updateAnalyzer(settings) {
@@ -1407,6 +1479,332 @@ function emaSeries(values, period) {
   return out;
 }
 
+function smaSeries(values, period) {
+  const out = [];
+  for (let i = 0; i < values.length; i++) {
+    if (i < period - 1) {
+      out.push(null);
+    } else {
+      const sum = values.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0);
+      out.push(sum / period);
+    }
+  }
+  return out;
+}
+
+function calculateRSI(values, period = 14) {
+  if (values.length < period + 1) return null;
+  
+  const changes = [];
+  for (let i = 1; i < values.length; i++) {
+    changes.push(values[i] - values[i - 1]);
+  }
+  
+  let gains = [];
+  let losses = [];
+  changes.forEach(change => {
+    gains.push(change > 0 ? change : 0);
+    losses.push(change < 0 ? Math.abs(change) : 0);
+  });
+  
+  const avgGain = gains.slice(-period).reduce((a, b) => a + b, 0) / period;
+  const avgLoss = losses.slice(-period).reduce((a, b) => a + b, 0) / period;
+  
+  if (avgLoss === 0) return 100;
+  
+  const rs = avgGain / avgLoss;
+  const rsi = 100 - (100 / (1 + rs));
+  
+  return {
+    rsi,
+    overbought: rsi > 70,
+    oversold: rsi < 30,
+    trend: rsi > 50 ? 'bullish' : 'bearish'
+  };
+}
+
+function calculateBollingerBands(values, period = 20, stdDev = 2) {
+  if (values.length < period) return null;
+  
+  const sma = smaSeries(values, period);
+  const lastSMA = sma[sma.length - 1];
+  
+  const recentValues = values.slice(-period);
+  const mean = recentValues.reduce((a, b) => a + b, 0) / period;
+  const variance = recentValues.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / period;
+  const std = Math.sqrt(variance);
+  
+  const upperBand = lastSMA + (stdDev * std);
+  const lowerBand = lastSMA - (stdDev * std);
+  const currentPrice = values[values.length - 1];
+  
+  return {
+    upper: upperBand,
+    middle: lastSMA,
+    lower: lowerBand,
+    current: currentPrice,
+    bandwidth: ((upperBand - lowerBand) / lastSMA) * 100,
+    position: currentPrice > upperBand ? 'above_upper' : 
+              currentPrice < lowerBand ? 'below_lower' : 'within',
+    squeeze: ((upperBand - lowerBand) / lastSMA) * 100 < 4
+  };
+}
+
+function calculateStochastic(values, highLowValues, kPeriod = 14, dPeriod = 3) {
+  if (values.length < kPeriod) return null;
+  
+  const recent = values.slice(-kPeriod);
+  const recentHighLow = highLowValues.slice(-kPeriod);
+  
+  const highestHigh = Math.max(...recentHighLow.map(v => v.high));
+  const lowestLow = Math.min(...recentHighLow.map(v => v.low));
+  const currentClose = values[values.length - 1];
+  
+  const k = ((currentClose - lowestLow) / (highestHigh - lowestLow)) * 100;
+  
+  return {
+    k,
+    overbought: k > 80,
+    oversold: k < 20,
+    signal: k > 80 ? 'sell' : k < 20 ? 'buy' : 'hold'
+  };
+}
+
+function calculateATR(values, highLowValues, period = 14) {
+  if (values.length < period + 1) return null;
+  
+  const trueRanges = [];
+  for (let i = 1; i < values.length; i++) {
+    const high = highLowValues[i].high;
+    const low = highLowValues[i].low;
+    const prevClose = values[i - 1];
+    
+    const tr = Math.max(high - low, Math.abs(high - prevClose), Math.abs(low - prevClose));
+    trueRanges.push(tr);
+  }
+  
+  const atr = trueRanges.slice(-period).reduce((a, b) => a + b, 0) / period;
+  
+  return {
+    atr,
+    volatility: atr / values[values.length - 1] * 100
+  };
+}
+
+function analyzeTechnicalIndicators(candles) {
+  if (!candles || candles.length < 30) return null;
+  
+  const closes = candles.map(c => Number(c.close));
+  const highLowData = candles.map(c => ({ high: Number(c.high), low: Number(c.low) }));
+  
+  const rsi = calculateRSI(closes, 14);
+  const bollinger = calculateBollingerBands(closes, 20, 2);
+  const sma20 = smaSeries(closes, 20);
+  const sma50 = smaSeries(closes, 50);
+  const ema12 = emaSeries(closes, 12);
+  const ema26 = emaSeries(closes, 26);
+  const stochastic = calculateStochastic(closes, highLowData, 14, 3);
+  const atr = calculateATR(closes, highLowData, 14);
+  
+  const currentPrice = closes[closes.length - 1];
+  const lastSMA20 = sma20[sma20.length - 1];
+  const lastSMA50 = sma50[sma50.length - 1];
+  const lastEMA12 = ema12[ema12.length - 1];
+  const lastEMA26 = ema26[ema26.length - 1];
+  
+  let trend = 'neutral';
+  let strength = 0;
+  
+  if (lastSMA20 > lastSMA50 && currentPrice > lastSMA20) {
+    trend = 'strong_bullish';
+    strength = 80;
+  } else if (lastSMA20 > lastSMA50) {
+    trend = 'bullish';
+    strength = 60;
+  } else if (lastSMA20 < lastSMA50 && currentPrice < lastSMA20) {
+    trend = 'strong_bearish';
+    strength = 80;
+  } else if (lastSMA20 < lastSMA50) {
+    trend = 'bearish';
+    strength = 60;
+  }
+  
+  if (lastEMA12 > lastEMA26) strength += 10;
+  if (rsi && rsi.rsi > 50) strength += 5;
+  if (bollinger && bollinger.position === 'above_upper') strength += 15;
+  if (bollinger && bollinger.position === 'below_lower') strength -= 15;
+  
+  strength = Math.min(100, Math.max(0, strength));
+  
+  let signals = [];
+  
+  if (rsi) {
+    if (rsi.oversold && trend.includes('bullish')) {
+      signals.push({ type: 'BUY', strength: 75, reason: 'RSI oversold in bullish trend' });
+    }
+    if (rsi.overbought && trend.includes('bearish')) {
+      signals.push({ type: 'SELL', strength: 75, reason: 'RSI overbought in bearish trend' });
+    }
+  }
+  
+  if (bollinger) {
+    if (bollinger.position === 'below_lower' && trend !== 'strong_bearish') {
+      signals.push({ type: 'BUY', strength: 70, reason: 'Price below lower Bollinger Band' });
+    }
+    if (bollinger.position === 'above_upper' && trend !== 'strong_bullish') {
+      signals.push({ type: 'SELL', strength: 70, reason: 'Price above upper Bollinger Band' });
+    }
+    if (bollinger.squeeze) {
+      signals.push({ type: 'WATCH', strength: 50, reason: 'Bollinger Band squeeze - potential breakout' });
+    }
+  }
+  
+  if (stochastic) {
+    if (stochastic.oversold && trend.includes('bullish')) {
+      signals.push({ type: 'BUY', strength: 65, reason: 'Stochastic oversold' });
+    }
+    if (stochastic.overbought && trend.includes('bearish')) {
+      signals.push({ type: 'SELL', strength: 65, reason: 'Stochastic overbought' });
+    }
+  }
+  
+  // Pattern recognition
+  const patterns = detectPatterns(closes, highLowData);
+  patterns.forEach(pattern => {
+    if (pattern.type === 'support' && trend.includes('bullish')) {
+      signals.push({ type: 'BUY', strength: pattern.strength, reason: pattern.reason });
+    }
+    if (pattern.type === 'resistance' && trend.includes('bearish')) {
+      signals.push({ type: 'SELL', strength: pattern.strength, reason: pattern.reason });
+    }
+  });
+  
+  return {
+    trend,
+    strength,
+    rsi,
+    bollinger,
+    sma20: lastSMA20,
+    sma50: lastSMA50,
+    ema12: lastEMA12,
+    ema26: lastEMA26,
+    stochastic,
+    atr,
+    signals: signals.sort((a, b) => b.strength - a.strength).slice(0, 3),
+    patterns,
+    currentPrice,
+    timestamp: Date.now()
+  };
+}
+
+function detectPatterns(closes, highLowData) {
+  const patterns = [];
+  const lookback = Math.min(20, closes.length);
+  
+  if (closes.length < 10) return patterns;
+  
+  const recentCloses = closes.slice(-lookback);
+  const recentHighs = highLowData.slice(-lookback).map(d => d.high);
+  const recentLows = highLowData.slice(-lookback).map(d => d.low);
+  
+  // Find support levels (price floors)
+  const minPrice = Math.min(...recentLows);
+  const nearMinCount = recentLows.filter(p => Math.abs(p - minPrice) / minPrice < 0.01).length;
+  
+  if (nearMinCount >= 2) {
+    const currentPrice = closes[closes.length - 1];
+    if (currentPrice > minPrice * 1.01 && currentPrice < minPrice * 1.03) {
+      patterns.push({
+        type: 'support',
+        strength: 60 + nearMinCount * 5,
+        reason: `Support level at ${minPrice.toFixed(2)} (${nearMinCount} touches)`,
+        level: minPrice
+      });
+    }
+  }
+  
+  // Find resistance levels (price ceilings)
+  const maxPrice = Math.max(...recentHighs);
+  const nearMaxCount = recentHighs.filter(p => Math.abs(p - maxPrice) / maxPrice < 0.01).length;
+  
+  if (nearMaxCount >= 2) {
+    const currentPrice = closes[closes.length - 1];
+    if (currentPrice < maxPrice * 0.99 && currentPrice > maxPrice * 0.97) {
+      patterns.push({
+        type: 'resistance',
+        strength: 60 + nearMaxCount * 5,
+        reason: `Resistance level at ${maxPrice.toFixed(2)} (${nearMaxCount} touches)`,
+        level: maxPrice
+      });
+    }
+  }
+  
+  // Detect trend direction using linear regression
+  const n = recentCloses.length;
+  let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+  
+  for (let i = 0; i < n; i++) {
+    sumX += i;
+    sumY += recentCloses[i];
+    sumXY += i * recentCloses[i];
+    sumX2 += i * i;
+  }
+  
+  const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+  const avgPrice = sumY / n;
+  
+  if (Math.abs(slope) > avgPrice * 0.001) {
+    const trendDirection = slope > 0 ? 'uptrend' : 'downtrend';
+    patterns.push({
+      type: trendDirection === 'uptrend' ? 'support' : 'resistance',
+      strength: 55,
+      reason: `${trendDirection.toUpperCase()} detected (slope: ${slope.toFixed(4)})`
+    });
+  }
+  
+  // Detect double bottom pattern
+  if (recentLows.length >= 10) {
+    const firstHalf = recentLows.slice(0, 5);
+    const secondHalf = recentLows.slice(-5);
+    const firstMin = Math.min(...firstHalf);
+    const secondMin = Math.min(...secondHalf);
+    
+    if (Math.abs(firstMin - secondMin) / firstMin < 0.01) {
+      const midHigh = Math.max(...recentHighs.slice(3, 7));
+      if (midHigh > firstMin * 1.02) {
+        patterns.push({
+          type: 'support',
+          strength: 70,
+          reason: 'Double bottom pattern detected',
+          level: firstMin
+        });
+      }
+    }
+  }
+  
+  // Detect double top pattern
+  if (recentHighs.length >= 10) {
+    const firstHalf = recentHighs.slice(0, 5);
+    const secondHalf = recentHighs.slice(-5);
+    const firstMax = Math.max(...firstHalf);
+    const secondMax = Math.max(...secondHalf);
+    
+    if (Math.abs(firstMax - secondMax) / firstMax < 0.01) {
+      const midLow = Math.min(...recentLows.slice(3, 7));
+      if (midLow < firstMax * 0.98) {
+        patterns.push({
+          type: 'resistance',
+          strength: 70,
+          reason: 'Double top pattern detected',
+          level: firstMax
+        });
+      }
+    }
+  }
+  
+  return patterns;
+}
+
 function computeMacd(closes) {
   if (closes.length < 30) return null;
   const ema12 = emaSeries(closes, 12);
@@ -1585,6 +1983,127 @@ function renderAiRecommendation(digits) {
 
   const card = $("da-ai-card");
   card.classList.toggle("ready", score >= 55);
+}
+
+state.technicalAnalysisData = state.technicalAnalysisData || {};
+
+function renderTechnicalAnalysis() {
+  const data = state.riseFallData[state.symbol] || {};
+  const candles = data[60] || [];
+  const analysis = analyzeTechnicalIndicators(candles);
+  
+  if (!analysis) {
+    $("ta-overall-signal").textContent = "Waiting for candle data...";
+    return;
+  }
+  
+  state.technicalAnalysisData[state.symbol] = analysis;
+  
+  // Overall signal
+  const trendBadge = $("ta-trend-badge");
+  trendBadge.textContent = analysis.trend.replace('_', ' ').toUpperCase();
+  trendBadge.className = 'ta-badge ' + (analysis.trend.includes('bullish') ? 'bullish' : analysis.trend.includes('bearish') ? 'bearish' : '');
+  
+  $("ta-strength").textContent = `Strength: ${analysis.strength}%`;
+  
+  let overallSignal = "NEUTRAL";
+  if (analysis.trend.includes('bullish') && analysis.strength > 60) overallSignal = "BUY SIGNAL";
+  else if (analysis.trend.includes('bearish') && analysis.strength > 60) overallSignal = "SELL SIGNAL";
+  else if (analysis.strength > 50) overallSignal = analysis.trend.includes('bullish') ? "LEANING BUY" : "LEANING SELL";
+  
+  $("ta-overall-signal").textContent = overallSignal;
+  
+  // RSI
+  if (analysis.rsi) {
+    $("ta-rsi-value").textContent = analysis.rsi.rsi.toFixed(1);
+    $("ta-rsi-status").textContent = analysis.rsi.overbought ? "Overbought" : analysis.rsi.oversold ? "Oversold" : "Neutral";
+    $("ta-rsi-gauge").style.width = `${analysis.rsi.rsi}%`;
+  }
+  
+  // Bollinger Bands
+  if (analysis.bollinger) {
+    const bbPos = analysis.bollinger.position === 'above_upper' ? 'Above Upper' : 
+                  analysis.bollinger.position === 'below_lower' ? 'Below Lower' : 'Within Bands';
+    $("ta-bb-value").textContent = bbPos;
+    $("ta-bb-status").textContent = analysis.bollinger.squeeze ? "Squeeze Alert" : "Normal";
+    
+    // Visual representation
+    const range = analysis.bollinger.upper - analysis.bollinger.lower;
+    const upperPct = ((analysis.bollinger.upper - analysis.bollinger.lower) / range) * 100;
+    const middlePct = ((analysis.bollinger.middle - analysis.bollinger.lower) / range) * 100;
+    const pricePct = ((analysis.currentPrice - analysis.bollinger.lower) / range) * 100;
+    
+    $("ta-bb-upper").style.top = "10%";
+    $("ta-bb-middle").style.top = "50%";
+    $("ta-bb-lower").style.top = "90%";
+    $("ta-bb-price").style.top = `${Math.max(10, Math.min(90, pricePct))}%`;
+  }
+  
+  // Stochastic
+  if (analysis.stochastic) {
+    $("ta-stoch-value").textContent = analysis.stochastic.k.toFixed(1);
+    $("ta-stoch-status").textContent = analysis.stochastic.overbought ? "Overbought" : analysis.stochastic.oversold ? "Oversold" : "Neutral";
+    $("ta-stoch-gauge").style.width = `${analysis.stochastic.k}%`;
+  }
+  
+  // ATR
+  if (analysis.atr) {
+    $("ta-atr-value").textContent = analysis.atr.atr.toFixed(4);
+    $("ta-atr-volatility").textContent = `Volatility: ${analysis.atr.volatility.toFixed(2)}%`;
+    $("ta-vol-fill").style.width = `${Math.min(100, analysis.atr.volatility * 5)}%`;
+  }
+  
+  // Moving Averages
+  if (analysis.sma20) {
+    $("ta-sma20").textContent = analysis.sma20.toFixed(2);
+    const sma20Diff = ((analysis.currentPrice - analysis.sma20) / analysis.sma20 * 100).toFixed(2);
+    const sma20DiffEl = $("ta-sma20-diff");
+    sma20DiffEl.textContent = `${sma20Diff > 0 ? '+' : ''}${sma20Diff}%`;
+    sma20DiffEl.className = 'ta-diff ' + (sma20Diff > 0 ? 'positive' : sma20Diff < 0 ? 'negative' : 'neutral');
+  }
+  
+  if (analysis.sma50) {
+    $("ta-sma50").textContent = analysis.sma50.toFixed(2);
+    const sma50Diff = ((analysis.currentPrice - analysis.sma50) / analysis.sma50 * 100).toFixed(2);
+    const sma50DiffEl = $("ta-sma50-diff");
+    sma50DiffEl.textContent = `${sma50Diff > 0 ? '+' : ''}${sma50Diff}%`;
+    sma50DiffEl.className = 'ta-diff ' + (sma50Diff > 0 ? 'positive' : sma50Diff < 0 ? 'negative' : 'neutral');
+  }
+  
+  if (analysis.ema12) {
+    $("ta-ema12").textContent = analysis.ema12.toFixed(2);
+    const ema12Diff = ((analysis.currentPrice - analysis.ema12) / analysis.ema12 * 100).toFixed(2);
+    const ema12DiffEl = $("ta-ema12-diff");
+    ema12DiffEl.textContent = `${ema12Diff > 0 ? '+' : ''}${ema12Diff}%`;
+    ema12DiffEl.className = 'ta-diff ' + (ema12Diff > 0 ? 'positive' : ema12Diff < 0 ? 'negative' : 'neutral');
+  }
+  
+  if (analysis.ema26) {
+    $("ta-ema26").textContent = analysis.ema26.toFixed(2);
+    const ema26Diff = ((analysis.currentPrice - analysis.ema26) / analysis.ema26 * 100).toFixed(2);
+    const ema26DiffEl = $("ta-ema26-diff");
+    ema26DiffEl.textContent = `${ema26Diff > 0 ? '+' : ''}${ema26Diff}%`;
+    ema26DiffEl.className = 'ta-diff ' + (ema26Diff > 0 ? 'positive' : ema26Diff < 0 ? 'negative' : 'neutral');
+  }
+  
+  // Trading Signals
+  const signalsContainer = $("ta-signals-container");
+  signalsContainer.innerHTML = "";
+  
+  if (analysis.signals && analysis.signals.length > 0) {
+    analysis.signals.forEach(signal => {
+      const signalItem = document.createElement("div");
+      signalItem.className = `ta-signal-item ${signal.type.toLowerCase()}`;
+      signalItem.innerHTML = `
+        <span class="ta-signal-type">${signal.type}</span>
+        <span class="ta-signal-reason">${signal.reason}</span>
+        <span class="ta-signal-strength">${signal.strength}%</span>
+      `;
+      signalsContainer.appendChild(signalItem);
+    });
+  } else {
+    signalsContainer.innerHTML = '<small class="ta-no-signals">No active trading signals</small>';
+  }
 }
 
 function renderDigitAnalysis() {

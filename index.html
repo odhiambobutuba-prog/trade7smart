@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#060a10" />
     <title>Trade7Smart — AI Volatility Console</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=round2-buy-fix-20260620" />
-    <link rel="stylesheet" href="./styles.css?v=round2-buy-fix-20260620" />
+    <link rel="manifest" href="./manifest.webmanifest?v=round3-engine-20260620" />
+    <link rel="stylesheet" href="./styles.css?v=round3-engine-20260620" />
   </head>
   <body>
     <div id="butuba-preloader" class="butuba-preloader">
@@ -250,7 +250,7 @@
               <button id="rf-buy-rise" class="qa-btn qa-rise" type="button">Buy Rise</button>
               <button id="rf-buy-fall" class="qa-btn qa-fall" type="button">Buy Fall</button>
             </div>
-            <small class="rf-buy-note">Manual buy uses the current market shown in the Settings drawer · 5 min duration</small>
+            <small class="rf-buy-note">Manual buy uses the current market in Settings and the Ticks duration set in Bot Controls</small>
           </div>
 
           <div class="rf-grid-head">
@@ -382,6 +382,7 @@
             <button type="button" class="contract-tab active" data-mode="odds_even">Odd / Even</button>
             <button type="button" class="contract-tab" data-mode="over_under">Over / Under</button>
             <button type="button" class="contract-tab" data-mode="differ">Differ</button>
+            <button type="button" class="contract-tab" data-mode="rise_fall">Rise / Fall</button>
           </div>
           <input id="contract-mode" type="hidden" value="odds_even" />
           <div class="settings-grid mode-panel" id="mode-odds_even">
@@ -436,6 +437,25 @@
               <span>Sample ticks</span>
               <input id="ou-sample" type="number" min="10" max="50" step="5" value="20" />
             </label>
+            <label class="save-token">
+              <input id="ou-auto-triple-enable" type="checkbox" />
+              <span>Auto-trade Over on triple repeat</span>
+            </label>
+            <label>
+              <span>Trigger digit</span>
+              <select id="ou-auto-triple-digit">
+                <option value="0">0</option>
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+              </select>
+            </label>
           </div>
           <div class="settings-grid mode-panel hidden" id="mode-differ">
             <label>
@@ -452,7 +472,33 @@
               <strong id="differ-repeat-digit" class="inline-value">--</strong>
             </label>
           </div>
+          <div class="settings-grid mode-panel hidden" id="mode-rise_fall">
+            <label>
+              <span>AI auto direction</span>
+              <strong id="rf-engine-direction" class="inline-value">Waiting for clean signal</strong>
+            </label>
+            <label>
+              <span>AI best market</span>
+              <strong id="rf-engine-market" class="inline-value">Scanning...</strong>
+            </label>
+            <p class="rf-engine-copy">Run Bot or AI Run will scan all 1s markets across 1m-10m MACD and auto-trade the first clean signal found, for the selected tick duration.</p>
+          </div>
           <div class="settings-grid shared-settings">
+            <label>
+              <span>Ticks</span>
+              <select id="trade-ticks">
+                <option value="1" selected>1 tick</option>
+                <option value="2">2 ticks</option>
+                <option value="3">3 ticks</option>
+                <option value="4">4 ticks</option>
+                <option value="5">5 ticks</option>
+                <option value="6">6 ticks</option>
+                <option value="7">7 ticks</option>
+                <option value="8">8 ticks</option>
+                <option value="9">9 ticks</option>
+                <option value="10">10 ticks</option>
+              </select>
+            </label>
             <label>
               <span>Stake</span>
               <input id="stake" type="number" inputmode="decimal" min="0.35" step="0.01" value="0.35" />
@@ -749,6 +795,6 @@
     </aside>
 
     <div id="toast-layer" class="toast-layer" aria-live="polite"></div>
-    <script src="./app.js?v=round2-buy-fix-20260620"></script>
+    <script src="./app.js?v=round3-engine-20260620"></script>
   </body>
 </html>

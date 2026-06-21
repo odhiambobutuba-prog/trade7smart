@@ -921,26 +921,7 @@ select:focus {
 }
 
 .digit-cursor-track.sweeping i {
-  transition: opacity 0.3s ease;
-  opacity: 0.55;
-}
-
-.cursor-sweep-dot {
-  position: absolute;
-  top: -10px;
-  left: 0;
-  width: 10%;
-  height: 4px;
-  border-radius: 99px;
-  background: linear-gradient(90deg, #3b82f6, #22d3ee);
-  box-shadow: 0 0 10px rgba(34, 211, 238, 0.6);
-  animation: cursorSweep 1.4s ease-in-out infinite;
-}
-
-@keyframes cursorSweep {
-  0% { transform: translateX(0%); }
-  50% { transform: translateX(900%); }
-  100% { transform: translateX(0%); }
+  opacity: 1;
 }
 
 .digit-cursor-track i {
@@ -954,7 +935,7 @@ select:focus {
   color: #8fa0b7;
   font-style: normal;
   font-weight: 900;
-  transition: min-height 90ms ease, transform 90ms ease, border-color 90ms ease, background 90ms ease;
+  transition: min-height 220ms ease, transform 220ms ease, border-color 220ms ease, background 220ms ease;
 }
 
 .digit-cursor-track i.odd {
@@ -962,13 +943,22 @@ select:focus {
   background: rgba(34, 211, 238, 0.08);
 }
 
-.digit-cursor-track i.active,
+.digit-cursor-track i.active {
+  min-height: 42px;
+  border-color: var(--cyan);
+  background: rgba(34, 211, 238, 0.18);
+  color: #fff;
+  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.3);
+  transform: translateY(-2px);
+}
+
 .digit-cursor-track i.ended {
   min-height: 48px;
   border-color: var(--good);
-  background: rgba(34, 197, 94, 0.2);
-  color: var(--cyan);
-  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3);
+  background: var(--good);
+  color: #fff;
+  font-weight: 900;
+  box-shadow: 0 0 14px rgba(34, 197, 94, 0.6);
   transform: translateY(-3px);
 }
 
@@ -2368,4 +2358,12 @@ body.light-theme small {
 .rf-buy-note {
   color: var(--muted, #8b95a7);
   font-size: 0.64rem;
+}
+
+.rf-engine-copy {
+  grid-column: 1 / -1;
+  font-size: 0.72rem;
+  color: var(--muted, #8b95a7);
+  margin: 4px 0 0;
+  line-height: 1.4;
 }

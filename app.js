@@ -304,6 +304,7 @@ function handleTick(tick) {
 
   updateWatch(symbol, display, digit);
   maybeTradeAiMarket(symbol);
+  maybeTriggerOverUnderTriple(symbol);
   if (symbol !== state.symbol) return;
 
   state.lastQuote = display;
@@ -409,6 +410,49 @@ function showStreakPrompt(display) {
   }
 }
 
+function maybeTriggerOverUnderTriple(symbol) {
+  const settings = getSettings();
+  if (settings.contractMode !== "over_under" || !settings.ouAutoTripleEnabled) return;
+  if (!state.running || state.activeTrade || !state.authorized) return;
+  const stat = state.marketStats.get(symbol);
+  if (!stat) return;
+  const triggerDigit = settings.ouAutoTripleDigit;
+  const last3 = (stat.recentDigits || []).slice(-3);
+  if (last3.length < 3 || !last3.every((d) => d === triggerDigit)) return;
+
+  const key = `${symbol}:${triggerDigit}:${stat.recentDigits.length}`;
+  if (state.lastTripleKey === key) return;
+  state.lastTripleKey = key;
+
+  state.symbol = symbol;
+  if ($("symbol")) $("symbol").value = symbol;
+  $("ou-barrier").value = String(triggerDigit);
+  $("ou-direction").value = "DIGITOVER";
+  state.currentStake = settings.stake;
+  journal(`Triple-repeat strategy: ${symbol} hit ${triggerDigit},${triggerDigit},${triggerDigit}. Firing OVER ${triggerDigit} for 1 tick.`, "trade");
+  toast(`Triple ${triggerDigit}s on ${symbol} — firing Over ${triggerDigit}.`, "good");
+
+  const stake = Number(settings.stake.toFixed(2));
+  state.activeTrade = true;
+  state.tradeEntryDigit = stat.digit;
+  state.tradeEndDigit = null;
+  startContractCursor();
+  send(
+    {
+      proposal: 1,
+      amount: stake,
+      basis: "stake",
+      currency: state.currency,
+      duration: 1,
+      duration_unit: "t",
+      symbol,
+      contract_type: "DIGITOVER",
+      barrier: String(triggerDigit),
+    },
+    "proposal"
+  );
+}
+
 function maybeTradeAiMarket(symbol) {
   const settings = getSettings();
   const stat = state.marketStats.get(symbol);
@@ -458,12 +502,16 @@ function getSettings() {
     differTrigger: Number($("differ-trigger").value || 4),
     sessionTargetProfit: Math.max(Number($("session-target-profit").value) || 0, 0),
     sessionMaxLoss: Math.max(Number($("session-max-loss").value) || 0, 0),
+    ticks: Math.min(10, Math.max(1, Number($("trade-ticks").value) || 1)),
+    ouAutoTripleEnabled: $("ou-auto-triple-enable")?.checked || false,
+    ouAutoTripleDigit: Number($("ou-auto-triple-digit")?.value ?? 1),
   };
 }
 
 function contractModeLabel(mode) {
   if (mode === "over_under") return "Over / Under";
   if (mode === "differ") return "Differ";
+  if (mode === "rise_fall") return "Rise / Fall";
   return "Odd / Even";
 }
 
@@ -543,6 +591,9 @@ function checkEntryReady(settings = getSettings()) {
   if (settings.contractMode === "differ") {
     return state.digitStreak >= settings.differTrigger;
   }
+  if (settings.contractMode === "rise_fall") {
+    return false; // rise_fall entries are driven by maybeTradeRiseFall(), not the tick-by-tick loop
+  }
   const sample = state.digitHistory.slice(-settings.ouSample);
   if (sample.length < settings.ouSample) return false;
   const under = sample.filter((d) => d < settings.barrier).length;
@@ -559,7 +610,7 @@ function buildProposalPayload(stake, settings) {
     amount: stake,
     basis: "stake",
     currency: state.currency,
-    duration: 1,
+    duration: settings.ticks || 1,
     duration_unit: "t",
     symbol: state.symbol,
   };
@@ -569,6 +620,9 @@ function buildProposalPayload(stake, settings) {
   if (settings.contractMode === "differ") {
     return { ...base, contract_type: "DIGITDIFF", barrier: String(state.repeatDigit ?? state.lastDigit ?? 0) };
   }
+  if (settings.contractMode === "rise_fall") {
+    return { ...base, contract_type: state.riseFallDirection === "FALL" ? "PUT" : "CALL" };
+  }
   return { ...base, contract_type: settings.ouDirection, barrier: String(settings.barrier) };
 }
 
@@ -577,6 +631,7 @@ function contractLabel(settings) {
     return settings.tradeDirection === "DIGITEVEN" ? "EVEN" : "ODD";
   }
   if (settings.contractMode === "differ") return "DIFFER";
+  if (settings.contractMode === "rise_fall") return state.riseFallDirection === "FALL" ? "FALL" : "RISE";
   return settings.ouDirection === "DIGITOVER" ? `OVER ${settings.barrier}` : `UNDER ${settings.barrier}`;
 }
 
@@ -589,6 +644,7 @@ function simulateContractWin(digit, settings) {
     const reference = state.tradeEntryDigit ?? state.repeatDigit;
     return digit !== reference;
   }
+  if (settings.contractMode === "rise_fall") return Math.random() > 0.48;
   if (settings.ouDirection === "DIGITOVER") return digit > settings.barrier;
   return digit < settings.barrier;
 }
@@ -1163,27 +1219,24 @@ function renderContractCursor() {
   const holder = $("digit-cursor-track");
   if (!holder) return;
   holder.innerHTML = "";
-  const endDigit = state.tradeEndDigit ?? state.lastDigit;
+  const activeDigit = state.activeTrade ? state.tradeCursorDigit : null;
   for (let digit = 0; digit <= 9; digit += 1) {
     const item = document.createElement("i");
     item.textContent = digit;
     item.className = [
       digit % 2 === 1 ? "odd" : "even",
+      activeDigit === digit ? "active" : "",
       state.tradeEndDigit === digit ? "ended" : "",
     ].filter(Boolean).join(" ");
-    if (!state.activeTrade && state.tradeEndDigit === digit) {
+    if (state.activeTrade && activeDigit === digit) {
+      item.setAttribute("data-badge", "•");
+    } else if (!state.activeTrade && state.tradeEndDigit === digit) {
       item.setAttribute("data-badge", state.tradeEndDigit % 2 === 0 ? "EVEN" : "ODD");
     }
     holder.appendChild(item);
   }
-  holder.classList.toggle("sweeping", !!state.activeTrade);
-  if (state.activeTrade) {
-    const dot = document.createElement("span");
-    dot.className = "cursor-sweep-dot";
-    holder.appendChild(dot);
-  }
   $("contract-cursor-copy").textContent = state.activeTrade
-    ? "Buying contract..."
+    ? `Buying contract... moving digit ${state.tradeCursorDigit ?? "--"}`
     : state.tradeEndDigit === null
       ? "Waiting for contract entry"
       : `Contract ended on digit ${state.tradeEndDigit}`;
@@ -1192,7 +1245,16 @@ function renderContractCursor() {
 
 function startContractCursor() {
   stopContractCursor();
+  state.tradeCursorDigit = Number.isInteger(state.tradeEntryDigit) ? state.tradeEntryDigit : 0;
   renderContractCursor();
+  state.tradeCursorTimer = setInterval(() => {
+    if (!state.activeTrade) {
+      stopContractCursor();
+      return;
+    }
+    state.tradeCursorDigit = ((Number(state.tradeCursorDigit) || 0) + 1) % 10;
+    renderContractCursor();
+  }, 450);
 }
 
 function stopContractCursor() {
@@ -1413,6 +1475,13 @@ function renderRiseFallPanel() {
     $("rf-best-confidence").textContent = `${Math.round(best.analysis.agreement * 100)}% agreement across ${best.analysis.validCount}/5 timeframes`;
   }
 
+  if (best && $("rf-engine-market")) {
+    $("rf-engine-market").textContent = `${best.name} (${Math.round(best.analysis.agreement * 100)}% match)`;
+    $("rf-engine-direction").textContent = best.analysis.cleanSignal
+      ? `Clean ${best.analysis.direction} signal ready`
+      : `Leaning ${best.analysis.direction}, waiting for full agreement`;
+  }
+
   if (best && best.analysis.cleanSignal) {
     const key = `${best.symbol}:${best.analysis.direction}`;
     if (state.lastCleanSignalKey !== key) {
@@ -1422,7 +1491,20 @@ function renderRiseFallPanel() {
         phoneNotify("Clean Rise/Fall entry", `${best.name}: ${best.analysis.direction} confirmed on 1m-10m MACD.`, "good");
       }
     }
+    maybeTradeRiseFall(best);
   }
+}
+
+function maybeTradeRiseFall(best) {
+  const settings = getSettings();
+  if (settings.contractMode !== "rise_fall" || !state.running || state.activeTrade) return;
+  if (!state.authorized) return;
+  state.symbol = best.symbol;
+  if ($("symbol")) $("symbol").value = best.symbol;
+  state.riseFallDirection = best.analysis.direction;
+  journal(`AI Run selected ${best.name}: clean ${best.analysis.direction} signal (1m-10m MACD agree).`, "trade");
+  toast(`AI Run trading ${best.analysis.direction} on ${best.name}.`, "good");
+  triggerTrade(false);
 }
 
 function buyRiseFall(direction) {
@@ -1439,6 +1521,7 @@ function buyRiseFall(direction) {
   state.currentStake = stake;
   state.activeTrade = true;
   state.tradeEndDigit = null;
+  state.riseFallDirection = direction;
   startContractCursor();
   send(
     {
@@ -1446,8 +1529,8 @@ function buyRiseFall(direction) {
       amount: stake,
       basis: "stake",
       currency: state.currency,
-      duration: 5,
-      duration_unit: "m",
+      duration: settings.ticks || 1,
+      duration_unit: "t",
       symbol: state.symbol,
       contract_type: direction === "RISE" ? "CALL" : "PUT",
     },

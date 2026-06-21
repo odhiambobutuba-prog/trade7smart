@@ -1,16 +1,18 @@
-const CACHE = "trade7smart-v5-fresh-20260621";
+const CACHE = "trade7smart-round5-realchart-20260620";
 const FILES = [
   "./",
   "./index.html",
-  "./styles.css?v=v5-fresh-20260621",
-  "./app.js?v=v5-fresh-20260621",
-  "./manifest.webmanifest?v=v5-fresh-20260621",
+  "./styles.css?v=round5-realchart-20260620",
+  "./app.js?v=round5-realchart-20260620",
+  "./manifest.webmanifest?v=round5-realchart-20260620",
   "./icon.svg"
 ];
+
 self.addEventListener("install", (event) => {
   self.skipWaiting();
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(FILES)));
 });
+
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys()
@@ -18,6 +20,7 @@ self.addEventListener("activate", (event) => {
       .then(() => self.clients.claim())
   );
 });
+
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   event.respondWith(
@@ -30,6 +33,7 @@ self.addEventListener("fetch", (event) => {
       .catch(() => caches.match(event.request))
   );
 });
+
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   const targetUrl = event.notification.data?.url || "./";

@@ -2098,6 +2098,9 @@ body {
 
 .home-connect-btn {
   align-self: flex-start;
+  margin-bottom: 12px;
+  font-weight: 800;
+  padding: 10px 24px;
 }
 
 .risk-gauge-wrap {
@@ -2651,4 +2654,76 @@ body.light-theme small {
   color: #f87171;
   border: 1px solid rgba(248, 113, 113, 0.3);
   animation: pulseLive 1.2s ease infinite;
+}
+
+/* ===== Pro AI Tab ===== */
+.pro-ai-badge {
+  display: inline-block;
+  font-size: 0.58rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: rgba(139, 92, 246, 0.15);
+  color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.pro-ai-badge.glowing {
+  background: rgba(139, 92, 246, 0.35);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
+  animation: pulseLive 1.2s ease infinite;
+}
+
+.pro-ai-scan-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pro-ai-progress-track {
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.pro-ai-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #22d3ee);
+  border-radius: 99px;
+  transition: width 0.5s ease;
+  width: 0%;
+}
+
+.pro-ai-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 0.72rem;
+}
+
+.pro-ai-feed-line {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border-left: 3px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.02);
+}
+
+.pro-ai-feed-line.good { border-color: #22c55e; color: #22c55e; }
+.pro-ai-feed-line.warn { border-color: #fbbf24; color: #fbbf24; }
+.pro-ai-feed-line.info { border-color: #3b82f6; color: #e7ecf5; }
+.pro-ai-feed-line.muted { color: var(--muted, #8b95a7); font-size: 0.66rem; }
+
+.pro-ai-scan-btn {
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+
+.pro-ai-scan-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

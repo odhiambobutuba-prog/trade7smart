@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#060a10" />
     <title>Trade7Smart — AI Volatility Console</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=round5-realchart-20260620" />
-    <link rel="stylesheet" href="./styles.css?v=round5-realchart-20260620" />
+    <link rel="manifest" href="./manifest.webmanifest?v=round6-proai-20260620" />
+    <link rel="stylesheet" href="./styles.css?v=round6-proai-20260620" />
   </head>
   <body>
     <div id="butuba-preloader" class="butuba-preloader">
@@ -86,6 +86,7 @@
       </div>
 
       <section class="home-tab" id="home-tab">
+        <button id="home-connect-button" class="ghost-button home-connect-btn" type="button">Connect</button>
         <div class="home-grid">
           <article class="panel home-balance-card">
             <span class="da-label">Balance</span>
@@ -113,7 +114,6 @@
             </div>
           </article>
         </div>
-        <button id="home-connect-button" class="ghost-button home-connect-btn" type="button">Connect</button>
       </section>
 
       <nav class="section-nav" aria-label="Console sections">
@@ -124,6 +124,7 @@
         <button type="button" class="nav-pill" data-tab="recovery">Recovery</button>
         <button type="button" class="nav-pill" data-tab="stats">Stats</button>
         <button type="button" class="nav-pill" data-tab="strategy">Strategy</button>
+        <button type="button" class="nav-pill" data-tab="pro-ai">Pro AI</button>
       </nav>
       <section class="ai-scanner-hero" id="ai-scanner-hero">
         <article class="panel ai-scanner-panel">
@@ -510,6 +511,20 @@
               </select>
             </label>
             <label>
+              <span>Bulk purchase</span>
+              <select id="bulk-trade-count">
+                <option value="1" selected>Single trade</option>
+                <option value="2">2 trades at once</option>
+                <option value="3">3 trades at once</option>
+                <option value="4">4 trades at once</option>
+                <option value="5">5 trades at once</option>
+                <option value="6">6 trades at once</option>
+                <option value="7">7 trades at once</option>
+                <option value="8">8 trades at once</option>
+                <option value="9">9 trades at once</option>
+              </select>
+            </label>
+            <label>
               <span>Stake</span>
               <input id="stake" type="number" inputmode="decimal" min="0.35" step="0.01" value="0.35" />
             </label>
@@ -736,29 +751,9 @@
           </div>
           <div id="setup-queue" class="setup-queue"></div>
         </article>
-        <article class="panel backtest-panel">
-          <div class="panel-head">
-            <div><span>Backtest mode</span><strong>Historical tick sample</strong></div>
-            <button id="run-backtest" class="text-button" type="button">Run</button>
-          </div>
-          <div id="backtest-results" class="backtest-results">
-            <span>Triggers --</span>
-            <span>Wins --</span>
-            <span>Losses --</span>
-            <span>Win Rate --</span>
-            <span>Net Profit --</span>
-            <span>Max Drawdown --</span>
-          </div>
-        </article>
       </section>
 
       <section class="bottom-grid" id="bottom-grid">
-        <article class="panel market-panel">
-          <div class="panel-head">
-            <div><span>Watchlist</span><strong>Market pulse</strong></div>
-          </div>
-          <div id="watchlist" class="watchlist"></div>
-        </article>
         <article class="panel journal-panel">
           <div class="journal-header">
             <div><span>Bot journal</span><strong>Live events</strong></div>
@@ -780,6 +775,33 @@
           </p>
         </article>
         <div id="strategy-bot-grid" class="strategy-bot-grid"></div>
+      </section>
+
+      <section class="pro-ai-section" id="pro-ai">
+        <article class="panel pro-ai-intro-panel">
+          <div class="panel-head">
+            <div>
+              <span>🤖 Pro AI <span id="pro-ai-badge" class="pro-ai-badge">OFF</span></span>
+              <strong>Auto-scan, auto-detect, auto-trade</strong>
+            </div>
+          </div>
+          <p class="strategy-intro-copy">
+            Pick a Pro AI bot below, hit <b>Open</b>, then <b>Scan</b>. It checks all 5 (1s) volatility markets for that
+            exact digit condition, picks the cleanest match, and fires the trade automatically with your stake/ticks/contract settings.
+          </p>
+        </article>
+
+        <div id="pro-ai-bot-grid" class="strategy-bot-grid"></div>
+
+        <article class="panel pro-ai-scan-panel hidden" id="pro-ai-scan-panel">
+          <div class="panel-head">
+            <div><span id="pro-ai-scan-title">Scanning</span><strong id="pro-ai-scan-status">Idle</strong></div>
+            <button type="button" id="pro-ai-close-scan" class="text-button">Close</button>
+          </div>
+          <div class="pro-ai-progress-track"><div id="pro-ai-progress-fill" class="pro-ai-progress-fill"></div></div>
+          <div id="pro-ai-feed" class="pro-ai-feed"></div>
+          <button type="button" id="pro-ai-scan-btn" class="ghost-button pro-ai-scan-btn">🔍 Start Scanning</button>
+        </article>
       </section>
     </main>
 
@@ -805,6 +827,9 @@
       <button type="button" class="bt-tab" data-tab="strategy">
         <span class="bt-icon">🧩</span><span class="bt-label">Strategy</span>
       </button>
+      <button type="button" class="bt-tab" data-tab="pro-ai">
+        <span class="bt-icon">🤖</span><span class="bt-label">Pro AI</span>
+      </button>
     </nav>
 
     <div class="quick-actions-wrap">
@@ -824,6 +849,6 @@
 
     <div id="toast-layer" class="toast-layer" aria-live="polite"></div>
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
-    <script src="./app.js?v=round5-realchart-20260620"></script>
+    <script src="./app.js?v=round6-proai-20260620"></script>
   </body>
 </html>

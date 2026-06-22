@@ -515,6 +515,7 @@ function getSettings() {
     sessionTargetProfit: Math.max(Number($("session-target-profit").value) || 0, 0),
     sessionMaxLoss: Math.max(Number($("session-max-loss").value) || 0, 0),
     ticks: Math.min(10, Math.max(1, Number($("trade-ticks").value) || 1)),
+    bulkCount: Math.min(9, Math.max(1, Number($("bulk-trade-count")?.value) || 1)),
     ouAutoTripleEnabled: $("ou-auto-triple-enable")?.checked || false,
     ouAutoTripleDigit: Number($("ou-auto-triple-digit")?.value ?? 1),
   };
@@ -803,6 +804,14 @@ function triggerTrade(isRecovery) {
   }
 
   send(buildProposalPayload(stake, settings), "proposal");
+
+  const bulkCount = Math.min(9, Math.max(1, settings.bulkCount || 1));
+  if (bulkCount > 1) {
+    journal(`Bulk purchase: firing ${bulkCount} trades at once (${label}, ${stake.toFixed(2)} ${state.currency} each).`, "trade");
+    for (let i = 1; i < bulkCount; i++) {
+      send(buildProposalPayload(stake, settings), "proposal");
+    }
+  }
 }
 
 function canPlaceTrade(stake, settings) {
@@ -1299,6 +1308,7 @@ function renderSessionGoal() {
 
 function renderWatchlist() {
   const list = $("watchlist");
+  if (!list) return;
   list.innerHTML = "";
   WATCHLIST.forEach(([symbol, name]) => {
     const row = document.createElement("div");
@@ -1787,6 +1797,13 @@ function initLightweightChart() {
     color: "rgba(34, 211, 238, 0.35)",
   });
 
+  state.lwSmaSeries = state.lwChart.addLineSeries({
+    color: "#fbbf24",
+    lineWidth: 2,
+    priceLineVisible: false,
+    lastValueVisible: false,
+  });
+
   state.lwChart.subscribeCrosshairMove((param) => {
     const readout = $("chart-crosshair-readout");
     if (!readout) return;
@@ -1854,6 +1871,29 @@ function seriesPoint(candle) {
   return { time: candle.time, value: candle.close };
 }
 
+function smaSeries(closes, period) {
+  const out = [];
+  for (let i = 0; i < closes.length; i++) {
+    if (i < period - 1) {
+      out.push(null);
+      continue;
+    }
+    let sum = 0;
+    for (let j = i - period + 1; j <= i; j++) sum += closes[j];
+    out.push(sum / period);
+  }
+  return out;
+}
+
+function renderSmaSeries(arr) {
+  if (!state.lwSmaSeries || !arr || arr.length < 20) return;
+  const closes = arr.map((c) => c.close);
+  const sma = smaSeries(closes, 20);
+  state.lwSmaSeries.setData(
+    arr.map((c, i) => ({ time: c.time, value: sma[i] })).filter((p) => p.value !== null)
+  );
+}
+
 function loadFullChartHistory() {
   const arr = state.liveCandles[state.symbol] || [];
   if (!state.lwSeries || !arr.length) return;
@@ -1862,6 +1902,7 @@ function loadFullChartHistory() {
     state.lwVolumeSeries.setData(arr.map((c) => ({ time: c.time, value: c.volume || 1, color: c.close >= c.open ? "rgba(34,197,94,0.4)" : "rgba(248,113,113,0.4)" })));
   }
   renderMacdSeries(arr);
+  renderSmaSeries(arr);
 }
 
 function updateLiveChart(candle, isNewBar) {
@@ -1872,6 +1913,7 @@ function updateLiveChart(candle, isNewBar) {
   }
   if (isNewBar || (state.liveCandles[state.symbol]?.length || 0) % 5 === 0) {
     renderMacdSeries(state.liveCandles[state.symbol]);
+    renderSmaSeries(state.liveCandles[state.symbol]);
   }
 }
 
@@ -2258,14 +2300,16 @@ function runBacktest() {
   });
 
   const total = wins + losses;
-  $("backtest-results").innerHTML = `
-    <span>Triggers ${triggers}</span>
-    <span>Wins ${wins}</span>
-    <span>Losses ${losses}</span>
-    <span>Win Rate ${total ? ((wins / total) * 100).toFixed(1) : "0.0"}%</span>
-    <span>Net Profit ${net.toFixed(2)}</span>
-    <span>Max Drawdown ${maxDrawdown.toFixed(2)}</span>
-  `;
+  if ($("backtest-results")) {
+    $("backtest-results").innerHTML = `
+      <span>Triggers ${triggers}</span>
+      <span>Wins ${wins}</span>
+      <span>Losses ${losses}</span>
+      <span>Win Rate ${total ? ((wins / total) * 100).toFixed(1) : "0.0"}%</span>
+      <span>Net Profit ${net.toFixed(2)}</span>
+      <span>Max Drawdown ${maxDrawdown.toFixed(2)}</span>
+    `;
+  }
   journal(`Backtest complete: ${triggers} triggers, net ${net.toFixed(2)} ${state.currency}.`, "trade");
 }
 
@@ -2340,6 +2384,7 @@ const TAB_GROUPS = {
   recovery: ["pro-grid", "risk-grid"],
   stats: ["analytics-grid", "scanner-grid", "bottom-grid"],
   strategy: ["strategy"],
+  "pro-ai": ["pro-ai"],
 };
 
 function initSectionNav() {
@@ -2583,7 +2628,7 @@ $("trade-direction").addEventListener("change", updateDashboard);
 $("strategy-recovery-start").addEventListener("input", () => syncStrategyBuilder("builder"));
 $("strategy-max-recovery").addEventListener("input", () => syncStrategyBuilder("builder"));
 $("strategy-profit-buffer").addEventListener("input", () => syncStrategyBuilder("builder"));
-$("run-backtest").addEventListener("click", runBacktest);
+$("run-backtest")?.addEventListener("click", runBacktest);
 $("compact-toggle").addEventListener("click", toggleCompactMode);
 $("mini-toggle").addEventListener("click", toggleMiniMode);
 $("sound-toggle").addEventListener("click", toggleSound);
@@ -2780,6 +2825,205 @@ function syncAnalyzerContractBadge() {
   badgeEl.classList.toggle("mismatch", !!mismatch);
 }
 
+const PRO_AI_BOTS = [
+  {
+    id: "over1_pro",
+    name: "Over 1 Pro",
+    condition: "Waits for 3 digits at or below 1",
+    barrier: 1,
+    direction: "DIGITOVER",
+    match: (recent) => recent.slice(-3).every((d) => d <= 1),
+  },
+  {
+    id: "under8_pro",
+    name: "Under 8 Pro",
+    condition: "Waits for 3 digits at or above 8",
+    barrier: 8,
+    direction: "DIGITUNDER",
+    match: (recent) => recent.slice(-3).every((d) => d >= 8),
+  },
+  {
+    id: "over2_pro",
+    name: "Over 2 Pro",
+    condition: "Waits for 3 digits at or below 2",
+    barrier: 2,
+    direction: "DIGITOVER",
+    match: (recent) => recent.slice(-3).every((d) => d <= 2),
+  },
+  {
+    id: "under7_pro",
+    name: "Under 7 Pro",
+    condition: "Waits for 3 digits at or above 7",
+    barrier: 7,
+    direction: "DIGITUNDER",
+    match: (recent) => recent.slice(-3).every((d) => d >= 7),
+  },
+];
+
+state.proAiActive = false;
+state.proAiOpenBot = null;
+state.proAiScanning = false;
+
+function renderProAiBotGrid() {
+  const holder = $("pro-ai-bot-grid");
+  if (!holder) return;
+  holder.innerHTML = "";
+  PRO_AI_BOTS.forEach((bot) => {
+    const card = document.createElement("article");
+    card.className = "panel strategy-card";
+    card.innerHTML = `
+      <div class="strategy-card-head"><strong>${bot.name}</strong></div>
+      <p class="strategy-card-desc">${bot.condition}</p>
+      <div class="strategy-tags"><span>Over/Under</span><span>Barrier ${bot.barrier}</span></div>
+      <button type="button" class="ghost-button pro-ai-open-btn" data-bot="${bot.id}">Open</button>
+    `;
+    holder.appendChild(card);
+  });
+  holder.querySelectorAll(".pro-ai-open-btn").forEach((btn) => {
+    btn.addEventListener("click", () => openProAiBot(btn.dataset.bot));
+  });
+}
+
+function openProAiBot(botId) {
+  const bot = PRO_AI_BOTS.find((b) => b.id === botId);
+  if (!bot) return;
+  state.proAiOpenBot = bot;
+  $("pro-ai-scan-panel").classList.remove("hidden");
+  $("pro-ai-scan-title").textContent = bot.name;
+  $("pro-ai-scan-status").textContent = bot.condition;
+  $("pro-ai-feed").innerHTML = "";
+  $("pro-ai-progress-fill").style.width = "0%";
+  $("pro-ai-scan-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function proAiFeedLine(text, cls = "") {
+  const feed = $("pro-ai-feed");
+  if (!feed) return;
+  const line = document.createElement("div");
+  line.className = `pro-ai-feed-line ${cls}`;
+  line.textContent = text;
+  feed.prepend(line);
+  while (feed.children.length > 20) feed.removeChild(feed.lastChild);
+}
+
+function startProAiScan() {
+  const bot = state.proAiOpenBot;
+  if (!bot) return;
+  if (!state.authorized) {
+    $("pro-ai-scan-status").textContent = "Demo Offline — connect your account first";
+    proAiFeedLine("⚠️ Not connected. Tap Connection to authorize before scanning.", "warn");
+    return;
+  }
+  if (state.proAiScanning) return;
+  state.proAiScanning = true;
+  state.proAiActive = true;
+  updateProAiBadge();
+  $("pro-ai-scan-status").textContent = "Scanning...";
+  $("pro-ai-scan-btn").textContent = "Scanning...";
+  $("pro-ai-scan-btn").disabled = true;
+  let progress = 0;
+  proAiFeedLine(`🔍 Pro AI scan started: ${bot.name} across all 1s markets.`, "info");
+
+  state.proAiScanTimer = setInterval(() => {
+    progress = Math.min(96, progress + 4);
+    $("pro-ai-progress-fill").style.width = `${progress}%`;
+
+    let found = null;
+    WATCHLIST.forEach(([symbol, name]) => {
+      const stat = state.marketStats.get(symbol);
+      if (!stat || !stat.recentDigits || stat.recentDigits.length < 3) return;
+      const recent = stat.recentDigits.slice(-3);
+      proAiFeedLine(`${name}: last 3 digits ${recent.join(",")}`, "muted");
+      if (!found && bot.match(stat.recentDigits)) {
+        found = { symbol, name, stat };
+      }
+    });
+
+    if (found) {
+      clearInterval(state.proAiScanTimer);
+      $("pro-ai-progress-fill").style.width = "100%";
+      $("pro-ai-scan-status").textContent = `Best market found: ${found.name}`;
+      proAiFeedLine(`✅ Best market found: ${found.name} matches "${bot.condition}".`, "good");
+      executeProAiTrade(bot, found);
+    }
+  }, 700);
+
+  setTimeout(() => {
+    if (state.proAiScanning && state.proAiScanTimer) {
+      clearInterval(state.proAiScanTimer);
+      state.proAiScanning = false;
+      $("pro-ai-scan-btn").textContent = "🔍 Start Scanning";
+      $("pro-ai-scan-btn").disabled = false;
+      $("pro-ai-scan-status").textContent = "No clean match found — try again";
+      proAiFeedLine("⏱️ Scan timed out without a clean match.", "warn");
+    }
+  }, 20000);
+}
+
+function executeProAiTrade(bot, found) {
+  $("pro-ai-scan-status").textContent = `Executing trade on ${found.name}...`;
+  proAiFeedLine(`⚡ Executing trade: ${bot.direction === "DIGITOVER" ? "OVER" : "UNDER"} ${bot.barrier} on ${found.name}.`, "info");
+
+  setContractMode("over_under");
+  state.symbol = found.symbol;
+  if ($("symbol")) $("symbol").value = found.symbol;
+  $("ou-barrier").value = String(bot.barrier);
+  $("ou-direction").value = bot.direction;
+
+  const settings = getSettings();
+  const stake = Number(settings.stake.toFixed(2));
+  state.currentStake = stake;
+  state.activeTrade = true;
+  state.tradeEntryDigit = found.stat.digit;
+  state.tradeEndDigit = null;
+  startContractCursor();
+
+  send(
+    {
+      proposal: 1,
+      amount: stake,
+      basis: "stake",
+      currency: state.currency,
+      duration: settings.ticks || 1,
+      duration_unit: "t",
+      symbol: found.symbol,
+      contract_type: bot.direction,
+      barrier: String(bot.barrier),
+    },
+    "proposal"
+  );
+
+  journal(`Pro AI (${bot.name}) executed ${bot.direction === "DIGITOVER" ? "OVER" : "UNDER"} ${bot.barrier} on ${found.name} at ${new Date().toLocaleTimeString()}.`, "trade");
+  toast(`Pro AI trading ${bot.name} on ${found.name}.`, "good");
+
+  state.proAiScanning = false;
+  $("pro-ai-scan-btn").textContent = "🔍 Start Scanning";
+  $("pro-ai-scan-btn").disabled = false;
+
+  if (state.notificationsEnabled) {
+    phoneNotify("Pro AI trade executed", `${bot.name} on ${found.name}`, "good");
+  }
+}
+
+function updateProAiBadge() {
+  const badge = $("pro-ai-badge");
+  if (!badge) return;
+  badge.textContent = state.proAiActive ? "ON" : "OFF";
+  badge.classList.toggle("glowing", state.proAiActive);
+}
+
+function initProAi() {
+  renderProAiBotGrid();
+  $("pro-ai-scan-btn")?.addEventListener("click", startProAiScan);
+  $("pro-ai-close-scan")?.addEventListener("click", () => {
+    $("pro-ai-scan-panel").classList.add("hidden");
+    if (state.proAiScanTimer) clearInterval(state.proAiScanTimer);
+    state.proAiScanning = false;
+    state.proAiActive = false;
+    updateProAiBadge();
+  });
+}
+
 function initRiseFallButtons() {
   $("rf-buy-rise")?.addEventListener("click", () => buyRiseFall("RISE"));
   $("rf-buy-fall")?.addEventListener("click", () => buyRiseFall("FALL"));
@@ -2788,6 +3032,7 @@ initRiseFallButtons();
 renderStrategyBotGrid();
 initChartTypeToggle();
 initLightweightChart();
+initProAi();
 
 connectPublicScanner();
 setTimeout(hideLoader, 850);

@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#060a10" />
     <title>Trade7Smart — AI Volatility Console</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=round6-proai-20260620" />
-    <link rel="stylesheet" href="./styles.css?v=round6-proai-20260620" />
+    <link rel="manifest" href="./manifest.webmanifest?v=round7-analyzer-20260620" />
+    <link rel="stylesheet" href="./styles.css?v=round7-analyzer-20260620" />
   </head>
   <body>
     <div id="butuba-preloader" class="butuba-preloader">
@@ -85,6 +85,8 @@
         </section>
       </div>
 
+      </section>
+
       <section class="home-tab" id="home-tab">
         <button id="home-connect-button" class="ghost-button home-connect-btn" type="button">Connect</button>
         <div class="home-grid">
@@ -114,6 +116,35 @@
             </div>
           </article>
         </div>
+
+        <article class="panel home-summary-panel">
+          <div class="panel-head">
+            <div><span>📊 Transaction Summary</span><strong>Today's session</strong></div>
+            <button id="reset-daily-stats" class="text-button" type="button">Reset</button>
+          </div>
+          <div class="summary-stats-grid">
+            <div class="summary-stat"><span>Runs</span><strong id="summary-runs">0</strong></div>
+            <div class="summary-stat"><span>Won</span><strong id="summary-wins" class="win-color">0</strong></div>
+            <div class="summary-stat"><span>Lost</span><strong id="summary-losses" class="loss-color">0</strong></div>
+            <div class="summary-stat"><span>Win Rate</span><strong id="summary-winrate">0%</strong></div>
+            <div class="summary-stat"><span>Total Stake</span><strong id="summary-stake">0.00</strong></div>
+            <div class="summary-stat"><span>P / L</span><strong id="summary-pnl">0.00</strong></div>
+          </div>
+        </article>
+
+        <article class="panel home-history-panel">
+          <div class="panel-head">
+            <div><span>📋 Trade History</span><strong>Last 50 trades</strong></div>
+          </div>
+          <div class="trade-history-table-wrap">
+            <table class="trade-history-table">
+              <thead>
+                <tr><th>Time</th><th>Type</th><th>Market</th><th>Stake</th><th>P/L</th><th>Result</th></tr>
+              </thead>
+              <tbody id="trade-history-tbody"></tbody>
+            </table>
+          </div>
+        </article>
       </section>
 
       <nav class="section-nav" aria-label="Console sections">
@@ -313,6 +344,24 @@
               <span class="analyzer-label">Neural signal engine</span>
               <strong id="signal-title">Scanning volatility pressure</strong>
               <p id="signal-copy">Waiting for a clean setup before entry.</p>
+
+              <div class="analyzer-confidence-row">
+                <span class="da-label">AI Confidence</span>
+                <div class="confidence-bar-wrap">
+                  <div class="confidence-bar-track">
+                    <div id="analyzer-conf-bar" class="confidence-bar-fill"></div>
+                  </div>
+                  <span id="analyzer-conf-pct">0%</span>
+                </div>
+                <span id="analyzer-conf-gate" class="conf-gate-badge">BELOW 80%</span>
+              </div>
+
+              <div class="analyzer-trend-row">
+                <span id="analyzer-trend-arrow" class="trend-arrow">→</span>
+                <span id="analyzer-trend-label">Flat</span>
+                <canvas id="analyzer-sparkline" class="analyzer-sparkline" width="80" height="28"></canvas>
+              </div>
+
               <div class="signal-tags">
                 <span id="signal-type-tag" class="signal-tag">ODDS</span>
                 <span id="signal-market-tag" class="signal-tag muted">1HZ100V</span>
@@ -320,6 +369,10 @@
               </div>
               <div id="strategy-watch-tag" class="strategy-watch-tag hidden">Watching: --</div>
               <div id="triple-detect-banner" class="triple-detect-banner"></div>
+            </div>
+
+            <div class="waveform-wrap" id="waveform-wrap">
+              <canvas id="analyzer-waveform" class="analyzer-waveform" height="36"></canvas>
             </div>
           </div>
           <div class="tick-readout">
@@ -849,6 +902,6 @@
 
     <div id="toast-layer" class="toast-layer" aria-live="polite"></div>
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
-    <script src="./app.js?v=round6-proai-20260620"></script>
+    <script src="./app.js?v=round7-analyzer-20260620"></script>
   </body>
 </html>

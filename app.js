@@ -807,16 +807,26 @@ function triggerTrade(isRecovery) {
 
   const bulkCount = Math.min(9, Math.max(1, settings.bulkCount || 1));
   if (bulkCount > 1) {
-    journal(`Bulk purchase: firing ${bulkCount} trades at once (${label}, ${stake.toFixed(2)} ${state.currency} each).`, "trade");
+    state.bulkQueue = [];
     for (let i = 1; i < bulkCount; i++) {
-      send(buildProposalPayload(stake, settings), "proposal");
+      state.bulkQueue.push({ payload: buildProposalPayload(stake, settings) });
     }
+    journal(`Bulk purchase queued: ${bulkCount} trades total (${label}, ${stake.toFixed(2)} ${state.currency} each).`, "trade");
+    toast(`Bulk: ${bulkCount} trades queued — firing sequentially.`, "good");
+  } else {
+    state.bulkQueue = [];
   }
 }
 
 function canPlaceTrade(stake, settings) {
   if (stake > settings.maxStake) {
     stopForRisk(`Max stake blocked trade: ${stake.toFixed(2)} > ${settings.maxStake.toFixed(2)}.`);
+    return false;
+  }
+
+  const aiScore = state.lastAiScore || 0;
+  if (state.running && state.aiAutoEnabled && aiScore < 80) {
+    $("bot-state").textContent = `AI ${aiScore}% — waiting for 80%`;
     return false;
   }
   if (state.lossCount >= settings.maxRecoverySteps) {
@@ -902,6 +912,20 @@ function settleTrade(profit, endDigit = state.lastDigit) {
   state.profitHistory.push(state.totalProfit);
   if (state.profitHistory.length > 60) state.profitHistory.shift();
 
+  const tradeEntry = {
+    time: new Date().toLocaleTimeString(),
+    type: contractLabel(getSettings()),
+    symbol: state.symbol,
+    stake: state.currentStake,
+    profit,
+    endDigit,
+    won: profit > 0,
+  };
+  state.tradeHistory = state.tradeHistory || [];
+  state.tradeHistory.unshift(tradeEntry);
+  if (state.tradeHistory.length > 50) state.tradeHistory.pop();
+  renderTradeHistory();
+
   if (profit > 0) {
     state.wins += 1;
     state.cyclesCompleted += 1;
@@ -922,6 +946,7 @@ function settleTrade(profit, endDigit = state.lastDigit) {
     state.repeatDigit = state.lastDigit;
     state.cycleRecoveryDepth = 0;
     enforceSessionAfterSettle();
+    fireBulkQueueNext();
     updateDashboard();
     return;
   }
@@ -955,9 +980,26 @@ function settleTrade(profit, endDigit = state.lastDigit) {
   enforceSessionAfterSettle();
   if (state.running) {
     $("bot-state").textContent = "Instant recovery";
-    triggerTrade(state.lossCount >= getSettings().recoveryStartLosses);
+    fireBulkQueueNext();
+    if (!state.bulkQueue || state.bulkQueue.length === 0) {
+      triggerTrade(state.lossCount >= getSettings().recoveryStartLosses);
+    }
   }
   updateDashboard();
+}
+
+function fireBulkQueueNext() {
+  if (!state.bulkQueue || state.bulkQueue.length === 0) return;
+  const next = state.bulkQueue.shift();
+  if (!next) return;
+  setTimeout(() => {
+    if (!state.authorized) return;
+    state.activeTrade = true;
+    state.tradeEndDigit = null;
+    startContractCursor();
+    send(next.payload, "proposal");
+    journal(`Bulk queue: firing next trade (${state.bulkQueue.length} remaining).`, "trade");
+  }, 300);
 }
 
 function enforceSessionAfterSettle() {
@@ -968,11 +1010,39 @@ function enforceSessionAfterSettle() {
     state.dailyProfit = 0;
   }
   if (settings.sessionMaxLoss > 0 && state.dailyProfit <= -settings.sessionMaxLoss) {
+    toast("Daily loss threshold hit — resetting counters and pausing.", "danger");
+    journal("Daily loss threshold hit. Counters reset to zero. Bot paused.", "loss");
+    resetDailyStats();
     state.running = false;
-    $("bot-state").textContent = "Session stop";
-    toast("Session max loss reached. Bot stopped.", "danger");
-    journal("Session max loss reached. Bot stopped.", "loss");
+    $("bot-state").textContent = "Daily reset";
   }
+}
+
+function resetDailyStats() {
+  state.dailyProfit = 0;
+  state.wins = 0;
+  state.losses = 0;
+  state.totalTrades = 0;
+  state.lossCount = 0;
+  state.cumulativeLoss = 0;
+  state.cycleRecoveryDepth = 0;
+  state.tradeHistory = [];
+  state.lastAiScore = 0;
+  renderTradeHistory();
+  updateDashboard();
+  journal("Daily stats auto-reset.", "trade");
+}
+
+function initDailyAutoReset() {
+  const now = new Date();
+  const nextMidnight = new Date(now);
+  nextMidnight.setHours(24, 0, 0, 0);
+  const msUntilMidnight = nextMidnight - now;
+  setTimeout(() => {
+    resetDailyStats();
+    toast("Daily auto-reset at midnight.", "good");
+    setInterval(resetDailyStats, 86400000);
+  }, msUntilMidnight);
 }
 
 function handleError(data) {
@@ -1609,6 +1679,7 @@ function renderAiRecommendation(digits) {
   }
 
   $("da-ai-score").textContent = `${score}%`;
+  state.lastAiScore = score;
   $("da-ai-recommend").textContent = `Recommend: ${recommend}`;
   $("da-ai-reason").textContent = reason;
   $("da-ai-confidence-tag").textContent = score >= 70 ? "HIGH" : score >= 45 ? "MEDIUM" : "BETA";
@@ -1617,9 +1688,130 @@ function renderAiRecommendation(digits) {
   const circumference = 2 * Math.PI * 34;
   ring.style.strokeDasharray = `${circumference}`;
   ring.style.strokeDashoffset = `${circumference - (score / 100) * circumference}`;
-
   const card = $("da-ai-card");
   card.classList.toggle("ready", score >= 55);
+
+  // Confidence bar + gate badge
+  const confBar = $("analyzer-conf-bar");
+  const confPct = $("analyzer-conf-pct");
+  const confGate = $("analyzer-conf-gate");
+  if (confBar) {
+    confBar.style.width = `${score}%`;
+    confBar.style.background = score >= 80 ? "#22c55e" : score >= 55 ? "#fbbf24" : "#f87171";
+  }
+  if (confPct) confPct.textContent = `${score}%`;
+  if (confGate) {
+    confGate.textContent = score >= 80 ? "✅ READY" : `NEED ${80 - score}% MORE`;
+    confGate.classList.toggle("gate-ready", score >= 80);
+  }
+
+  // Trend arrow
+  const last5 = digits.slice(-5);
+  const first5avg = last5.slice(0, 2).reduce((a, b) => a + b, 0) / 2;
+  const last5avg = last5.slice(-2).reduce((a, b) => a + b, 0) / 2;
+  const arrow = $("analyzer-trend-arrow");
+  const trendLabel = $("analyzer-trend-label");
+  if (arrow && trendLabel) {
+    if (last5avg > first5avg + 0.5) {
+      arrow.textContent = "↑"; arrow.style.color = "#22c55e"; trendLabel.textContent = "Rising";
+    } else if (last5avg < first5avg - 0.5) {
+      arrow.textContent = "↓"; arrow.style.color = "#f87171"; trendLabel.textContent = "Falling";
+    } else {
+      arrow.textContent = "→"; arrow.style.color = "#8b95a7"; trendLabel.textContent = "Flat";
+    }
+  }
+
+  // Streak glow on digit strip
+  const strip = $("digit-strip");
+  if (strip) {
+    strip.classList.toggle("streak-glow", eoStreak >= 5);
+  }
+
+  // Sparkline
+  renderAnalyzerSparkline(digits.slice(-20));
+
+  // Waveform
+  renderAnalyzerWaveform(digits.slice(-40));
+}
+
+function renderAnalyzerSparkline(digits) {
+  const canvas = $("analyzer-sparkline");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+  if (digits.length < 2) return;
+  const min = Math.min(...digits);
+  const max = Math.max(...digits) || 1;
+  const range = max - min || 1;
+  ctx.beginPath();
+  ctx.strokeStyle = "#22d3ee";
+  ctx.lineWidth = 1.5;
+  digits.forEach((d, i) => {
+    const x = (i / (digits.length - 1)) * w;
+    const y = h - ((d - min) / range) * (h - 4) - 2;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+}
+
+function renderAnalyzerWaveform(digits) {
+  const canvas = $("analyzer-waveform");
+  if (!canvas) return;
+  canvas.width = canvas.offsetWidth || 300;
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+  const barW = w / digits.length;
+  digits.forEach((d, i) => {
+    const barH = (d / 9) * h;
+    const isOdd = d % 2 === 1;
+    ctx.fillStyle = isOdd ? "rgba(34,211,238,0.7)" : "rgba(139,92,246,0.7)";
+    ctx.fillRect(i * barW + 1, h - barH, barW - 2, barH);
+  });
+}
+
+function renderTradeHistory() {
+  const tbody = $("trade-history-tbody");
+  const summaryRuns = $("summary-runs");
+  const summaryWins = $("summary-wins");
+  const summaryLosses = $("summary-losses");
+  const summaryWinrate = $("summary-winrate");
+  const summaryStake = $("summary-stake");
+  const summaryPnl = $("summary-pnl");
+
+  const trades = state.tradeHistory || [];
+  const wins = trades.filter((t) => t.won).length;
+  const losses = trades.filter((t) => !t.won).length;
+  const totalStake = trades.reduce((a, t) => a + (t.stake || 0), 0);
+  const totalPnl = trades.reduce((a, t) => a + (t.profit || 0), 0);
+  const winRate = trades.length ? ((wins / trades.length) * 100).toFixed(1) : "0.0";
+
+  if (summaryRuns) summaryRuns.textContent = trades.length;
+  if (summaryWins) summaryWins.textContent = wins;
+  if (summaryLosses) summaryLosses.textContent = losses;
+  if (summaryWinrate) summaryWinrate.textContent = `${winRate}%`;
+  if (summaryStake) summaryStake.textContent = totalStake.toFixed(2);
+  if (summaryPnl) {
+    summaryPnl.textContent = (totalPnl >= 0 ? "+" : "") + totalPnl.toFixed(2);
+    summaryPnl.style.color = totalPnl >= 0 ? "#22c55e" : "#f87171";
+  }
+
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  trades.slice(0, 50).forEach((t) => {
+    const tr = document.createElement("tr");
+    tr.className = t.won ? "trade-row-win" : "trade-row-loss";
+    tr.innerHTML = `
+      <td>${t.time}</td>
+      <td>${t.type}</td>
+      <td>${t.symbol}</td>
+      <td>${(t.stake || 0).toFixed(2)}</td>
+      <td style="color:${t.profit >= 0 ? "#22c55e" : "#f87171"}">${t.profit >= 0 ? "+" : ""}${(t.profit || 0).toFixed(2)}</td>
+      <td><span class="trade-result-badge ${t.won ? "win" : "loss"}">${t.won ? "WIN" : "LOSS"}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
 }
 
 function renderDigitAnalysis() {
@@ -3033,6 +3225,12 @@ renderStrategyBotGrid();
 initChartTypeToggle();
 initLightweightChart();
 initProAi();
+initDailyAutoReset();
+renderTradeHistory();
+$("reset-daily-stats")?.addEventListener("click", () => {
+  resetDailyStats();
+  toast("Daily stats reset.", "good");
+});
 
 connectPublicScanner();
 setTimeout(hideLoader, 850);

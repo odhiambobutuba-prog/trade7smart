@@ -57,6 +57,7 @@ const state = {
   digitCounts: Array(10).fill(0),
   watch: new Map(),
   marketStats: new Map(),
+  copilotSignal: null,
 };
 
 const $ = (id) => document.getElementById(id);
@@ -306,6 +307,13 @@ function handleTick(tick) {
   pushTickToCandle(symbol, quote, Number(tick.epoch) || Math.floor(Date.now() / 1000));
   maybeTradeAiMarket(symbol);
   maybeTriggerOverUnderTriple(symbol);
+  
+  // Copilot AI analysis
+  const settings = getSettings();
+  const copilotSignal = copilotAnalyzeTick(tick, symbol, settings);
+  state.copilotSignal = copilotSignal;
+  updateCopilotDisplay(copilotSignal);
+  
   if (symbol !== state.symbol) return;
 
   state.lastQuote = display;
@@ -339,8 +347,82 @@ function handleTick(tick) {
     showStreakPrompt(display);
   }
 
-  if (state.running && !state.activeTrade && checkEntryReady()) {
+  // Copilot triggers trade directly when signal is ready
+  if (state.running && !state.activeTrade && copilotSignal.recommendation) {
     triggerTrade(false);
+  }
+}
+
+function updateCopilotDisplay(signal) {
+  if (!signal) return;
+  
+  // Update analyzer panel with Copilot's live scanning activity
+  if ($("signal-title")) {
+    $("signal-title").textContent = `Copilot: ${signal.trend}`;
+  }
+  
+  if ($("signal-copy")) {
+    let copyText = `Scanning ${signal.symbol} - Trend: ${signal.trend}`;
+    if (signal.recommendation) {
+      copyText += ` | Signal: ${signal.recommendation}`;
+    }
+    if (signal.oddStreak > 0) {
+      copyText += ` | Odds Streak: ${signal.oddStreak}`;
+    }
+    if (signal.digitStreak > 1) {
+      copyText += ` | Digit Streak: ${signal.digitStreak}x${signal.repeatDigit}`;
+    }
+    $("signal-copy").textContent = copyText;
+  }
+  
+  // Update signal type tag
+  if ($("signal-type-tag")) {
+    const settings = getSettings();
+    $("signal-type-tag").textContent = settings.contractMode.toUpperCase();
+  }
+  
+  // Update market tag
+  if ($("signal-market-tag")) {
+    $("signal-market-tag").textContent = signal.symbol;
+  }
+  
+  // Update trend arrow and label
+  if ($("analyzer-trend-arrow") && $("analyzer-trend-label")) {
+    const arrow = $("analyzer-trend-arrow");
+    const label = $("analyzer-trend-label");
+    if (signal.trend === "RISING") {
+      arrow.textContent = "↑";
+      arrow.style.color = "#22c55e";
+      label.textContent = "Rising";
+    } else if (signal.trend === "FALLING") {
+      arrow.textContent = "↓";
+      arrow.style.color = "#f87171";
+      label.textContent = "Falling";
+    } else {
+      arrow.textContent = "→";
+      arrow.style.color = "#6b7280";
+      label.textContent = "Flat";
+    }
+  }
+  
+  // Update confidence display (Copilot confidence, no gating)
+  const confBar = $("analyzer-conf-bar");
+  const confPct = $("analyzer-conf-pct");
+  const confGate = $("analyzer-conf-gate");
+  if (confBar) {
+    confBar.style.width = `${signal.confidence}%`;
+    confBar.style.background = "#22c55e";
+  }
+  if (confPct) confPct.textContent = `${signal.confidence}%`;
+  if (confGate) {
+    confGate.textContent = signal.recommendation ? "✅ SIGNAL READY" : "SCANNING";
+    confGate.classList.toggle("gate-ready", !!signal.recommendation);
+  }
+  
+  // Update entry ready status
+  if ($("entry-ready")) {
+    $("entry-ready").textContent = signal.recommendation ? "ENTRY READY" : "SCANNING";
+    $("entry-ready").classList.toggle("ready", !!signal.recommendation);
   }
 }
 
@@ -1066,10 +1148,16 @@ function settleTrade(profit, endDigit = state.lastDigit) {
 
   enforceSessionAfterSettle();
   if (state.running) {
-    $("bot-state").textContent = "Instant recovery";
+    $("bot-state").textContent = "Instant recovery - Copilot scanning";
     fireBulkQueueNext();
     if (!state.bulkQueue || state.bulkQueue.length === 0) {
-      triggerTrade(state.lossCount >= getSettings().recoveryStartLosses);
+      // Copilot will trigger next trade when signal is ready
+      // No delay - instant re-entry enabled
+      setTimeout(() => {
+        if (state.running && !state.activeTrade && state.copilotSignal && state.copilotSignal.recommendation) {
+          triggerTrade(state.lossCount >= getSettings().recoveryStartLosses);
+        }
+      }, 100);
     }
   }
   updateDashboard();
@@ -1219,35 +1307,37 @@ function updateAnalyzer(settings) {
     $("ring-fill").style.strokeDashoffset = String(circumference - (score / 100) * circumference);
   }
 
-  if ($("signal-type-tag")) $("signal-type-tag").textContent = ai.signalType;
-  if ($("signal-market-tag")) $("signal-market-tag").textContent = state.symbol;
-
-  const ready = checkEntryReady(settings);
-  if ($("entry-ready")) {
-    $("entry-ready").textContent = ready ? "ENTRY READY" : "WAITING";
-    $("entry-ready").classList.toggle("ready", ready);
-  }
-
-  if (settings.contractMode === "odds_even") {
-    if (state.oddStreak >= preferred) {
-      $("signal-title").textContent = "Strong odds signal";
-      $("signal-copy").textContent = `${state.oddStreak} straight Odds detected. ${contractLabel(settings)} trade is ready when Run Bot is active.`;
-    } else if (state.oddStreak >= Math.max(preferred - 1, 1)) {
-      $("signal-title").textContent = "Signal building";
-      $("signal-copy").textContent = `${state.oddStreak}/${preferred} Odds. One more Odd can complete your setup.`;
-    } else {
-      $("signal-title").textContent = "Scanning odds pressure";
-      $("signal-copy").textContent = `Waiting for a clean ${preferred} Odds streak before ${contractLabel(settings)} entry.`;
-    }
-  } else if (settings.contractMode === "differ") {
-    if (state.digitStreak >= settings.differTrigger) {
-      $("signal-title").textContent = "Differ trigger locked";
-      $("signal-copy").textContent = `Digit ${state.repeatDigit} repeated ${state.digitStreak}x. Differ recovery trade is ready.`;
-    } else {
-      $("signal-title").textContent = "Tracking digit repeats";
-      $("signal-copy").textContent = `${state.digitStreak}/${settings.differTrigger} repeats on digit ${state.repeatDigit ?? "--"}.`;
-    }
+  // Copilot AI - use copilotSignal for display instead of old logic
+  if (state.copilotSignal) {
+    updateCopilotDisplay(state.copilotSignal);
   } else {
+    // Fallback to old logic if copilotSignal not available yet
+    const ready = checkEntryReady(settings);
+    if ($("entry-ready")) {
+      $("entry-ready").textContent = ready ? "ENTRY READY" : "WAITING";
+      $("entry-ready").classList.toggle("ready", ready);
+    }
+
+    if (settings.contractMode === "odds_even") {
+      if (state.oddStreak >= preferred) {
+        $("signal-title").textContent = "Strong odds signal";
+        $("signal-copy").textContent = `${state.oddStreak} straight Odds detected. ${contractLabel(settings)} trade is ready when Run Bot is active.`;
+      } else if (state.oddStreak >= Math.max(preferred - 1, 1)) {
+        $("signal-title").textContent = "Signal building";
+        $("signal-copy").textContent = `${state.oddStreak}/${preferred} Odds. One more Odd can complete your setup.`;
+      } else {
+        $("signal-title").textContent = "Scanning odds pressure";
+        $("signal-copy").textContent = `Waiting for a clean ${preferred} Odds streak before ${contractLabel(settings)} entry.`;
+      }
+    } else if (settings.contractMode === "differ") {
+      if (state.digitStreak >= settings.differTrigger) {
+        $("signal-title").textContent = "Differ trigger locked";
+        $("signal-copy").textContent = `Digit ${state.repeatDigit} repeated ${state.digitStreak}x. Differ recovery trade is ready.`;
+      } else {
+        $("signal-title").textContent = "Tracking digit repeats";
+        $("signal-copy").textContent = `${state.digitStreak}/${settings.differTrigger} repeats on digit ${state.repeatDigit ?? "--"}.`;
+      }
+    } else {
     const sample = state.digitHistory.slice(-settings.ouSample);
     const under = sample.filter((d) => d < settings.barrier).length;
     const over = sample.filter((d) => d > settings.barrier).length;
@@ -1267,6 +1357,7 @@ function updateAnalyzer(settings) {
     }
     $("signal-title").textContent = ready ? "Barrier bias confirmed" : "Over/Under analysis";
     $("signal-copy").textContent = ai.signal + (ready ? " — entry quality is high." : " — waiting for stronger bias.");
+    }
   }
 
   const ranked = getRankedMarkets(settings);

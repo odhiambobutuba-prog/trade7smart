@@ -2832,6 +2832,8 @@ function initButubaPreloader() {
           pre.classList.add("hide");
           setTimeout(() => pre.remove(), 600);
         }
+        // Hide the app loader as well
+        hideLoader();
       }, 800);
     }
   }, 400);

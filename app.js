@@ -2881,6 +2881,8 @@ $("save-token").addEventListener("change", () => {
   }
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+
 loadSavedSettings();
 renderWatchlist();
 syncStrategyBuilder("main");
@@ -3584,3 +3586,5 @@ if ("serviceWorker" in navigator) {
     .then((registration) => registration.update?.())
     .catch(() => {});
 }
+
+}); // end DOMContentLoaded

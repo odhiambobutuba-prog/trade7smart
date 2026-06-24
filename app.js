@@ -528,6 +528,97 @@ function contractModeLabel(mode) {
   return "Odd / Even";
 }
 
+// Copilot AI - Real-time tick analysis and trade recommendations
+function copilotAnalyzeTick(tick, symbol, settings) {
+  const quote = Number(tick.quote);
+  const digit = Number(quote.toFixed(2).replace(".", "").slice(-1));
+  const recentDigits = state.digitHistory.slice(-20);
+  
+  // Trend analysis
+  const last5 = recentDigits.slice(-5);
+  const first5avg = last5.slice(0, 2).reduce((a, b) => a + b, 0) / 2;
+  const last5avg = last5.slice(-2).reduce((a, b) => a + b, 0) / 2;
+  let trend = "FLAT";
+  let trendDirection = 0;
+  if (last5avg > first5avg + 0.5) {
+    trend = "RISING";
+    trendDirection = 1;
+  } else if (last5avg < first5avg - 0.5) {
+    trend = "FALLING";
+    trendDirection = -1;
+  }
+  
+  // Odd/Even analysis
+  const oddStreak = state.oddStreak;
+  const oddSignal = oddStreak >= settings.preferredOdds;
+  const oddRecommendation = oddSignal ? (settings.tradeDirection === "DIGITEVEN" ? "EVEN" : "ODD") : null;
+  
+  // Differ analysis
+  const digitStreak = state.digitStreak;
+  const differSignal = digitStreak >= settings.differTrigger;
+  const differRecommendation = differSignal ? "DIFFER" : null;
+  
+  // Over/Under analysis
+  const sample = state.digitHistory.slice(-settings.ouSample);
+  const under = sample.filter((d) => d < settings.barrier).length;
+  const over = sample.filter((d) => d > settings.barrier).length;
+  const underPct = Math.round((under / sample.length) * 100);
+  const overPct = Math.round((over / sample.length) * 100);
+  const ouSignal = overPct >= settings.ouMinBias || underPct >= settings.ouMinBias;
+  const ouRecommendation = ouSignal ? (overPct >= underPct ? "OVER" : "UNDER") : null;
+  
+  // Rise/Fall analysis (based on trend)
+  const rfRecommendation = trendDirection !== 0 ? (trendDirection > 0 ? "RISE" : "FALL") : null;
+  
+  // Overall recommendation based on contract mode
+  let recommendation = null;
+  let signalStrength = 0;
+  
+  switch (settings.contractMode) {
+    case "odds_even":
+      recommendation = oddRecommendation;
+      signalStrength = oddStreak / settings.preferredOdds;
+      break;
+    case "differ":
+      recommendation = differRecommendation;
+      signalStrength = digitStreak / settings.differTrigger;
+      break;
+    case "over_under":
+      recommendation = ouRecommendation;
+      signalStrength = Math.max(overPct, underPct) / 100;
+      break;
+    case "rise_fall":
+      recommendation = rfRecommendation;
+      signalStrength = Math.abs(trendDirection);
+      break;
+  }
+  
+  // Copilot confidence (no gating, just for display)
+  const confidence = Math.min(100, Math.round(signalStrength * 100));
+  
+  return {
+    symbol,
+    digit,
+    trend,
+    trendDirection,
+    oddStreak,
+    oddSignal,
+    oddRecommendation,
+    digitStreak,
+    differSignal,
+    differRecommendation,
+    underPct,
+    overPct,
+    ouSignal,
+    ouRecommendation,
+    rfRecommendation,
+    recommendation,
+    confidence,
+    signalStrength,
+    timestamp: Date.now()
+  };
+}
+
 function computeMarketAi(stat, settings) {
   const mode = settings.contractMode;
   if (mode === "odds_even") {
@@ -824,11 +915,7 @@ function canPlaceTrade(stake, settings) {
     return false;
   }
 
-  const aiScore = state.lastAiScore || 0;
-  if (state.running && state.aiAutoEnabled && aiScore < 80) {
-    $("bot-state").textContent = `AI ${aiScore}% — waiting for 80%`;
-    return false;
-  }
+  // Copilot AI - no confidence gating, trades execute directly on signals
   if (state.lossCount >= settings.maxRecoverySteps) {
     stopForRisk("Max recovery steps reached.");
     return false;
@@ -1691,18 +1778,18 @@ function renderAiRecommendation(digits) {
   const card = $("da-ai-card");
   card.classList.toggle("ready", score >= 55);
 
-  // Confidence bar + gate badge
+  // Confidence bar + gate badge (removed - no longer restricts trades)
   const confBar = $("analyzer-conf-bar");
   const confPct = $("analyzer-conf-pct");
   const confGate = $("analyzer-conf-gate");
   if (confBar) {
     confBar.style.width = `${score}%`;
-    confBar.style.background = score >= 80 ? "#22c55e" : score >= 55 ? "#fbbf24" : "#f87171";
+    confBar.style.background = "#22c55e";
   }
   if (confPct) confPct.textContent = `${score}%`;
   if (confGate) {
-    confGate.textContent = score >= 80 ? "✅ READY" : `NEED ${80 - score}% MORE`;
-    confGate.classList.toggle("gate-ready", score >= 80);
+    confGate.textContent = "✅ ALWAYS READY";
+    confGate.classList.add("gate-ready");
   }
 
   // Trend arrow

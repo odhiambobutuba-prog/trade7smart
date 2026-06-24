@@ -2808,9 +2808,10 @@ function applyConnectionSettings() {
   updateDashboard();
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+function _init() {
+try {
 
-$("strategy-contract-mode").addEventListener("change", () => syncStrategyBuilder("builder"));
+$("strategy-contract-mode")?.addEventListener("change", () => syncStrategyBuilder("builder"));
 document.querySelectorAll(".contract-tab").forEach((tab) => {
   tab.addEventListener("click", () => setContractMode(tab.dataset.mode));
 });
@@ -2819,7 +2820,7 @@ document.querySelectorAll(".contract-tab").forEach((tab) => {
   if (el) el.addEventListener("input", updateDashboard);
   if (el) el.addEventListener("change", updateDashboard);
 });
-$("connect-button").addEventListener("click", connectAccount);
+$("connect-button")?.addEventListener("click", connectAccount);
 $("start-bot")?.addEventListener("click", startBot);
 $("ai-run-bot")?.addEventListener("click", aiRunBot);
 $("stop-bot")?.addEventListener("click", stopBot);
@@ -2840,43 +2841,43 @@ $("aqa-reset")?.addEventListener("click", () => { resetDailyStats(); toast("Stat
 $("aqa-pause")?.addEventListener("click", stopBot);
 $("aqa-export")?.addEventListener("click", () => toast("Export coming soon.", "good"));
 $("aqa-report")?.addEventListener("click", () => document.querySelector(".sb-nav-btn[data-tab='stats']")?.click());
-$("clear-journal").addEventListener("click", () => ($("journal").innerHTML = ""));
-$("symbol").addEventListener("change", () => {
+$("clear-journal")?.addEventListener("click", () => { const j = $("journal"); if(j) j.innerHTML = ""; });
+$("symbol")?.addEventListener("change", () => {
   applyConnectionSettings();
   loadFullChartHistory();
 });
-$("account-target").addEventListener("change", applyConnectionSettings);
-$("app-id").addEventListener("change", applyConnectionSettings);
-$("preferred-odds").addEventListener("change", () => syncStrategyBuilder("main"));
-$("stake").addEventListener("input", () => {
+$("account-target")?.addEventListener("change", applyConnectionSettings);
+$("app-id")?.addEventListener("change", applyConnectionSettings);
+$("preferred-odds")?.addEventListener("change", () => syncStrategyBuilder("main"));
+$("stake")?.addEventListener("input", () => {
   if (!state.running) state.currentStake = getSettings().stake;
   updateDashboard();
 });
-$("shield").addEventListener("input", updateDashboard);
-$("profit-buffer").addEventListener("input", () => syncStrategyBuilder("main"));
-$("recovery-start-losses").addEventListener("input", () => syncStrategyBuilder("main"));
-$("max-recovery-steps").addEventListener("input", () => syncStrategyBuilder("main"));
-$("max-stake").addEventListener("input", updateDashboard);
-$("daily-profit-target").addEventListener("input", updateDashboard);
-$("daily-loss-limit").addEventListener("input", updateDashboard);
-$("min-balance-protection").addEventListener("input", updateDashboard);
-$("strategy-preset").addEventListener("change", applyPreset);
-$("trigger-count").addEventListener("change", () => syncStrategyBuilder("builder"));
-$("trade-direction").addEventListener("change", updateDashboard);
-$("strategy-recovery-start").addEventListener("input", () => syncStrategyBuilder("builder"));
-$("strategy-max-recovery").addEventListener("input", () => syncStrategyBuilder("builder"));
-$("strategy-profit-buffer").addEventListener("input", () => syncStrategyBuilder("builder"));
+$("shield")?.addEventListener("input", updateDashboard);
+$("profit-buffer")?.addEventListener("input", () => syncStrategyBuilder("main"));
+$("recovery-start-losses")?.addEventListener("input", () => syncStrategyBuilder("main"));
+$("max-recovery-steps")?.addEventListener("input", () => syncStrategyBuilder("main"));
+$("max-stake")?.addEventListener("input", updateDashboard);
+$("daily-profit-target")?.addEventListener("input", updateDashboard);
+$("daily-loss-limit")?.addEventListener("input", updateDashboard);
+$("min-balance-protection")?.addEventListener("input", updateDashboard);
+$("strategy-preset")?.addEventListener("change", applyPreset);
+$("trigger-count")?.addEventListener("change", () => syncStrategyBuilder("builder"));
+$("trade-direction")?.addEventListener("change", updateDashboard);
+$("strategy-recovery-start")?.addEventListener("input", () => syncStrategyBuilder("builder"));
+$("strategy-max-recovery")?.addEventListener("input", () => syncStrategyBuilder("builder"));
+$("strategy-profit-buffer")?.addEventListener("input", () => syncStrategyBuilder("builder"));
 $("run-backtest")?.addEventListener("click", runBacktest);
-$("compact-toggle").addEventListener("click", toggleCompactMode);
-$("mini-toggle").addEventListener("click", toggleMiniMode);
-$("sound-toggle").addEventListener("click", toggleSound);
-$("notify-toggle").addEventListener("click", requestNotifications);
-$("ai-auto-toggle").addEventListener("click", toggleAiAuto);
-$("use-best-market").addEventListener("click", useBestMarket);
-if ($("ou-auto-barrier")) $("ou-auto-barrier").addEventListener("click", pickAutoBarrier);
-$("session-target-profit").addEventListener("input", updateDashboard);
-$("session-max-loss").addEventListener("input", updateDashboard);
-$("save-token").addEventListener("change", () => {
+$("compact-toggle")?.addEventListener("click", toggleCompactMode);
+$("mini-toggle")?.addEventListener("click", toggleMiniMode);
+$("sound-toggle")?.addEventListener("click", toggleSound);
+$("notify-toggle")?.addEventListener("click", requestNotifications);
+$("ai-auto-toggle")?.addEventListener("click", toggleAiAuto);
+$("use-best-market")?.addEventListener("click", useBestMarket);
+$("ou-auto-barrier")?.addEventListener("click", pickAutoBarrier);
+$("session-target-profit")?.addEventListener("input", updateDashboard);
+$("session-max-loss")?.addEventListener("input", updateDashboard);
+$("save-token")?.addEventListener("change", () => {
   if (!$("save-token").checked) {
     localStorage.removeItem("trade7smart_token");
     toast("Saved token removed.");
@@ -3583,9 +3584,16 @@ connectPublicScanner();
 setTimeout(hideLoader, 3000);
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js?v=cursor-ai-20260620")
+  navigator.serviceWorker.register("./sw.js?v=v11-fix-20260624")
     .then((registration) => registration.update?.())
     .catch(() => {});
 }
 
-}); // end DOMContentLoaded
+} catch(e) { console.error("_init error:", e); }
+} // end _init
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", _init);
+} else {
+  _init();
+}

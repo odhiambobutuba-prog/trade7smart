@@ -1,10 +1,10 @@
-const CACHE = "trade7smart-v9-final-20260624";
+const CACHE = "trade7smart-v11-fix-20260624";
 const FILES = [
   "./",
   "./index.html",
-  "./styles.css?v=v9-final-20260624",
-  "./app.js?v=v9-final-20260624",
-  "./manifest.webmanifest?v=v9-final-20260624",
+  "./styles.css?v=v11-fix-20260624",
+  "./app.js?v=v11-fix-20260624",
+  "./manifest.webmanifest?v=v11-fix-20260624",
   "./icon.svg"
 ];
 

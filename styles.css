@@ -4754,3 +4754,42 @@ body.light-theme small {
   .da-predict-grid { grid-template-columns: 1fr; }
   .da-streaks { grid-template-columns: 1fr; }
 }
+
+/* ── TOP STICKY TAB NAV FIX ─────────────────────────────────────────────── */
+.top-section-nav {
+  position: sticky !important;
+  top: 0;
+  z-index: 200 !important;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  gap: 6px !important;
+  padding: 8px 12px !important;
+  margin: 0 0 10px 0 !important;
+  background: rgba(6, 10, 16, 0.97) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.09) !important;
+  border-radius: 0 !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.top-section-nav::-webkit-scrollbar { display: none; }
+.top-section-nav .nav-pill {
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+  font-size: 0.72rem !important;
+  padding: 0 10px !important;
+  min-height: 32px !important;
+}
+
+/* On mobile, hide bottom tab bar since top nav handles everything */
+@media (max-width: 720px) {
+  .bottom-tab-bar { display: none !important; }
+  .terminal-shell { padding-bottom: 16px !important; }
+}
+/* On desktop, also show top nav */
+@media (min-width: 721px) {
+  .top-section-nav { display: flex !important; }
+}
+/* ─────────────────────────────────────────────────────────────────────────── */

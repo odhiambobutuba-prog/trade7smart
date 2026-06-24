@@ -130,6 +130,17 @@
         </section>
       </div>
 
+      <nav class="section-nav top-section-nav" id="main-tab-nav" aria-label="Console sections">
+        <button type="button" class="nav-pill active" data-tab="home-tab-key">🏠 Home</button>
+        <button type="button" class="nav-pill" data-tab="ai-scanner-hero">📡 Scanner</button>
+        <button type="button" class="nav-pill" data-tab="hero-grid">🎯 Analyzer</button>
+        <button type="button" class="nav-pill" data-tab="charts-section">📈 Charts</button>
+        <button type="button" class="nav-pill" data-tab="recovery">🛡️ Recovery</button>
+        <button type="button" class="nav-pill" data-tab="stats">📊 Stats</button>
+        <button type="button" class="nav-pill" data-tab="strategy">🧩 Strategy</button>
+        <button type="button" class="nav-pill" data-tab="pro-ai">🤖 Pro AI</button>
+      </nav>
+
       </section>
 
       <section class="home-tab" id="home-tab">
@@ -288,18 +299,7 @@
             </div>
           </div>
         </div>
-      </section>
 
-      <nav class="section-nav" aria-label="Console sections">
-        <button type="button" class="nav-pill active" data-tab="home-tab-key">Home</button>
-        <button type="button" class="nav-pill" data-tab="ai-scanner-hero">Scanner</button>
-        <button type="button" class="nav-pill" data-tab="hero-grid">Analyzer</button>
-        <button type="button" class="nav-pill" data-tab="charts-section">Charts</button>
-        <button type="button" class="nav-pill" data-tab="recovery">Recovery</button>
-        <button type="button" class="nav-pill" data-tab="stats">Stats</button>
-        <button type="button" class="nav-pill" data-tab="strategy">Strategy</button>
-        <button type="button" class="nav-pill" data-tab="pro-ai">Pro AI</button>
-      </nav>
       <section class="ai-scanner-hero" id="ai-scanner-hero">
         <article class="panel ai-scanner-panel">
           <div class="panel-head">
@@ -1632,25 +1632,31 @@
           var el = document.getElementById(id);
           if (!el) return;
           if (show.indexOf(id) > -1) {
-            el.style.cssText = el.style.cssText.replace(/display\s*:[^;]+;?/gi,"");
+            el.style.removeProperty("display");
             el.classList.remove("tab-hidden");
           } else {
             el.style.setProperty("display","none","important");
             el.classList.add("tab-hidden");
           }
         });
+        // Always keep nav visible
         document.querySelectorAll(".section-nav").forEach(function(el){
-          el.style.cssText = el.style.cssText.replace(/display\s*:[^;]+;?/gi,"");
+          el.style.removeProperty("display");
           el.classList.remove("tab-hidden");
         });
+        // Active state on all tab buttons
         document.querySelectorAll(".bt-tab,.nav-pill").forEach(function(b){
           b.classList.toggle("active", b.getAttribute("data-tab")===key);
         });
+        // Re-render bots so they always show
+        if (key === "strategy" && typeof renderStrategyBotGrid === "function") renderStrategyBotGrid();
+        if (key === "pro-ai" && typeof renderProAiBotGrid === "function") renderProAiBotGrid();
         var shell = document.querySelector(".terminal-shell");
         if (shell) shell.scrollTop = 0;
       }
 
       function init() {
+        // Clone to strip all old listeners
         document.querySelectorAll(".bt-tab,.nav-pill").forEach(function(btn) {
           var clone = btn.cloneNode(true);
           btn.parentNode.replaceChild(clone, btn);
@@ -1659,8 +1665,10 @@
         switchTab("home-tab-key");
       }
 
+      // Run immediately, then again after app.js fully initialises
       init();
-      setTimeout(init, 1200);
+      setTimeout(init, 800);
+      setTimeout(init, 1800);
     })();
     </script>
   </body>

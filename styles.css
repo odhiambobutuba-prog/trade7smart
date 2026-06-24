@@ -750,7 +750,7 @@ select:focus {
 }
 
 .home-tab {
-  display: block !important;
+  /* display managed by tab switcher */
 }
 
 .ai-analyzer-panel {
@@ -1974,16 +1974,16 @@ html, body {
 }
 
 body {
-  overflow: hidden;
+  overflow: auto;
 }
 
 .terminal-shell {
-  height: 100dvh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   padding: 12px 16px;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .topbar,
@@ -1992,6 +1992,7 @@ body {
   flex-shrink: 0;
 }
 
+.home-tab,
 .ai-scanner-hero,
 .charts-section,
 .hero-grid,
@@ -1999,7 +2000,10 @@ body {
 .risk-grid,
 .analytics-grid,
 .scanner-grid,
-.bottom-grid {
+.bottom-grid,
+.strategy-section,
+#strategy,
+#pro-ai {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
@@ -4793,3 +4797,16 @@ body.light-theme small {
   .top-section-nav { display: flex !important; }
 }
 /* ─────────────────────────────────────────────────────────────────────────── */
+
+/* ── SECTION FLEX FIX ── */
+#strategy, #pro-ai {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+}
+.strategy-bot-grid, #pro-ai-bot-grid, #strategy-bot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}

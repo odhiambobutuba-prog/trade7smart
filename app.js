@@ -2787,8 +2787,7 @@ function showTab(tabKey) {
   // Re-render bot grids when those tabs are opened
   if (tabKey === "strategy" && typeof renderStrategyBotGrid === "function") renderStrategyBotGrid();
   if (tabKey === "pro-ai" && typeof renderProAiBotGrid === "function") renderProAiBotGrid();
-  const shell = document.querySelector(".terminal-shell");
-  if (shell) shell.scrollTop = 0;
+  window.scrollTo(0, 0);
 }
 
 function initSectionNav() {

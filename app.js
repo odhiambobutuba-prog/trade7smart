@@ -2747,14 +2747,14 @@ function startLiveClock() {
 }
 
 const TAB_GROUPS = {
-  "home-tab-key": ["home-tab"],
-  "ai-scanner-hero": ["ai-scanner-hero"],
-  "hero-grid": ["hero-grid"],
-  "charts-section": ["charts-section"],
-  recovery: ["pro-grid", "risk-grid"],
-  stats: ["analytics-grid", "scanner-grid", "bottom-grid"],
-  strategy: ["strategy"],
-  "pro-ai": ["pro-ai"],
+  "home-tab-key": ["home-tab", "bot-panel-anchor", "account-panel"],
+  "ai-scanner-hero": ["ai-scanner-hero", "bot-panel-anchor", "account-panel"],
+  "hero-grid": ["hero-grid", "bot-panel-anchor", "account-panel"],
+  "charts-section": ["charts-section", "bot-panel-anchor", "account-panel"],
+  recovery: ["pro-grid", "risk-grid", "bot-panel-anchor", "account-panel"],
+  stats: ["analytics-grid", "scanner-grid", "bottom-grid", "bot-panel-anchor", "account-panel"],
+  strategy: ["strategy", "bot-panel-anchor", "account-panel"],
+  "pro-ai": ["pro-ai", "bot-panel-anchor", "account-panel"],
 };
 
 function initSectionNav() {

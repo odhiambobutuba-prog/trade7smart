@@ -2747,17 +2747,16 @@ function startLiveClock() {
 }
 
 const TAB_GROUPS = {
-  "home-tab-key":    ["home-tab", "bot-panel-anchor"],
-  "ai-scanner-hero": ["ai-scanner-hero", "bot-panel-anchor"],
+  "home-tab-key":    ["home-tab"],
+  "ai-scanner-hero": ["ai-scanner-hero"],
   "hero-grid":       ["hero-grid", "bot-panel-anchor"],
-  "charts-section":  ["charts-section", "bot-panel-anchor"],
+  "charts-section":  ["charts-section"],
   recovery:          ["pro-grid", "risk-grid", "bot-panel-anchor"],
-  stats:             ["analytics-grid", "bottom-grid", "bot-panel-anchor"],
+  stats:             ["analytics-grid", "scanner-grid", "bottom-grid", "bot-panel-anchor"],
   strategy:          ["strategy", "bot-panel-anchor"],
   "pro-ai":          ["pro-ai", "bot-panel-anchor"],
 };
 
-// All sections that belong to tabs (deduplicated)
 const ALL_TAB_SECTIONS = [
   "home-tab",
   "ai-scanner-hero",
@@ -2773,26 +2772,24 @@ const ALL_TAB_SECTIONS = [
   "bot-panel-anchor",
 ];
 
-function initSectionNav() {
-  function showTab(tabKey) {
-    const activeIds = TAB_GROUPS[tabKey] || [];
-    ALL_TAB_SECTIONS.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.classList.toggle("tab-hidden", !activeIds.includes(id));
-      }
-    });
-    document.querySelectorAll(".nav-pill").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
-    document.querySelectorAll(".bt-tab").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
-    const shell = document.querySelector(".terminal-shell");
-    if (shell) shell.scrollTo({ top: 0 });
-  }
+function showTab(tabKey) {
+  const activeIds = TAB_GROUPS[tabKey] || [];
+  ALL_TAB_SECTIONS.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle("tab-hidden", !activeIds.includes(id));
+  });
+  document.querySelectorAll(".nav-pill").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
+  document.querySelectorAll(".bt-tab").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
+  // Always keep the section-nav bar visible
+  document.querySelectorAll(".section-nav").forEach((el) => el.classList.remove("tab-hidden"));
+  const shell = document.querySelector(".terminal-shell");
+  if (shell) shell.scrollTo({ top: 0 });
+}
 
+function initSectionNav() {
   document.querySelectorAll(".nav-pill, .bt-tab").forEach((pill) => {
     pill.addEventListener("click", () => showTab(pill.dataset.tab));
   });
-
-  // Initialize by showing home tab
   showTab("home-tab-key");
 }
 

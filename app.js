@@ -2746,52 +2746,42 @@ function startLiveClock() {
   setInterval(tick, 1000);
 }
 
-// ── TAB SYSTEM ──────────────────────────────────────────────────────────────
 const TAB_GROUPS = {
-  "home-tab-key":   ["home-tab"],
-  "ai-scanner-hero":["ai-scanner-hero", "scanner-grid"],
-  "hero-grid":      ["hero-grid", "bot-panel-anchor"],
-  "charts-section": ["charts-section"],
-  "recovery":       ["pro-grid", "risk-grid"],
-  "stats":          ["analytics-grid", "bottom-grid"],
-  "strategy":       ["strategy"],
-  "pro-ai":         ["pro-ai"],
+  "home-tab-key": ["home-tab", "bot-panel-anchor", "account-panel"],
+  "ai-scanner-hero": ["ai-scanner-hero", "bot-panel-anchor", "account-panel"],
+  "hero-grid": ["hero-grid", "bot-panel-anchor", "account-panel"],
+  "charts-section": ["charts-section", "bot-panel-anchor", "account-panel"],
+  recovery: ["pro-grid", "risk-grid", "bot-panel-anchor", "account-panel"],
+  stats: ["analytics-grid", "scanner-grid", "bottom-grid", "bot-panel-anchor", "account-panel"],
+  strategy: ["strategy", "bot-panel-anchor", "account-panel"],
+  "pro-ai": ["pro-ai", "bot-panel-anchor", "account-panel"],
 };
 
-const ALL_TAB_SECTIONS = [
-  "home-tab","ai-scanner-hero","hero-grid","charts-section",
-  "pro-grid","risk-grid","analytics-grid","scanner-grid",
-  "bottom-grid","strategy","pro-ai","bot-panel-anchor",
-];
-
-// Hide all sections immediately so page doesn't flash
-ALL_TAB_SECTIONS.forEach((id) => {
-  const el = document.getElementById(id);
-  if (el) el.style.display = "none";
-});
-
-function showTab(tabKey) {
-  const show = TAB_GROUPS[tabKey] || [];
-  ALL_TAB_SECTIONS.forEach((id) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.style.display = show.includes(id) ? "" : "none";
-  });
-  document.querySelectorAll(".nav-pill,.bt-tab").forEach((p) => {
-    p.classList.toggle("active", p.dataset.tab === tabKey);
-  });
-  if (tabKey === "strategy" && typeof renderStrategyBotGrid === "function") renderStrategyBotGrid();
-  if (tabKey === "pro-ai" && typeof renderProAiBotGrid === "function") renderProAiBotGrid();
-  window.scrollTo(0, 0);
-}
-
 function initSectionNav() {
+  const allSectionIds = Object.values(TAB_GROUPS).flat();
+
+  function showTab(tabKey) {
+    const activeIds = TAB_GROUPS[tabKey] || [];
+    allSectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        // Only hide if it's not in the active group
+        el.classList.toggle("tab-hidden", !activeIds.includes(id));
+      }
+    });
+    document.querySelectorAll(".nav-pill").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
+    document.querySelectorAll(".bt-tab").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
+    const shell = document.querySelector(".terminal-shell");
+    if (shell) shell.scrollTo({ top: 0 });
+  }
+
   document.querySelectorAll(".nav-pill, .bt-tab").forEach((pill) => {
     pill.addEventListener("click", () => showTab(pill.dataset.tab));
   });
+
+  // Initialize by showing home tab
   showTab("home-tab-key");
 }
-// ────────────────────────────────────────────────────────────────────────────
 
 
 

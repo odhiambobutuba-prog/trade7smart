@@ -130,16 +130,7 @@
         </section>
       </div>
 
-      <nav class="section-nav top-section-nav" id="main-tab-nav" aria-label="Console sections">
-        <button type="button" class="nav-pill active" data-tab="home-tab-key">🏠 Home</button>
-        <button type="button" class="nav-pill" data-tab="ai-scanner-hero">📡 Scanner</button>
-        <button type="button" class="nav-pill" data-tab="hero-grid">🎯 Analyzer</button>
-        <button type="button" class="nav-pill" data-tab="charts-section">📈 Charts</button>
-        <button type="button" class="nav-pill" data-tab="recovery">🛡️ Recovery</button>
-        <button type="button" class="nav-pill" data-tab="stats">📊 Stats</button>
-        <button type="button" class="nav-pill" data-tab="strategy">🧩 Strategy</button>
-        <button type="button" class="nav-pill" data-tab="pro-ai">🤖 Pro AI</button>
-      </nav>
+      </section>
 
       <section class="home-tab" id="home-tab">
         <button id="home-connect-button" class="ghost-button home-connect-btn" type="button">Connect</button>
@@ -297,7 +288,18 @@
             </div>
           </div>
         </div>
+      </section>
 
+      <nav class="section-nav" aria-label="Console sections">
+        <button type="button" class="nav-pill active" data-tab="home-tab-key">Home</button>
+        <button type="button" class="nav-pill" data-tab="ai-scanner-hero">Scanner</button>
+        <button type="button" class="nav-pill" data-tab="hero-grid">Analyzer</button>
+        <button type="button" class="nav-pill" data-tab="charts-section">Charts</button>
+        <button type="button" class="nav-pill" data-tab="recovery">Recovery</button>
+        <button type="button" class="nav-pill" data-tab="stats">Stats</button>
+        <button type="button" class="nav-pill" data-tab="strategy">Strategy</button>
+        <button type="button" class="nav-pill" data-tab="pro-ai">Pro AI</button>
+      </nav>
       <section class="ai-scanner-hero" id="ai-scanner-hero">
         <article class="panel ai-scanner-panel">
           <div class="panel-head">
@@ -1610,13 +1612,5 @@
     <div id="toast-layer" class="toast-layer" aria-live="polite"></div>
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
     <script src="./app.js?v=round7-analyzer-20260620"></script>
-    <script>
-    // Re-init tab listeners after page fully loads (picks up top nav + bottom bar)
-    window.addEventListener("load", function() {
-      setTimeout(function() {
-        if (typeof initSectionNav === "function") initSectionNav();
-      }, 300);
-    });
-    </script>
   </body>
 </html>

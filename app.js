@@ -209,6 +209,7 @@ async function connectPublicScanner() {
     hideLoader();
     updateDashboard();
   } catch (error) {
+    hideLoader();
     setTimeout(connectPublicScanner, 3000);
   }
 }
@@ -3576,7 +3577,7 @@ $("reset-daily-stats")?.addEventListener("click", () => {
 });
 
 connectPublicScanner();
-setTimeout(hideLoader, 850);
+setTimeout(hideLoader, 3000);
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js?v=cursor-ai-20260620")

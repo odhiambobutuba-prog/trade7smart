@@ -2764,7 +2764,10 @@ function initSectionNav() {
     const activeIds = TAB_GROUPS[tabKey] || [];
     allSectionIds.forEach((id) => {
       const el = document.getElementById(id);
-      if (el) el.classList.toggle("tab-hidden", !activeIds.includes(id));
+      if (el) {
+        // Only hide if it's not in the active group
+        el.classList.toggle("tab-hidden", !activeIds.includes(id));
+      }
     });
     document.querySelectorAll(".nav-pill").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
     document.querySelectorAll(".bt-tab").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
@@ -2776,6 +2779,7 @@ function initSectionNav() {
     pill.addEventListener("click", () => showTab(pill.dataset.tab));
   });
 
+  // Initialize by showing home tab
   showTab("home-tab-key");
 }
 

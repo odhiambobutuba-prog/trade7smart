@@ -201,7 +201,7 @@ label span,
 }
 
 .section-nav {
-  display: flex;
+  display: flex !important;
   flex-wrap: wrap;
   gap: 8px;
   padding: 10px 12px;
@@ -686,10 +686,64 @@ select:focus {
   font-weight: 900;
 }
 
+.strategy-section {
+  display: block !important;
+}
+
+.pro-ai-section {
+  display: block !important;
+}
+
+.ai-scanner-hero {
+  display: grid !important;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 12px;
+}
+
 .hero-grid {
-  display: grid;
+  display: grid !important;
   grid-template-columns: 1.35fr 0.95fr 1.4fr;
   gap: 12px;
+}
+
+.charts-section {
+  display: grid !important;
+  grid-template-columns: 1.2fr 0.9fr 1fr;
+  gap: 12px;
+}
+
+.pro-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.risk-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.analytics-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.scanner-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.bottom-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.home-tab {
+  display: block !important;
 }
 
 .ai-analyzer-panel {
@@ -1320,7 +1374,6 @@ body.compact-mode .control-strip {
 body.mini-mode .risk-grid,
 body.mini-mode .analytics-grid,
 body.mini-mode .charts-section,
-body.mini-mode .section-nav,
 body.mini-mode .bottom-grid,
 body.mini-mode .recovery-settings-panel,
 body.mini-mode .simulator-panel,
@@ -1951,7 +2004,7 @@ body {
 }
 
 .section-nav {
-  display: flex;
+  display: flex !important;
   gap: 6px;
   overflow-x: auto;
 }
@@ -3829,7 +3882,7 @@ body {
 
 /* ===== Home Tab ===== */
 .home-tab {
-  display: flex;
+  display: flex !important;
   flex-direction: column;
   gap: 14px;
 }
@@ -3933,7 +3986,7 @@ body {
 /* hide old top nav-pills row on mobile, bottom bar takes over */
 @media (max-width: 720px) {
   .section-nav {
-    display: none;
+    display: flex !important;
   }
   .terminal-shell {
     padding-bottom: 70px;

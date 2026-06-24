@@ -2808,6 +2808,8 @@ function applyConnectionSettings() {
   updateDashboard();
 }
 
+document.addEventListener("DOMContentLoaded", function() {
+
 $("strategy-contract-mode").addEventListener("change", () => syncStrategyBuilder("builder"));
 document.querySelectorAll(".contract-tab").forEach((tab) => {
   tab.addEventListener("click", () => setContractMode(tab.dataset.mode));
@@ -2881,7 +2883,6 @@ $("save-token").addEventListener("change", () => {
   }
 });
 
-document.addEventListener("DOMContentLoaded", function() {
 
 loadSavedSettings();
 renderWatchlist();

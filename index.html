@@ -20,6 +20,27 @@
   <div><strong>Trade7Smart</strong><span>Initializing AI engine</span><i></i></div>
 </div>
 
+<script>
+  // Guaranteed loader dismissal — runs inline, zero dependencies on app.js or CDN
+  (function() {
+    function forceHide() {
+      document.body.classList.add('loaded');
+      var el = document.getElementById('app-loader');
+      if (el) el.style.display = 'none';
+      var pre = document.getElementById('butuba-preloader');
+      if (pre) pre.style.display = 'none';
+    }
+    // Primary: hide 1s after DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() { setTimeout(forceHide, 1000); });
+    } else {
+      setTimeout(forceHide, 1000);
+    }
+    // Hard fallback: no matter what, gone by 4s
+    setTimeout(forceHide, 4000);
+  })();
+</script>
+
 <!-- ===== SIDEBAR ===== -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-brand">

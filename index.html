@@ -1612,5 +1612,56 @@
     <div id="toast-layer" class="toast-layer" aria-live="polite"></div>
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
     <script src="./app.js?v=round7-analyzer-20260620"></script>
+    <script>
+    (function() {
+      var TAB_MAP = {
+        "home-tab-key":    ["home-tab"],
+        "ai-scanner-hero": ["ai-scanner-hero"],
+        "hero-grid":       ["hero-grid","bot-panel-anchor"],
+        "charts-section":  ["charts-section"],
+        "recovery":        ["pro-grid","risk-grid","bot-panel-anchor"],
+        "stats":           ["analytics-grid","scanner-grid","bottom-grid","bot-panel-anchor"],
+        "strategy":        ["strategy","bot-panel-anchor"],
+        "pro-ai":          ["pro-ai","bot-panel-anchor"]
+      };
+      var ALL_SECTIONS = ["home-tab","ai-scanner-hero","hero-grid","charts-section","pro-grid","risk-grid","analytics-grid","scanner-grid","bottom-grid","strategy","pro-ai","bot-panel-anchor"];
+
+      function switchTab(key) {
+        var show = TAB_MAP[key] || [];
+        ALL_SECTIONS.forEach(function(id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          if (show.indexOf(id) > -1) {
+            el.style.cssText = el.style.cssText.replace(/display\s*:[^;]+;?/gi,"");
+            el.classList.remove("tab-hidden");
+          } else {
+            el.style.setProperty("display","none","important");
+            el.classList.add("tab-hidden");
+          }
+        });
+        document.querySelectorAll(".section-nav").forEach(function(el){
+          el.style.cssText = el.style.cssText.replace(/display\s*:[^;]+;?/gi,"");
+          el.classList.remove("tab-hidden");
+        });
+        document.querySelectorAll(".bt-tab,.nav-pill").forEach(function(b){
+          b.classList.toggle("active", b.getAttribute("data-tab")===key);
+        });
+        var shell = document.querySelector(".terminal-shell");
+        if (shell) shell.scrollTop = 0;
+      }
+
+      function init() {
+        document.querySelectorAll(".bt-tab,.nav-pill").forEach(function(btn) {
+          var clone = btn.cloneNode(true);
+          btn.parentNode.replaceChild(clone, btn);
+          clone.addEventListener("click", function(){ switchTab(clone.getAttribute("data-tab")); });
+        });
+        switchTab("home-tab-key");
+      }
+
+      init();
+      setTimeout(init, 1200);
+    })();
+    </script>
   </body>
 </html>

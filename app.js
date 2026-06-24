@@ -2764,27 +2764,15 @@ const ALL_TAB_SECTIONS = [
 ];
 
 function showTab(tabKey) {
-  const activeIds = TAB_GROUPS[tabKey] || [];
+  const show = TAB_GROUPS[tabKey] || [];
   ALL_TAB_SECTIONS.forEach((id) => {
     const el = document.getElementById(id);
     if (!el) return;
-    if (activeIds.includes(id)) {
-      el.style.removeProperty("display");
-      el.classList.remove("tab-hidden");
-    } else {
-      el.style.setProperty("display", "none", "important");
-      el.classList.add("tab-hidden");
-    }
-  });
-  // Always keep navs visible
-  document.querySelectorAll(".section-nav").forEach((el) => {
-    el.style.removeProperty("display");
-    el.classList.remove("tab-hidden");
+    el.style.display = show.includes(id) ? "" : "none";
   });
   document.querySelectorAll(".nav-pill,.bt-tab").forEach((p) => {
     p.classList.toggle("active", p.dataset.tab === tabKey);
   });
-  // Re-render bot grids when those tabs are opened
   if (tabKey === "strategy" && typeof renderStrategyBotGrid === "function") renderStrategyBotGrid();
   if (tabKey === "pro-ai" && typeof renderProAiBotGrid === "function") renderProAiBotGrid();
   window.scrollTo(0, 0);

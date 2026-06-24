@@ -1611,14 +1611,23 @@
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
     <script src="./app.js?v=round7-analyzer-20260620"></script>
     <script>
-    // Runs after app.js — re-attaches tab listeners and shows home tab cleanly
-    (function waitForApp() {
-      if (typeof showTab !== "function" || typeof initSectionNav !== "function") {
-        setTimeout(waitForApp, 50);
-        return;
+    // Re-init tabs after everything loads to pick up top nav buttons
+    (function() {
+      function reInit() {
+        if (typeof showTab !== "function") return;
+        // Attach click listeners to ALL tab buttons (top nav + bottom bar)
+        document.querySelectorAll(".nav-pill, .bt-tab").forEach(function(btn) {
+          var fresh = btn.cloneNode(true);
+          btn.parentNode.replaceChild(fresh, btn);
+          fresh.addEventListener("click", function() { showTab(fresh.dataset.tab); });
+        });
+        showTab("home-tab-key");
       }
-      // Re-init to pick up the new nav buttons at the top
-      initSectionNav();
+      // Run at 500ms and 1500ms after page load
+      window.addEventListener("load", function() {
+        setTimeout(reInit, 500);
+        setTimeout(reInit, 1500);
+      });
     })();
     </script>
   </body>

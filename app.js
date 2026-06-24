@@ -2751,39 +2751,44 @@ const TAB_GROUPS = {
   "ai-scanner-hero": ["ai-scanner-hero"],
   "hero-grid":       ["hero-grid", "bot-panel-anchor"],
   "charts-section":  ["charts-section"],
-  recovery:          ["pro-grid", "risk-grid", "bot-panel-anchor"],
-  stats:             ["analytics-grid", "scanner-grid", "bottom-grid", "bot-panel-anchor"],
-  strategy:          ["strategy", "bot-panel-anchor"],
+  "recovery":        ["pro-grid", "risk-grid", "bot-panel-anchor"],
+  "stats":           ["analytics-grid", "scanner-grid", "bottom-grid", "bot-panel-anchor"],
+  "strategy":        ["strategy", "bot-panel-anchor"],
   "pro-ai":          ["pro-ai", "bot-panel-anchor"],
 };
 
 const ALL_TAB_SECTIONS = [
-  "home-tab",
-  "ai-scanner-hero",
-  "hero-grid",
-  "charts-section",
-  "pro-grid",
-  "risk-grid",
-  "analytics-grid",
-  "scanner-grid",
-  "bottom-grid",
-  "strategy",
-  "pro-ai",
-  "bot-panel-anchor",
+  "home-tab","ai-scanner-hero","hero-grid","charts-section",
+  "pro-grid","risk-grid","analytics-grid","scanner-grid",
+  "bottom-grid","strategy","pro-ai","bot-panel-anchor",
 ];
 
 function showTab(tabKey) {
   const activeIds = TAB_GROUPS[tabKey] || [];
   ALL_TAB_SECTIONS.forEach((id) => {
     const el = document.getElementById(id);
-    if (el) el.classList.toggle("tab-hidden", !activeIds.includes(id));
+    if (!el) return;
+    if (activeIds.includes(id)) {
+      el.style.removeProperty("display");
+      el.classList.remove("tab-hidden");
+    } else {
+      el.style.setProperty("display", "none", "important");
+      el.classList.add("tab-hidden");
+    }
   });
-  document.querySelectorAll(".nav-pill").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
-  document.querySelectorAll(".bt-tab").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
-  // Always keep the section-nav bar visible
-  document.querySelectorAll(".section-nav").forEach((el) => el.classList.remove("tab-hidden"));
+  // Always keep navs visible
+  document.querySelectorAll(".section-nav").forEach((el) => {
+    el.style.removeProperty("display");
+    el.classList.remove("tab-hidden");
+  });
+  document.querySelectorAll(".nav-pill,.bt-tab").forEach((p) => {
+    p.classList.toggle("active", p.dataset.tab === tabKey);
+  });
+  // Re-render bot grids when those tabs are opened
+  if (tabKey === "strategy" && typeof renderStrategyBotGrid === "function") renderStrategyBotGrid();
+  if (tabKey === "pro-ai" && typeof renderProAiBotGrid === "function") renderProAiBotGrid();
   const shell = document.querySelector(".terminal-shell");
-  if (shell) shell.scrollTo({ top: 0 });
+  if (shell) shell.scrollTop = 0;
 }
 
 function initSectionNav() {

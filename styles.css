@@ -4796,3 +4796,31 @@ body.light-theme small {
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 12px;
 }
+
+
+/* ════════════════════════════════════════════════════
+   FINAL TAB OVERRIDE — wins over all earlier rules
+   ════════════════════════════════════════════════════ */
+
+/* Make sure body & shell don't clip content */
+body { overflow-y: auto !important; }
+.terminal-shell { overflow: visible !important; height: auto !important; }
+
+/* Tab hidden = gone */
+#home-tab[style*="display: none"],
+#ai-scanner-hero[style*="display: none"],
+#hero-grid[style*="display: none"],
+#charts-section[style*="display: none"],
+#pro-grid[style*="display: none"],
+#risk-grid[style*="display: none"],
+#analytics-grid[style*="display: none"],
+#scanner-grid[style*="display: none"],
+#bottom-grid[style*="display: none"],
+#strategy[style*="display: none"],
+#pro-ai[style*="display: none"],
+#bot-panel-anchor[style*="display: none"] {
+  display: none !important;
+}
+
+/* Nav always visible */
+.section-nav, .top-section-nav { display: flex !important; }

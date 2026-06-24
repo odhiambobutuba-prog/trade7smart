@@ -2746,15 +2746,16 @@ function startLiveClock() {
   setInterval(tick, 1000);
 }
 
+// ── TAB SYSTEM ──────────────────────────────────────────────────────────────
 const TAB_GROUPS = {
-  "home-tab-key":    ["home-tab"],
-  "ai-scanner-hero": ["ai-scanner-hero"],
-  "hero-grid":       ["hero-grid", "bot-panel-anchor"],
-  "charts-section":  ["charts-section"],
-  "recovery":        ["pro-grid", "risk-grid", "bot-panel-anchor"],
-  "stats":           ["analytics-grid", "scanner-grid", "bottom-grid", "bot-panel-anchor"],
-  "strategy":        ["strategy", "bot-panel-anchor"],
-  "pro-ai":          ["pro-ai", "bot-panel-anchor"],
+  "home-tab-key":   ["home-tab"],
+  "ai-scanner-hero":["ai-scanner-hero", "scanner-grid"],
+  "hero-grid":      ["hero-grid", "bot-panel-anchor"],
+  "charts-section": ["charts-section"],
+  "recovery":       ["pro-grid", "risk-grid"],
+  "stats":          ["analytics-grid", "bottom-grid"],
+  "strategy":       ["strategy"],
+  "pro-ai":         ["pro-ai"],
 };
 
 const ALL_TAB_SECTIONS = [
@@ -2762,6 +2763,12 @@ const ALL_TAB_SECTIONS = [
   "pro-grid","risk-grid","analytics-grid","scanner-grid",
   "bottom-grid","strategy","pro-ai","bot-panel-anchor",
 ];
+
+// Hide all sections immediately so page doesn't flash
+ALL_TAB_SECTIONS.forEach((id) => {
+  const el = document.getElementById(id);
+  if (el) el.style.display = "none";
+});
 
 function showTab(tabKey) {
   const show = TAB_GROUPS[tabKey] || [];
@@ -2784,6 +2791,7 @@ function initSectionNav() {
   });
   showTab("home-tab-key");
 }
+// ────────────────────────────────────────────────────────────────────────────
 
 
 

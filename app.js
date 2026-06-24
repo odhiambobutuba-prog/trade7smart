@@ -2747,25 +2747,38 @@ function startLiveClock() {
 }
 
 const TAB_GROUPS = {
-  "home-tab-key": ["home-tab", "bot-panel-anchor", "account-panel"],
-  "ai-scanner-hero": ["ai-scanner-hero", "bot-panel-anchor", "account-panel"],
-  "hero-grid": ["hero-grid", "bot-panel-anchor", "account-panel"],
-  "charts-section": ["charts-section", "bot-panel-anchor", "account-panel"],
-  recovery: ["pro-grid", "risk-grid", "bot-panel-anchor", "account-panel"],
-  stats: ["analytics-grid", "scanner-grid", "bottom-grid", "bot-panel-anchor", "account-panel"],
-  strategy: ["strategy", "bot-panel-anchor", "account-panel"],
-  "pro-ai": ["pro-ai", "bot-panel-anchor", "account-panel"],
+  "home-tab-key":    ["home-tab", "bot-panel-anchor"],
+  "ai-scanner-hero": ["ai-scanner-hero", "bot-panel-anchor"],
+  "hero-grid":       ["hero-grid", "bot-panel-anchor"],
+  "charts-section":  ["charts-section", "bot-panel-anchor"],
+  recovery:          ["pro-grid", "risk-grid", "bot-panel-anchor"],
+  stats:             ["analytics-grid", "bottom-grid", "bot-panel-anchor"],
+  strategy:          ["strategy", "bot-panel-anchor"],
+  "pro-ai":          ["pro-ai", "bot-panel-anchor"],
 };
 
-function initSectionNav() {
-  const allSectionIds = Object.values(TAB_GROUPS).flat();
+// All sections that belong to tabs (deduplicated)
+const ALL_TAB_SECTIONS = [
+  "home-tab",
+  "ai-scanner-hero",
+  "hero-grid",
+  "charts-section",
+  "pro-grid",
+  "risk-grid",
+  "analytics-grid",
+  "scanner-grid",
+  "bottom-grid",
+  "strategy",
+  "pro-ai",
+  "bot-panel-anchor",
+];
 
+function initSectionNav() {
   function showTab(tabKey) {
     const activeIds = TAB_GROUPS[tabKey] || [];
-    allSectionIds.forEach((id) => {
+    ALL_TAB_SECTIONS.forEach((id) => {
       const el = document.getElementById(id);
       if (el) {
-        // Only hide if it's not in the active group
         el.classList.toggle("tab-hidden", !activeIds.includes(id));
       }
     });

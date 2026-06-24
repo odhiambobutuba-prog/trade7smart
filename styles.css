@@ -209,9 +209,12 @@ label span,
   border-radius: 12px;
   background: rgba(8, 13, 20, 0.85);
   backdrop-filter: blur(8px);
+  z-index: 1000;
+  position: relative;
 }
 
 .nav-pill {
+  display: inline-flex !important;
   min-height: 34px;
   padding: 0 14px;
   border: 1px solid #243044;
@@ -511,7 +514,11 @@ label span,
 }
 
 body.connected-mode .control-strip {
-  display: none;
+  display: none !important;
+}
+
+body.connected-mode .section-nav {
+  display: flex !important;
 }
 
 label {

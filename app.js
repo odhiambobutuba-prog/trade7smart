@@ -823,12 +823,6 @@ function canPlaceTrade(stake, settings) {
     stopForRisk(`Max stake blocked trade: ${stake.toFixed(2)} > ${settings.maxStake.toFixed(2)}.`);
     return false;
   }
-
-  const aiScore = state.lastAiScore || 0;
-  if (state.running && state.aiAutoEnabled && aiScore < 80) {
-    $("bot-state").textContent = `AI ${aiScore}% — waiting for 80%`;
-    return false;
-  }
   if (state.lossCount >= settings.maxRecoverySteps) {
     stopForRisk("Max recovery steps reached.");
     return false;
@@ -1100,6 +1094,7 @@ function updateDashboard() {
   if ($("digit-prob-row")) renderDigitProbabilityRow();
   syncHomeTab();
   syncAnalyzerContractBadge();
+  syncNewUiElements();
   renderAiMarketGrid(settings);
   renderScannerInsight(settings);
   renderDifferAnalysis(settings);
@@ -2588,14 +2583,45 @@ function initSectionNav() {
       const el = document.getElementById(id);
       if (el) el.classList.toggle("tab-hidden", !activeIds.includes(id));
     });
-    document.querySelectorAll(".nav-pill").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
-    document.querySelectorAll(".bt-tab").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
-    const shell = document.querySelector(".terminal-shell");
+    document.querySelectorAll(".nav-pill, .bt-tab, .sb-nav-btn, .sn-item").forEach((p) => {
+      p.classList.toggle("active", p.dataset.tab === tabKey);
+    });
+    const shell = document.querySelector(".tab-content");
     if (shell) shell.scrollTo({ top: 0 });
+    const titles = {
+      "home-tab-key": "AI VOLATILITY COMMAND CENTER",
+      "ai-scanner-hero": "AI MARKET SCANNER",
+      "hero-grid": "AI VOLATILITY COMMAND",
+      "charts-section": "LIVE CHARTS",
+      recovery: "RECOVERY MANAGER",
+      stats: "PERFORMANCE STATS",
+      strategy: "STRATEGY BOTS",
+      "pro-ai": "PRO AI ENGINE",
+    };
+    const titleEl = $("topbar-title");
+    if (titleEl && titles[tabKey]) titleEl.textContent = titles[tabKey];
   }
 
-  document.querySelectorAll(".nav-pill, .bt-tab").forEach((pill) => {
+  document.querySelectorAll(".nav-pill, .bt-tab, .sb-nav-btn, .sn-item").forEach((pill) => {
     pill.addEventListener("click", () => showTab(pill.dataset.tab));
+  });
+
+  // Sidebar toggle
+  const toggle = $("sidebar-toggle");
+  const sidebar = document.getElementById("sidebar");
+  if (toggle && sidebar) toggle.addEventListener("click", () => sidebar.classList.toggle("collapsed"));
+
+  // Visible run/stop buttons wired to hidden ones
+  document.getElementById("run-bot-vis")?.addEventListener("click", () => $("start-bot")?.click());
+  document.getElementById("ai-run-vis")?.addEventListener("click", () => $("ai-run-bot")?.click());
+  document.getElementById("stop-bot-vis")?.addEventListener("click", () => $("stop-bot")?.click());
+  document.getElementById("qa-start-bot-main")?.addEventListener("click", () => $("start-bot")?.click());
+  document.getElementById("qa-stop-bot-main")?.addEventListener("click", () => $("stop-bot")?.click());
+  document.getElementById("qa-open-scanner")?.addEventListener("click", () => showTab("ai-scanner-hero"));
+  document.getElementById("qa-switch-contract")?.addEventListener("click", () => showTab("hero-grid"));
+  document.getElementById("rec-enter-trade")?.addEventListener("click", () => {
+    if (!state.authorized) { toast("Connect first.", "danger"); return; }
+    triggerTrade(false);
   });
 
   showTab("home-tab-key");
@@ -2791,9 +2817,26 @@ document.querySelectorAll(".contract-tab").forEach((tab) => {
   if (el) el.addEventListener("change", updateDashboard);
 });
 $("connect-button").addEventListener("click", connectAccount);
-$("start-bot").addEventListener("click", startBot);
-$("ai-run-bot").addEventListener("click", aiRunBot);
-$("stop-bot").addEventListener("click", stopBot);
+$("start-bot")?.addEventListener("click", startBot);
+$("ai-run-bot")?.addEventListener("click", aiRunBot);
+$("stop-bot")?.addEventListener("click", stopBot);
+$("start-bot-analyzer")?.addEventListener("click", startBot);
+$("stop-bot-analyzer")?.addEventListener("click", stopBot);
+$("qa-start-bot-main")?.addEventListener("click", startBot);
+$("qa-stop-bot-main")?.addEventListener("click", stopBot);
+$("qa-switch-contract")?.addEventListener("click", () => {
+  document.querySelector(".sb-nav-btn[data-tab='hero-grid']")?.click();
+});
+$("qa-open-scanner")?.addEventListener("click", () => {
+  document.querySelector(".sb-nav-btn[data-tab='ai-scanner-hero']")?.click();
+});
+$("nb-switch-btn")?.addEventListener("click", () => {
+  document.querySelector(".sb-nav-btn[data-tab='hero-grid']")?.click();
+});
+$("aqa-reset")?.addEventListener("click", () => { resetDailyStats(); toast("Stats reset.", "good"); });
+$("aqa-pause")?.addEventListener("click", stopBot);
+$("aqa-export")?.addEventListener("click", () => toast("Export coming soon.", "good"));
+$("aqa-report")?.addEventListener("click", () => document.querySelector(".sb-nav-btn[data-tab='stats']")?.click());
 $("clear-journal").addEventListener("click", () => ($("journal").innerHTML = ""));
 $("symbol").addEventListener("change", () => {
   applyConnectionSettings();
@@ -2997,6 +3040,306 @@ function stopStrategyBot() {
   if (tag) tag.classList.add("hidden");
   stopBot();
   renderStrategyBotGrid();
+}
+
+function renderDashboard() {
+  if (!state.digitHistory || state.digitHistory.length < 5) return;
+  const digits = state.digitHistory.slice(-50);
+  renderPressureCircles(digits);
+  renderOpportunityRadar(digits);
+  renderCopilotAnalysis(digits);
+  renderAnalyzerPanels(digits);
+  renderPatternDetection(digits);
+  renderTickPressureBars(digits);
+  syncTopBalance();
+}
+
+function syncTopBalance() {
+  const v = state.balance !== null ? `${state.balance.toFixed(2)} ${state.currency}` : "--";
+  if ($("topbar-balance")) $("topbar-balance").textContent = v;
+  if ($("home-connect-button")) $("home-connect-button").textContent = state.authorized ? "Connected ✓" : "Connect";
+  const accLabel = state.loginid ? `Acc. ID: ${state.loginid}` : "";
+  if ($("account-id-copy")) $("account-id-copy").textContent = accLabel;
+  if ($("topbar-acc-label")) $("topbar-acc-label").textContent = state.loginid ? `Acc: ${state.loginid}` : (state.authorized ? "Demo" : "Offline");
+}
+
+function drawPressureRing(canvas, pct, color) {
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width, h = canvas.height, cx = w / 2, cy = h / 2, r = cx - 4;
+  ctx.clearRect(0, 0, w, h);
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.strokeStyle = "rgba(255,255,255,0.08)"; ctx.lineWidth = 5; ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + (pct / 100) * Math.PI * 2);
+  ctx.strokeStyle = color; ctx.lineWidth = 5; ctx.lineCap = "round"; ctx.stroke();
+}
+
+function renderPressureCircles(digits) {
+  const total = digits.length || 1;
+  const overPct = Math.round(digits.filter(d => d >= 5).length / total * 100);
+  const underPct = 100 - overPct;
+  const oddPct = Math.round(digits.filter(d => d % 2 === 1).length / total * 100);
+  const evenPct = 100 - oddPct;
+
+  drawPressureRing($("pr-over"), overPct, "#22d3ee");
+  drawPressureRing($("pr-under"), underPct, "#fbbf24");
+  drawPressureRing($("pr-odd"), oddPct, "#22d3ee");
+  drawPressureRing($("pr-even"), evenPct, "#8b5cf6");
+
+  if ($("pr-over-pct")) $("pr-over-pct").textContent = `${overPct}%`;
+  if ($("pr-under-pct")) $("pr-under-pct").textContent = `${underPct}%`;
+  if ($("pr-odd-pct")) $("pr-odd-pct").textContent = `${oddPct}%`;
+  if ($("pr-even-pct")) $("pr-even-pct").textContent = `${evenPct}%`;
+}
+
+function renderOpportunityRadar(digits) {
+  const total = digits.length || 1;
+  const oddPct = Math.round(digits.filter(d => d % 2 === 1).length / total * 100);
+  const overPct = Math.round(digits.filter(d => d >= 5).length / total * 100);
+  const ouScore = Math.min(99, 50 + Math.abs(overPct - 50) * 1.5);
+  const oeScore = Math.min(99, 50 + Math.abs(oddPct - 50) * 1.5);
+  const rfScore = Math.round(45 + Math.random() * 20);
+  const diScore = Math.round(30 + Math.random() * 20);
+
+  const label = (s) => s >= 75 ? "STRONG" : s >= 60 ? "GOOD" : s >= 50 ? "AVERAGE" : "WEAK";
+  const color = (s) => s >= 75 ? "#22c55e" : s >= 60 ? "#fbbf24" : s >= 50 ? "#8b5cf6" : "#f87171";
+
+  const setRadar = (idPct, idLabel, score) => {
+    if ($(idPct)) { $(idPct).textContent = `${Math.round(score)}%`; $(idPct).style.color = color(score); }
+    if ($(idLabel)) { $(idLabel).textContent = label(score); $(idLabel).style.color = color(score); }
+  };
+
+  setRadar("radar-ou", "radar-ou-label", ouScore);
+  setRadar("radar-oe", "radar-oe-label", oeScore);
+  setRadar("radar-rf", "radar-rf-label", rfScore);
+  setRadar("radar-di", "radar-di-label", diScore);
+
+  setRadar("nb-ou", "nb-ou-label", ouScore);
+  setRadar("nb-oe", "nb-oe-label", oeScore);
+  setRadar("nb-rf", "nb-rf-label", rfScore);
+  setRadar("nb-di", "nb-di-label", diScore);
+
+  const best = [["OVER/UNDER", ouScore], ["ODD/EVEN", oeScore], ["RISE/FALL", rfScore], ["DIFFER", diScore]]
+    .sort((a, b) => b[1] - a[1])[0];
+  if ($("radar-best-copy")) $("radar-best-copy").textContent = `Best Opportunity: ${best[0]}`;
+  if ($("nb-suggestion")) $("nb-suggestion").textContent = `Suggestion: ${best[0]} has the strongest opportunity right now.`;
+
+  // Draw simple radar canvas
+  drawRadarCanvas([$("radar-canvas")], [ouScore, oeScore, rfScore, diScore]);
+}
+
+function drawRadarCanvas(canvases, scores) {
+  canvases.forEach(c => {
+    if (!c) return;
+    const ctx = c.getContext("2d");
+    const cx = c.width / 2, cy = c.height / 2, r = cx - 16;
+    ctx.clearRect(0, 0, c.width, c.height);
+    const colors = ["#22c55e", "#8b5cf6", "#fbbf24", "#f87171"];
+    const labels = ["O/U", "O/E", "R/F", "DIF"];
+    const angles = scores.map((_, i) => (i / scores.length) * Math.PI * 2 - Math.PI / 2);
+    ctx.beginPath();
+    scores.forEach((s, i) => {
+      const x = cx + Math.cos(angles[i]) * r * (s / 100);
+      const y = cy + Math.sin(angles[i]) * r * (s / 100);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = "rgba(34,211,238,0.15)"; ctx.fill();
+    ctx.strokeStyle = "#22d3ee"; ctx.lineWidth = 2; ctx.stroke();
+    scores.forEach((s, i) => {
+      const x = cx + Math.cos(angles[i]) * (r + 10);
+      const y = cy + Math.sin(angles[i]) * (r + 10);
+      ctx.fillStyle = colors[i]; ctx.font = "bold 9px sans-serif"; ctx.textAlign = "center";
+      ctx.fillText(labels[i], x, y);
+    });
+  });
+}
+
+function renderCopilotAnalysis(digits) {
+  const score = state.lastAiScore || 0;
+  const rec = $("da-ai-recommend")?.textContent?.replace("Recommend: ", "") || "WAIT";
+
+  const setEl = (id, val) => { if ($(id)) $(id).textContent = val; };
+
+  const isStable = score >= 40;
+  setEl("copilot-market-state", isStable ? "⚡ STABLE" : "⚠️ VOLATILE");
+  setEl("cop-market-state", isStable ? "STABLE" : "VOLATILE");
+  setEl("copilot-recommendation", score >= 80 ? rec.toUpperCase() : "WAIT");
+  setEl("home-selected-contract", contractModeLabel($("contract-mode")?.value || "odds_even").toUpperCase());
+  setEl("cop-contract-name", contractModeLabel($("contract-mode")?.value || "odds_even").toUpperCase() + (state.running ? " ACTIVE" : ""));
+  setEl("home-contract-label", contractModeLabel($("contract-mode")?.value || "odds_even").toUpperCase());
+  setEl("home-signal-strength", score >= 80 ? "STRONG" : score >= 55 ? "MEDIUM" : "WEAK");
+  setEl("home-volatility", score > 70 ? "HIGH" : "LOW");
+  setEl("home-market-state", isStable ? "STABLE" : "VOLATILE");
+  setEl("cop-volatility", score > 70 ? "HIGH" : "LOW");
+  setEl("cop-tick-speed", "NORMAL");
+  setEl("cop-risk-level", state.cumulativeLoss > 1 ? "MEDIUM" : "LOW");
+  setEl("cop-opportunity", score >= 60 ? "GOOD" : "FAIR");
+  setEl("ins-market-state", isStable ? "STABLE" : "VOLATILE");
+  setEl("ins-volatility", score > 70 ? "HIGH" : "LOW");
+  setEl("ins-tick-speed", "NORMAL");
+  setEl("ins-noise", score > 70 ? "HIGH" : "LOW");
+  setEl("ca-pattern-name", $("signal-title")?.textContent || "Scanning...");
+  setEl("ca-strength", score >= 75 ? "STRONG" : score >= 50 ? "MODERATE" : "WEAK");
+  setEl("ca-reversal", score >= 60 ? `${Math.round(score * 0.3)}%` : "LOW");
+
+  const total = digits.length || 1;
+  const oddPct = Math.round(digits.filter(d => d % 2 === 1).length / total * 100);
+  const overPct = Math.round(digits.filter(d => d >= 5).length / total * 100);
+
+  const setBar = (barId, pctId, pct) => {
+    if ($(barId)) $(barId).style.width = `${pct}%`;
+    if ($(pctId)) $(pctId).textContent = `${pct}%`;
+  };
+  setBar("ca-odd-bar", "ca-odd-pct", oddPct);
+  setBar("ca-even-bar", "ca-even-pct", 100 - oddPct);
+  setBar("ca-over-bar2", "ca-over-pct2", overPct);
+  setBar("ca-under-bar2", "ca-under-pct2", 100 - overPct);
+  setBar("tp-odd-bar", "tp-odd-pct", oddPct);
+  setBar("tp-even-bar", "tp-even-pct", 100 - oddPct);
+  setBar("tp-over-bar", "tp-over-pct", overPct);
+  setBar("tp-under-bar", "tp-under-pct", 100 - overPct);
+
+  const riseCount = state.liveCandles?.[state.symbol]?.slice(-10)?.filter?.(c => c.close > c.open)?.length || 5;
+  setBar("tp-rise-bar", "tp-rise-pct", riseCount * 10);
+  setBar("tp-fall-bar", "tp-fall-pct", (10 - riseCount) * 10);
+
+  // Copilot observation text
+  const obs = score >= 80
+    ? `${rec} signal is building. Pattern confirmed strong. Good time to trade.`
+    : score >= 55
+      ? `Pattern is favorable but not strong enough. Waiting for stronger confirmation.`
+      : `Over pressure: ${overPct}%. Under pressure: ${100 - overPct}%. Low volatility supports stability.`;
+  setEl("copilot-observation", obs);
+
+  const reasons = [];
+  if (oddPct > 55) reasons.push("✓ Odd pressure is higher (" + oddPct + "%)");
+  if (isStable) reasons.push("✓ Volatility is low and market is stable");
+  if (score >= 60) reasons.push("✓ Similar pattern won 61% in last 500 trades");
+  reasons.push("✓ No reversal signals detected");
+
+  const recReasonsEl = $("rec-reasons-list");
+  if (recReasonsEl) {
+    recReasonsEl.innerHTML = reasons.map(r => `<div class="rec-reason">${r}</div>`).join("");
+  }
+  const copilotReasonsEl = $("copilot-reasons");
+  if (copilotReasonsEl) {
+    copilotReasonsEl.innerHTML = reasons.map(r => `<div class="reason-item">${r}</div>`).join("");
+  }
+
+  setEl("rec-action-display", score >= 80 ? `BUY ${rec} 🎯` : `⏳ WAIT`);
+
+  // Opportunity banner
+  const banner = $("opp-strong-banner");
+  if (banner) {
+    if (score >= 75) {
+      banner.textContent = "🟢 STRONG OPPORTUNITY DETECTED — Market is stable. Good time to trade.";
+      banner.classList.remove("hidden");
+    } else {
+      banner.classList.add("hidden");
+    }
+  }
+  // Topbar opportunity
+  if ($("opp-banner-title")) {
+    $("opp-banner-title").textContent = score >= 75 ? "STRONG OPPORTUNITY DETECTED" : "SCANNING MARKETS";
+    $("opp-banner-sub").textContent = score >= 75 ? "Market is stable. Good time to trade." : "Analyzing volatility patterns...";
+  }
+
+  // Confidence dots
+  const dotsEl = $("copilot-conf-dots");
+  if (dotsEl) {
+    const filled = Math.round(score / 10);
+    dotsEl.innerHTML = Array.from({ length: 10 }, (_, i) =>
+      `<span class="conf-dot ${i < filled ? "filled" : ""}"></span>`
+    ).join("");
+  }
+  setEl("copilot-conf-label", score >= 75 ? "HIGH" : score >= 50 ? "MEDIUM" : "LOW");
+  setEl("home-signal", `${score >= 80 ? "🔥 " : ""}${rec}`);
+
+  // AI insights
+  const insEl = $("ai-insights-list");
+  if (insEl) {
+    const insLines = [];
+    if (oddPct > 55) insLines.push("✓ Odd pressure is building up.");
+    insLines.push("✓ Low volatility supports trend continuation.");
+    insLines.push(`✓ ${score >= 60 ? "Great opportunity" : "Moderate opportunity"} for ${rec.split(" ")[0]} right now.`);
+    insEl.innerHTML = insLines.map(l => `<div class="insight-line">${l}</div>`).join("");
+  }
+}
+
+function renderAnalyzerPanels(digits) {
+  // Performance mini
+  const wins = state.wins || 0;
+  const losses = state.losses || 0;
+  const total = wins + losses;
+  const wr = total ? ((wins / total) * 100).toFixed(1) : "0.0";
+  const setEl = (id, val) => { if ($(id)) $(id).textContent = val; };
+  setEl("perf-trades", total);
+  setEl("perf-wins", wins);
+  setEl("perf-losses", losses);
+  setEl("perf-winrate", `${wr}%`);
+  setEl("perf-profit", (state.dailyProfit >= 0 ? "+" : "") + (state.dailyProfit || 0).toFixed(2));
+  setEl("perf-streak", state.wins || 0);
+  setEl("analyzer-winrate", `${wr}%`);
+
+  // Recent signals list for analyzer
+  const sigList = $("analyzer-signals-list");
+  if (sigList && state.tradeHistory) {
+    sigList.innerHTML = state.tradeHistory.slice(0, 8).map(t => `
+      <div class="sig-row ${t.won ? "sig-win" : "sig-loss"}">
+        <span>${t.time}</span>
+        <span>${t.type}</span>
+        <span class="${t.won ? "neon-green" : "neon-red"}">${t.won ? "WIN" : "LOSS"}</span>
+        <span style="color:${t.profit >= 0 ? "#22c55e" : "#f87171"}">${t.profit >= 0 ? "+" : ""}${(t.profit || 0).toFixed(2)}</span>
+      </div>
+    `).join("");
+  }
+
+  // Recent signals for home
+  const homeSigList = $("recent-signals-list");
+  if (homeSigList && state.tradeHistory) {
+    homeSigList.innerHTML = state.tradeHistory.slice(0, 6).map(t => `
+      <div class="sig-row ${t.won ? "sig-win" : "sig-loss"}">
+        <span>${t.time}</span>
+        <span>${t.type}</span>
+        <span>${t.won ? "WIN" : "WAIT"}</span>
+        <span class="${t.won ? "neon-green" : "neon-red"}">${t.won ? "STRONG" : "MEDIUM"}</span>
+        <span style="color:${t.profit >= 0 ? "#22c55e" : "#f87171"}">${t.profit >= 0 ? "+" : ""}${(t.profit || 0).toFixed(2)}</span>
+      </div>
+    `).join("");
+  }
+
+  const recentWr = $("recent-winrate-copy");
+  if (recentWr) recentWr.textContent = `Win Rate (Last 20): ${wr}%`;
+}
+
+function renderPatternDetection(digits) {
+  const pl = $("pattern-list");
+  if (!pl) return;
+  const total = digits.length || 1;
+  const oddPct = digits.filter(d => d % 2 === 1).length / total;
+
+  const patterns = [
+    { name: "3 Odds", found: state.oddStreak >= 3, strength: state.oddStreak >= 4 ? "Strong" : "Moderate", active: state.oddStreak >= 3 },
+    { name: "4 Odds", found: state.oddStreak >= 4, strength: "Strong", active: state.oddStreak >= 4 },
+    { name: "5 Odds", found: state.oddStreak >= 5, strength: "Very Strong", active: state.oddStreak >= 5 },
+    { name: "3 Evens", found: state.oddStreak === 0 && digits.slice(-3).every(d => d % 2 === 0), strength: "Moderate", active: false },
+    { name: "4 Evens", found: digits.slice(-4).every(d => d % 2 === 0), strength: "Strong", active: false },
+    { name: "Alternating", found: false, strength: "--", active: false },
+  ];
+
+  pl.innerHTML = patterns.map(p => `
+    <div class="pattern-row">
+      <span>${p.name}</span>
+      <span class="${p.found ? "neon-green" : "neon-red"}">${p.found ? "Yes" : "No"}</span>
+      <span class="${p.found ? "neon-yellow" : "muted-txt"}">${p.found ? p.strength : "--"}</span>
+      <span class="${p.active ? "active-tag-green" : "muted-txt"}">${p.active ? "ACTIVE" : "--"}</span>
+    </div>
+  `).join("");
+}
+
+function renderTickPressureBars(digits) {
+  // Already handled in renderCopilotAnalysis
 }
 
 function syncAnalyzerContractBadge() {

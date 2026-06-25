@@ -220,7 +220,6 @@ async function connectPublicScanner() {
     hideLoader();
     updateDashboard();
   } catch (error) {
-    // Always show the app even if WebSocket fails on first load
     hideLoader();
     setTimeout(connectPublicScanner, 3000);
   }
@@ -2798,13 +2797,8 @@ function initSectionNav() {
 
 function hideLoader() {
   document.body.classList.add("loaded");
-  // Also directly dismiss the preloader overlay in case initButubaPreloader
-  // hasn't fired yet (e.g. WebSocket connects faster than the 1800ms timer)
-  const pre = document.getElementById("butuba-preloader");
-  if (pre && !pre.classList.contains("hide")) {
-    pre.classList.add("hide");
-    setTimeout(() => { pre.style.display = "none"; }, 650);
-  }
+  var pre = document.getElementById("butuba-preloader");
+  if (pre) { pre.classList.add("hide"); }
 }
 
 function initButubaPreloader() {
@@ -4867,9 +4861,7 @@ $("reset-daily-stats")?.addEventListener("click", () => {
 });
 
 connectPublicScanner();
-// Hard fallback: if WebSocket takes too long or fails silently, force the app visible
-// after the preloader animation finishes (1800ms spinner + 650ms fade = 2450ms)
-setTimeout(hideLoader, 2600);
+setTimeout(hideLoader, 2200);
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js?v=round8-update-20260625")

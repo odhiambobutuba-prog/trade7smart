@@ -97,6 +97,15 @@ body.loaded .app-loader {
   pointer-events: none;
 }
 
+/* CSS fallback: app-loader auto-dismisses after 3.5s even if JS never adds body.loaded */
+@keyframes appLoaderAutoDismiss {
+  0%   { opacity: 1; visibility: visible; pointer-events: auto; }
+  100% { opacity: 0; visibility: hidden;  pointer-events: none; }
+}
+.app-loader {
+  animation: appLoaderAutoDismiss 0.26s ease 3.5s forwards;
+}
+
 @keyframes loader-slide {
   0% { transform: translateX(-110%); }
   100% { transform: translateX(260%); }
@@ -2037,12 +2046,20 @@ body {
   align-items: center;
   justify-content: center;
   gap: 28px;
-  transition: opacity 0.6s ease;
+  /* CSS-driven auto-dismiss: fades out at 2s, pointer-events off at 2.6s, display:none at 3.2s */
+  animation: preloaderAutoDismiss 0.6s ease 2s forwards;
+}
+
+@keyframes preloaderAutoDismiss {
+  0%   { opacity: 1; pointer-events: auto; }
+  99%  { opacity: 0; pointer-events: none; display: flex; }
+  100% { opacity: 0; pointer-events: none; display: none; }
 }
 
 .butuba-preloader.hide {
   opacity: 0;
   pointer-events: none;
+  display: none !important;
 }
 
 .tt-spinner-wrap {

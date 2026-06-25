@@ -210,7 +210,6 @@ async function connectPublicScanner() {
     hideLoader();
     updateDashboard();
   } catch (error) {
-    hideLoader(); // show app even if WS fails
     setTimeout(connectPublicScanner, 3000);
   }
 }
@@ -2788,21 +2787,60 @@ function initSectionNav() {
 
 function hideLoader() {
   document.body.classList.add("loaded");
-  // Force-dismiss both overlay layers
-  var pre = document.getElementById("butuba-preloader");
-  if (pre) { pre.style.opacity="0"; pre.style.visibility="hidden"; pre.style.pointerEvents="none"; pre.style.display="none"; }
-  var al = document.getElementById("app-loader");
-  if (al) { al.style.opacity="0"; al.style.visibility="hidden"; al.style.pointerEvents="none"; }
 }
 
 function initButubaPreloader() {
-  var pre = document.getElementById("butuba-preloader");
-  if (!pre) { hideLoader(); return; }
-  setTimeout(function() {
-    pre.style.transition = "opacity 0.4s ease";
-    pre.style.opacity = "0";
-    setTimeout(function() { pre.style.display = "none"; hideLoader(); }, 450);
-  }, 2000);
+  // Enhanced BUTUBA preloader with 6-count animation
+  const letters = document.querySelectorAll('.bp-letter');
+  const counter = $("bp-counter");
+  const progressFill = $("bp-progress-fill");
+  const particlesContainer = $("bp-particles");
+  
+  // Create floating particles
+  if (particlesContainer) {
+    for (let i = 0; i < 20; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'bp-particle';
+      particle.style.left = `${Math.random() * 100}%`;
+      particle.style.animationDelay = `${Math.random() * 3}s`;
+      particle.style.animationDuration = `${2 + Math.random() * 2}s`;
+      particlesContainer.appendChild(particle);
+    }
+  }
+  
+  // Animate letters one by one with sound
+  letters.forEach((letter, i) => {
+    letter.style.animationDelay = `${i * 0.4}s`;
+    // Play subtle click sound (optional - requires audio context)
+    setTimeout(() => {
+      if (typeof playTone === 'function') {
+        playTone('ready');
+      }
+    }, i * 400);
+  });
+  
+  // Update progress counter
+  let count = 0;
+  const progressInterval = setInterval(() => {
+    count++;
+    if (counter) counter.textContent = `Loading... ${count}/6`;
+    if (progressFill) progressFill.style.width = `${(count / 6) * 100}%`;
+    
+    if (count >= 6) {
+      clearInterval(progressInterval);
+      // Final burst animation
+      if (counter) counter.textContent = '6/6 - Complete!';
+      setTimeout(() => {
+        const pre = $("butuba-preloader");
+        if (pre) {
+          pre.classList.add("hide");
+          setTimeout(() => pre.remove(), 600);
+        }
+        // Hide the app loader as well
+        hideLoader();
+      }, 800);
+    }
+  }, 400);
 }
 
 function initConnectionDrawer() {
@@ -4701,7 +4739,7 @@ $("reset-daily-stats")?.addEventListener("click", () => {
 });
 
 connectPublicScanner();
-setTimeout(hideLoader, 2500);
+setTimeout(hideLoader, 850);
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js?v=cursor-ai-20260620")

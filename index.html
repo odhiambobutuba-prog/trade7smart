@@ -7,34 +7,26 @@
     <title>Trade7Smart — AI Volatility Console</title>
     <link rel="manifest" href="./manifest.webmanifest?v=round7-analyzer-20260620" />
     <link rel="stylesheet" href="./styles.css?v=round7-analyzer-20260620" />
-  
-  <style>
-    /* NUCLEAR PRELOADER FIX: CSS auto-dismiss after 3s, no JS needed */
-    #butuba-preloader {
-      animation: __dismissLoader 0.4s ease 3s forwards !important;
-    }
-    @keyframes __dismissLoader {
-      to { opacity: 0; visibility: hidden; pointer-events: none; display: none; }
-    }
-    /* app-loader auto-dismiss after 3.5s */
-    #app-loader {
-      animation: __dismissAppLoader 0.3s ease 3.5s forwards !important;
-    }
-    @keyframes __dismissAppLoader {
-      to { opacity: 0; visibility: hidden; pointer-events: none; }
-    }
-  </style>
   </head>
   <body>
     <div id="butuba-preloader" class="butuba-preloader">
-      <div class="tt-spinner-wrap">
-        <div class="tt-spinner">
-          <div class="tt-arc tt-arc-1"></div>
-          <div class="tt-arc tt-arc-2"></div>
-          <div class="tt-arc tt-arc-3"></div>
+      <p class="bp-welcome">Welcome to Trade7Smart</p>
+      <div class="bp-letters" id="bp-letters">
+        <span class="bp-letter" data-letter="B">B</span>
+        <span class="bp-letter" data-letter="U">U</span>
+        <span class="bp-letter" data-letter="T">T</span>
+        <span class="bp-letter" data-letter="U">U</span>
+        <span class="bp-letter" data-letter="B">B</span>
+        <span class="bp-letter" data-letter="A">A</span>
+      </div>
+      <div class="bp-progress">
+        <span class="bp-counter" id="bp-counter">Loading... 0/6</span>
+        <div class="bp-progress-bar">
+          <div class="bp-progress-fill" id="bp-progress-fill"></div>
         </div>
       </div>
-      <p class="bp-welcome">Welcome to Trade7Smart</p>
+      <p class="bp-powered">powered by Butuba</p>
+      <div class="bp-particles" id="bp-particles"></div>
     </div>
 
     <div id="app-loader" class="app-loader">

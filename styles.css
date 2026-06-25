@@ -2027,36 +2027,158 @@ body {
 }
 
 /* ===== Butuba Preloader ===== */
-/* ===== TikTok Blue Preloader ===== */
 .butuba-preloader {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 999;
   background: #060a10;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 20px;
+  transition: opacity 0.6s ease;
 }
-.tt-spinner-wrap { width: 60px; height: 60px; position: relative; }
-.tt-spinner { position: relative; width: 60px; height: 60px; }
-.tt-arc {
+
+.butuba-preloader.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bp-welcome {
+  color: #e7ecf5;
+  font-size: 1.3rem;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.bp-letters {
+  display: flex;
+  gap: 12px;
+  position: relative;
+}
+
+.bp-letter {
+  font-size: 3rem;
+  font-weight: 900;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #22d3ee);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0;
+  transform: translateY(20px) scale(0.8);
+  animation: bpPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  text-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+  position: relative;
+}
+
+.bp-letter::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.3), transparent 70%);
+  opacity: 0;
+  animation: bpGlow 0.6s ease forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes bpPop {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bpGlow {
+  to {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+}
+
+.bp-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 200px;
+}
+
+.bp-counter {
+  color: #7b8ba3;
+  font-size: 0.9rem;
+  font-family: monospace;
+  letter-spacing: 0.1em;
+}
+
+.bp-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #1a2433;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.bp-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #22d3ee);
+  width: 0%;
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.bp-powered {
+  color: #7b8ba3;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  animation: bpPulse 2s ease-in-out infinite;
+}
+
+@keyframes bpPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; text-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+}
+
+.bp-particles {
   position: absolute;
   inset: 0;
-  border-radius: 50%;
-  border: 4px solid transparent;
+  pointer-events: none;
+  overflow: hidden;
 }
-.tt-arc-1 { border-top-color: #1d6ff4; animation: ttSpin 1s cubic-bezier(0.4,0,0.2,1) infinite; }
-.tt-arc-2 { inset: 8px; border-bottom-color: #3b8ef8; animation: ttSpin 1s cubic-bezier(0.4,0,0.2,1) infinite; animation-delay:-0.25s; }
-.tt-arc-3 { inset: 16px; border-top-color: #60a5fa; animation: ttSpin 1s cubic-bezier(0.4,0,0.2,1) infinite; animation-delay:-0.5s; }
-@keyframes ttSpin { to { transform: rotate(360deg); } }
-.bp-welcome {
-  color: #e2e8f4;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+
+.bp-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #3b82f6;
+  border-radius: 50%;
+  opacity: 0;
+  animation: bpFloat 3s ease-in-out infinite;
+}
+
+@keyframes bpFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(100vh) scale(0);
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100vh) scale(1);
+  }
+}
+
+.bp-powered {
+  color: var(--muted, #8b95a7);
+  font-size: 0.78rem;
   margin: 0;
 }
 

@@ -4858,7 +4858,33 @@ $("reset-daily-stats")?.addEventListener("click", () => {
 });
 
 connectPublicScanner();
-setTimeout(hideLoader, 850);
+
+// Guarantee the app always becomes visible even if something upstream fails.
+// Primary: fire after preloader animation completes (1800ms spinner + 650ms fade = 2450ms).
+// Fallback: hard-force visibility at 5s in case of any error.
+(function ensureAppVisible() {
+  try {
+    setTimeout(function() {
+      try { hideLoader(); } catch(e) {}
+      // Belt-and-suspenders: directly remove both overlay layers
+      var pre = document.getElementById("butuba-preloader");
+      if (pre) { pre.classList.add("hide"); setTimeout(function(){ pre.style.display = "none"; }, 650); }
+      var loader = document.getElementById("app-loader");
+      if (loader) { loader.style.opacity = "0"; loader.style.visibility = "hidden"; loader.style.pointerEvents = "none"; }
+      document.body.classList.add("loaded");
+    }, 2500);
+    // Hard fallback at 5s
+    setTimeout(function() {
+      document.body.classList.add("loaded");
+      var pre = document.getElementById("butuba-preloader");
+      if (pre) pre.style.display = "none";
+      var loader = document.getElementById("app-loader");
+      if (loader) { loader.style.opacity = "0"; loader.style.visibility = "hidden"; }
+    }, 5000);
+  } catch(e) {
+    document.body.classList.add("loaded");
+  }
+})();
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js?v=round8-update-20260625")

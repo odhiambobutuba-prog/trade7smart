@@ -5,8 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#060a10" />
     <title>Trade7Smart — AI Volatility Console</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=round10-upgrade-20260625" />
-    <link rel="stylesheet" href="./styles.css?v=round10-upgrade-20260625" />
+    <link rel="manifest" href="./manifest.webmanifest?v=round7-analyzer-20260620" />
+    <link rel="stylesheet" href="./styles.css?v=round7-analyzer-20260620" />
+  
+  <style>
+    /* NUCLEAR PRELOADER FIX: CSS auto-dismiss after 3s, no JS needed */
+    #butuba-preloader {
+      animation: __dismissLoader 0.4s ease 3s forwards !important;
+    }
+    @keyframes __dismissLoader {
+      to { opacity: 0; visibility: hidden; pointer-events: none; display: none; }
+    }
+    /* app-loader auto-dismiss after 3.5s */
+    #app-loader {
+      animation: __dismissAppLoader 0.3s ease 3.5s forwards !important;
+    }
+    @keyframes __dismissAppLoader {
+      to { opacity: 0; visibility: hidden; pointer-events: none; }
+    }
+  </style>
   </head>
   <body>
     <div id="butuba-preloader" class="butuba-preloader">
@@ -285,7 +302,9 @@
         <button type="button" class="nav-pill active" data-tab="home-tab-key">Home</button>
         <button type="button" class="nav-pill" data-tab="ai-scanner-hero">Scanner</button>
         <button type="button" class="nav-pill" data-tab="hero-grid">Analyzer</button>
+        <button type="button" class="nav-pill" data-tab="charts-section">Charts</button>
         <button type="button" class="nav-pill" data-tab="recovery">Recovery</button>
+        <button type="button" class="nav-pill" data-tab="stats">Stats</button>
         <button type="button" class="nav-pill" data-tab="strategy">Strategy</button>
         <button type="button" class="nav-pill" data-tab="pro-ai">Pro AI</button>
       </nav>
@@ -889,7 +908,23 @@
           </div>
         </article>
 
-<!-- account-panel removed per update -->
+        <article class="panel account-panel">
+          <div class="panel-head">
+            <div>
+              <span>Account balance</span>
+              <strong id="balance">--</strong>
+            </div>
+            <b id="account-badge">DEMO</b>
+          </div>
+          <div class="mini-stats">
+            <div><span>Odd streak</span><strong id="odd-streak">0</strong></div>
+            <div><span>Digit repeat</span><strong id="digit-streak">0</strong></div>
+            <div><span>Loss count</span><strong id="loss-count">0</strong></div>
+            <div><span>Cumulative loss</span><strong id="cum-loss">0.00</strong></div>
+            <div><span>Next stake</span><strong id="next-stake">0.35</strong></div>
+            <div><span>AI rank</span><strong id="market-rank">--</strong></div>
+          </div>
+        </article>
 
         <article class="panel bot-panel" id="bot-panel-anchor">
           <div class="panel-head">
@@ -1488,7 +1523,15 @@
         </article>
       </section>
 
-      <!-- journal/bottom-grid removed per update -->
+      <section class="bottom-grid" id="bottom-grid">
+        <article class="panel journal-panel">
+          <div class="journal-header">
+            <div><span>Bot journal</span><strong>Live events</strong></div>
+            <button id="clear-journal" class="text-button" type="button">Clear</button>
+          </div>
+          <ol id="journal" class="journal"></ol>
+        </article>
+      </section>
 
       <section class="strategy-section" id="strategy">
         <article class="panel strategy-intro-panel">
@@ -1496,14 +1539,10 @@
             <div><span>🧩 Strategy Bot</span><strong>Your imported DBot strategies</strong></div>
           </div>
           <p class="strategy-intro-copy">
-            Tap <b>Run</b> to start a strategy bot. Use <b>Edit</b> to change its market and settings. Use <b>Import</b> to bring in any Deriv DBot XML file.
+            These are mapped from your Deriv DBot XML files onto Trade7Smart's engine (same proposal/buy pipeline,
+            matching contract type, market, and trigger logic where possible). Tap <b>Run</b> to start one —
+            the Analyzer tab will show <b>"Watching: [bot name]"</b> while it's active.
           </p>
-          <div class="strategy-toolbar">
-            <label class="import-dbot-label">
-              <span class="ghost-button import-dbot-btn">📥 Import DBot XML</span>
-              <input type="file" id="import-dbot-file" accept=".xml" style="display:none" />
-            </label>
-          </div>
         </article>
         <div id="strategy-bot-grid" class="strategy-bot-grid"></div>
       </section>
@@ -1546,8 +1585,14 @@
       <button type="button" class="bt-tab" data-tab="hero-grid">
         <span class="bt-icon">🎯</span><span class="bt-label">Analyzer</span>
       </button>
+      <button type="button" class="bt-tab" data-tab="charts-section">
+        <span class="bt-icon">📈</span><span class="bt-label">Charts</span>
+      </button>
       <button type="button" class="bt-tab" data-tab="recovery">
         <span class="bt-icon">🛡️</span><span class="bt-label">Recovery</span>
+      </button>
+      <button type="button" class="bt-tab" data-tab="stats">
+        <span class="bt-icon">📊</span><span class="bt-label">Stats</span>
       </button>
       <button type="button" class="bt-tab" data-tab="strategy">
         <span class="bt-icon">🧩</span><span class="bt-label">Strategy</span>
@@ -1574,6 +1619,6 @@
 
     <div id="toast-layer" class="toast-layer" aria-live="polite"></div>
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
-    <script src="./app.js?v=round10-upgrade-20260625"></script>
+    <script src="./app.js?v=round7-analyzer-20260620"></script>
   </body>
 </html>

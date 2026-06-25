@@ -29,9 +29,6 @@ body {
     linear-gradient(180deg, #0a1018 0%, var(--bg) 48%);
   color: var(--ink);
   background-attachment: fixed;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
 }
 
 body::before {
@@ -2030,7 +2027,7 @@ body {
 }
 
 /* ===== Butuba Preloader ===== */
-/* ===== TikTok-style Blue Preloader ===== */
+/* ===== TikTok Blue Preloader ===== */
 .butuba-preloader {
   position: fixed;
   inset: 0;
@@ -2040,72 +2037,27 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 24px;
-  transition: opacity 0.5s ease;
+  gap: 20px;
 }
-
-.butuba-preloader.hide {
-  opacity: 0;
-  pointer-events: none;
-  display: none !important;
-}
-
-/* TikTok spinner: 3 arcs in blue shades */
-.tt-spinner-wrap {
-  position: relative;
-  width: 64px;
-  height: 64px;
-}
-
-.tt-spinner {
-  position: relative;
-  width: 64px;
-  height: 64px;
-}
-
+.tt-spinner-wrap { width: 60px; height: 60px; position: relative; }
+.tt-spinner { position: relative; width: 60px; height: 60px; }
 .tt-arc {
   position: absolute;
   inset: 0;
   border-radius: 50%;
   border: 4px solid transparent;
 }
-
-.tt-arc-1 {
-  border-top-color: #3b82f6;
-  animation: ttSpin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-
-.tt-arc-2 {
-  inset: 8px;
-  border-bottom-color: #60a5fa;
-  animation: ttSpin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  animation-delay: -0.25s;
-}
-
-.tt-arc-3 {
-  inset: 16px;
-  border-top-color: #93c5fd;
-  animation: ttSpin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  animation-delay: -0.5s;
-}
-
-@keyframes ttSpin {
-  to { transform: rotate(360deg); }
-}
-
+.tt-arc-1 { border-top-color: #1d6ff4; animation: ttSpin 1s cubic-bezier(0.4,0,0.2,1) infinite; }
+.tt-arc-2 { inset: 8px; border-bottom-color: #3b8ef8; animation: ttSpin 1s cubic-bezier(0.4,0,0.2,1) infinite; animation-delay:-0.25s; }
+.tt-arc-3 { inset: 16px; border-top-color: #60a5fa; animation: ttSpin 1s cubic-bezier(0.4,0,0.2,1) infinite; animation-delay:-0.5s; }
+@keyframes ttSpin { to { transform: rotate(360deg); } }
 .bp-welcome {
-  color: #e7ecf5;
-  font-size: 1.1rem;
+  color: #e2e8f4;
+  font-size: 1rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   margin: 0;
-  animation: bpFadeIn 0.6s 0.2s ease forwards;
-  opacity: 0;
-}
-
-@keyframes bpFadeIn {
-  to { opacity: 1; }
 }
 
 /* ===== Connection Drawer ===== */
@@ -4679,111 +4631,4 @@ body.light-theme small {
 
   .da-predict-grid { grid-template-columns: 1fr; }
   .da-streaks { grid-template-columns: 1fr; }
-}
-
-/* ===== Mobile responsive improvements ===== */
-@media (max-width: 720px) {
-  main.terminal-shell {
-    padding: 8px !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    height: auto !important;
-    max-height: none !important;
-  }
-  .bottom-tab-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 500;
-  }
-  main.terminal-shell {
-    padding-bottom: 80px !important;
-  }
-  .topbar {
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .top-actions {
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-  .home-grid {
-    grid-template-columns: 1fr 1fr !important;
-  }
-  .settings-grid {
-    grid-template-columns: 1fr !important;
-  }
-  .contract-tabs {
-    flex-wrap: wrap !important;
-  }
-  .control-strip {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 10px !important;
-  }
-  .strategy-bot-grid {
-    grid-template-columns: 1fr !important;
-  }
-  .ai-market-grid {
-    grid-template-columns: 1fr 1fr !important;
-  }
-}
-
-/* ===== Strategy Bot Edit Modal ===== */
-.bot-edit-modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 800;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-.bot-edit-modal {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 24px;
-  width: 100%;
-  max-width: 480px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.bot-edit-modal h3 {
-  margin: 0;
-  color: var(--ink);
-  font-size: 1.1rem;
-}
-.bot-edit-modal label {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-.bot-edit-modal select,
-.bot-edit-modal input {
-  padding: 8px 10px;
-  background: var(--input-bg, #111c2b);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--ink);
-  font-size: 0.9rem;
-}
-.bot-edit-modal-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-}
-.strategy-toolbar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-.import-dbot-btn {
-  cursor: pointer;
-  display: inline-block;
 }

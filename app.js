@@ -2749,8 +2749,8 @@ function startLiveClock() {
 const TAB_GROUPS = {
   "home-tab-key": ["home-tab"],
   "ai-scanner-hero": ["ai-scanner-hero"],
-  "hero-grid": ["hero-grid"],
-  recovery: ["pro-grid", "risk-grid"],
+  "hero-grid": ["hero-grid", "charts-section", "analytics-grid", "scanner-grid", "bottom-grid", "pro-grid"],
+  recovery: ["risk-grid"],
   strategy: ["strategy"],
   "pro-ai": ["pro-ai"],
 };

@@ -176,7 +176,7 @@
         </article>
       </section>
 
-      <section class="charts-section" id="charts-section">
+      <section class="charts-section analyzer-only" id="charts-section">
         <article class="panel price-chart-panel">
           <div class="panel-head">
             <div><span>Price stream</span><strong id="price-chart-symbol-label">Live market chart</strong></div>
@@ -659,41 +659,6 @@
       </section>
 
       <section class="risk-grid" id="risk-grid">
-        <article class="panel recovery-settings-panel">
-          <div class="panel-head">
-            <div><span>Recovery settings</span><strong>Risk boundaries</strong></div>
-          </div>
-          <div class="settings-grid">
-            <label>
-              <span>Daily Profit Target</span>
-              <input id="daily-profit-target" type="number" inputmode="decimal" step="0.01" value="10" />
-            </label>
-            <label>
-              <span>Daily Loss Limit</span>
-              <input id="daily-loss-limit" type="number" inputmode="decimal" step="0.01" value="10" />
-            </label>
-            <label>
-              <span>Min Balance Protection</span>
-              <input id="min-balance-protection" type="number" inputmode="decimal" step="0.01" value="5" />
-            </label>
-            <label>
-              <span>Preset</span>
-              <select id="strategy-preset">
-                <option value="custom" selected>Custom</option>
-                <option value="immediate">Immediate recovery after loss</option>
-                <option value="verysafe">Very Safe</option>
-                <option value="normal">Normal</option>
-                <option value="fast">Fast</option>
-                <option value="conservative">Conservative</option>
-                <option value="balanced">Balanced</option>
-                <option value="aggressive">Aggressive</option>
-                <option value="recovery3">Recovery 3</option>
-                <option value="recovery5">Recovery 5</option>
-              </select>
-            </label>
-          </div>
-        </article>
-
         <article class="panel ladder-panel">
           <div class="panel-head">
             <div><span>Recovery ladder</span><strong id="ladder-summary">Base stake ready</strong></div>
@@ -716,7 +681,7 @@
         </article>
       </section>
 
-      <section class="analytics-grid" id="analytics-grid">
+      <section class="analytics-grid analyzer-only" id="analytics-grid">
         <article class="panel stats-panel">
           <div class="panel-head">
             <div><span>Statistics</span><strong>Session performance</strong></div>
@@ -786,7 +751,7 @@
         </article>
       </section>
 
-      <section class="scanner-grid" id="scanner-grid">
+      <section class="scanner-grid analyzer-only" id="scanner-grid">
         <article class="panel scanner-panel">
           <div class="panel-head">
             <div><span>Market scanner</span><strong>Volatility rank table</strong></div>
@@ -801,7 +766,7 @@
         </article>
       </section>
 
-      <section class="bottom-grid" id="bottom-grid">
+      <section class="bottom-grid analyzer-only" id="bottom-grid">
         <article class="panel journal-panel">
           <div class="journal-header">
             <div><span>Bot journal</span><strong>Live events</strong></div>

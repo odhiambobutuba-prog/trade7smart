@@ -5,28 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#060a10" />
     <title>Trade7Smart — AI Volatility Console</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=round7-analyzer-20260620" />
-    <link rel="stylesheet" href="./styles.css?v=round7-analyzer-20260620" />
+    <link rel="manifest" href="./manifest.webmanifest?v=v5-fresh-20260621" />
+    <link rel="stylesheet" href="./styles.css?v=v5-fresh-20260621" />
   </head>
   <body>
     <div id="butuba-preloader" class="butuba-preloader">
       <p class="bp-welcome">Welcome to Trade7Smart</p>
-      <div class="bp-letters" id="bp-letters">
-        <span class="bp-letter" data-letter="B">B</span>
-        <span class="bp-letter" data-letter="U">U</span>
-        <span class="bp-letter" data-letter="T">T</span>
-        <span class="bp-letter" data-letter="U">U</span>
-        <span class="bp-letter" data-letter="B">B</span>
-        <span class="bp-letter" data-letter="A">A</span>
-      </div>
-      <div class="bp-progress">
-        <span class="bp-counter" id="bp-counter">Loading... 0/6</span>
-        <div class="bp-progress-bar">
-          <div class="bp-progress-fill" id="bp-progress-fill"></div>
-        </div>
-      </div>
+      <div class="bp-letters" id="bp-letters"></div>
       <p class="bp-powered">powered by Butuba</p>
-      <div class="bp-particles" id="bp-particles"></div>
     </div>
 
     <div id="app-loader" class="app-loader">
@@ -99,10 +85,10 @@
         </section>
       </div>
 
-      </section>
-
       <section class="home-tab" id="home-tab">
         <button id="home-connect-button" class="ghost-button home-connect-btn" type="button">Connect</button>
+
+        <!-- Top stat cards -->
         <div class="home-grid">
           <article class="panel home-balance-card">
             <span class="da-label">Balance</span>
@@ -131,32 +117,31 @@
           </article>
         </div>
 
-        <article class="panel home-summary-panel">
-          <div class="panel-head">
-            <div><span>📊 Transaction Summary</span><strong>Today's session</strong></div>
-            <button id="reset-daily-stats" class="text-button" type="button">Reset</button>
+        
+              <div class="home-chart-type-btns">
+                <button type="button" class="chart-type-btn active" data-home-chart-type="candles">Candles</button>
+                <button type="button" class="chart-type-btn" data-home-chart-type="area">Area</button>
+                <button type="button" class="chart-type-btn" data-home-chart-type="line">Line</button>
+              </div>
+            </div>
           </div>
-          <div class="summary-stats-grid">
-            <div class="summary-stat"><span>Runs</span><strong id="summary-runs">0</strong></div>
-            <div class="summary-stat"><span>Won</span><strong id="summary-wins" class="win-color">0</strong></div>
-            <div class="summary-stat"><span>Lost</span><strong id="summary-losses" class="loss-color">0</strong></div>
-            <div class="summary-stat"><span>Win Rate</span><strong id="summary-winrate">0%</strong></div>
-            <div class="summary-stat"><span>Total Stake</span><strong id="summary-stake">0.00</strong></div>
-            <div class="summary-stat"><span>P / L</span><strong id="summary-pnl">0.00</strong></div>
+          <!-- Main price canvas -->
+          <div class="home-chart-canvas-wrap">
+            <canvas id="home-price-chart" class="home-chart-canvas" height="180"></canvas>
+            <div class="chart-zoom-controls">
+              <button type="button" id="home-chart-zoom-in" class="chart-zoom-btn" title="Zoom in">+</button>
+              <button type="button" id="home-chart-zoom-reset" class="chart-zoom-btn" title="Reset view">⊙</button>
+              <button type="button" id="home-chart-zoom-out" class="chart-zoom-btn" title="Zoom out">−</button>
+            </div>
           </div>
-        </article>
-
-        <article class="panel home-history-panel">
-          <div class="panel-head">
-            <div><span>📋 Trade History</span><strong>Last 50 trades</strong></div>
-          </div>
-          <div class="trade-history-table-wrap">
-            <table class="trade-history-table">
-              <thead>
-                <tr><th>Time</th><th>Type</th><th>Market</th><th>Stake</th><th>P/L</th><th>Result</th></tr>
-              </thead>
-              <tbody id="trade-history-tbody"></tbody>
-            </table>
+          <!-- MACD sub-chart -->
+          <div class="home-indicator-label">MACD (12,26,9)</div>
+          <canvas id="home-macd-chart" class="home-macd-canvas" height="70"></canvas>
+          <!-- Chandelier Exit indicator row -->
+          <div class="home-chandelier-row">
+            <span class="home-indicator-label">Chandelier Exit</span>
+            <span id="home-chandelier-signal" class="home-chandelier-signal">--</span>
+            <span id="home-chandelier-value" class="home-chandelier-value"></span>
           </div>
         </article>
       </section>
@@ -169,7 +154,6 @@
         <button type="button" class="nav-pill" data-tab="recovery">Recovery</button>
         <button type="button" class="nav-pill" data-tab="stats">Stats</button>
         <button type="button" class="nav-pill" data-tab="strategy">Strategy</button>
-        <button type="button" class="nav-pill" data-tab="pro-ai">Pro AI</button>
       </nav>
       <section class="ai-scanner-hero" id="ai-scanner-hero">
         <article class="panel ai-scanner-panel">
@@ -194,137 +178,15 @@
           <div class="panel-head">
             <div><span>Price stream</span><strong id="price-chart-symbol-label">Live market chart</strong></div>
             <div class="chart-type-toggle">
+              <button type="button" class="chart-type-btn active" data-chart-type="area">Area</button>
               <button type="button" class="chart-type-btn" data-chart-type="line">Line</button>
-              <button type="button" class="chart-type-btn" data-chart-type="area">Area</button>
-              <button type="button" class="chart-type-btn active" data-chart-type="candles">Candles</button>
+              <button type="button" class="chart-type-btn" data-chart-type="candles">Candles</button>
             </div>
           </div>
-          <div id="price-chart-container" class="price-chart-container"></div>
-          <div id="chart-crosshair-readout" class="chart-crosshair-readout"></div>
-          <div id="macd-chart-container" class="macd-chart-container"></div>
-
+          <canvas id="price-chart" class="chart-canvas" height="220"></canvas>
           <div class="digit-prob-row" id="digit-prob-row">
             <div class="digit-prob-cursor" id="digit-prob-cursor"></div>
           </div>
-        </article>
-
-        <article class="panel digit-analysis-panel">
-          <div class="panel-head">
-            <div><span>✨ Smart Digit Analysis</span><strong>Last digits, streaks &amp; predictions</strong></div>
-          </div>
-
-          <div class="da-ai-card" id="da-ai-card">
-            <div class="da-ai-head">
-              <span>✨ AI Recommendation</span>
-              <small id="da-ai-confidence-tag">BETA</small>
-            </div>
-            <p class="da-ai-sub">AI-powered trading recommendation using pattern analysis of recent digit streaks.</p>
-            <div class="da-ai-body">
-              <div class="da-ai-score-ring">
-                <svg viewBox="0 0 80 80" aria-hidden="true">
-                  <circle class="da-ring-track" cx="40" cy="40" r="34" />
-                  <circle class="da-ring-fill" id="da-ai-ring" cx="40" cy="40" r="34" />
-                </svg>
-                <b id="da-ai-score">0%</b>
-              </div>
-              <div class="da-ai-text">
-                <strong id="da-ai-recommend">Recommend: WAITING</strong>
-                <span id="da-ai-reason">Analyzing patterns...</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="digit-strip-wrap">
-            <span class="da-label">Recent digits</span>
-            <div id="digit-strip" class="digit-strip"></div>
-          </div>
-
-          <div class="da-streaks">
-            <div class="da-streak-card">
-              <span>Even / Odd streak</span>
-              <strong id="da-eo-streak">--</strong>
-            </div>
-            <div class="da-streak-card">
-              <span>High / Low streak</span>
-              <strong id="da-hl-streak">--</strong>
-            </div>
-          </div>
-
-          <div class="da-predict-grid">
-            <div class="da-predict-card">
-              <div class="da-predict-head">
-                <span>Even / Odd Prediction</span>
-                <small id="da-eo-confidence">Confidence: Low</small>
-              </div>
-              <div class="da-bar-row">
-                <span>EVEN</span>
-                <div class="da-bar"><i id="da-even-bar"></i></div>
-                <b id="da-even-pct">50%</b>
-              </div>
-              <div class="da-bar-row">
-                <span>ODD</span>
-                <div class="da-bar"><i id="da-odd-bar"></i></div>
-                <b id="da-odd-pct">50%</b>
-              </div>
-            </div>
-
-            <div class="da-predict-card">
-              <div class="da-predict-head">
-                <span>Over / Under Prediction</span>
-                <small id="da-ou-confidence">Confidence: Low</small>
-              </div>
-              <div class="da-bar-row">
-                <span>0-4</span>
-                <div class="da-bar"><i id="da-under-bar"></i></div>
-                <b id="da-under-pct">50%</b>
-              </div>
-              <div class="da-bar-row">
-                <span>5-9</span>
-                <div class="da-bar"><i id="da-over-bar"></i></div>
-                <b id="da-over-pct">50%</b>
-              </div>
-            </div>
-          </div>
-
-          <div class="da-trend">
-            <span>Recent digit trend</span>
-            <strong id="da-trend-copy">Flat trend - no clear direction</strong>
-            <div class="da-trend-meta">
-              <span>Last <b id="da-last-digit">-</b></span>
-              <span>Avg <b id="da-avg-digit">-</b></span>
-              <span>Mode <b id="da-mode-digit">-</b></span>
-            </div>
-          </div>
-
-          <div id="digit-pattern-heatmap" class="digit-pattern-heatmap"></div>
-        </article>
-
-        <article class="panel risefall-panel">
-          <div class="panel-head">
-            <div><span>📈 Rise/Fall AI</span><strong>MACD across 1m, 2m, 3m, 5m, 10m</strong></div>
-          </div>
-
-          <div class="rf-best-card" id="rf-best-card">
-            <span class="da-label">AI best market pick</span>
-            <strong id="rf-best-market">Scanning...</strong>
-            <div class="rf-best-meta">
-              <span id="rf-best-direction" class="rf-pending">--</span>
-              <small id="rf-best-confidence">Waiting for candle data</small>
-            </div>
-            <div class="rf-buy-row">
-              <button id="rf-buy-rise" class="qa-btn qa-rise" type="button">Buy Rise</button>
-              <button id="rf-buy-fall" class="qa-btn qa-fall" type="button">Buy Fall</button>
-            </div>
-            <small class="rf-buy-note">Manual buy uses the current market in Settings and the Ticks duration set in Bot Controls</small>
-          </div>
-
-          <div class="rf-grid-head">
-            <span class="rf-name">Market</span>
-            <span class="rf-tfs-head">1m&nbsp;&nbsp;2m&nbsp;&nbsp;3m&nbsp;&nbsp;5m&nbsp;10m</span>
-            <span>Verdict</span>
-            <span>Match</span>
-          </div>
-          <div id="risefall-grid" class="rf-grid"></div>
         </article>
       </section>
 
@@ -351,31 +213,9 @@
               </div>
             </div>
             <div class="analyzer-copy">
-              <div class="analyzer-sync-row">
-                <span id="analyzer-active-contract">Analyzing: Odd / Even (1HZ100V)</span>
-                <span id="analyzer-sync-badge" class="sync-badge synced">✅ Synced</span>
-              </div>
               <span class="analyzer-label">Neural signal engine</span>
               <strong id="signal-title">Scanning volatility pressure</strong>
               <p id="signal-copy">Waiting for a clean setup before entry.</p>
-
-              <div class="analyzer-confidence-row">
-                <span class="da-label">AI Confidence</span>
-                <div class="confidence-bar-wrap">
-                  <div class="confidence-bar-track">
-                    <div id="analyzer-conf-bar" class="confidence-bar-fill"></div>
-                  </div>
-                  <span id="analyzer-conf-pct">0%</span>
-                </div>
-                <span id="analyzer-conf-gate" class="conf-gate-badge">BELOW 80%</span>
-              </div>
-
-              <div class="analyzer-trend-row">
-                <span id="analyzer-trend-arrow" class="trend-arrow">→</span>
-                <span id="analyzer-trend-label">Flat</span>
-                <canvas id="analyzer-sparkline" class="analyzer-sparkline" width="80" height="28"></canvas>
-              </div>
-
               <div class="signal-tags">
                 <span id="signal-type-tag" class="signal-tag">ODDS</span>
                 <span id="signal-market-tag" class="signal-tag muted">1HZ100V</span>
@@ -383,10 +223,6 @@
               </div>
               <div id="strategy-watch-tag" class="strategy-watch-tag hidden">Watching: --</div>
               <div id="triple-detect-banner" class="triple-detect-banner"></div>
-            </div>
-
-            <div class="waveform-wrap" id="waveform-wrap">
-              <canvas id="analyzer-waveform" class="analyzer-waveform" height="36"></canvas>
             </div>
           </div>
           <div class="tick-readout">
@@ -578,20 +414,6 @@
               </select>
             </label>
             <label>
-              <span>Bulk purchase</span>
-              <select id="bulk-trade-count">
-                <option value="1" selected>Single trade</option>
-                <option value="2">2 trades at once</option>
-                <option value="3">3 trades at once</option>
-                <option value="4">4 trades at once</option>
-                <option value="5">5 trades at once</option>
-                <option value="6">6 trades at once</option>
-                <option value="7">7 trades at once</option>
-                <option value="8">8 trades at once</option>
-                <option value="9">9 trades at once</option>
-              </select>
-            </label>
-            <label>
               <span>Stake</span>
               <input id="stake" type="number" inputmode="decimal" min="0.35" step="0.01" value="0.35" />
             </label>
@@ -756,6 +578,21 @@
           <div class="panel-head">
             <div><span>Strategy builder</span><strong>Trigger and recovery</strong></div>
           </div>
+          <p class="strategy-panel-note">Monitors <strong>all</strong> selected contract modes simultaneously. Choose which contracts to watch:</p>
+          <div class="strategy-mode-checks">
+            <label class="strategy-check-label">
+              <input type="checkbox" id="strat-watch-odds_even" checked /> Odd / Even
+            </label>
+            <label class="strategy-check-label">
+              <input type="checkbox" id="strat-watch-over_under" checked /> Over / Under
+            </label>
+            <label class="strategy-check-label">
+              <input type="checkbox" id="strat-watch-differ" checked /> Differ
+            </label>
+            <label class="strategy-check-label">
+              <input type="checkbox" id="strat-watch-rise_fall" checked /> Rise / Fall
+            </label>
+          </div>
           <div class="settings-grid">
             <label>
               <span>Trigger Count</span>
@@ -767,15 +604,6 @@
                 <option value="7">7 Odds</option>
                 <option value="8">8 Odds</option>
                 <option value="9">9 Odds</option>
-              </select>
-            </label>
-            <label>
-              <span>Contract mode</span>
-              <select id="strategy-contract-mode">
-                <option value="odds_even" selected>Odd / Even</option>
-                <option value="over_under">Over / Under</option>
-                <option value="differ">Differ</option>
-                <option value="rise_fall">Rise / Fall</option>
               </select>
             </label>
             <label>
@@ -791,6 +619,7 @@
               <input id="strategy-profit-buffer" type="number" inputmode="decimal" min="0" step="0.01" value="0.35" />
             </label>
           </div>
+          <div id="strategy-monitor-status" class="strategy-monitor-status">Monitoring: Odd/Even · Over/Under · Differ · Rise/Fall</div>
         </article>
 
         <article class="panel simulator-panel">
@@ -836,39 +665,11 @@
             <div><span>🧩 Strategy Bot</span><strong>Your imported DBot strategies</strong></div>
           </div>
           <p class="strategy-intro-copy">
-            These are mapped from your Deriv DBot XML files onto Trade7Smart's engine (same proposal/buy pipeline,
-            matching contract type, market, and trigger logic where possible). Tap <b>Run</b> to start one —
-            the Analyzer tab will show <b>"Watching: [bot name]"</b> while it's active.
+            Each bot below is fully editable — tap <b>Edit</b> to change stake, ticks, market and recovery settings before running.
+            Tap <b>Run</b> to start immediately with current settings, or <b>Edit → Run</b> to review first.
           </p>
         </article>
         <div id="strategy-bot-grid" class="strategy-bot-grid"></div>
-      </section>
-
-      <section class="pro-ai-section" id="pro-ai">
-        <article class="panel pro-ai-intro-panel">
-          <div class="panel-head">
-            <div>
-              <span>🤖 Pro AI <span id="pro-ai-badge" class="pro-ai-badge">OFF</span></span>
-              <strong>Auto-scan, auto-detect, auto-trade</strong>
-            </div>
-          </div>
-          <p class="strategy-intro-copy">
-            Pick a Pro AI bot below, hit <b>Open</b>, then <b>Scan</b>. It checks all 5 (1s) volatility markets for that
-            exact digit condition, picks the cleanest match, and fires the trade automatically with your stake/ticks/contract settings.
-          </p>
-        </article>
-
-        <div id="pro-ai-bot-grid" class="strategy-bot-grid"></div>
-
-        <article class="panel pro-ai-scan-panel hidden" id="pro-ai-scan-panel">
-          <div class="panel-head">
-            <div><span id="pro-ai-scan-title">Scanning</span><strong id="pro-ai-scan-status">Idle</strong></div>
-            <button type="button" id="pro-ai-close-scan" class="text-button">Close</button>
-          </div>
-          <div class="pro-ai-progress-track"><div id="pro-ai-progress-fill" class="pro-ai-progress-fill"></div></div>
-          <div id="pro-ai-feed" class="pro-ai-feed"></div>
-          <button type="button" id="pro-ai-scan-btn" class="ghost-button pro-ai-scan-btn">🔍 Start Scanning</button>
-        </article>
       </section>
     </main>
 
@@ -894,9 +695,6 @@
       <button type="button" class="bt-tab" data-tab="strategy">
         <span class="bt-icon">🧩</span><span class="bt-label">Strategy</span>
       </button>
-      <button type="button" class="bt-tab" data-tab="pro-ai">
-        <span class="bt-icon">🤖</span><span class="bt-label">Pro AI</span>
-      </button>
     </nav>
 
     <div class="quick-actions-wrap">
@@ -915,7 +713,6 @@
     </aside>
 
     <div id="toast-layer" class="toast-layer" aria-live="polite"></div>
-    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
-    <script src="./app.js?v=round7-analyzer-20260620"></script>
+    <script src="./app.js?v=v5-fresh-20260621"></script>
   </body>
 </html>

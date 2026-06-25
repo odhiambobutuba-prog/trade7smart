@@ -220,6 +220,8 @@ async function connectPublicScanner() {
     hideLoader();
     updateDashboard();
   } catch (error) {
+    // Always show the app even if WebSocket fails on first load
+    hideLoader();
     setTimeout(connectPublicScanner, 3000);
   }
 }
@@ -2796,6 +2798,13 @@ function initSectionNav() {
 
 function hideLoader() {
   document.body.classList.add("loaded");
+  // Also directly dismiss the preloader overlay in case initButubaPreloader
+  // hasn't fired yet (e.g. WebSocket connects faster than the 1800ms timer)
+  const pre = document.getElementById("butuba-preloader");
+  if (pre && !pre.classList.contains("hide")) {
+    pre.classList.add("hide");
+    setTimeout(() => { pre.style.display = "none"; }, 650);
+  }
 }
 
 function initButubaPreloader() {
@@ -4858,33 +4867,9 @@ $("reset-daily-stats")?.addEventListener("click", () => {
 });
 
 connectPublicScanner();
-
-// Guarantee the app always becomes visible even if something upstream fails.
-// Primary: fire after preloader animation completes (1800ms spinner + 650ms fade = 2450ms).
-// Fallback: hard-force visibility at 5s in case of any error.
-(function ensureAppVisible() {
-  try {
-    setTimeout(function() {
-      try { hideLoader(); } catch(e) {}
-      // Belt-and-suspenders: directly remove both overlay layers
-      var pre = document.getElementById("butuba-preloader");
-      if (pre) { pre.classList.add("hide"); setTimeout(function(){ pre.style.display = "none"; }, 650); }
-      var loader = document.getElementById("app-loader");
-      if (loader) { loader.style.opacity = "0"; loader.style.visibility = "hidden"; loader.style.pointerEvents = "none"; }
-      document.body.classList.add("loaded");
-    }, 2500);
-    // Hard fallback at 5s
-    setTimeout(function() {
-      document.body.classList.add("loaded");
-      var pre = document.getElementById("butuba-preloader");
-      if (pre) pre.style.display = "none";
-      var loader = document.getElementById("app-loader");
-      if (loader) { loader.style.opacity = "0"; loader.style.visibility = "hidden"; }
-    }, 5000);
-  } catch(e) {
-    document.body.classList.add("loaded");
-  }
-})();
+// Hard fallback: if WebSocket takes too long or fails silently, force the app visible
+// after the preloader animation finishes (1800ms spinner + 650ms fade = 2450ms)
+setTimeout(hideLoader, 2600);
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js?v=round8-update-20260625")

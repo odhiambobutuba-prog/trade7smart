@@ -2750,7 +2750,9 @@ const TAB_GROUPS = {
   "home-tab-key": ["home-tab"],
   "ai-scanner-hero": ["ai-scanner-hero"],
   "hero-grid": ["hero-grid"],
+  "charts-section": ["charts-section"],
   recovery: ["pro-grid", "risk-grid"],
+  stats: ["analytics-grid", "scanner-grid", "bottom-grid"],
   strategy: ["strategy"],
   "pro-ai": ["pro-ai"],
 };
@@ -2784,17 +2786,22 @@ function hideLoader() {
 }
 
 function initButubaPreloader() {
-  // Dismiss preloader quickly and open Home directly
-  function dismissPreloader() {
+  const letters = "BUTUBA".split("");
+  const holder = $("bp-letters");
+  if (!holder) return;
+  letters.forEach((ch, i) => {
+    const span = document.createElement("span");
+    span.textContent = ch;
+    span.style.animationDelay = `${i * 0.12}s`;
+    holder.appendChild(span);
+  });
+  setTimeout(() => {
     const pre = $("butuba-preloader");
     if (pre) {
       pre.classList.add("hide");
-      setTimeout(() => { if (pre.parentNode) pre.remove(); }, 550);
+      setTimeout(() => pre.remove(), 600);
     }
-    document.body.classList.add("loaded");
-  }
-  // Show for a short moment then dismiss
-  setTimeout(dismissPreloader, 1600);
+  }, 5000);
 }
 
 function initConnectionDrawer() {
@@ -3117,20 +3124,14 @@ function renderStrategyBotGrid() {
     const card = document.createElement("article");
     card.className = "panel strategy-card";
     const isActive = state.activeStrategyId === bot.id;
-    // Per-bot market saved in bot.market or fallback to global strategy market
-    const botMarket = bot.market || $("strategy-global-market")?.value || "1HZ100V";
-    const marketLabel = WATCHLIST.find(([s]) => s === botMarket)?.[1] || botMarket;
     card.innerHTML = `
       <div class="strategy-card-head">
         <strong>${bot.name}</strong>
         ${isActive ? '<span class="strategy-live-tag">LIVE</span>' : ""}
       </div>
       <p class="strategy-card-desc">${bot.description}</p>
-      <div class="strategy-tags">${bot.tags.map((t) => `<span>${t}</span>`).join("")}<span class="bot-market-tag" data-bot="${bot.id}">📍 ${marketLabel}</span></div>
-      <div class="strategy-card-actions">
-        <button type="button" class="ghost-button strategy-edit-btn" data-bot="${bot.id}">✏️ Edit</button>
-        <button type="button" class="ghost-button strategy-run-btn" data-bot="${bot.id}">${isActive ? "Stop" : "Run"}</button>
-      </div>
+      <div class="strategy-tags">${bot.tags.map((t) => `<span>${t}</span>`).join("")}</div>
+      <button type="button" class="ghost-button strategy-run-btn" data-bot="${bot.id}">${isActive ? "Stop" : "Run"}</button>
     `;
     holder.appendChild(card);
   });
@@ -3146,138 +3147,7 @@ function renderStrategyBotGrid() {
       }
     });
   });
-
-  holder.querySelectorAll(".strategy-edit-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const bot = STRATEGY_BOTS.find((b) => b.id === btn.dataset.bot);
-      if (bot) openStrategyEditModal(bot);
-    });
-  });
 }
-
-function openStrategyEditModal(bot) {
-  // Remove any existing modal
-  const existing = document.getElementById("strategy-edit-modal");
-  if (existing) existing.remove();
-
-  // All Deriv markets for selection
-  const allMarkets = [
-    ["1HZ100V","Volatility 100 (1s)"],["1HZ75V","Volatility 75 (1s)"],["1HZ50V","Volatility 50 (1s)"],
-    ["1HZ25V","Volatility 25 (1s)"],["1HZ10V","Volatility 10 (1s)"],
-    ["R_100","Volatility 100"],["R_75","Volatility 75"],["R_50","Volatility 50"],
-    ["R_25","Volatility 25"],["R_10","Volatility 10"],
-    ["frxEURUSD","EUR/USD"],["frxGBPUSD","GBP/USD"],["frxUSDJPY","USD/JPY"],
-    ["OTC_DJI","Wall Street 30"],["OTC_SPC","US Tech 100"],
-  ];
-  const botMarket = bot.market || $("strategy-global-market")?.value || "1HZ100V";
-  const marketOptions = allMarkets.map(([v, l]) => `<option value="${v}" ${v === botMarket ? "selected" : ""}>${l}</option>`).join("");
-  const contractOptions = [
-    ["odds_even","Odd / Even"],["over_under","Over / Under"],
-    ["differ","Differ"],["rise_fall","Rise / Fall"],
-  ].map(([v, l]) => `<option value="${v}" ${(bot.contractMode || "odds_even") === v ? "selected" : ""}>${l}</option>`).join("");
-
-  const backdrop = document.createElement("div");
-  backdrop.id = "strategy-edit-modal";
-  backdrop.className = "edit-modal-backdrop";
-  backdrop.innerHTML = `
-    <div class="edit-modal">
-      <h3>✏️ Edit: ${bot.name}</h3>
-      <div class="edit-modal-grid">
-        <label>Market
-          <select id="edit-bot-market">${marketOptions}</select>
-        </label>
-        <label>Contract Type
-          <select id="edit-bot-contract">${contractOptions}</select>
-        </label>
-        <label>Stake (${state.currency || "USD"})
-          <input id="edit-bot-stake" type="number" min="0.35" step="0.01" value="${bot.stake || 0.35}" />
-        </label>
-        <label>Ticks
-          <input id="edit-bot-ticks" type="number" min="1" max="10" value="${bot.ticks || 1}" />
-        </label>
-        <label>Trigger Count
-          <input id="edit-bot-trigger" type="number" min="2" max="9" value="${bot.triggerCount || 5}" />
-        </label>
-        <label>Max Recovery
-          <input id="edit-bot-maxrecov" type="number" min="1" max="15" value="${bot.maxRecovery || 7}" />
-        </label>
-      </div>
-      <div class="edit-modal-actions">
-        <button type="button" class="ghost-button" id="edit-modal-save" style="flex:1">✅ Save</button>
-        <button type="button" class="text-button" id="edit-modal-cancel">Cancel</button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(backdrop);
-
-  document.getElementById("edit-modal-save").addEventListener("click", () => {
-    bot.market = document.getElementById("edit-bot-market").value;
-    bot.contractMode = document.getElementById("edit-bot-contract").value;
-    bot.stake = parseFloat(document.getElementById("edit-bot-stake").value) || 0.35;
-    bot.ticks = parseInt(document.getElementById("edit-bot-ticks").value) || 1;
-    bot.triggerCount = parseInt(document.getElementById("edit-bot-trigger").value) || 5;
-    bot.maxRecovery = parseInt(document.getElementById("edit-bot-maxrecov").value) || 7;
-    backdrop.remove();
-    renderStrategyBotGrid();
-    toast(`Bot "${bot.name}" settings saved.`, "good");
-  });
-  document.getElementById("edit-modal-cancel").addEventListener("click", () => backdrop.remove());
-  backdrop.addEventListener("click", (e) => { if (e.target === backdrop) backdrop.remove(); });
-}
-
-function initImportDBot() {
-  const btn = $("import-dbot-btn");
-  const fileInput = $("import-dbot-file");
-  if (!btn || !fileInput) return;
-
-  btn.addEventListener("click", () => fileInput.click());
-  fileInput.addEventListener("change", () => {
-    const file = fileInput.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target.result;
-      // Parse XML and extract what we can
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(text, "text/xml");
-      const botName = file.name.replace(".xml", "").replace(/_/g, " ");
-      // Detect contract type from XML keywords
-      let contractMode = "odds_even";
-      const xmlStr = text.toLowerCase();
-      if (xmlStr.includes("digitover") || xmlStr.includes("digitunder")) contractMode = "over_under";
-      else if (xmlStr.includes("digitdiff")) contractMode = "differ";
-      else if (xmlStr.includes("call") || xmlStr.includes("put") || xmlStr.includes("rise") || xmlStr.includes("fall")) contractMode = "rise_fall";
-      // Extract market
-      const symbolMatch = xmlStr.match(/1hz\d+v|r_\d+/);
-      const market = symbolMatch ? symbolMatch[0].toUpperCase() : ($("strategy-global-market")?.value || "1HZ100V");
-
-      const newBot = {
-        id: `imported_${Date.now()}`,
-        name: botName,
-        source: file.name,
-        tags: ["Imported", contractMode.replace("_", "/")],
-        description: `Imported from ${file.name}. Contract: ${contractMode}. Market: ${market}.`,
-        market,
-        contractMode,
-        stake: 0.35,
-        ticks: 1,
-        triggerCount: 5,
-        maxRecovery: 7,
-        apply: function() {
-          setContractMode(this.contractMode);
-          state.symbol = this.market;
-          if ($("symbol")) $("symbol").value = this.market;
-        },
-      };
-      STRATEGY_BOTS.unshift(newBot);
-      renderStrategyBotGrid();
-      toast(`Imported: ${botName}`, "good");
-      fileInput.value = "";
-    };
-    reader.readAsText(file);
-  });
-}
-
 
 function runStrategyBot(bot) {
   if (!state.authorized) {
@@ -3285,15 +3155,6 @@ function runStrategyBot(bot) {
     return;
   }
   bot.apply();
-  // Apply bot-level settings overrides
-  if (bot.market) {
-    state.symbol = bot.market;
-    if ($("symbol")) $("symbol").value = bot.market;
-  }
-  if (bot.stake && $("stake")) $("stake").value = bot.stake;
-  if (bot.ticks && $("trade-ticks")) $("trade-ticks").value = bot.ticks;
-  if (bot.triggerCount && $("preferred-odds")) $("preferred-odds").value = bot.triggerCount;
-  if (bot.maxRecovery && $("max-recovery-steps")) $("max-recovery-steps").value = bot.maxRecovery;
   state.activeStrategyId = bot.id;
   state.activeStrategyName = bot.name;
   const tag = $("strategy-watch-tag");
@@ -3427,31 +3288,22 @@ function startProAiScan() {
   state.proAiScanning = true;
   state.proAiActive = true;
   updateProAiBadge();
-  $("pro-ai-scan-status").textContent = "Scanning continuously...";
-  $("pro-ai-scan-btn").textContent = "⏹ Stop Scan";
-  $("pro-ai-scan-btn").disabled = false;
-  // Toggle to stop on second click
-  $("pro-ai-scan-btn").dataset.scanning = "1";
+  $("pro-ai-scan-status").textContent = "Scanning...";
+  $("pro-ai-scan-btn").textContent = "Scanning...";
+  $("pro-ai-scan-btn").disabled = true;
   let progress = 0;
-  let scanCycles = 0;
-  proAiFeedLine(`🔍 Pro AI continuous scan started: ${bot.name} across all markets.`, "info");
+  proAiFeedLine(`🔍 Pro AI scan started: ${bot.name} across all 1s markets.`, "info");
 
   state.proAiScanTimer = setInterval(() => {
-    if (!state.proAiScanning) return;
-    scanCycles++;
-    // Animate progress bar back and forth
-    progress = (progress + 5) % 110;
-    if (progress > 100) progress = 0;
-    $("pro-ai-progress-fill").style.width = `${Math.min(progress, 100)}%`;
+    progress = Math.min(96, progress + 4);
+    $("pro-ai-progress-fill").style.width = `${progress}%`;
 
     let found = null;
     WATCHLIST.forEach(([symbol, name]) => {
       const stat = state.marketStats.get(symbol);
       if (!stat || !stat.recentDigits || stat.recentDigits.length < 3) return;
       const recent = stat.recentDigits.slice(-3);
-      if (scanCycles % 5 === 0) {
-        proAiFeedLine(`${name}: last 3 digits ${recent.join(",")}`, "muted");
-      }
+      proAiFeedLine(`${name}: last 3 digits ${recent.join(",")}`, "muted");
       if (!found && bot.match(stat.recentDigits)) {
         found = { symbol, name, stat };
       }
@@ -3460,13 +3312,22 @@ function startProAiScan() {
     if (found) {
       clearInterval(state.proAiScanTimer);
       $("pro-ai-progress-fill").style.width = "100%";
-      $("pro-ai-scan-status").textContent = `✅ Best market found: ${found.name}`;
-      proAiFeedLine(`✅ Match found on ${found.name} — executing trade.`, "good");
-      $("pro-ai-scan-btn").textContent = "🔍 Start Scanning";
-      $("pro-ai-scan-btn").dataset.scanning = "0";
+      $("pro-ai-scan-status").textContent = `Best market found: ${found.name}`;
+      proAiFeedLine(`✅ Best market found: ${found.name} matches "${bot.condition}".`, "good");
       executeProAiTrade(bot, found);
     }
-  }, 500);
+  }, 700);
+
+  setTimeout(() => {
+    if (state.proAiScanning && state.proAiScanTimer) {
+      clearInterval(state.proAiScanTimer);
+      state.proAiScanning = false;
+      $("pro-ai-scan-btn").textContent = "🔍 Start Scanning";
+      $("pro-ai-scan-btn").disabled = false;
+      $("pro-ai-scan-status").textContent = "No clean match found — try again";
+      proAiFeedLine("⏱️ Scan timed out without a clean match.", "warn");
+    }
+  }, 20000);
 }
 
 function executeProAiTrade(bot, found) {
@@ -3507,7 +3368,6 @@ function executeProAiTrade(bot, found) {
 
   state.proAiScanning = false;
   $("pro-ai-scan-btn").textContent = "🔍 Start Scanning";
-  $("pro-ai-scan-btn").dataset.scanning = "0";
   $("pro-ai-scan-btn").disabled = false;
 
   if (state.notificationsEnabled) {
@@ -3524,19 +3384,7 @@ function updateProAiBadge() {
 
 function initProAi() {
   renderProAiBotGrid();
-  $("pro-ai-scan-btn")?.addEventListener("click", () => {
-    if ($("pro-ai-scan-btn").dataset.scanning === "1") {
-      // Stop scan
-      if (state.proAiScanTimer) clearInterval(state.proAiScanTimer);
-      state.proAiScanning = false;
-      $("pro-ai-scan-btn").textContent = "🔍 Start Scanning";
-      $("pro-ai-scan-btn").dataset.scanning = "0";
-      $("pro-ai-scan-status").textContent = "Scan stopped.";
-      proAiFeedLine("⏹ Scan stopped manually.", "warn");
-    } else {
-      startProAiScan();
-    }
-  });
+  $("pro-ai-scan-btn")?.addEventListener("click", startProAiScan);
   $("pro-ai-close-scan")?.addEventListener("click", () => {
     $("pro-ai-scan-panel").classList.add("hidden");
     if (state.proAiScanTimer) clearInterval(state.proAiScanTimer);
@@ -3555,7 +3403,6 @@ renderStrategyBotGrid();
 initChartTypeToggle();
 initLightweightChart();
 initProAi();
-initImportDBot();
 initDailyAutoReset();
 renderTradeHistory();
 $("reset-daily-stats")?.addEventListener("click", () => {

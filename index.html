@@ -9,8 +9,33 @@
     <link rel="stylesheet" href="./styles.css?v=round7-analyzer-20260620" />
   </head>
   <body>
-  
-        
+    <div id="butuba-preloader" class="butuba-preloader">
+      <p class="bp-welcome">Welcome to Trade7Smart</p>
+      <div class="bp-letters" id="bp-letters">
+        <span class="bp-letter" data-letter="B">B</span>
+        <span class="bp-letter" data-letter="U">U</span>
+        <span class="bp-letter" data-letter="T">T</span>
+        <span class="bp-letter" data-letter="U">U</span>
+        <span class="bp-letter" data-letter="B">B</span>
+        <span class="bp-letter" data-letter="A">A</span>
+      </div>
+      <div class="bp-progress">
+        <span class="bp-counter" id="bp-counter">Loading... 0/6</span>
+        <div class="bp-progress-bar">
+          <div class="bp-progress-fill" id="bp-progress-fill"></div>
+        </div>
+      </div>
+      <p class="bp-powered">powered by Butuba</p>
+      <div class="bp-particles" id="bp-particles"></div>
+    </div>
+
+    <div id="app-loader" class="app-loader">
+      <div>
+        <strong>Trade7Smart</strong>
+        <span>Initializing AI volatility scanner</span>
+        <i></i>
+      </div>
+    </div>
     <main class="terminal-shell">
       <header class="topbar">
         <div class="brand-block">
@@ -140,7 +165,9 @@
         <button type="button" class="nav-pill active" data-tab="home-tab-key">Home</button>
         <button type="button" class="nav-pill" data-tab="ai-scanner-hero">Scanner</button>
         <button type="button" class="nav-pill" data-tab="hero-grid">Analyzer</button>
+        <button type="button" class="nav-pill" data-tab="charts-section">Charts</button>
         <button type="button" class="nav-pill" data-tab="recovery">Recovery</button>
+        <button type="button" class="nav-pill" data-tab="stats">Stats</button>
         <button type="button" class="nav-pill" data-tab="strategy">Strategy</button>
         <button type="button" class="nav-pill" data-tab="pro-ai">Pro AI</button>
       </nav>
@@ -162,7 +189,7 @@
         </article>
       </section>
 
-      <section class="charts-section analyzer-only" id="charts-section">
+      <section class="charts-section" id="charts-section">
         <article class="panel price-chart-panel">
           <div class="panel-head">
             <div><span>Price stream</span><strong id="price-chart-symbol-label">Live market chart</strong></div>
@@ -419,17 +446,23 @@
           </div>
         </article>
 
-        <!-- Hidden elements for JS balance tracking -->
-        <div style="display:none">
-          <strong id="balance">--</strong>
-          <b id="account-badge">DEMO</b>
-          <strong id="odd-streak">0</strong>
-          <strong id="digit-streak">0</strong>
-          <strong id="loss-count">0</strong>
-          <strong id="cum-loss">0.00</strong>
-          <strong id="next-stake">0.35</strong>
-          <strong id="market-rank">--</strong>
-        </div>
+        <article class="panel account-panel">
+          <div class="panel-head">
+            <div>
+              <span>Account balance</span>
+              <strong id="balance">--</strong>
+            </div>
+            <b id="account-badge">DEMO</b>
+          </div>
+          <div class="mini-stats">
+            <div><span>Odd streak</span><strong id="odd-streak">0</strong></div>
+            <div><span>Digit repeat</span><strong id="digit-streak">0</strong></div>
+            <div><span>Loss count</span><strong id="loss-count">0</strong></div>
+            <div><span>Cumulative loss</span><strong id="cum-loss">0.00</strong></div>
+            <div><span>Next stake</span><strong id="next-stake">0.35</strong></div>
+            <div><span>AI rank</span><strong id="market-rank">--</strong></div>
+          </div>
+        </article>
 
         <article class="panel bot-panel" id="bot-panel-anchor">
           <div class="panel-head">
@@ -645,6 +678,41 @@
       </section>
 
       <section class="risk-grid" id="risk-grid">
+        <article class="panel recovery-settings-panel">
+          <div class="panel-head">
+            <div><span>Recovery settings</span><strong>Risk boundaries</strong></div>
+          </div>
+          <div class="settings-grid">
+            <label>
+              <span>Daily Profit Target</span>
+              <input id="daily-profit-target" type="number" inputmode="decimal" step="0.01" value="10" />
+            </label>
+            <label>
+              <span>Daily Loss Limit</span>
+              <input id="daily-loss-limit" type="number" inputmode="decimal" step="0.01" value="10" />
+            </label>
+            <label>
+              <span>Min Balance Protection</span>
+              <input id="min-balance-protection" type="number" inputmode="decimal" step="0.01" value="5" />
+            </label>
+            <label>
+              <span>Preset</span>
+              <select id="strategy-preset">
+                <option value="custom" selected>Custom</option>
+                <option value="immediate">Immediate recovery after loss</option>
+                <option value="verysafe">Very Safe</option>
+                <option value="normal">Normal</option>
+                <option value="fast">Fast</option>
+                <option value="conservative">Conservative</option>
+                <option value="balanced">Balanced</option>
+                <option value="aggressive">Aggressive</option>
+                <option value="recovery3">Recovery 3</option>
+                <option value="recovery5">Recovery 5</option>
+              </select>
+            </label>
+          </div>
+        </article>
+
         <article class="panel ladder-panel">
           <div class="panel-head">
             <div><span>Recovery ladder</span><strong id="ladder-summary">Base stake ready</strong></div>
@@ -667,7 +735,7 @@
         </article>
       </section>
 
-      <section class="analytics-grid analyzer-only" id="analytics-grid">
+      <section class="analytics-grid" id="analytics-grid">
         <article class="panel stats-panel">
           <div class="panel-head">
             <div><span>Statistics</span><strong>Session performance</strong></div>
@@ -737,7 +805,7 @@
         </article>
       </section>
 
-      <section class="scanner-grid analyzer-only" id="scanner-grid">
+      <section class="scanner-grid" id="scanner-grid">
         <article class="panel scanner-panel">
           <div class="panel-head">
             <div><span>Market scanner</span><strong>Volatility rank table</strong></div>
@@ -752,7 +820,7 @@
         </article>
       </section>
 
-      <section class="bottom-grid analyzer-only" id="bottom-grid">
+      <section class="bottom-grid" id="bottom-grid">
         <article class="panel journal-panel">
           <div class="journal-header">
             <div><span>Bot journal</span><strong>Live events</strong></div>
@@ -766,28 +834,11 @@
         <article class="panel strategy-intro-panel">
           <div class="panel-head">
             <div><span>🧩 Strategy Bot</span><strong>Your imported DBot strategies</strong></div>
-            <div class="strategy-header-actions">
-              <label class="strategy-market-label">
-                <span>Market</span>
-                <select id="strategy-global-market" class="strategy-market-select">
-                  <option value="1HZ100V">Volatility 100 (1s)</option>
-                  <option value="1HZ75V">Volatility 75 (1s)</option>
-                  <option value="1HZ50V">Volatility 50 (1s)</option>
-                  <option value="1HZ25V">Volatility 25 (1s)</option>
-                  <option value="1HZ10V">Volatility 10 (1s)</option>
-                  <option value="R_100">Volatility 100</option>
-                  <option value="R_75">Volatility 75</option>
-                  <option value="R_50">Volatility 50</option>
-                  <option value="R_25">Volatility 25</option>
-                  <option value="R_10">Volatility 10</option>
-                </select>
-              </label>
-              <button id="import-dbot-btn" class="ghost-button import-btn" type="button">📥 Import DBot</button>
-              <input id="import-dbot-file" type="file" accept=".xml" style="display:none" />
-            </div>
           </div>
           <p class="strategy-intro-copy">
-            These are mapped from your Deriv DBot XML files onto Trade7Smart's engine. Tap <b>Run</b> to start, <b>Edit</b> to change settings, or import any DBot XML file.
+            These are mapped from your Deriv DBot XML files onto Trade7Smart's engine (same proposal/buy pipeline,
+            matching contract type, market, and trigger logic where possible). Tap <b>Run</b> to start one —
+            the Analyzer tab will show <b>"Watching: [bot name]"</b> while it's active.
           </p>
         </article>
         <div id="strategy-bot-grid" class="strategy-bot-grid"></div>
@@ -802,8 +853,8 @@
             </div>
           </div>
           <p class="strategy-intro-copy">
-            Pick a Pro AI bot below, hit <b>Open</b>, then <b>Scan</b>. It continuously scans all volatility markets for that
-            exact digit condition — it will <b>not stop</b> until it finds a good trade. Trades execute automatically with your stake/ticks/contract settings.
+            Pick a Pro AI bot below, hit <b>Open</b>, then <b>Scan</b>. It checks all 5 (1s) volatility markets for that
+            exact digit condition, picks the cleanest match, and fires the trade automatically with your stake/ticks/contract settings.
           </p>
         </article>
 
@@ -831,8 +882,14 @@
       <button type="button" class="bt-tab" data-tab="hero-grid">
         <span class="bt-icon">🎯</span><span class="bt-label">Analyzer</span>
       </button>
+      <button type="button" class="bt-tab" data-tab="charts-section">
+        <span class="bt-icon">📈</span><span class="bt-label">Charts</span>
+      </button>
       <button type="button" class="bt-tab" data-tab="recovery">
         <span class="bt-icon">🛡️</span><span class="bt-label">Recovery</span>
+      </button>
+      <button type="button" class="bt-tab" data-tab="stats">
+        <span class="bt-icon">📊</span><span class="bt-label">Stats</span>
       </button>
       <button type="button" class="bt-tab" data-tab="strategy">
         <span class="bt-icon">🧩</span><span class="bt-label">Strategy</span>

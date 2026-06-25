@@ -29,6 +29,9 @@ body {
     linear-gradient(180deg, #0a1018 0%, var(--bg) 48%);
   color: var(--ink);
   background-attachment: fixed;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 body::before {
@@ -95,15 +98,6 @@ body.loaded .app-loader {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-}
-
-/* CSS fallback: app-loader auto-dismisses after 3.5s even if JS never adds body.loaded */
-@keyframes appLoaderAutoDismiss {
-  0%   { opacity: 1; visibility: visible; pointer-events: auto; }
-  100% { opacity: 0; visibility: hidden;  pointer-events: none; }
-}
-.app-loader {
-  animation: appLoaderAutoDismiss 0.26s ease 3.5s forwards;
 }
 
 @keyframes loader-slide {
@@ -2036,24 +2030,18 @@ body {
 }
 
 /* ===== Butuba Preloader ===== */
+/* ===== TikTok-style Blue Preloader ===== */
 .butuba-preloader {
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: 9999;
   background: #060a10;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 28px;
-  /* CSS-driven auto-dismiss: fades out at 2s, pointer-events off at 2.6s, display:none at 3.2s */
-  animation: preloaderAutoDismiss 0.6s ease 2s forwards;
-}
-
-@keyframes preloaderAutoDismiss {
-  0%   { opacity: 1; pointer-events: auto; }
-  99%  { opacity: 0; pointer-events: none; display: flex; }
-  100% { opacity: 0; pointer-events: none; display: none; }
+  gap: 24px;
+  transition: opacity 0.5s ease;
 }
 
 .butuba-preloader.hide {
@@ -2062,43 +2050,43 @@ body {
   display: none !important;
 }
 
+/* TikTok spinner: 3 arcs in blue shades */
 .tt-spinner-wrap {
   position: relative;
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
 }
 
 .tt-spinner {
   position: relative;
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
 }
 
 .tt-arc {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 5px solid transparent;
+  border: 4px solid transparent;
 }
 
-.tt-arc-blue {
+.tt-arc-1 {
   border-top-color: #3b82f6;
   animation: ttSpin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-.tt-arc-white {
+.tt-arc-2 {
   inset: 8px;
-  border-bottom-color: #ffffff;
-  border-top-color: transparent;
+  border-bottom-color: #60a5fa;
   animation: ttSpin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  animation-delay: -0.3s;
+  animation-delay: -0.25s;
 }
 
-.tt-arc-cyan {
+.tt-arc-3 {
   inset: 16px;
-  border-top-color: #22d3ee;
+  border-top-color: #93c5fd;
   animation: ttSpin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  animation-delay: -0.6s;
+  animation-delay: -0.5s;
 }
 
 @keyframes ttSpin {
@@ -2107,13 +2095,13 @@ body {
 
 .bp-welcome {
   color: #e7ecf5;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  margin: 0;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  margin: 0;
+  animation: bpFadeIn 0.6s 0.2s ease forwards;
   opacity: 0;
-  animation: bpFadeIn 0.5s 0.3s ease forwards;
 }
 
 @keyframes bpFadeIn {
@@ -4693,208 +4681,109 @@ body.light-theme small {
   .da-streaks { grid-template-columns: 1fr; }
 }
 
-/* ===== Smooth scrolling & mobile UX ===== */
-html {
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
+/* ===== Mobile responsive improvements ===== */
+@media (max-width: 720px) {
+  main.terminal-shell {
+    padding: 8px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+  .bottom-tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 500;
+  }
+  main.terminal-shell {
+    padding-bottom: 80px !important;
+  }
+  .topbar {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .top-actions {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .home-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .settings-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .contract-tabs {
+    flex-wrap: wrap !important;
+  }
+  .control-strip {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  .strategy-bot-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .ai-market-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
 }
 
-.terminal-shell {
-  overflow-x: hidden;
-}
-
-/* ===== Strategy Bot Edit & Market Selector ===== */
-.strategy-card-market {
-  margin-top: 6px;
-}
-
-.strategy-card-market select {
-  width: 100%;
-  padding: 5px 8px;
-  border: 1px solid #1e2a3c;
-  border-radius: 6px;
-  background: #080d14;
-  color: var(--ink);
-  font-size: 0.76rem;
-}
-
-.strategy-card-actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 8px;
-  flex-wrap: wrap;
-}
-
-.strategy-card-actions .ghost-button {
-  flex: 1;
-  min-width: 0;
-  font-size: 0.75rem;
-  padding: 5px 8px;
-}
-
-.strategy-edit-modal {
+/* ===== Strategy Bot Edit Modal ===== */
+.bot-edit-modal-overlay {
   position: fixed;
   inset: 0;
   z-index: 800;
-  background: rgba(0,0,0,0.75);
+  background: rgba(0,0,0,0.7);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
 }
-
-.strategy-edit-modal.hidden { display: none !important; }
-
-.strategy-edit-inner {
-  background: #0d1219;
-  border: 1px solid #1a2433;
-  border-radius: 14px;
-  padding: 20px;
+.bot-edit-modal {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
   width: 100%;
-  max-width: 420px;
-  max-height: 85vh;
-  overflow-y: auto;
+  max-width: 480px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
-
-.strategy-edit-inner h3 {
+.bot-edit-modal h3 {
   margin: 0;
-  font-size: 1rem;
   color: var(--ink);
+  font-size: 1.1rem;
 }
-
-.strategy-edit-inner label {
+.bot-edit-modal label {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   color: var(--muted);
 }
-
-.strategy-edit-inner input,
-.strategy-edit-inner select,
-.strategy-edit-inner textarea {
-  background: #080d14;
-  border: 1px solid #1e2a3c;
+.bot-edit-modal select,
+.bot-edit-modal input {
+  padding: 8px 10px;
+  background: var(--input-bg, #111c2b);
+  border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--ink);
-  padding: 6px 10px;
-  font-size: 0.84rem;
+  font-size: 0.9rem;
 }
-
-.strategy-edit-inner textarea {
-  resize: vertical;
-  min-height: 60px;
-}
-
-.modal-actions {
+.bot-edit-modal-actions {
   display: flex;
-  gap: 8px;
-  margin-top: 4px;
+  gap: 10px;
+  justify-content: flex-end;
 }
-
-.modal-actions button { flex: 1; }
-
-/* ===== Responsive phone layout fixes ===== */
-@media (max-width: 600px) {
-  .topbar {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .top-actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .section-nav {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding: 8px 10px;
-  }
-
-  .nav-pill {
-    flex-shrink: 0;
-    font-size: 0.72rem;
-    padding: 0 10px;
-    min-height: 30px;
-  }
-
-  .bottom-tab-bar {
-    gap: 0;
-    padding: 6px 2px;
-  }
-
-  .bt-tab {
-    flex: 1;
-    min-width: 0;
-    padding: 4px 2px;
-  }
-
-  .bt-label {
-    font-size: 0.58rem;
-  }
-
-  .bt-icon {
-    font-size: 1.1rem;
-  }
-
-  .home-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-
-  .control-strip {
-    grid-template-columns: 1fr !important;
-  }
-
-  .action-row {
-    flex-wrap: wrap;
-  }
-
-  .run-button,
-  .stop-button {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .panel {
-    padding: 10px 12px;
-  }
-
-  .brand-block h1 {
-    font-size: 1.1rem;
-  }
-
-  .contract-tabs {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-  }
-
-  .contract-tab {
-    flex-shrink: 0;
-    font-size: 0.72rem;
-    padding: 6px 10px;
-  }
-
-  .strategy-bot-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .performance-float {
-    bottom: 70px;
-    right: 10px;
-    padding: 6px 10px;
-    font-size: 0.72rem;
-  }
-
-  .quick-actions-fab {
-    bottom: 72px;
-    right: 10px;
-    width: 40px;
-    height: 40px;
-    font-size: 1rem;
-  }
+.strategy-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.import-dbot-btn {
+  cursor: pointer;
+  display: inline-block;
 }

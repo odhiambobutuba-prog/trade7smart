@@ -7,16 +7,6 @@ const WATCHLIST = [
   ["1HZ10V", "Volatility 10 (1s)"],
 ];
 
-const ALL_MARKETS = [
-  ["1HZ100V","Vol 100 (1s)"],["1HZ75V","Vol 75 (1s)"],["1HZ50V","Vol 50 (1s)"],
-  ["1HZ25V","Vol 25 (1s)"],["1HZ10V","Vol 10 (1s)"],
-  ["R_100","Vol 100"],["R_75","Vol 75"],["R_50","Vol 50"],["R_25","Vol 25"],["R_10","Vol 10"],
-  ["BOOM1000","Boom 1000"],["BOOM500","Boom 500"],["BOOM300","Boom 300"],
-  ["CRASH1000","Crash 1000"],["CRASH500","Crash 500"],["CRASH300","Crash 300"],
-  ["stpRNG","Step Index"],["JD10","Jump 10"],["JD25","Jump 25"],["JD50","Jump 50"],
-  ["JD75","Jump 75"],["JD100","Jump 100"],
-];
-
 const state = {
   ws: null,
   scannerOnly: false,
@@ -220,7 +210,7 @@ async function connectPublicScanner() {
     hideLoader();
     updateDashboard();
   } catch (error) {
-    hideLoader();
+    hideLoader(); // always show app even if WS fails
     setTimeout(connectPublicScanner, 3000);
   }
 }
@@ -2760,7 +2750,7 @@ function startLiveClock() {
 const TAB_GROUPS = {
   "home-tab-key": ["home-tab"],
   "ai-scanner-hero": ["ai-scanner-hero"],
-  "hero-grid": ["hero-grid", "bottom-grid"],
+  "hero-grid": ["hero-grid", "bot-panel-anchor"],
   recovery: ["pro-grid", "risk-grid"],
   strategy: ["strategy"],
   "pro-ai": ["pro-ai"],
@@ -2781,8 +2771,7 @@ function initSectionNav() {
     document.querySelectorAll(".nav-pill").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
     document.querySelectorAll(".bt-tab").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
     const shell = document.querySelector(".terminal-shell");
-    if (shell) shell.scrollTo({ top: 0, behavior: "smooth" });
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (shell) shell.scrollTo({ top: 0 });
   }
 
   document.querySelectorAll(".nav-pill, .bt-tab").forEach((pill) => {
@@ -2797,19 +2786,18 @@ function initSectionNav() {
 
 function hideLoader() {
   document.body.classList.add("loaded");
-  var pre = document.getElementById("butuba-preloader");
+  const pre = document.getElementById("butuba-preloader");
   if (pre) { pre.classList.add("hide"); }
 }
 
 function initButubaPreloader() {
-  // Simple TikTok-style spinner: show for 1.8s then fade out
+  // Simple TikTok-style blue spinner: show for 2s then fade out
   const pre = $("butuba-preloader");
-  if (!pre) return;
+  if (!pre) { hideLoader(); return; }
   setTimeout(() => {
     pre.classList.add("hide");
-    setTimeout(() => { pre.style.display = "none"; }, 650);
     hideLoader();
-  }, 1800);
+  }, 2000);
 }
 
 function initConnectionDrawer() {
@@ -4413,10 +4401,69 @@ const STRATEGY_BOTS = [
   },
 ];
 
-function marketOptionsHtml(selected) {
-  return ALL_MARKETS.map(([v, n]) =>
-    `<option value="${v}"${v === selected ? " selected" : ""}>${n}</option>`
+const ALL_MARKETS_FOR_BOTS = [
+  ["1HZ100V","Volatility 100 (1s)"],["1HZ75V","Volatility 75 (1s)"],["1HZ50V","Volatility 50 (1s)"],
+  ["1HZ25V","Volatility 25 (1s)"],["1HZ10V","Volatility 10 (1s)"],
+  ["R_100","Volatility 100"],["R_75","Volatility 75"],["R_50","Volatility 50"],
+  ["R_25","Volatility 25"],["R_10","Volatility 10"],
+  ["BOOM1000","Boom 1000"],["BOOM500","Boom 500"],["BOOM300","Boom 300"],
+  ["CRASH1000","Crash 1000"],["CRASH500","Crash 500"],["CRASH300","Crash 300"],
+  ["stpRNG","Step Index"],["JD10","Jump 10"],["JD25","Jump 25"],
+  ["JD50","Jump 50"],["JD75","Jump 75"],["JD100","Jump 100"],
+];
+
+function openBotEditModal(bot) {
+  const overlay = document.createElement("div");
+  overlay.className = "bot-edit-modal-overlay";
+  const mktOpts = ALL_MARKETS_FOR_BOTS.map(([v,l]) =>
+    `<option value="${v}" ${(bot.market||state.symbol)===v?"selected":""}>${l}</option>`
   ).join("");
+  overlay.innerHTML = `
+    <div class="bot-edit-modal">
+      <h3>Edit: ${bot.name}</h3>
+      <label>Market<select id="bem-market">${mktOpts}</select></label>
+      <label>Stake<input type="number" id="bem-stake" value="${bot.stake||0.35}" min="0.35" step="0.01"/></label>
+      <label>Ticks<input type="number" id="bem-ticks" value="${bot.ticks||1}" min="1" max="10"/></label>
+      <div class="bot-edit-modal-actions">
+        <button class="ghost-button" id="bem-cancel">Cancel</button>
+        <button class="run-button" id="bem-save">Save</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector("#bem-cancel").onclick = () => overlay.remove();
+  overlay.querySelector("#bem-save").onclick = () => {
+    bot.market = overlay.querySelector("#bem-market").value;
+    bot.stake = parseFloat(overlay.querySelector("#bem-stake").value)||0.35;
+    bot.ticks = parseInt(overlay.querySelector("#bem-ticks").value)||1;
+    overlay.remove();
+    renderStrategyBotGrid();
+    toast(`${bot.name} settings saved.`, "good");
+  };
+}
+
+function initImportDBot() {
+  const fi = $("import-dbot-file");
+  if (!fi) return;
+  fi.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const xml = new DOMParser().parseFromString(ev.target.result,"text/xml");
+        const botName = xml.querySelector("field[name='TRADETYPE_LIST']")?.textContent || file.name.replace(".xml","");
+        STRATEGY_BOTS.push({
+          id:"imported_"+Date.now(), name:botName, tags:["Imported"],
+          description:`Imported from ${file.name}`, market:state.symbol,
+          stake:0.35, ticks:1, apply:()=>{}
+        });
+        renderStrategyBotGrid();
+        toast(`DBot imported: ${botName}`,"good");
+      } catch(_){ toast("Could not parse DBot XML.","danger"); }
+    };
+    reader.readAsText(file);
+    fi.value="";
+  });
 }
 
 function renderStrategyBotGrid() {
@@ -4427,7 +4474,7 @@ function renderStrategyBotGrid() {
     const card = document.createElement("article");
     card.className = "panel strategy-card";
     const isActive = state.activeStrategyId === bot.id;
-    const mktVal = bot._market || (bot.apply.toString().includes("1HZ100V") ? "1HZ100V" : "1HZ100V");
+    const marketLabel = ALL_MARKETS_FOR_BOTS.find(([v])=>v===(bot.market||""))?.[1] || "Default market";
     card.innerHTML = `
       <div class="strategy-card-head">
         <strong>${bot.name}</strong>
@@ -4435,49 +4482,27 @@ function renderStrategyBotGrid() {
       </div>
       <p class="strategy-card-desc">${bot.description}</p>
       <div class="strategy-tags">${bot.tags.map((t) => `<span>${t}</span>`).join("")}</div>
-      <div class="strategy-card-market">
-        <select class="strategy-market-sel" data-bot="${bot.id}">
-          ${marketOptionsHtml(mktVal)}
-        </select>
-      </div>
+      <small class="bot-market-label">📍 ${marketLabel}</small>
       <div class="strategy-card-actions">
         <button type="button" class="ghost-button strategy-run-btn" data-bot="${bot.id}">${isActive ? "Stop" : "Run"}</button>
-        <button type="button" class="ghost-button strategy-edit-btn" data-bot="${bot.id}">✏️ Edit</button>
+        <button type="button" class="ghost-button strategy-edit-btn" data-bot="${bot.id}">Edit</button>
       </div>
     `;
     holder.appendChild(card);
-  });
-
-  holder.querySelectorAll(".strategy-market-sel").forEach((sel) => {
-    sel.addEventListener("change", () => {
-      const bot = STRATEGY_BOTS.find((b) => b.id === sel.dataset.bot);
-      if (bot) bot._market = sel.value;
-    });
   });
 
   holder.querySelectorAll(".strategy-run-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const bot = STRATEGY_BOTS.find((b) => b.id === btn.dataset.bot);
       if (!bot) return;
-      if (state.activeStrategyId === bot.id) {
-        stopStrategyBot();
-      } else {
-        // Apply chosen market override before running
-        const mktSel = holder.querySelector(`.strategy-market-sel[data-bot="${bot.id}"]`);
-        if (mktSel) {
-          bot._market = mktSel.value;
-          state.symbol = mktSel.value;
-          if ($("symbol")) $("symbol").value = mktSel.value;
-        }
-        runStrategyBot(bot);
-      }
+      if (state.activeStrategyId === bot.id) stopStrategyBot();
+      else runStrategyBot(bot);
     });
   });
-
   holder.querySelectorAll(".strategy-edit-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const bot = STRATEGY_BOTS.find((b) => b.id === btn.dataset.bot);
-      if (bot) openStrategyEditModal(bot);
+      if (bot) openBotEditModal(bot);
     });
   });
 }
@@ -4487,6 +4512,16 @@ function runStrategyBot(bot) {
     toast("Connect your account first.", "danger");
     return;
   }
+  // Apply bot-specific market, stake, ticks
+  if (bot.market) {
+    state.symbol = bot.market;
+    if ($("symbol")) $("symbol").value = bot.market;
+  }
+  if (bot.stake) {
+    state.currentStake = bot.stake;
+    if ($("stake")) $("stake").value = String(bot.stake);
+  }
+  if (bot.ticks && $("trade-ticks")) $("trade-ticks").value = String(bot.ticks);
   bot.apply();
   state.activeStrategyId = bot.id;
   state.activeStrategyName = bot.name;
@@ -4499,94 +4534,6 @@ function runStrategyBot(bot) {
   journal(`Strategy Bot started: ${bot.name} (source: ${bot.source}).`, "trade");
   startBot();
   renderStrategyBotGrid();
-}
-
-function openStrategyEditModal(bot) {
-  // Create or reuse modal
-  let modal = $("strategy-edit-modal");
-  if (!modal) {
-    modal = document.createElement("div");
-    modal.id = "strategy-edit-modal";
-    modal.className = "strategy-edit-modal hidden";
-    document.body.appendChild(modal);
-  }
-  modal.innerHTML = `
-    <div class="strategy-edit-inner">
-      <h3>✏️ Edit: ${bot.name}</h3>
-      <label>Bot Name
-        <input id="edit-bot-name" value="${bot.name}" />
-      </label>
-      <label>Description
-        <textarea id="edit-bot-desc">${bot.description}</textarea>
-      </label>
-      <label>Market
-        <select id="edit-bot-market">${marketOptionsHtml(bot._market || "1HZ100V")}</select>
-      </label>
-      <label>Tags (comma separated)
-        <input id="edit-bot-tags" value="${bot.tags.join(", ")}" />
-      </label>
-      <div class="modal-actions">
-        <button class="ghost-button" id="edit-bot-save">Save</button>
-        <button class="ghost-button" id="edit-bot-cancel">Cancel</button>
-      </div>
-    </div>
-  `;
-  modal.classList.remove("hidden");
-
-  $("edit-bot-cancel").addEventListener("click", () => modal.classList.add("hidden"));
-  $("edit-bot-save").addEventListener("click", () => {
-    bot.name = $("edit-bot-name").value.trim() || bot.name;
-    bot.description = $("edit-bot-desc").value.trim() || bot.description;
-    bot._market = $("edit-bot-market").value;
-    bot.tags = $("edit-bot-tags").value.split(",").map((t) => t.trim()).filter(Boolean);
-    modal.classList.add("hidden");
-    renderStrategyBotGrid();
-    toast("Bot settings saved.", "good");
-  });
-  modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.add("hidden"); });
-}
-
-function initImportDBot() {
-  const btn = $("import-dbot-btn");
-  const fileInput = $("dbot-file-input");
-  if (!btn || !fileInput) return;
-
-  btn.addEventListener("click", () => fileInput.click());
-
-  fileInput.addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const xml = ev.target.result;
-      const id = `imported_${Date.now()}`;
-      const name = file.name.replace(/\.xml$/i, "").replace(/_/g, " ").replace(/-/g, " ");
-      // Parse a basic contract type from XML content
-      let contractMode = "odds_even";
-      let tags = ["Imported"];
-      if (/DIGITOVER|DIGITUNDER/i.test(xml)) { contractMode = "over_under"; tags.push("Over/Under"); }
-      else if (/DIGITDIFF/i.test(xml)) { contractMode = "differ"; tags.push("Differ"); }
-      else if (/CALL|PUT/i.test(xml)) { contractMode = "rise_fall"; tags.push("Rise/Fall"); }
-      else { tags.push("Odd/Even"); }
-      if (/R_100|1HZ100V/i.test(xml)) tags.push("Vol 100");
-
-      const newBot = {
-        id,
-        name: name || "Imported DBot",
-        source: file.name,
-        tags,
-        description: `Imported from ${file.name}. Contract: ${contractMode}.`,
-        _market: "1HZ100V",
-        apply: () => { setContractMode(contractMode); },
-      };
-      STRATEGY_BOTS.push(newBot);
-      renderStrategyBotGrid();
-      toast(`Imported: ${newBot.name}`, "good");
-      journal(`DBot imported: ${file.name}`, "trade");
-    };
-    reader.readAsText(file);
-    fileInput.value = "";
-  });
 }
 
 function stopStrategyBot() {
@@ -4666,31 +4613,12 @@ function renderProAiBotGrid() {
       <div class="strategy-card-head"><strong>${bot.name}</strong></div>
       <p class="strategy-card-desc">${bot.condition}</p>
       <div class="strategy-tags"><span>Over/Under</span><span>Barrier ${bot.barrier}</span></div>
-      <div class="strategy-card-market">
-        <select class="proai-market-sel" data-bot="${bot.id}">
-          ${marketOptionsHtml(bot._market || "1HZ100V")}
-        </select>
-      </div>
       <button type="button" class="ghost-button pro-ai-open-btn" data-bot="${bot.id}">Open</button>
     `;
     holder.appendChild(card);
   });
-
-  holder.querySelectorAll(".proai-market-sel").forEach((sel) => {
-    sel.addEventListener("change", () => {
-      const bot = PRO_AI_BOTS.find((b) => b.id === sel.dataset.bot);
-      if (bot) bot._market = sel.value;
-    });
-  });
-
   holder.querySelectorAll(".pro-ai-open-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const bot = PRO_AI_BOTS.find((b) => b.id === btn.dataset.bot);
-      if (!bot) return;
-      const mktSel = holder.querySelector(`.proai-market-sel[data-bot="${bot.id}"]`);
-      if (mktSel) bot._market = mktSel.value;
-      openProAiBot(btn.dataset.bot);
-    });
+    btn.addEventListener("click", () => openProAiBot(btn.dataset.bot));
   });
 }
 
@@ -4720,7 +4648,7 @@ function startProAiScan() {
   const bot = state.proAiOpenBot;
   if (!bot) return;
   if (!state.authorized) {
-    $("pro-ai-scan-status").textContent = "Not connected — connect your account first";
+    $("pro-ai-scan-status").textContent = "Demo Offline — connect your account first";
     proAiFeedLine("⚠️ Not connected. Tap Connection to authorize before scanning.", "warn");
     return;
   }
@@ -4728,55 +4656,37 @@ function startProAiScan() {
   state.proAiScanning = true;
   state.proAiActive = true;
   updateProAiBadge();
-  $("pro-ai-scan-status").textContent = "Scanning continuously...";
+  $("pro-ai-scan-status").textContent = "Scanning...";
   $("pro-ai-scan-btn").textContent = "Scanning...";
   $("pro-ai-scan-btn").disabled = true;
-
   let progress = 0;
-  let scanCycle = 0;
-  proAiFeedLine(`🔍 Pro AI scan started: ${bot.name} — scanning non-stop until match found.`, "info");
+  proAiFeedLine(`🔍 Pro AI scan started: ${bot.name} across all 1s markets.`, "info");
 
-  function runCycle() {
-    if (!state.proAiScanning) return;
-    scanCycle++;
-    progress = (progress + 8) % 100;
+  state.proAiScanTimer = setInterval(() => {
+    progress = Math.min(96, progress + 4);
     $("pro-ai-progress-fill").style.width = `${progress}%`;
 
-    // Determine which markets to scan — use bot's chosen market or all 1s markets
-    const scanList = bot._market
-      ? [[bot._market, ALL_MARKETS.find(([v]) => v === bot._market)?.[1] || bot._market]]
-      : WATCHLIST;
-
     let found = null;
-    scanList.forEach(([symbol, name]) => {
+    WATCHLIST.forEach(([symbol, name]) => {
       const stat = state.marketStats.get(symbol);
       if (!stat || !stat.recentDigits || stat.recentDigits.length < 3) return;
       const recent = stat.recentDigits.slice(-3);
-      if (scanCycle % 5 === 0) proAiFeedLine(`${name}: last 3 → ${recent.join(",")}`, "muted");
+      proAiFeedLine(`${name}: last 3 digits ${recent.join(",")}`, "muted");
       if (!found && bot.match(stat.recentDigits)) {
         found = { symbol, name, stat };
       }
     });
 
     if (found) {
+      clearInterval(state.proAiScanTimer);
       $("pro-ai-progress-fill").style.width = "100%";
-      $("pro-ai-scan-status").textContent = `✅ Match on ${found.name}`;
-      proAiFeedLine(`✅ ${found.name} matches "${bot.condition}". Executing trade...`, "good");
+      $("pro-ai-scan-status").textContent = `Best market found: ${found.name}`;
+      proAiFeedLine(`✅ Best market found: ${found.name} matches "${bot.condition}".`, "good");
       executeProAiTrade(bot, found);
-      // After trade, keep scanning flag ON but pause briefly, then resume
-      state.proAiScanTimer = setTimeout(() => {
-        if (state.proAiScanning) {
-          $("pro-ai-scan-status").textContent = "Resumed scanning...";
-          proAiFeedLine("🔄 Resuming scan after trade.", "info");
-          state.proAiScanTimer = setTimeout(runCycle, 700);
-        }
-      }, 3000);
-    } else {
-      state.proAiScanTimer = setTimeout(runCycle, 700);
     }
-  }
+  }, 700);
 
-  state.proAiScanTimer = setTimeout(runCycle, 300);
+  // Scan runs indefinitely until match found or user closes
 }
 
 function executeProAiTrade(bot, found) {
@@ -4815,7 +4725,13 @@ function executeProAiTrade(bot, found) {
   journal(`Pro AI (${bot.name}) executed ${bot.direction === "DIGITOVER" ? "OVER" : "UNDER"} ${bot.barrier} on ${found.name} at ${new Date().toLocaleTimeString()}.`, "trade");
   toast(`Pro AI trading ${bot.name} on ${found.name}.`, "good");
 
-  state.proAiScanning = true; // keep scanning flag active — scan resumes after trade
+  // After trade, continue scanning for next opportunity
+  setTimeout(() => {
+    if (state.proAiActive && state.proAiOpenBot) {
+      state.proAiScanning = false; // allow restart
+      startProAiScan(); // auto-restart scan
+    }
+  }, 3000);
 
   if (state.notificationsEnabled) {
     phoneNotify("Pro AI trade executed", `${bot.name} on ${found.name}`, "good");
@@ -4834,12 +4750,14 @@ function initProAi() {
   $("pro-ai-scan-btn")?.addEventListener("click", startProAiScan);
   $("pro-ai-close-scan")?.addEventListener("click", () => {
     $("pro-ai-scan-panel").classList.add("hidden");
-    if (state.proAiScanTimer) { clearTimeout(state.proAiScanTimer); clearInterval(state.proAiScanTimer); }
+    if (state.proAiScanTimer) clearInterval(state.proAiScanTimer);
     state.proAiScanning = false;
     state.proAiActive = false;
+    state.proAiOpenBot = null;
     $("pro-ai-scan-btn").textContent = "🔍 Start Scanning";
     $("pro-ai-scan-btn").disabled = false;
     updateProAiBadge();
+    proAiFeedLine("🛑 Scanning stopped by user.", "warn");
   });
 }
 
@@ -4849,7 +4767,6 @@ function initRiseFallButtons() {
 }
 initRiseFallButtons();
 renderStrategyBotGrid();
-initImportDBot();
 initChartTypeToggle();
 initLightweightChart();
 initProAi();
@@ -4864,7 +4781,7 @@ connectPublicScanner();
 setTimeout(hideLoader, 2200);
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js?v=round8-update-20260625")
+  navigator.serviceWorker.register("./sw.js?v=round10-upgrade-20260625")
     .then((registration) => registration.update?.())
     .catch(() => {});
 }

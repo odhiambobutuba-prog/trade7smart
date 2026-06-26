@@ -326,6 +326,9 @@ function handleTick(tick) {
   if (state.digitHistory.length > 400) state.digitHistory.shift();
   if (Number.isInteger(digit)) state.digitCounts[digit] += 1;
 
+  // OUA analyzer hook
+  if (typeof ouaOnTick === "function") ouaOnTick(digit);
+
   if (digit % 2 === 1) {
     state.oddStreak += 1;
     state.recentOdds.push(digit);
@@ -895,6 +898,9 @@ function extractContractEndDigit(contract) {
 }
 
 function settleTrade(profit, endDigit = state.lastDigit) {
+  // Notify OUA analyzer of outcome
+  if (typeof ouaNotifySettle === "function") ouaNotifySettle(profit);
+
   state.activeTrade = false;
   state.tradeEndDigit = endDigit;
   state.tradeCursorDigit = endDigit;
@@ -3056,6 +3062,380 @@ safeInit(initChartTypeToggle, "initChartTypeToggle");
 safeInit(initHomeChart, "initHomeChart");
 
 safeInit(connectPublicScanner, "connectPublicScanner");
+
+/* ═══════════════════════════════════════════════════════════════
+   OVER/UNDER COMBINED STRATEGY ANALYZER — standalone module
+   No function redeclarations. Hooks via ouaOnTick + ouaNotifySettle.
+   ═══════════════════════════════════════════════════════════════ */
+(function () {
+  // ── Module state ──────────────────────────────────────────────
+  const oua = {
+    running: false,
+    digitBuf: [],      // up to 30 digits
+    s1PauseTicks: 0,
+    s3PauseTicks: 0,
+    s2Leg: "over0",    // "over0" | "under7"
+    s2Step: 0,
+    lastStratLabel: "",
+    tradePending: false,
+    feed: [],
+  };
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function streakGt0(arr) {
+    let n = 0;
+    for (let i = arr.length - 1; i >= 0; i--) {
+      if (arr[i] > 0) n++; else break;
+    }
+    return n;
+  }
+
+  function streakMatchLeg(arr, leg) {
+    let n = 0;
+    for (let i = arr.length - 1; i >= 0; i--) {
+      const ok = leg === "over0" ? arr[i] > 0 : arr[i] <= 6;
+      if (ok) n++; else break;
+    }
+    return n;
+  }
+
+  function gapSinceLast0(arr) {
+    for (let i = arr.length - 1; i >= 0; i--) {
+      if (arr[i] === 0) return arr.length - 1 - i;
+    }
+    return arr.length;
+  }
+
+  function el(id) { return document.getElementById(id); }
+
+  function setPill(id, text, cls) {
+    const e = el(id); if (!e) return;
+    e.textContent = text;
+    e.className = "oua-strat-pill" + (cls ? " " + cls : "");
+  }
+
+  function setCard(id, cls) {
+    const e = el(id); if (!e) return;
+    e.className = "oua-strat-card" + (cls ? " " + cls : "");
+  }
+
+  function buildStrip(id, digits, highlightFn) {
+    const e = el(id); if (!e) return;
+    e.innerHTML = "";
+    digits.forEach((d, i) => {
+      const chip = document.createElement("i");
+      chip.textContent = d;
+      const c = highlightFn(d, i, digits);
+      if (c) chip.className = c;
+      e.appendChild(chip);
+    });
+  }
+
+  function setArrow(dir) {
+    const a = el("oua-arrow"); if (!a) return;
+    if (dir === "up") { a.textContent = "↑"; a.className = "oua-arrow up"; }
+    else if (dir === "dn") { a.textContent = "↓"; a.className = "oua-arrow dn"; }
+    else { a.textContent = "→"; a.className = "oua-arrow"; }
+  }
+
+  function setTxt(id, txt) { const e = el(id); if (e) e.textContent = txt; }
+
+  function setBadge(mode) {
+    const e = el("oua-status-badge"); if (!e) return;
+    const map = {
+      stopped:  ["STOPPED",  "oua-badge oua-badge--stopped"],
+      scanning: ["SCANNING", "oua-badge oua-badge--scanning"],
+      ready:    ["READY",    "oua-badge oua-badge--ready"],
+      trading:  ["TRADING",  "oua-badge oua-badge--trading"],
+    };
+    const [txt, cls] = map[mode] || map.stopped;
+    e.textContent = txt; e.className = cls;
+  }
+
+  // ── Trade feed ────────────────────────────────────────────────
+  function feedLog(contract, rec, outcome) {
+    oua.feed.unshift({ time: new Date().toLocaleTimeString(), contract, rec, outcome });
+    if (oua.feed.length > 50) oua.feed.pop();
+    renderFeed();
+  }
+
+  function renderFeed() {
+    const list = el("oua-feed"); if (!list) return;
+    list.innerHTML = "";
+    oua.feed.forEach((item) => {
+      const li = document.createElement("li");
+      li.className = item.outcome === "WIN" ? "win" : item.outcome === "LOSS" ? "loss" : "exec";
+      li.innerHTML = `<span class="oua-feed-time">${item.time}</span><span class="oua-feed-rec">${item.contract}</span><span>${item.rec}</span><span class="oua-feed-result">${item.outcome}</span>`;
+      list.appendChild(li);
+    });
+  }
+
+  // ── Fire trade via existing proposal/buy flow ─────────────────
+  function fireTrade(contractType, barrier, stratLabel) {
+    if (!state.authorized) return;
+    if (state.activeTrade || oua.tradePending) return;
+
+    const settings = getSettings();
+    const stake = Number(state.currentStake.toFixed(2));
+
+    // Override mode settings to match what we're firing
+    state.symbol = $("symbol").value;
+
+    oua.tradePending = true;
+    oua.lastStratLabel = stratLabel;
+    state.activeTrade = true;
+    state.tradeEntryDigit = state.lastDigit;
+    state.tradeEndDigit = null;
+    startContractCursor();
+
+    feedLog(contractType === "DIGITOVER" ? `Over ${barrier}` : `Under ${barrier}`, stratLabel, "EXEC");
+    journal({ signal: `OUA: ${stratLabel}`, stake: `${stake} ${state.currency}`, result: "EXEC", level: state.lossCount }, "trade");
+    playTone("trade");
+    toast(`OUA: ${stratLabel} firing — ${contractType === "DIGITOVER" ? "Over" : "Under"} ${barrier}`, "good");
+
+    setBadge("trading");
+
+    if (settings.executionMode === "paper") {
+      setTimeout(() => {
+        const digit = Math.floor(Math.random() * 10);
+        const won = contractType === "DIGITOVER" ? digit > barrier : digit < barrier;
+        const profit = won ? stake * 0.91 : -stake;
+        oua.tradePending = false;
+        settleTrade(profit, digit);
+      }, 450);
+      return;
+    }
+
+    send(
+      { proposal: 1, amount: stake, basis: "stake", currency: state.currency,
+        duration: settings.ticks || 1, duration_unit: "t", symbol: state.symbol,
+        contract_type: contractType, barrier: String(barrier) },
+      "proposal"
+    );
+    // Safety timeout to unblock tradePending if no settle arrives
+    setTimeout(() => { oua.tradePending = false; }, 10000);
+  }
+
+  // ── Public hook: called from settleTrade (injected above) ─────
+  window.ouaNotifySettle = function (profit) {
+    oua.tradePending = false;
+    const won = profit > 0;
+    const last = oua.feed[0];
+    if (last && last.outcome === "EXEC") {
+      last.outcome = won ? "WIN" : "LOSS";
+      renderFeed();
+    }
+    const label = oua.lastStratLabel || "";
+    if (!won) {
+      if (label.includes("S1")) { oua.s1PauseTicks = 1; }
+      if (label.includes("S3")) { oua.s3PauseTicks = 2; }
+      if (label.includes("S2")) {
+        oua.s2Step++;
+        oua.s2Leg = oua.s2Leg === "over0" ? "under7" : "over0";
+      }
+    } else {
+      if (label.includes("S2")) { oua.s2Step = 0; oua.s2Leg = "over0"; }
+    }
+    if (oua.running) setBadge("scanning");
+  };
+
+  // ── Per-strategy renderers ────────────────────────────────────
+  function renderS1(buf, biasPct, streak, ready, biasOk) {
+    setTxt("oua-s1-bias", biasPct + "%");
+    setTxt("oua-s1-streak", streak);
+    setTxt("oua-s1-signal", ready ? "FIRE ↑ Over 0" : biasOk ? `Streak ${streak}/4` : "Low bias");
+    setCard("oua-s1", ready ? "oua-ready" : "");
+    setPill("oua-s1-pill", ready ? "READY" : "Watching", ready ? "ready" : "");
+    buildStrip("oua-s1-strip", buf, (d, i, arr) => {
+      const inStreak = i >= arr.length - streak && streak > 0 && d > 0;
+      if (d === 0) return "oua-zero";
+      if (inStreak) return "oua-streak";
+      return "oua-hot";
+    });
+  }
+
+  function renderS2(buf, biasPct, streak, ready) {
+    const legLabel = oua.s2Leg === "over0" ? "Over 0" : "Under 7";
+    setTxt("oua-s2-leg", legLabel);
+    setTxt("oua-s2-bias", biasPct + "%");
+    setTxt("oua-s2-streak", streak);
+    setTxt("oua-s2-step", oua.s2Step);
+    const arrow = oua.s2Leg === "over0" ? "↑" : "↓";
+    setTxt("oua-s2-signal", ready ? `FIRE ${arrow} ${legLabel}` : `Streak ${streak}/3`);
+    setCard("oua-s2", ready ? "oua-ready" : "");
+    setPill("oua-s2-pill", ready ? "READY" : "Watching", ready ? "ready" : "");
+    buildStrip("oua-s2-strip", buf, (d) => {
+      if (oua.s2Leg === "over0") return d === 0 ? "oua-zero" : "oua-hot";
+      return d > 6 ? "oua-zero" : "oua-hot";
+    });
+  }
+
+  function renderS3(buf, zeros, gap, ready, biasOk) {
+    setTxt("oua-s3-zeros", zeros);
+    setTxt("oua-s3-gap", `${gap} ticks since last 0`);
+    setTxt("oua-s3-signal", ready ? `FIRE ↑ Pattern (gap:${gap})` : biasOk ? `Gap ${gap}/5` : `Zeros:${zeros} need≤2`);
+    setCard("oua-s3", ready ? "oua-ready" : "");
+    setPill("oua-s3-pill", ready ? "READY" : "Watching", ready ? "ready" : "");
+    buildStrip("oua-s3-strip", buf, (d, i, arr) => {
+      if (d === 0) return "oua-zero";
+      let lastZ = -1;
+      for (let j = arr.length - 1; j >= 0; j--) { if (arr[j] === 0) { lastZ = j; break; } }
+      if (lastZ >= 0 && i > lastZ) return "oua-streak";
+      return "oua-hot";
+    });
+  }
+
+  // ── Main tick processor (called from handleTick hook) ─────────
+  window.ouaOnTick = function (digit) {
+    if (!oua.running) return;
+    if (state.activeTrade || oua.tradePending) {
+      setBadge("trading");
+      return;
+    }
+
+    oua.digitBuf.push(digit);
+    if (oua.digitBuf.length > 30) oua.digitBuf.shift();
+    const buf = oua.digitBuf;
+    if (buf.length < 5) return;
+
+    // Decrement pause counters
+    if (oua.s1PauseTicks > 0) oua.s1PauseTicks--;
+    if (oua.s3PauseTicks > 0) oua.s3PauseTicks--;
+
+    // ── Strategy 1: Pro Over 0 ──────────────────────────────
+    const s1Buf = buf.slice(-30);
+    const s1BiasPct = Math.round((s1Buf.filter((d) => d > 0).length / s1Buf.length) * 100);
+    const s1Streak = streakGt0(s1Buf);
+    const s1BiasOk = s1BiasPct >= 75;
+    const s1Ready = s1BiasOk && s1Streak >= 4 && oua.s1PauseTicks === 0;
+
+    // ── Strategy 2: Over 0 + Under 7 Recovery ───────────────
+    const s2Buf = buf.slice(-20);
+    let s2BiasPct, s2Streak;
+    if (oua.s2Leg === "over0") {
+      s2BiasPct = Math.round((s2Buf.filter((d) => d > 0).length / s2Buf.length) * 100);
+      s2Streak = streakMatchLeg(s2Buf, "over0");
+    } else {
+      s2BiasPct = Math.round((s2Buf.filter((d) => d <= 6).length / s2Buf.length) * 100);
+      s2Streak = streakMatchLeg(s2Buf, "under7");
+    }
+    const s2Ready = s2BiasPct >= 70 && s2Streak >= 3;
+
+    // ── Strategy 3: Pattern Over 0 ──────────────────────────
+    const s3Buf = buf.slice(-15);
+    const s3Zeros = s3Buf.filter((d) => d === 0).length;
+    const s3Gap = gapSinceLast0(buf);
+    const s3BiasOk = s3Zeros <= 2;
+    const s3Ready = s3BiasOk && s3Gap >= 5 && oua.s3PauseTicks === 0 && digit !== 0;
+
+    // ── Render all three cards ───────────────────────────────
+    renderS1(s1Buf, s1BiasPct, s1Streak, s1Ready, s1BiasOk);
+    renderS2(s2Buf, s2BiasPct, s2Streak, s2Ready);
+    renderS3(s3Buf, s3Zeros, s3Gap, s3Ready, s3BiasOk);
+
+    // ── Decide signal & fire ─────────────────────────────────
+    const anyReady = s1Ready || s2Ready || s3Ready;
+    setBadge(anyReady ? "ready" : "scanning");
+
+    if (s1Ready) {
+      setArrow("up");
+      setTxt("oua-signal-label", "Over 0 — Pro Strategy");
+      setTxt("oua-signal-type", "OVER 0 · bias " + s1BiasPct + "% · streak " + s1Streak);
+      fireTrade("DIGITOVER", 0, "S1 Pro Over 0");
+      return;
+    }
+    if (s3Ready) {
+      setArrow("up");
+      setTxt("oua-signal-label", "Over 0 — Pattern Strategy");
+      setTxt("oua-signal-type", "OVER 0 · gap " + s3Gap + " ticks · zeros " + s3Zeros);
+      fireTrade("DIGITOVER", 0, "S3 Pattern Over 0");
+      return;
+    }
+    if (s2Ready) {
+      if (oua.s2Leg === "over0") {
+        setArrow("up");
+        setTxt("oua-signal-label", "Over 0 — Recovery Leg");
+        setTxt("oua-signal-type", "OVER 0 · bias " + s2BiasPct + "% · step " + oua.s2Step);
+        fireTrade("DIGITOVER", 0, "S2 Over0+U7 [Over0]");
+      } else {
+        setArrow("dn");
+        setTxt("oua-signal-label", "Under 7 — Recovery Leg");
+        setTxt("oua-signal-type", "UNDER 7 · bias " + s2BiasPct + "% · step " + oua.s2Step);
+        fireTrade("DIGITUNDER", 7, "S2 Over0+U7 [Under7]");
+      }
+      return;
+    }
+
+    // Idle
+    setArrow("");
+    setTxt("oua-signal-label", "Scanning — waiting for signal");
+    setTxt("oua-signal-type", "");
+  };
+
+  // ── Start / Stop ─────────────────────────────────────────────
+  function ouaStart() {
+    if (!state.authorized) {
+      toast("Connect your account first.", "danger");
+      return;
+    }
+    // Switch to over_under mode
+    setContractMode("over_under");
+    $("ou-barrier").value = "0";
+    $("ou-direction").value = "DIGITOVER";
+
+    oua.running = true;
+    oua.tradePending = false;
+    oua.s1PauseTicks = 0;
+    oua.s3PauseTicks = 0;
+    oua.s2Leg = "over0";
+    oua.s2Step = 0;
+    // Seed buffer from existing digit history
+    oua.digitBuf = state.digitHistory.slice(-30).slice();
+
+    const btn = el("oua-run-btn");
+    if (btn) { btn.textContent = "Stop"; btn.style.background = "var(--danger)"; }
+    setBadge("scanning");
+    toast("OUA Analyzer running — 3 strategies scanning.", "good");
+    journal("OUA Combined Analyzer started.", "trade");
+    updateDashboard();
+  }
+
+  function ouaStop() {
+    oua.running = false;
+    oua.tradePending = false;
+    const btn = el("oua-run-btn");
+    if (btn) { btn.textContent = "Run"; btn.style.background = ""; }
+    setBadge("stopped");
+    setArrow("");
+    setTxt("oua-signal-label", "Stopped — press Run to scan");
+    setTxt("oua-signal-type", "");
+    toast("OUA Analyzer stopped.", "warn");
+    journal("OUA Analyzer stopped.", "warn");
+  }
+
+  // ── Bind controls after DOM ready ────────────────────────────
+  document.addEventListener("DOMContentLoaded", function () {
+    const runBtn = el("oua-run-btn");
+    if (runBtn) runBtn.addEventListener("click", () => oua.running ? ouaStop() : ouaStart());
+    const clearBtn = el("oua-clear-feed");
+    if (clearBtn) clearBtn.addEventListener("click", () => { oua.feed = []; renderFeed(); });
+  });
+
+  // Also bind immediately in case DOMContentLoaded already fired
+  (function tryBind() {
+    const runBtn = el("oua-run-btn");
+    if (runBtn && !runBtn._ouaBound) {
+      runBtn._ouaBound = true;
+      runBtn.addEventListener("click", () => oua.running ? ouaStop() : ouaStart());
+    }
+    const clearBtn = el("oua-clear-feed");
+    if (clearBtn && !clearBtn._ouaBound) {
+      clearBtn._ouaBound = true;
+      clearBtn.addEventListener("click", () => { oua.feed = []; renderFeed(); });
+    }
+  })();
+
+})(); // end OUA IIFE
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js?v=v5-fresh-20260621")

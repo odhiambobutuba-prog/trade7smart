@@ -257,6 +257,72 @@
             </div>
             <p id="ou-analysis-copy">Barrier bias analysis</p>
             <div id="ou-recommendation" class="ou-recommendation">AI recommendation pending</div>
+
+            <!-- OU Combined Strategy Analyzer -->
+            <div class="oua-wrap" id="oua-wrap">
+              <div class="oua-head">
+                <div class="oua-head-left">
+                  <span class="oua-label">Combined Strategy Analyzer</span>
+                  <strong id="oua-status-badge" class="oua-badge oua-badge--stopped">STOPPED</strong>
+                </div>
+                <button id="oua-run-btn" class="run-button oua-run-btn" type="button">Run</button>
+              </div>
+              <div class="oua-strategies">
+                <div class="oua-strat-card" id="oua-s1">
+                  <div class="oua-strat-head">
+                    <span class="oua-strat-icon">↑</span>
+                    <strong>Pro Over 0</strong>
+                    <b class="oua-strat-pill" id="oua-s1-pill">Watching</b>
+                  </div>
+                  <div class="oua-strat-body">
+                    <div class="oua-stat-row"><span>Bias (30)</span><b id="oua-s1-bias">--%</b></div>
+                    <div class="oua-stat-row"><span>Streak &gt;0</span><b id="oua-s1-streak">0</b></div>
+                    <div class="oua-stat-row"><span>Signal</span><b id="oua-s1-signal">Waiting</b></div>
+                    <div class="oua-digit-strip" id="oua-s1-strip"></div>
+                  </div>
+                </div>
+                <div class="oua-strat-card" id="oua-s2">
+                  <div class="oua-strat-head">
+                    <span class="oua-strat-icon">⇄</span>
+                    <strong>Over 0 / Under 7</strong>
+                    <b class="oua-strat-pill" id="oua-s2-pill">Watching</b>
+                  </div>
+                  <div class="oua-strat-body">
+                    <div class="oua-stat-row"><span>Active leg</span><b id="oua-s2-leg">Over 0</b></div>
+                    <div class="oua-stat-row"><span>Bias (20)</span><b id="oua-s2-bias">--%</b></div>
+                    <div class="oua-stat-row"><span>Streak</span><b id="oua-s2-streak">0</b></div>
+                    <div class="oua-stat-row"><span>Recovery step</span><b id="oua-s2-step">0</b></div>
+                    <div class="oua-stat-row"><span>Signal</span><b id="oua-s2-signal">Waiting</b></div>
+                    <div class="oua-digit-strip" id="oua-s2-strip"></div>
+                  </div>
+                </div>
+                <div class="oua-strat-card" id="oua-s3">
+                  <div class="oua-strat-head">
+                    <span class="oua-strat-icon">⊘</span>
+                    <strong>Pattern Over 0</strong>
+                    <b class="oua-strat-pill" id="oua-s3-pill">Watching</b>
+                  </div>
+                  <div class="oua-strat-body">
+                    <div class="oua-stat-row"><span>Zeros in 15</span><b id="oua-s3-zeros">0</b></div>
+                    <div class="oua-stat-row"><span>Gap length</span><b id="oua-s3-gap">0 ticks since last 0</b></div>
+                    <div class="oua-stat-row"><span>Signal</span><b id="oua-s3-signal">Waiting</b></div>
+                    <div class="oua-digit-strip" id="oua-s3-strip"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="oua-signal-row">
+                <div class="oua-arrow" id="oua-arrow">→</div>
+                <div class="oua-signal-info">
+                  <span id="oua-signal-label">No signal yet — press Run to start scanning</span>
+                  <b id="oua-signal-type" class="oua-signal-type"></b>
+                </div>
+              </div>
+              <div class="oua-feed-head">
+                <span>Trade Feed</span>
+                <button class="text-button" id="oua-clear-feed" type="button">Clear</button>
+              </div>
+              <ol class="oua-feed" id="oua-feed"></ol>
+            </div>
           </div>
           <div id="differ-analysis" class="differ-analysis hidden">
             <div class="differ-header">

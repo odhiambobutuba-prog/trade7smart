@@ -2745,3 +2745,55 @@ body.light-theme small {
   .strategy-edit-grid { grid-template-columns: 1fr; }
   .home-chart-head { flex-direction: column; align-items: flex-start; }
 }
+
+/* ── OUA Combined Strategy Analyzer ── */
+.oua-wrap { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; }
+.oua-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.oua-head-left { display:flex; align-items:center; gap:8px; }
+.oua-label { font-size:.72rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); }
+.oua-badge { font-size:.65rem; font-weight:800; padding:2px 7px; border-radius:99px; letter-spacing:.06em; }
+.oua-badge--stopped  { background:rgba(123,139,163,.18); color:var(--muted); }
+.oua-badge--scanning { background:rgba(59,130,246,.18);  color:var(--blue); }
+.oua-badge--ready    { background:rgba(34,197,94,.18);   color:var(--good); animation:oua-pulse 1s ease-in-out infinite alternate; }
+.oua-badge--trading  { background:rgba(245,158,11,.18);  color:var(--warn); }
+@keyframes oua-pulse { from{opacity:1} to{opacity:.55} }
+.oua-run-btn { font-size:.8rem; padding:5px 18px; }
+.oua-strategies { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:10px; }
+@media(max-width:680px){ .oua-strategies { grid-template-columns:1fr; } }
+.oua-strat-card { background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:10px; transition:border-color .25s; }
+.oua-strat-card.oua-ready  { border-color:var(--good); box-shadow:0 0 0 1px rgba(34,197,94,.2); }
+.oua-strat-card.oua-active { border-color:var(--blue); box-shadow:0 0 0 1px rgba(59,130,246,.25); }
+.oua-strat-head { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
+.oua-strat-icon { font-size:1.1rem; line-height:1; }
+.oua-strat-head strong { font-size:.78rem; flex:1; }
+.oua-strat-pill { font-size:.62rem; font-weight:800; padding:2px 6px; border-radius:99px; background:rgba(123,139,163,.2); color:var(--muted); white-space:nowrap; }
+.oua-strat-pill.ready { background:rgba(34,197,94,.2); color:var(--good); }
+.oua-strat-pill.fire  { background:rgba(239,68,68,.2);  color:var(--danger); animation:oua-pulse .5s ease-in-out infinite alternate; }
+.oua-strat-body { display:grid; gap:4px; }
+.oua-stat-row { display:flex; justify-content:space-between; align-items:baseline; font-size:.73rem; }
+.oua-stat-row span { color:var(--muted); }
+.oua-stat-row b { color:var(--ink); font-weight:700; }
+.oua-digit-strip { display:flex; flex-wrap:wrap; gap:3px; margin-top:6px; min-height:22px; }
+.oua-digit-strip i { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:4px; font-size:.68rem; font-style:normal; font-weight:700; background:var(--panel); border:1px solid var(--line); color:var(--ink); }
+.oua-digit-strip i.oua-zero   { border-color:var(--danger); color:var(--danger); }
+.oua-digit-strip i.oua-hot    { border-color:rgba(34,197,94,.5); color:var(--good); }
+.oua-digit-strip i.oua-streak { border-color:var(--cyan); color:var(--cyan); box-shadow:0 0 4px rgba(34,211,238,.35); }
+.oua-signal-row { display:flex; align-items:center; gap:10px; margin:8px 0 10px; padding:8px 12px; background:var(--panel-2); border-radius:8px; border:1px solid var(--line); }
+.oua-arrow { font-size:1.6rem; line-height:1; color:var(--muted); min-width:26px; text-align:center; transition:color .3s,transform .3s; }
+.oua-arrow.up { color:var(--good); }
+.oua-arrow.dn { color:var(--danger); }
+.oua-signal-info { display:grid; gap:2px; }
+.oua-signal-info span { font-size:.75rem; color:var(--muted); }
+.oua-signal-type { font-size:.9rem; font-weight:800; color:var(--ink); }
+.oua-feed-head { display:flex; justify-content:space-between; align-items:center; font-size:.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }
+.oua-feed { list-style:none; margin:0; padding:0; max-height:130px; overflow-y:auto; display:flex; flex-direction:column; gap:3px; }
+.oua-feed li { display:grid; grid-template-columns:4.5rem 1fr auto auto; gap:6px; align-items:center; font-size:.71rem; padding:4px 8px; background:var(--panel-2); border-radius:5px; border-left:3px solid var(--line); }
+.oua-feed li.win  { border-left-color:var(--good); }
+.oua-feed li.loss { border-left-color:var(--danger); }
+.oua-feed li.exec { border-left-color:var(--blue); }
+.oua-feed .oua-feed-time   { color:var(--muted); }
+.oua-feed .oua-feed-rec    { font-weight:700; }
+.oua-feed .oua-feed-result { font-weight:800; }
+.oua-feed li.win  .oua-feed-result { color:var(--good); }
+.oua-feed li.loss .oua-feed-result { color:var(--danger); }
+.oua-feed li.exec .oua-feed-result { color:var(--blue); }

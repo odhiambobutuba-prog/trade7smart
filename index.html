@@ -2,169 +2,251 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#060A10">
-<title>Trade7Smart AI — Deriv Trading Terminal</title>
+<title>Trade7Smart AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <div id="preloader">
-  <div class="preloader-ring"><div class="core"></div></div>
-  <div class="preloader-logo">Trade7Smart AI</div>
-  <div class="preloader-pct" id="prePct">0%</div>
-  <div class="preloader-bar"><div class="preloader-fill" id="preFill"></div></div>
-  <div class="preloader-text" id="preText">Initializing...</div>
+  <div class="ring"><div class="ring-inner"></div></div>
+  <h1 class="logo">Trade7Smart AI</h1>
+  <div class="pct" id="pct">0%</div>
+  <div class="bar"><div class="fill" id="pfill"></div></div>
+  <div class="ltxt" id="ltxt">Initializing...</div>
 </div>
-<div id="toast-wrap"></div>
-<div class="modal-backdrop" id="modal">
+
+<div id="toasts"></div>
+
+<div id="modal" class="modal-bg">
   <div class="modal">
-    <div class="modal-head"><h3 id="modalTitle">Connect Deriv</h3><button class="btn btn-icon btn-ghost" onclick="closeModal()">✕</button></div>
-    <div id="modalBody"></div>
+    <div class="modal-h">
+      <h3 id="mtitle">Connect Deriv</h3>
+      <button class="x" onclick="closeModal()">×</button>
+    </div>
+    <div id="mbody"></div>
   </div>
 </div>
-<button id="fab-buy" onclick="navigate('trade')" title="Quick Trade">
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-</button>
+
+<button id="fab" onclick="go('trade')">⚡</button>
+
 <div class="app">
-  <aside class="sidebar">
-    <div class="brand"><div class="brand-mark">T7</div><div class="brand-text">Trade7Smart<small>AI TERMINAL</small></div></div>
-    <div class="nav-item active" data-page="home" onclick="navigate('home')"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></div>
-    <div class="nav-item" data-page="analyzer" onclick="navigate('analyzer')"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l3-9 4 18 3-9h6"/></svg><span>Analyzer</span></div>
-    <div class="nav-item" data-page="trade" onclick="navigate('trade')"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>Trade</span></div>
-    <div class="nav-item" data-page="history" onclick="navigate('history')"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg><span>History</span></div>
-    <div class="nav-item" data-page="settings" onclick="navigate('settings')"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></div>
-    <div class="sidebar-foot">
-      <div class="row between"><span class="text-muted" style="font-size:10px">Build</span><span class="mono-s text-dim">v2.1.0</span></div>
-      <div class="row between" style="margin-top:4px"><span class="text-muted" style="font-size:10px">WS Status</span><span class="mono-s text-green" id="sbWs">●</span></div>
-      <div class="row between" style="margin-top:4px"><span class="text-muted" style="font-size:10px">Auto-Trade</span><span class="mono-s" id="sbAuto">○</span></div>
+  <aside class="side">
+    <div class="brand"><div class="bm">T7</div><div class="bt">Trade7Smart<small>AI TERMINAL</small></div></div>
+    <div class="nav active" data-p="home" onclick="go('home')">🏠 <span>Home</span></div>
+    <div class="nav" data-p="analyzer" onclick="go('analyzer')">📊 <span>Analyzer</span></div>
+    <div class="nav" data-p="trade" onclick="go('trade')">🎯 <span>Trade</span></div>
+    <div class="nav" data-p="history" onclick="go('history')">📜 <span>History</span></div>
+    <div class="nav" data-p="settings" onclick="go('settings')">⚙️ <span>Settings</span></div>
+    <div class="sfoot">
+      <div class="r"><span class="dim">v2.1.0</span><span class="ok" id="sbWs">● Online</span></div>
     </div>
   </aside>
-  <header class="header">
-    <div class="header-left"><div class="symbol-pill"><span class="dot dot-live"></span><span id="symbolName">R_100</span></div><div class="spot-price" id="spotPrice">—</div></div>
-    <div class="header-right"><div class="connection-pill"><span class="dot" id="connDot"></span><span id="connText">Disconnected</span></div><div class="balance-pill mono" id="balance">$0.00</div></div>
+
+  <header class="top">
+    <div class="hl">
+      <div class="pill"><span class="dot"></span><span id="sym">R_100</span></div>
+      <div class="price" id="px">—</div>
+    </div>
+    <div class="hr">
+      <div class="cpill"><span class="dot" id="cd"></span><span id="ct">Offline</span></div>
+      <div class="bal mono" id="bal">$0.00</div>
+    </div>
   </header>
+
   <main class="main">
-    <section class="page active" id="page-home">
+
+    <section id="p-home" class="page on">
       <div class="hero">
         <canvas id="particles"></canvas>
-        <div>
-          <div class="row gap-2" style="margin-bottom:10px"><span class="live-tag">LIVE</span><span class="text-muted" style="font-size:11px">AI Engine v2.1 · Auto-Trade Ready</span></div>
-          <h1><span class="grad">Trade7Smart AI</span></h1>
-          <p class="hero-sub">AI Powered Volatility Trading · Auto-Trade Engine · Real Deriv execution</p>
+        <div class="hi">
+          <span class="live">● LIVE</span>
+          <h1>Trade7Smart <span class="grad">AI</span></h1>
+          <p class="sub">AI Powered Volatility Trading · Auto-Trade Engine · Real Deriv execution</p>
         </div>
-        <div class="hero-stats">
-          <div class="hero-stat"><div class="label">Market Status</div><div class="value text-cyan" id="hMarket">Connecting...</div></div>
-          <div class="hero-stat"><div class="label">Account</div><div class="value" id="hAccount">—</div></div>
-          <div class="hero-stat"><div class="label">Server</div><div class="value text-green" id="hServer">—</div></div>
-          <div class="hero-stat"><div class="label">Balance</div><div class="value" id="hBalance">$0.00</div></div>
-          <div class="hero-stat"><div class="label">Today's P/L</div><div class="value" id="hPL">$0.00</div></div>
+        <div class="stats">
+          <div class="stat"><div class="lbl">Market</div><div class="val cy" id="hmkt">—</div></div>
+          <div class="stat"><div class="lbl">Account</div><div class="val" id="hacc">—</div></div>
+          <div class="stat"><div class="lbl">Server</div><div class="val ok">Online</div></div>
+          <div class="stat"><div class="lbl">Balance</div><div class="val" id="hbal">$0.00</div></div>
+          <div class="stat"><div class="lbl">P/L</div><div class="val" id="hpl">$0.00</div></div>
         </div>
-        <div class="hero-buttons">
-          <button class="btn btn-primary btn-lg" onclick="openConnect()">⚡ Connect Deriv</button>
-          <button class="btn btn-lg" onclick="navigate('analyzer')">📊 Open Analyzer</button>
-          <button class="btn btn-lg" onclick="navigate('trade')">🎯 Trade Terminal</button>
-          <button class="btn btn-lg" onclick="navigate('history')">📜 Trade History</button>
+        <div class="hbtns">
+          <button class="btn b1" onclick="openConn()">⚡ Connect</button>
+          <button class="btn" onclick="go('analyzer')">📊 Analyzer</button>
+          <button class="btn" onclick="go('trade')">🎯 Trade</button>
+          <button class="btn" onclick="go('history')">📜 History</button>
         </div>
       </div>
-      <div class="section-head"><h2><span class="accent"></span>Quick Overview</h2></div>
-      <div class="home-grid">
-        <div class="home-card glass" onclick="navigate('analyzer')"><div class="home-card-head"><div class="home-card-icon" style="background:rgba(59,130,246,.15);color:var(--blue)">🧠</div><span class="dot dot-live"></span></div><div class="home-card-title">AI Recommendation</div><div class="home-card-value" id="aiRecHome">—</div><div class="text-muted" style="font-size:11px" id="aiRecSub">Awaiting analysis</div></div>
-        <div class="home-card glass" onclick="navigate('analyzer')"><div class="home-card-head"><div class="home-card-icon" style="background:rgba(34,211,238,.15);color:var(--cyan)">📈</div><span class="text-muted mono-s" id="mktRegime">—</span></div><div class="home-card-title">Current Market</div><div class="home-card-value" id="mktDigit">—</div><div class="text-muted" style="font-size:11px" id="mktPrice">—</div></div>
-        <div class="home-card glass" onclick="openConnect()"><div class="home-card-head"><div class="home-card-icon" style="background:rgba(34,197,94,.15);color:var(--green)">🔌</div><span class="dot" id="hConnDot"></span></div><div class="home-card-title">Connection Status</div><div class="home-card-value" id="hConnTxt" style="font-size:18px">Disconnected</div><div class="text-muted" style="font-size:11px" id="hConnSub">Tap to connect</div></div>
-        <div class="home-card glass" onclick="navigate('history')"><div class="home-card-head"><div class="home-card-icon" style="background:rgba(139,92,246,.15);color:var(--purple)">🏆</div><span class="text-muted mono-s" id="hTrades">0</span></div><div class="home-card-title">Win Rate</div><div class="home-card-value text-green" id="hWinRate">0%</div><div class="text-muted" style="font-size:11px" id="hWRSub">No trades yet</div></div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:14px">
-        <div class="glass" style="padding:16px"><div class="row between" style="margin-bottom:10px"><h3>Recent Trades</h3><button class="btn btn-sm btn-ghost" onclick="navigate('history')">View all →</button></div><div id="recentTrades" class="empty">No recent trades</div></div>
-        <div class="glass" style="padding:16px"><div class="row between" style="margin-bottom:10px"><h3>Recent Signals</h3><span class="text-muted mono-s" style="font-size:11px" id="sigCount">0</span></div><div id="recentSignals" class="empty">Awaiting signals</div></div>
-        <div class="glass" style="padding:16px"><div class="row between" style="margin-bottom:10px"><h3>Market News</h3><span class="text-cyan mono-s" style="font-size:11px">LIVE</span></div><div id="newsFeed" class="empty">Loading market context...</div></div>
-      </div>
-      <div class="glass" style="padding:16px;margin-top:12px">
-        <div class="row between" style="margin-bottom:10px"><h3>System Status</h3><span class="mono-s text-green">All Systems Operational</span></div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">
-          <div class="hero-stat"><div class="label">WebSocket</div><div class="value text-green" id="sysWS">●</div></div>
-          <div class="hero-stat"><div class="label">AI Engine</div><div class="value text-green">●</div></div>
-          <div class="hero-stat"><div class="label">Market Feed</div><div class="value text-green">●</div></div>
-          <div class="hero-stat"><div class="label">Auto-Trade</div><div class="value text-muted" id="sysAuto">○</div></div>
+
+      <div class="sh"><h2><i></i>Overview</h2></div>
+      <div class="grid4">
+        <div class="card g" onclick="go('analyzer')">
+          <div class="ch"><div class="ci b">🧠</div><span class="dot live"></span></div>
+          <div class="ct">AI Recommendation</div>
+          <div class="cv" id="aiHome">—</div>
+          <div class="cm" id="aiSub">Scanning...</div>
         </div>
+        <div class="card g" onclick="go('analyzer')">
+          <div class="ch"><div class="ci c">📈</div><span class="dim" id="reg">—</span></div>
+          <div class="ct">Market</div>
+          <div class="cv" id="md">—</div>
+          <div class="cm" id="mp">—</div>
+        </div>
+        <div class="card g" onclick="openConn()">
+          <div class="ch"><div class="ci g">🔌</div><span class="dot" id="hcd"></span></div>
+          <div class="ct">Connection</div>
+          <div class="cv" id="hct">Disconnected</div>
+          <div class="cm">Tap to connect</div>
+        </div>
+        <div class="card g" onclick="go('history')">
+          <div class="ch"><div class="ci p">🏆</div><span class="dim" id="htc">0</span></div>
+          <div class="ct">Win Rate</div>
+          <div class="cv g" id="hwr">0%</div>
+          <div class="cm" id="hwrs">No trades</div>
+        </div>
+      </div>
+
+      <div class="grid3">
+        <div class="card g"><h3>Recent Trades</h3><div id="rTrades" class="empty">No trades yet</div></div>
+        <div class="card g"><h3>Recent Signals</h3><div id="rSignals" class="empty">Awaiting signals</div></div>
+        <div class="card g"><h3>Market News</h3><div id="rNews" class="empty">Loading...</div></div>
       </div>
     </section>
-    <section class="page" id="page-analyzer">
-      <div class="section-head"><h2><span class="accent"></span>AI Analyzer — Live Brain</h2><div class="row gap-2"><span class="live-tag">LIVE</span><span class="text-muted mono-s" id="anaTicks">0 ticks</span></div></div>
-      <div class="analyzer-grid">
-        <div class="glass a-chart"><div class="row between" style="flex-wrap:wrap;gap:8px"><div><h3>Live Chart</h3><div class="text-muted mono-s" id="chartSym">R_100</div></div><div class="row gap-2" style="flex-wrap:wrap"><button class="btn btn-sm" onclick="setChartSymbol('R_100')">R_100</button><button class="btn btn-sm" onclick="setChartSymbol('R_75')">R_75</button><button class="btn btn-sm" onclick="setChartSymbol('R_50')">R_50</button><button class="btn btn-sm" onclick="setChartSymbol('1HZ100V')">1HZ100V</button></div></div><div class="a-chart-wrap" id="chartWrap"></div></div>
-        <div class="glass a-panel a-gauge"><h3>Momentum Score</h3><div class="gauge-ring"><svg width="140" height="140"><circle cx="70" cy="70" r="60" stroke="rgba(255,255,255,.06)" stroke-width="10" fill="none"/><circle id="mGaugeArc" cx="70" cy="70" r="60" stroke="url(#mGrad)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="377" stroke-dashoffset="377"/><defs><linearGradient id="mGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3B82F6"/><stop offset="50%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#22D3EE"/></linearGradient></defs></svg><div class="gauge-val"><span id="mScore">0</span><small>MOMENTUM</small></div></div><div class="row between" style="width:100%"><div class="center" style="flex:1"><div class="text-muted" style="font-size:10px">BULLISH</div><div class="text-green fw-7" id="mBull" style="font-size:18px">0%</div></div><div class="center" style="flex:1"><div class="text-muted" style="font-size:10px">BEARISH</div><div class="text-red fw-7" id="mBear" style="font-size:18px">0%</div></div></div></div>
-        <div class="glass a-panel"><h3 style="margin-bottom:8px">Digit Frequency</h3><div class="digit-grid" id="digitGrid"></div><div class="stat-list" style="margin-top:12px"><div class="stat-line"><span class="k">Most Frequent</span><span class="v text-cyan" id="mostFreq">—</span></div><div class="stat-line"><span class="k">Least Frequent</span><span class="v text-amber" id="leastFreq">—</span></div><div class="stat-line"><span class="k">Even / Odd</span><span class="v" id="evenOdd">—</span></div><div class="stat-line"><span class="k">Over / Under 5</span><span class="v" id="overUnder">—</span></div></div></div>
-        <div class="glass ai-rec-card" style="grid-column:1/-1"><div class="row between" style="flex-wrap:wrap;gap:10px"><div style="min-width:200px;flex:1"><div class="ai-rec-label">Live AI Recommendation</div><div class="ai-rec-action" id="aiAction">ANALYZING...</div><div class="ai-rec-reason" id="aiReason">Awaiting tick data from Deriv</div></div><div class="row gap-3"><div class="center"><div class="text-muted" style="font-size:10px">CONFIDENCE</div><div class="fw-7 mono text-cyan" id="aiConf" style="font-size:28px">0%</div></div><div class="center"><div class="text-muted" style="font-size:10px">RECOVERY</div><div class="fw-7 mono text-purple" id="aiRec" style="font-size:28px">—</div></div></div></div><div style="margin-top:14px"><div class="row between" style="font-size:11px;margin-bottom:5px"><span class="text-muted">Risk Level</span><span class="mono fw-6" id="riskLevelTxt">LOW</span></div><div class="risk-meter"><div class="risk-meter-fill" id="riskFill" style="width:25%"></div></div></div></div>
-        <div class="glass a-panel" style="grid-column:1/-1"><div class="row between" style="margin-bottom:10px"><h3>Live Tick Stream</h3><span class="text-muted mono-s" id="lastTickTime">—</span></div><div class="row" style="margin-bottom:10px;flex-wrap:wrap;gap:6px"><span class="text-muted" style="font-size:11px">Momentum:</span><div class="momentum-row" id="momentumRow"></div><span class="text-muted" style="font-size:11px;margin-left:auto" id="avgMove">avg: 0.000</span></div><div class="tick-table" id="tickTable"></div></div>
-      </div>
-    </section>
-    <section class="page" id="page-trade">
-      <div class="section-head"><h2><span class="accent"></span>Trade Terminal</h2><div class="row gap-2"><span class="text-muted mono-s">Stake:</span><input type="number" class="input" id="stakeInput" value="1" min="0.35" max="500" step="0.5" style="width:90px"></div></div>
-      <div class="trade-grid">
-        <div>
-          <div class="glass" style="padding:16px;margin-bottom:12px"><h3 style="margin-bottom:12px">Select Contract</h3><div class="contract-grid">
-            <div class="contract-btn over selected" data-contract="DIGITOVER" data-barrier="0" onclick="selectContract(this)"><div class="name">OVER 0</div><div class="desc">Last digit &gt; 0</div><div class="payout-hint" id="payout-OVER-0">—</div></div>
-            <div class="contract-btn over" data-contract="DIGITOVER" data-barrier="1" onclick="selectContract(this)"><div class="name">OVER 1</div><div class="desc">Last digit &gt; 1</div><div class="payout-hint" id="payout-OVER-1">—</div></div>
-            <div class="contract-btn under" data-contract="DIGITUNDER" data-barrier="8" onclick="selectContract(this)"><div class="name">UNDER 8</div><div class="desc">Last digit &lt; 8</div><div class="payout-hint" id="payout-UNDER-8">—</div></div>
-            <div class="contract-btn under" data-contract="DIGITUNDER" data-barrier="9" onclick="selectContract(this)"><div class="name">UNDER 9</div><div class="desc">Last digit &lt; 9</div><div class="payout-hint" id="payout-UNDER-9">—</div></div>
-          </div></div>
-          <div class="glass auto-panel">
-            <div class="row between" style="margin-bottom:10px;flex-wrap:wrap;gap:8px"><div><h3>🤖 Auto-Trade Engine</h3><div class="text-muted" style="font-size:11px">Scan · 3 Blue Arrows · Buy · Recovery on Loss</div></div><div id="autoStatus" class="mono fw-6 text-muted">Stopped</div></div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px">
-              <div><div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Arrows Required</div><input type="number" id="autoArrows" class="input" value="3" min="1" max="10"></div>
-              <div><div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Profit Buffer (×)</div><input type="number" id="autoBuffer" class="input" value="0.91" min="0.5" max="1" step="0.01"></div>
-              <div><div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Arrows Now</div><div id="autoArrowsNow" class="mono fw-7 text-cyan" style="font-size:24px;padding:6px 0">0/3</div></div>
-              <div><div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Level / Stake</div><div style="display:flex;gap:6px;align-items:center;padding:6px 0"><span id="autoLevel" class="mono fw-7 text-amber" style="font-size:18px">1</span><span class="text-muted">/</span><span id="autoStake" class="mono fw-7 text-green">$1.00</span></div></div>
-            </div>
-            <div class="auto-arrows"><span class="text-muted" style="font-size:11px">Confirmation:</span><div class="auto-arrow">1</div><div class="auto-arrow">2</div><div class="auto-arrow">3</div><div class="auto-arrow">4</div><div class="auto-arrow">5</div></div>
-            <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end"><div><div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Recovery Ladder (Martingale)</div><div id="autoLadderView"></div></div><button class="btn btn-primary btn-lg" id="autoBtn" onclick="startAutoTrade()" style="min-width:200px;height:fit-content">▶ SCAN & AUTO-TRADE</button></div>
-            <div class="text-muted" style="font-size:11px;margin-top:10px;text-align:center">Recovery: OVER → UNDER 7 · UNDER → OVER 2 · Auto-switches on loss, no delay</div>
+
+    <section id="p-analyzer" class="page">
+      <div class="sh"><h2><i></i>AI Analyzer</h2><span class="live">● LIVE</span> <span class="dim mono" id="anaTicks">0 ticks</span></div>
+      <div class="agrid">
+        <div class="card g achart">
+          <div class="r between"><h3>Live Chart</h3>
+            <div class="r gap"><button class="btn s" onclick="setSym('R_100')">R_100</button><button class="btn s" onclick="setSym('R_75')">R_75</button><button class="btn s" onclick="setSym('R_50')">R_50</button><button class="btn s" onclick="setSym('1HZ100V')">1HZ</button></div>
           </div>
-          <div id="openMonitorSlot" style="margin-top:12px"></div>
+          <div id="chart" class="cwrap"></div>
         </div>
-        <div class="glass proposal-card">
-          <h3 style="margin-bottom:12px">Live Proposal</h3>
-          <div class="prop-row"><span class="k">Contract</span><span class="v" id="propContract">—</span></div>
-          <div class="prop-row"><span class="k">Barrier</span><span class="v" id="propBarrier">—</span></div>
-          <div class="prop-row"><span class="k">Stake</span><span class="v" id="propStake">—</span></div>
-          <div class="prop-row"><span class="k">Payout</span><span class="v text-cyan" id="propPayout">—</span></div>
-          <div class="prop-row"><span class="k">Profit</span><span class="v text-green" id="propProfit">—</span></div>
-          <div class="prop-row"><span class="k">Probability</span><span class="v" id="propProb">—</span></div>
-          <div class="prop-row"><span class="k">Risk</span><span class="v text-amber" id="propRisk">—</span></div>
-          <div class="prop-row"><span class="k">Expected Return</span><span class="v" id="propER">—</span></div>
-          <button class="btn btn-primary btn-lg" style="width:100%;margin-top:14px" onclick="buyContract()" id="buyBtn" disabled>⚡ BUY</button>
-          <div class="text-muted center" style="font-size:10px;margin-top:8px" id="propStatus">Connect Deriv account to begin</div>
+        <div class="card g ag">
+          <h3>Momentum</h3>
+          <div class="gring">
+            <svg width="120" height="120"><circle cx="60" cy="60" r="52" stroke="#ffffff10" stroke-width="9" fill="none"/><circle id="gauge" cx="60" cy="60" r="52" stroke="url(#gg)" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327" transform="rotate(-90 60 60)"/><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3B82F6"/><stop offset=".5" stop-color="#8B5CF6"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs></svg>
+            <div class="gv"><span id="ms">0</span><small>MOM</small></div>
+          </div>
+          <div class="r between w"><div><div class="dim fz">BULL</div><div class="g fw" id="mb">0%</div></div><div><div class="dim fz">BEAR</div><div class="r fw" id="mr">0%</div></div></div>
+        </div>
+        <div class="card g">
+          <h3>Digit Frequency</h3>
+          <div class="dgrid" id="dgrid"></div>
+          <div class="stats mt"><div class="r between"><span class="dim">Top</span><span class="cy mono" id="mf">—</span></div><div class="r between"><span class="dim">Bottom</span><span class="am mono" id="lf">—</span></div><div class="r between"><span class="dim">E/O</span><span class="mono" id="eo">—</span></div><div class="r between"><span class="dim">O5/U5</span><span class="mono" id="ou">—</span></div></div>
+        </div>
+        <div class="card g airc">
+          <div class="r between wrap">
+            <div><div class="dim sm">AI RECOMMENDATION</div><div class="aiac" id="aia">SCANNING...</div><div class="dim fz" id="air">Awaiting tick data</div></div>
+            <div class="r gap"><div class="c"><div class="dim fz">CONF</div><div class="cy mono fw" style="font-size:24px" id="aic">0%</div></div><div class="c"><div class="dim fz">RECOVERY</div><div class="pp mono fw" style="font-size:24px" id="airec">—</div></div></div>
+          </div>
+          <div class="rmeter mt"><div class="rfill" id="rfill" style="width:25%"></div></div>
+        </div>
+        <div class="card g" style="grid-column:1/-1">
+          <div class="r between"><h3>Live Ticks</h3><span class="dim mono" id="ltt">—</span></div>
+          <div class="r mt mb"><span class="dim fz">Mom:</span><div class="mrow" id="mrow"></div><span class="dim fz ml">avg: 0</span></div>
+          <div class="ttable" id="ttable"></div>
         </div>
       </div>
     </section>
-    <section class="page" id="page-history">
-      <div class="section-head"><h2><span class="accent"></span>Trade History</h2><div class="row gap-2"><div class="text-muted mono-s" id="histStats">0 trades</div><button class="btn btn-sm btn-ghost" onclick="exportHistory()">Export</button><button class="btn btn-sm btn-ghost" onclick="clearHistory()">Clear</button></div></div>
-      <div class="glass" style="padding:14px"><div style="overflow-x:auto"><table class="history-table"><thead><tr><th>Time</th><th>Contract</th><th>Entry</th><th>Exit</th><th>Stake</th><th>P/L</th><th>Conf</th><th>Mom</th><th>Reason</th></tr></thead><tbody id="histBody"></tbody></table></div><div id="histEmpty" class="empty">No trade history yet</div></div>
-    </section>
-    <section class="page" id="page-settings">
-      <div class="section-head"><h2><span class="accent"></span>Settings</h2></div>
-      <div class="settings-grid">
-        <div class="glass setting-card"><h3 style="margin-bottom:8px">Appearance</h3><div class="setting-row"><div class="info"><div class="label">Dark Mode</div><div class="desc">Premium dark theme</div></div><div class="toggle on" id="tDark" onclick="toggleSetting(this,'darkMode')"></div></div><div class="setting-row"><div class="info"><div class="label">Animations</div><div class="desc">Smooth transitions</div></div><div class="toggle on" id="tAnim" onclick="toggleSetting(this,'animations')"></div></div></div>
-        <div class="glass setting-card"><h3 style="margin-bottom:8px">Alerts</h3><div class="setting-row"><div class="info"><div class="label">Sound Effects</div><div class="desc">Trade confirmations</div></div><div class="toggle" id="tSound" onclick="toggleSetting(this,'sound')"></div></div><div class="setting-row"><div class="info"><div class="label">Notifications</div><div class="desc">Browser push</div></div><div class="toggle" id="tNotif" onclick="toggleSetting(this,'notifications')"></div></div></div>
-        <div class="glass setting-card"><h3 style="margin-bottom:8px">Risk</h3><div class="setting-row"><div class="info"><div class="label">Max Stake</div><div class="desc">Per trade limit</div></div><input type="number" class="input" id="sMaxStake" value="10" min="1" style="width:90px" onchange="saveSettings()"></div><div class="setting-row"><div class="info"><div class="label">Max Daily Loss</div><div class="desc">Stop-loss threshold</div></div><input type="number" class="input" id="sMaxLoss" value="50" min="1" style="width:90px" onchange="saveSettings()"></div><div class="setting-row"><div class="info"><div class="label">Min Confidence</div><div class="desc">AI recommendation threshold</div></div><input type="number" class="input" id="sMinConf" value="55" min="30" max="95" style="width:90px" onchange="saveSettings()"></div></div>
-        <div class="glass setting-card"><h3 style="margin-bottom:8px">API Connection</h3><div class="setting-row"><div class="info"><div class="label">Deriv API Token</div><div class="desc">Stored locally only</div></div><input type="password" class="input" id="sToken" placeholder="••••••••" style="width:140px" onchange="saveSettings()"></div><div class="setting-row"><div class="info"><div class="label">Default Symbol</div><div class="desc">Volatility index</div></div><select class="input" id="sSymbol" style="width:140px" onchange="saveSettings()"><option value="R_100">R_100</option><option value="R_75">R_75</option><option value="R_50">R_50</option><option value="1HZ100V">1HZ100V</option></select></div></div>
-        <div class="glass setting-card"><h3 style="margin-bottom:8px">Data</h3><div class="setting-row"><div class="info"><div class="label">Reset All Data</div><div class="desc">Clears history & signals</div></div><button class="btn btn-sm btn-red" onclick="resetAll()">Reset</button></div><div class="setting-row"><div class="info"><div class="label">Export Data</div><div class="desc">Download as JSON</div></div><button class="btn btn-sm" onclick="exportHistory()">Export</button></div></div>
-        <div class="glass setting-card"><h3 style="margin-bottom:8px">About</h3><div class="setting-row"><div class="info"><div class="label">Version</div><div class="desc">Trade7Smart AI Terminal</div></div><span class="mono-s text-dim">v2.1.0</span></div><div class="setting-row"><div class="info"><div class="label">Engine</div><div class="desc">Deriv WebSocket API</div></div><span class="mono-s text-green">●</span></div></div>
+
+    <section id="p-trade" class="page">
+      <div class="sh"><h2><i></i>Trade Terminal</h2>
+        <div class="r gap"><span class="dim mono">Stake $</span><input type="number" id="stake" class="input" value="1" min="0.35" step="0.5" style="width:80px"></div>
+      </div>
+      <div class="tgrid">
+        <div>
+          <div class="card g"><h3 class="mb">Select Contract</h3>
+            <div class="cgrid">
+              <div class="cbtn over on" data-c="DIGITOVER" data-b="0" onclick="pick(this)"><div class="cn">OVER 0</div><div class="cd">Last digit &gt; 0</div><div class="ch" id="ph-OVER-0">—</div></div>
+              <div class="cbtn over" data-c="DIGITOVER" data-b="1" onclick="pick(this)"><div class="cn">OVER 1</div><div class="cd">Last digit &gt; 1</div><div class="ch" id="ph-OVER-1">—</div></div>
+              <div class="cbtn under" data-c="DIGITUNDER" data-b="8" onclick="pick(this)"><div class="cn">UNDER 8</div><div class="cd">Last digit &lt; 8</div><div class="ch" id="ph-UNDER-8">—</div></div>
+              <div class="cbtn under" data-c="DIGITUNDER" data-b="9" onclick="pick(this)"><div class="cn">UNDER 9</div><div class="cd">Last digit &lt; 9</div><div class="ch" id="ph-UNDER-9">—</div></div>
+            </div>
+          </div>
+
+          <div class="card g auto">
+            <div class="r between wrap mb">
+              <div><h3>🤖 Auto-Trade</h3><div class="dim fz">Scan → 3 arrows → Buy → Recovery</div></div>
+              <div class="mono fw cy" id="aStat">Stopped</div>
+            </div>
+            <div class="grid4 mb">
+              <div><div class="dim sm">Arrows</div><input type="number" id="aa" class="input" value="3" min="1" max="10"></div>
+              <div><div class="dim sm">Buffer</div><input type="number" id="ab" class="input" value="0.91" min="0.5" max="1" step="0.01"></div>
+              <div><div class="dim sm">Now</div><div class="mono fw cy fz" id="anow">0/3</div></div>
+              <div><div class="dim sm">L / $</div><div><span class="mono fw am" id="alv">1</span> / <span class="mono fw g" id="astk">$1.00</span></div></div>
+            </div>
+            <div class="arrows">
+              <span class="dim fz mr">Confirm:</span>
+              <div class="arr">1</div><div class="arr">2</div><div class="arr">3</div><div class="arr">4</div><div class="arr">5</div>
+            </div>
+            <div class="r between mt wrap">
+              <div class="ladder" id="lad"></div>
+              <button class="btn b1 big" id="aBtn" onclick="autoStart()">▶ SCAN</button>
+            </div>
+            <div class="dim fz center mt">Recovery: OVER→UNDER 7 · UNDER→OVER 2 · No delay</div>
+          </div>
+
+          <div id="omon"></div>
+        </div>
+
+        <div class="card g prop">
+          <h3 class="mb">Live Proposal</h3>
+          <div class="pr"><span class="dim">Contract</span><span class="mono" id="pc">—</span></div>
+          <div class="pr"><span class="dim">Barrier</span><span class="mono" id="pb">—</span></div>
+          <div class="pr"><span class="dim">Stake</span><span class="mono" id="ps">—</span></div>
+          <div class="pr"><span class="dim">Payout</span><span class="mono cy" id="ppo">—</span></div>
+          <div class="pr"><span class="dim">Profit</span><span class="mono g" id="ppr">—</span></div>
+          <div class="pr"><span class="dim">Probability</span><span class="mono" id="pprob">—</span></div>
+          <div class="pr"><span class="dim">Risk</span><span class="mono am" id="prk">—</span></div>
+          <div class="pr"><span class="dim">Expected</span><span class="mono" id="per">—</span></div>
+          <button class="btn b1 big w" onclick="buy()" id="buyBtn" disabled>⚡ BUY</button>
+          <div class="dim fz center mt" id="pst">Connect to begin</div>
+        </div>
       </div>
     </section>
+
+    <section id="p-history" class="page">
+      <div class="sh"><h2><i></i>Trade History</h2>
+        <div class="r gap"><span class="dim mono" id="hs">0 trades</span><button class="btn s" onclick="expH()">Export</button><button class="btn s" onclick="clrH()">Clear</button></div>
+      </div>
+      <div class="card g"><div style="overflow-x:auto"><table class="ht" id="ht"><thead><tr><th>Time</th><th>Contract</th><th>Entry</th><th>Exit</th><th>Stake</th><th>P/L</th></tr></thead><tbody id="hb"></tbody></table></div><div id="he" class="empty">No history</div></div>
+    </section>
+
+    <section id="p-settings" class="page">
+      <div class="sh"><h2><i></i>Settings</h2></div>
+      <div class="setgrid">
+        <div class="card g"><h3 class="mb">Connection</h3>
+          <div class="sr"><div><div class="fw">API Token</div><div class="dim fz">Stored locally</div></div><input type="password" id="st" class="input" placeholder="••••" style="width:140px" onchange="saveS()"></div>
+          <div class="sr"><div><div class="fw">Symbol</div><div class="dim fz">Default</div></div><select id="ss" class="input" style="width:140px" onchange="saveS()"><option>R_100</option><option>R_75</option><option>R_50</option><option>1HZ100V</option></select></div>
+        </div>
+        <div class="card g"><h3 class="mb">Risk</h3>
+          <div class="sr"><div><div class="fw">Max Stake</div><div class="dim fz">Per trade</div></div><input type="number" id="smax" class="input" value="10" style="width:80px" onchange="saveS()"></div>
+          <div class="sr"><div><div class="fw">Min Confidence</div><div class="dim fz">Signal threshold</div></div><input type="number" id="sconf" class="input" value="55" style="width:80px" onchange="saveS()"></div>
+        </div>
+        <div class="card g"><h3 class="mb">Data</h3>
+          <div class="sr"><div><div class="fw">Reset</div><div class="dim fz">Clear all</div></div><button class="btn red" onclick="reset()">Reset</button></div>
+        </div>
+      </div>
+    </section>
+
   </main>
-  <nav class="bottom-nav">
-    <div class="bnav-item active" data-page="home" onclick="navigate('home')"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></div>
-    <div class="bnav-item" data-page="analyzer" onclick="navigate('analyzer')"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l3-9 4 18 3-9h6"/></svg><span>Analyzer</span></div>
-    <div class="bnav-item" data-page="trade" onclick="navigate('trade')"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>Trade</span></div>
-    <div class="bnav-item" data-page="history" onclick="navigate('history')"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg><span>History</span></div>
-    <div class="bnav-item" data-page="settings" onclick="navigate('settings')"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></div>
+
+  <nav class="bnav">
+    <div class="bi active" data-p="home" onclick="go('home')"><div class="bi-i">🏠</div><span>Home</span></div>
+    <div class="bi" data-p="analyzer" onclick="go('analyzer')"><div class="bi-i">📊</div><span>Analyze</span></div>
+    <div class="bi" data-p="trade" onclick="go('trade')"><div class="bi-i">🎯</div><span>Trade</span></div>
+    <div class="bi" data-p="history" onclick="go('history')"><div class="bi-i">📜</div><span>History</span></div>
+    <div class="bi" data-p="settings" onclick="go('settings')"><div class="bi-i">⚙️</div><span>Settings</span></div>
   </nav>
 </div>
-<script src="style.js"></script>
+
 <script src="app.js"></script>
 </body>
 </html>

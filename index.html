@@ -132,7 +132,7 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
 .digit-cell .d-num{font-family:'JetBrains Mono';font-weight:700;font-size:14px}
 .digit-cell .d-pct{font-size:9px;color:var(--text-muted);margin-top:1px}
 .tick-table{max-height:240px;overflow-y:auto;border-radius:8px}
-.tick-row{display:grid;grid-template-columns:80px 1fr 60px 70px;gap:8px;padding:6px 10px;font-family:'JetBrains Mono',font-size:11px;border-bottom:1px solid var(--border);align-items:center}
+.tick-row{display:grid;grid-template-columns:80px 1fr 60px 70px;gap:8px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;border-bottom:1px solid var(--border);align-items:center}
 .tick-row:last-child{border-bottom:none}
 .tick-row .arr-up{color:var(--green)}
 .tick-row .arr-down{color:var(--red)}
@@ -168,7 +168,7 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
 .prop-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;gap:8px}
 .prop-row:last-child{border-bottom:none}
 .prop-row .k{color:var(--text-muted)}
-.prop-row .v{font-family:'JetBrains Mono';font-weight:600;text-align:right}
+.prop-row .v{font-family:'JetBrains Mono',font-weight:600;text-align:right}
 .monitor-card{padding:24px;max-width:540px;margin:0 auto;text-align:center}
 .monitor-digit{font-size:clamp(56px,12vw,90px);font-weight:800;font-family:'JetBrains Mono';line-height:1;margin:6px 0}
 .monitor-digit.up{color:var(--green);text-shadow:0 0 30px rgba(34,197,94,.5)}
@@ -243,6 +243,124 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
 .ladder-row.active{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.4);box-shadow:0 0 12px rgba(59,130,246,.2)}
 #autoBtn.live{background:linear-gradient(135deg,#DC2626,#EF4444);box-shadow:var(--glow-red);animation:autoPulse 2s ease-in-out infinite}
 @keyframes autoPulse{0%,100%{box-shadow:0 0 20px rgba(239,68,68,.4)}50%{box-shadow:0 0 40px rgba(239,68,68,.7)}}
+
+/* ===== ENHANCED RESPONSIVE ===== */
+@media(max-width:1280px){.hero-stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:1024px){
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .analyzer-grid{grid-template-columns:1fr;grid-template-rows:auto}
+  .trade-grid{grid-template-columns:1fr}
+  .a-chart{grid-row:auto;min-height:340px}
+  .auto-panel .row{gap:6px}
+  .section-head h2{font-size:1.1rem}
+}
+@media(max-width:768px){
+  .main{padding:10px;padding-bottom:96px}
+  .header{padding:0 10px;gap:8px}
+  .header-left{gap:8px}
+  .symbol-pill{padding:5px 9px;font-size:11px}
+  .spot-price{font-size:15px}
+  .balance-pill{padding:6px 10px;font-size:12px}
+  .connection-pill{padding:5px 8px;font-size:10px}
+  .hero{padding:20px 16px;min-height:auto;gap:16px}
+  .hero h1{font-size:1.6rem}
+  .hero-sub{font-size:13px;margin-bottom:14px}
+  .hero-stat{padding:10px 12px}
+  .hero-stat .value{font-size:14px}
+  .hero-stat .label{font-size:9px}
+  .hero-stats{grid-template-columns:repeat(2,1fr);gap:8px}
+  .hero-buttons .btn{padding:12px 14px;font-size:13px}
+  .section-head{margin:18px 4px 8px}
+  .home-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .home-card{padding:14px;min-height:110px;gap:6px}
+  .home-card-value{font-size:18px}
+  .home-card-icon{width:30px;height:30px;font-size:14px}
+  .home-card-title{font-size:11px}
+  .analyzer-grid{grid-template-columns:1fr;gap:10px}
+  .a-chart{min-height:280px;padding:12px}
+  .a-chart-wrap{min-height:240px;margin-top:8px}
+  .a-panel{padding:12px}
+  .a-gauge{padding:12px}
+  .gauge-ring{width:120px;height:120px}
+  .gauge-ring svg{width:120px;height:120px}
+  .gauge-val{font-size:24px}
+  .digit-grid{gap:4px}
+  .digit-cell .d-num{font-size:12px}
+  .digit-cell .d-pct{font-size:8px}
+  .tick-table{max-height:200px}
+  .tick-row{grid-template-columns:60px 1fr 50px 60px;font-size:10px;padding:5px 8px;gap:6px}
+  .trade-grid{grid-template-columns:1fr;gap:10px}
+  .contract-btn{padding:16px 12px}
+  .contract-btn .name{font-size:13px}
+  .contract-btn .desc{font-size:9px}
+  .proposal-card{padding:14px}
+  .prop-row{font-size:11px;padding:6px 0}
+  .auto-panel{padding:12px;margin-top:10px}
+  .auto-panel h3{font-size:14px}
+  .auto-arrow{width:28px;height:28px;font-size:12px}
+  .auto-arrows{gap:6px;font-size:10px}
+  .settings-grid{grid-template-columns:1fr;gap:10px}
+  .setting-card{padding:14px}
+  .history-table{font-size:11px}
+  .history-table th,.history-table td{padding:8px;font-size:10px}
+  .glass{padding:12px}
+  h3{font-size:13px}
+  .ai-rec-card{padding:12px}
+  .ai-rec-action{font-size:17px}
+  .ai-rec-reason{font-size:11px}
+  .modal{padding:18px}
+  #toast-wrap{left:10px;right:10px;top:70px}
+  .toast{max-width:none;font-size:12px;padding:10px 12px}
+  #fab-buy{bottom:80px;right:14px;width:54px;height:54px}
+  .bottom-nav{padding:5px 4px}
+  .bnav-item{padding:7px 2px;font-size:9px;gap:2px}
+  .bnav-item .ico{width:18px;height:18px}
+}
+@media(max-width:540px){
+  .hero h1{font-size:1.4rem}
+  .hero-buttons{flex-direction:column;align-items:stretch}
+  .hero-buttons .btn{width:100%}
+  .home-grid{grid-template-columns:1fr}
+  .contract-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .hero-stats{grid-template-columns:1fr 1fr;gap:6px}
+  .balance-pill{font-size:11px;padding:5px 8px}
+  .spot-price{font-size:13px}
+  .sidebar{display:none}
+  .bottom-nav{font-size:9px}
+  .bnav-item{padding:6px 2px;font-size:9px}
+  .bnav-item .ico{width:18px;height:18px}
+  .monitor-card{padding:18px}
+  .result-card{padding:20px}
+  .result-icon{width:70px;height:70px;font-size:36px}
+  .result-amt{font-size:28px}
+  .ai-rec-action{font-size:15px}
+  .digit-grid{grid-template-columns:repeat(5,1fr);gap:3px}
+  .digit-cell .d-num{font-size:11px}
+  .auto-arrow{width:26px;height:26px;font-size:11px}
+}
+@media(max-width:380px){
+  .header-left .symbol-pill span:not(.dot){display:none}
+  .balance-pill{padding:5px 7px;font-size:10px}
+  .auto-arrows{justify-content:flex-start}
+  .hero h1{font-size:1.25rem}
+  .hero-sub{font-size:12px}
+}
+@media(hover:none) and (pointer:coarse){
+  .btn{min-height:44px}
+  .contract-btn{min-height:80px}
+  .auto-arrow{min-width:44px;min-height:44px}
+  .bnav-item{min-height:60px}
+  .input{font-size:16px}
+  .toggle{width:48px;height:26px}
+  .toggle::after{width:22px;height:22px}
+  .toggle.on::after{left:24px}
+  .nav-item{min-height:48px}
+}
+@media(orientation:landscape) and (max-height:500px){
+  .hero{min-height:240px;padding:16px}
+  .hero-stats{grid-template-columns:repeat(5,1fr)}
+  .hero-buttons{margin-top:8px}
+}
 </style>
 </head>
 <body>
@@ -652,24 +770,7 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
 </div>
 
 <script>
-/* ====================================================================
-   STATE
-   ==================================================================== */
-const STATE = {
-  page:'home', ws:null, wsReady:false, authorized:false, reconnecting:false,
-  heartbeatTimer:null, priceSubs:new Set(),
-  tickHistory:[], digitFreq:Array(10).fill(0),
-  currentSymbol:'R_100', proposalId:null, proposalData:null,
-  selectedContract:{type:'DIGITOVER',barrier:'0'},
-  openContractId:null, openContractData:null,
-  history:[], signals:[],
-  settings:{darkMode:true,animations:true,sound:false,notifications:false,maxStake:10,maxLoss:50,minConfidence:55,token:'',symbol:'R_100'},
-  account:{balance:0,currency:'USD',loginid:'',todayPL:0},
-  lastPrice:null, lastPriceDir:0, requestId:1, stake:1,
-  chartReady:false, chart:null, candleSeries:null, candle:null,
-  auto:{enabled:false,scanning:false,contract:'DIGITOVER',barrier:'1',arrowCount:0,arrowsNeeded:3,requiredDir:1,level:0,baseStake:1,ladder:[],profitBuffer:0.91,pendingBuy:false,activeContractId:null,cooldown:false},
-  lastSignalConfidence:0, lastSignalReason:'', lastMomentum:0
-};
+const STATE={page:'home',ws:null,wsReady:false,authorized:false,reconnecting:false,heartbeatTimer:null,priceSubs:new Set(),tickHistory:[],digitFreq:Array(10).fill(0),currentSymbol:'R_100',proposalId:null,proposalData:null,selectedContract:{type:'DIGITOVER',barrier:'0'},openContractId:null,openContractData:null,history:[],signals:[],settings:{darkMode:true,animations:true,sound:false,notifications:false,maxStake:10,maxLoss:50,minConfidence:55,token:'',symbol:'R_100'},account:{balance:0,currency:'USD',loginid:'',todayPL:0},lastPrice:null,lastPriceDir:0,requestId:1,stake:1,chartReady:false,chart:null,candleSeries:null,candle:null,auto:{enabled:false,scanning:false,contract:'DIGITOVER',barrier:'1',arrowCount:0,arrowsNeeded:3,requiredDir:1,level:0,baseStake:1,ladder:[],profitBuffer:0.91,pendingBuy:false,activeContractId:null,cooldown:false},lastSignalConfidence:0,lastSignalReason:'',lastMomentum:0};
 
 function saveState(){try{localStorage.setItem('t7s_settings',JSON.stringify(STATE.settings));localStorage.setItem('t7s_history',JSON.stringify(STATE.history));localStorage.setItem('t7s_signals',JSON.stringify(STATE.signals.slice(-50)));}catch(e){}}
 function loadState(){try{const s=JSON.parse(localStorage.getItem('t7s_settings')||'null');if(s)Object.assign(STATE.settings,s);const h=JSON.parse(localStorage.getItem('t7s_history')||'[]');if(Array.isArray(h))STATE.history=h;const sg=JSON.parse(localStorage.getItem('t7s_signals')||'[]');if(Array.isArray(sg))STATE.signals=sg;}catch(e){}}
@@ -687,602 +788,73 @@ function runPreloader(){const tick=()=>{if(preIdx>=PRELOAD_STEPS.length){setTime
 
 function navigate(page){STATE.page=page;document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item,.bnav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));$('page-'+page).classList.add('active');document.querySelector('.main').scrollTop=0;$('fab-buy').classList.toggle('show',page==='analyzer'||page==='home');if(page==='analyzer'&&STATE.chartReady)setTimeout(()=>STATE.chart&&STATE.chart.timeScale().fitContent(),50);if(page==='history')renderHistory();if(page==='home')renderHome();}
 
-/* ====================================================================
-   DERIV WEBSOCKET — FIXED
-   ==================================================================== */
 const WS_URL='wss://ws.binaryws.com/websockets/v3?app_id=1089';
-
-function connectDeriv(){
-  if(STATE.ws){
-    try{STATE.ws.close();}catch(e){}
-    STATE.ws=null;
-  }
-  STATE.wsReady=false;
-  STATE.authorized=false;
-  STATE.proposalId=null;
-  STATE.proposalData=null;
-  updateConn('connecting');
-
-  try{
-    STATE.ws=new WebSocket(WS_URL);
-  }catch(e){
-    updateConn('disconnected');
-    scheduleReconnect();
-    return;
-  }
-
-  STATE.ws.onopen=()=>{
-    console.log('[WS] Connected');
-    STATE.wsReady=true;
-    try{STATE.ws.send(JSON.stringify({forget_all:'all'}));}catch(e){}
-    if(STATE.settings.token && STATE.settings.token.length > 5){
-      console.log('[WS] Authorizing...');
-      sendWS({authorize:STATE.settings.token});
-    } else {
-      console.log('[WS] No token — public stream');
-      subscribeTicks(STATE.currentSymbol);
-      updateConn('live');
-    }
-    startHeartbeat();
-  };
-
-  STATE.ws.onmessage=(ev)=>{
-    try{
-      const data=JSON.parse(ev.data);
-      console.log('[WS]', data.msg_type || (data.error?data.error.code:'unknown'));
-      handleWS(data);
-    }catch(e){console.error('[WS] Parse error',e);}
-  };
-
-  STATE.ws.onerror=(err)=>{console.error('[WS] Error',err);};
-
-  STATE.ws.onclose=(ev)=>{
-    console.log('[WS] Closed',ev.code);
-    STATE.wsReady=false;
-    STATE.authorized=false;
-    STATE.proposalId=null;
-    STATE.proposalData=null;
-    updateConn('disconnected');
-    stopHeartbeat();
-    scheduleReconnect();
-  };
-}
-
+function connectDeriv(){if(STATE.ws){try{STATE.ws.close();}catch(e){}STATE.ws=null;}STATE.wsReady=false;STATE.authorized=false;STATE.proposalId=null;STATE.proposalData=null;updateConn('connecting');try{STATE.ws=new WebSocket(WS_URL);}catch(e){updateConn('disconnected');scheduleReconnect();return;}STATE.ws.onopen=()=>{console.log('[WS] Connected');STATE.wsReady=true;try{STATE.ws.send(JSON.stringify({forget_all:'all'}));}catch(e){}if(STATE.settings.token&&STATE.settings.token.length>5){console.log('[WS] Authorizing...');sendWS({authorize:STATE.settings.token});}else{subscribeTicks(STATE.currentSymbol);updateConn('live');}startHeartbeat();};STATE.ws.onmessage=(ev)=>{try{const data=JSON.parse(ev.data);console.log('[WS]',data.msg_type||(data.error?data.error.code:'unknown'));handleWS(data);}catch(e){console.error('[WS] Parse error',e);}};STATE.ws.onerror=(err)=>{console.error('[WS] Error',err);};STATE.ws.onclose=(ev)=>{console.log('[WS] Closed',ev.code);STATE.wsReady=false;STATE.authorized=false;STATE.proposalId=null;STATE.proposalData=null;updateConn('disconnected');stopHeartbeat();scheduleReconnect();};}
 function scheduleReconnect(){if(STATE.reconnecting)return;STATE.reconnecting=true;setTimeout(()=>{STATE.reconnecting=false;connectDeriv();},4000);}
-
 function startHeartbeat(){stopHeartbeat();STATE.heartbeatTimer=setInterval(()=>{if(STATE.wsReady){try{STATE.ws.send(JSON.stringify({ping:1}));}catch(e){}}},30000);}
 function stopHeartbeat(){if(STATE.heartbeatTimer){clearInterval(STATE.heartbeatTimer);STATE.heartbeatTimer=null;}}
-
 function sendWS(obj){if(!STATE.wsReady||!STATE.ws){console.warn('[WS] Not ready');return;}obj.req_id=STATE.requestId++;try{STATE.ws.send(JSON.stringify(obj));}catch(e){console.error('[WS] Send failed',e);}}
 
 function handleWS(data){
   if(data.msg_type==='ping'){sendWS({pong:1});return;}
-
-  if(data.error){
-    const code=data.error.code||'';
-    const msg=data.error.message||'Error';
-    console.error('[WS ERROR]',code,msg);
-    if(code==='InvalidToken'||code==='AuthorizationRequired'){
-      STATE.authorized=false;
-      toast('Invalid API token','error');
-      updateConn('connecting');
-    } else if(code==='InvalidContractProposal'||code==='ProposalError'){
-      toast('Proposal error: '+msg,'error',3000);
-      STATE.proposalId=null;
-      STATE.proposalData=null;
-      setTimeout(()=>{if(STATE.wsReady&&STATE.authorized)requestProposal();},1500);
-    } else if(code==='ContractBuyPriceError'||code==='PriceMoved'){
-      // Re-request fresh proposal
-      STATE.proposalId=null;
-      STATE.proposalData=null;
-      setTimeout(()=>{if(STATE.wsReady&&STATE.authorized)requestProposal();},800);
-    } else if(!['AlreadySubscribed','ContractWon','ContractLost','RateLimit','MarketIsClosed','InputValidationFailed'].includes(code)){
-      toast(msg,'error',3500);
-    }
-    return;
-  }
-
-  // AUTHORIZE
-  if(data.msg_type==='authorize'){
-    console.log('[AUTH OK]',data.authorize.loginid,data.authorize.currency);
-    STATE.authorized=true;
-    STATE.account.loginid=data.authorize.loginid;
-    STATE.account.currency=data.authorize.currency||'USD';
-    subscribeTicks(STATE.currentSymbol);
-    // Subscribe to live balance updates — THIS IS THE KEY
-    sendWS({balance:1,subscribe:1});
-    sendWS({get_account_status:1});
-    updateConn('live');
-    toast('✓ Authorized '+data.authorize.loginid,'success',2500);
-  }
-
-  // BALANCE — updates from Deriv's subscription
-  if(data.msg_type==='balance'){
-    const newBal=Number(data.balance.balance);
-    console.log('[BALANCE]',newBal,data.balance.currency);
-    STATE.account.balance=newBal;
-    if(data.balance.currency) STATE.account.currency=data.balance.currency;
-    renderBalance();
-  }
-
-  if(data.msg_type==='get_account_status'){
-    console.log('[ACCT STATUS]',data.get_account_status);
-  }
-
+  if(data.error){const code=data.error.code||'';const msg=data.error.message||'Error';console.error('[WS ERROR]',code,msg);if(code==='InvalidToken'||code==='AuthorizationRequired'){STATE.authorized=false;toast('Invalid API token','error');updateConn('connecting');}else if(code==='InvalidContractProposal'||code==='ProposalError'){toast('Proposal error: '+msg,'error',3000);STATE.proposalId=null;STATE.proposalData=null;setTimeout(()=>{if(STATE.wsReady&&STATE.authorized)requestProposal();},1500);}else if(code==='ContractBuyPriceError'||code==='PriceMoved'){STATE.proposalId=null;STATE.proposalData=null;setTimeout(()=>{if(STATE.wsReady&&STATE.authorized)requestProposal();},800);}else if(!['AlreadySubscribed','ContractWon','ContractLost','RateLimit','MarketIsClosed','InputValidationFailed'].includes(code)){toast(msg,'error',3500);}return;}
+  if(data.msg_type==='authorize'){console.log('[AUTH OK]',data.authorize.loginid,data.authorize.currency);STATE.authorized=true;STATE.account.loginid=data.authorize.loginid;STATE.account.currency=data.authorize.currency||'USD';subscribeTicks(STATE.currentSymbol);sendWS({balance:1,subscribe:1});sendWS({get_account_status:1});updateConn('live');toast('✓ Authorized '+data.authorize.loginid,'success',2500);}
+  if(data.msg_type==='balance'){const newBal=Number(data.balance.balance);console.log('[BALANCE]',newBal,data.balance.currency);STATE.account.balance=newBal;if(data.balance.currency)STATE.account.currency=data.balance.currency;renderBalance();}
+  if(data.msg_type==='get_account_status'){console.log('[ACCT STATUS]',data.get_account_status);}
   if(data.msg_type==='tick'){onTick(data.tick);}
-
-  if(data.msg_type==='history'&&data.history&&data.history.prices){
-    const candles=data.history.times.map((t,i)=>({time:t,open:data.history.prices[i],high:data.history.prices[i],low:data.history.prices[i],close:data.history.prices[i]}));
-    if(STATE.chart&&STATE.candleSeries) STATE.candleSeries.setData(candles);
-  }
-
-  // PROPOSAL
-  if(data.msg_type==='proposal'){
-    console.log('[PROPOSAL]',data.proposal.id,'ask:',data.proposal.ask_price);
-    STATE.proposalId=data.proposal.id;
-    STATE.proposalData=data.proposal;
-    renderProposal();
-  }
-
-  // BUY
-  if(data.msg_type==='buy'){
-    if(data.buy){
-      console.log('[BUY OK]',data.buy.contract_id,'$'+data.buy.buy_price);
-      toast(`✓ BOUGHT @ $${data.buy.buy_price}`,'success');
-      STATE.openContractId=data.buy.contract_id;
-      STATE.openContractData=null;
-      // Subscribe to track this contract through settlement
-      sendWS({proposal_open_contract:1,contract_id:data.buy.contract_id,subscribe:1});
-      if(STATE.settings.sound) playBeep(900,100);
-      renderOpenMonitor();
-    } else {
-      console.error('[BUY FAILED]');
-      toast('Buy failed — balance/limits','error');
-    }
-  }
-
-  // PROPOSAL_OPEN_CONTRACT — settlement + live tracking
-  if(data.msg_type==='proposal_open_contract'){
-    const c=data.proposal_open_contract;
-    STATE.openContractData=c;
-
-    const isSettled = (c.is_sold===1) || c.status==='lost' || c.status==='won' || (c.is_expired && c.status!=='open');
-    if(isSettled){
-      console.log('[SETTLED]',c.status,'profit:',c.profit);
-      handleSettlement(c);
-    } else {
-      renderOpenMonitor();
-    }
-  }
+  if(data.msg_type==='history'&&data.history&&data.history.prices){const candles=data.history.times.map((t,i)=>({time:t,open:data.history.prices[i],high:data.history.prices[i],low:data.history.prices[i],close:data.history.prices[i]}));if(STATE.chart&&STATE.candleSeries)STATE.candleSeries.setData(candles);}
+  if(data.msg_type==='proposal'){console.log('[PROPOSAL]',data.proposal.id,'ask:',data.proposal.ask_price);STATE.proposalId=data.proposal.id;STATE.proposalData=data.proposal;renderProposal();}
+  if(data.msg_type==='buy'){if(data.buy){console.log('[BUY OK]',data.buy.contract_id,'$'+data.buy.buy_price);toast(`✓ BOUGHT @ $${data.buy.buy_price}`,'success');STATE.openContractId=data.buy.contract_id;STATE.openContractData=null;sendWS({proposal_open_contract:1,contract_id:data.buy.contract_id,subscribe:1});if(STATE.settings.sound)playBeep(900,100);renderOpenMonitor();}else{console.error('[BUY FAILED]');toast('Buy failed — balance/limits','error');}}
+  if(data.msg_type==='proposal_open_contract'){const c=data.proposal_open_contract;STATE.openContractData=c;const isSettled=(c.is_sold===1)||c.status==='lost'||c.status==='won'||(c.is_expired&&c.status!=='open');if(isSettled){console.log('[SETTLED]',c.status,'profit:',c.profit);handleSettlement(c);}else{renderOpenMonitor();}}
 }
 
-// FIX: handleSettlement correctly updates balance + history
-function handleSettlement(c){
-  const profit = Number(c.profit);
-  const buyPrice = Number(c.buy_price);
-  const payout = Number(c.payout || (profit + buyPrice));
-  const exitTick = c.exit_tick_display || c.exit_tick || c.current_spot_display || c.current_spot || 0;
-  const entryTick = c.entry_tick_display || c.entry_tick || 0;
-  const isWin = profit > 0;
+function handleSettlement(c){const profit=Number(c.profit);const buyPrice=Number(c.buy_price);const payout=Number(c.payout||(profit+buyPrice));const exitTick=c.exit_tick_display||c.exit_tick||c.current_spot_display||c.current_spot||0;const entryTick=c.entry_tick_display||c.entry_tick||0;const isWin=profit>0;console.log('[SETTLEMENT]',{profit,isWin,status:c.status,entry:entryTick,exit:exitTick});STATE.account.todayPL+=profit;onAutoSettlement(profit);const entry={time:c.date_start||Math.floor(Date.now()/1000),contract:c.contract_type+' '+c.barrier,entry:entryTick,exit:exitTick,stake:buyPrice,payout:payout,profit:profit,isWin:isWin,confidence:STATE.lastSignalConfidence||0,momentum:STATE.lastMomentum||0,reason:STATE.lastSignalReason||''};STATE.history.unshift(entry);if(STATE.history.length>500)STATE.history=STATE.history.slice(0,500);saveState();renderHistory();renderHome();renderBalance();setTimeout(()=>{if(STATE.wsReady)sendWS({balance:1,subscribe:1});},500);showResult(entry);STATE.openContractId=null;STATE.openContractData=null;STATE.lastSignalConfidence=0;STATE.lastSignalReason='';STATE.lastMomentum=0;}
 
-  console.log('[SETTLEMENT]',{profit,isWin,status:c.status,entry:entryTick,exit:exitTick});
+function updateConn(status){const dot=$('connDot'),txt=$('connText'),sDot=$('sbWs');if(status==='live'){dot.className='dot dot-live';txt.textContent=STATE.authorized?'Connected':'Connected (Public)';txt.className=STATE.authorized?'':'text-amber';if(sDot){sDot.textContent=STATE.authorized?'● ONLINE':'● PUBLIC';sDot.className='mono-s text-green';}$('hMarket').textContent='Open';$('hServer').textContent='Online';$('hConnDot').className='dot dot-live';$('hConnTxt').textContent=STATE.authorized?'Authorized':'Connected';$('hConnTxt').className='home-card-value text-green';$('hConnTxt').style.fontSize='18px';$('hConnSub').textContent=STATE.authorized?'Trading ready':'Awaiting token';}else if(status==='connecting'){dot.className='dot dot-warn';txt.textContent='Connecting';txt.className='text-amber';$('hMarket').textContent='Connecting';$('hConnDot').className='dot dot-warn';$('hConnTxt').textContent='Connecting';$('hConnTxt').className='home-card-value text-amber';$('hConnSub').textContent='Establishing...';}else{dot.className='dot dot-down';txt.textContent='Disconnected';txt.className='text-red';if(sDot){sDot.textContent='● OFFLINE';sDot.className='mono-s text-red';}$('hMarket').textContent='Offline';$('hServer').textContent='Offline';$('hConnDot').className='dot dot-down';$('hConnTxt').textContent='Disconnected';$('hConnTxt').className='home-card-value text-red';$('hConnSub').textContent='Tap to reconnect';}}
 
-  // Update local P/L
-  STATE.account.todayPL += profit;
+function subscribeTicks(symbol){if(!STATE.wsReady)return;sendWS({forget_all:'ticks'});STATE.priceSubs.clear();sendWS({ticks_history:symbol,adjust_start_time:1,count:100,end:'latest',start:1,style:'ticks'});sendWS({ticks:symbol,subscribe:1});sendWS({ticks_history:symbol,adjust_start_time:1,count:200,end:'latest',start:1,style:'candles',granularity:60});STATE.priceSubs.add(symbol);}
 
-  // Auto-trade hook
-  onAutoSettlement(profit);
+function onTick(t){const price=Number(t.quote);const prev=STATE.lastPrice;const dir=prev!==null?(price>prev?1:price<prev?-1:0):0;const change=prev!==null?price-prev:0;const digit=parseInt(t.quote.toString().slice(-1),10);STATE.lastPrice=price;STATE.lastPriceDir=dir;const sp=$('spotPrice');sp.textContent=fmt(price,4);sp.classList.remove('up','down');if(dir>0)sp.classList.add('up');else if(dir<0)sp.classList.add('down');if(STATE.chart){STATE.candle=STATE.candle||{time:t.epoch,open:price,high:price,low:price,close:price};const sameMinute=Math.floor(t.epoch/60)===Math.floor(STATE.candle.time/60);if(sameMinute){STATE.candle.high=Math.max(STATE.candle.high,price);STATE.candle.low=Math.min(STATE.candle.low,price);STATE.candle.close=price;}else{STATE.candle={time:t.epoch,open:price,high:price,low:price,close:price};}STATE.candleSeries.update(STATE.candle);}STATE.tickHistory.unshift({price,dir,change,digit,time:t.epoch});if(STATE.tickHistory.length>200)STATE.tickHistory.pop();STATE.digitFreq[digit]++;$('anaTicks').textContent=STATE.tickHistory.length+' ticks';$('lastTickTime').textContent=new Date(t.epoch*1000).toLocaleTimeString();renderTickTable();renderDigitGrid();renderMomentum();renderAnalyzer();renderHomeLive();autoTickCheck();}
 
-  // Save to history
-  const entry = {
-    time: c.date_start || Math.floor(Date.now()/1000),
-    contract: c.contract_type + ' ' + c.barrier,
-    entry: entryTick,
-    exit: exitTick,
-    stake: buyPrice,
-    payout: payout,
-    profit: profit,
-    isWin: isWin,
-    confidence: STATE.lastSignalConfidence || 0,
-    momentum: STATE.lastMomentum || 0,
-    reason: STATE.lastSignalReason || ''
-  };
-  STATE.history.unshift(entry);
-  if(STATE.history.length > 500) STATE.history = STATE.history.slice(0,500);
-  saveState();
-
-  // Refresh ALL UI
-  renderHistory();
-  renderHome();
-  renderBalance();
-
-  // Force balance refresh from Deriv
-  setTimeout(()=>{
-    if(STATE.wsReady) sendWS({balance:1,subscribe:1});
-  }, 500);
-
-  // Show result card
-  showResult(entry);
-
-  // Cleanup
-  STATE.openContractId = null;
-  STATE.openContractData = null;
-  STATE.lastSignalConfidence = 0;
-  STATE.lastSignalReason = '';
-  STATE.lastMomentum = 0;
-}
-
-function updateConn(status){
-  const dot=$('connDot'), txt=$('connText'), sDot=$('sbWs');
-  if(status==='live'){
-    dot.className='dot dot-live';
-    txt.textContent = STATE.authorized ? 'Connected' : 'Connected (Public)';
-    txt.className = STATE.authorized ? '' : 'text-amber';
-    if(sDot){
-      sDot.textContent = STATE.authorized ? '● ONLINE' : '● PUBLIC';
-      sDot.className='mono-s text-green';
-    }
-    $('hMarket').textContent='Open';
-    $('hServer').textContent='Online';
-    $('hConnDot').className='dot dot-live';
-    $('hConnTxt').textContent = STATE.authorized ? 'Authorized' : 'Connected';
-    $('hConnTxt').className='home-card-value text-green';
-    $('hConnTxt').style.fontSize='18px';
-    $('hConnSub').textContent = STATE.authorized ? 'Trading ready' : 'Awaiting token';
-  } else if(status==='connecting'){
-    dot.className='dot dot-warn';
-    txt.textContent='Connecting';
-    txt.className='text-amber';
-    $('hMarket').textContent='Connecting';
-    $('hConnDot').className='dot dot-warn';
-    $('hConnTxt').textContent='Connecting';
-    $('hConnTxt').className='home-card-value text-amber';
-    $('hConnSub').textContent='Establishing...';
-  } else {
-    dot.className='dot dot-down';
-    txt.textContent='Disconnected';
-    txt.className='text-red';
-    if(sDot){sDot.textContent='● OFFLINE';sDot.className='mono-s text-red';}
-    $('hMarket').textContent='Offline';
-    $('hServer').textContent='Offline';
-    $('hConnDot').className='dot dot-down';
-    $('hConnTxt').textContent='Disconnected';
-    $('hConnTxt').className='home-card-value text-red';
-    $('hConnSub').textContent='Tap to reconnect';
-  }
-}
-
-function subscribeTicks(symbol){
-  if(!STATE.wsReady) return;
-  sendWS({forget_all:'ticks'});
-  STATE.priceSubs.clear();
-  sendWS({ticks_history:symbol,adjust_start_time:1,count:100,end:'latest',start:1,style:'ticks'});
-  sendWS({ticks:symbol,subscribe:1});
-  sendWS({ticks_history:symbol,adjust_start_time:1,count:200,end:'latest',start:1,style:'candles',granularity:60});
-  STATE.priceSubs.add(symbol);
-}
-
-function onTick(t){
-  const price=Number(t.quote);
-  const prev=STATE.lastPrice;
-  const dir=prev!==null ? (price>prev ? 1 : price<prev ? -1 : 0) : 0;
-  const change=prev!==null ? price-prev : 0;
-  const digit=parseInt(t.quote.toString().slice(-1),10);
-  STATE.lastPrice=price; STATE.lastPriceDir=dir;
-
-  const sp=$('spotPrice');
-  sp.textContent=fmt(price,4);
-  sp.classList.remove('up','down');
-  if(dir>0) sp.classList.add('up'); else if(dir<0) sp.classList.add('down');
-
-  if(STATE.chart){
-    STATE.candle=STATE.candle || {time:t.epoch,open:price,high:price,low:price,close:price};
-    const sameMinute=Math.floor(t.epoch/60)===Math.floor(STATE.candle.time/60);
-    if(sameMinute){
-      STATE.candle.high=Math.max(STATE.candle.high,price);
-      STATE.candle.low=Math.min(STATE.candle.low,price);
-      STATE.candle.close=price;
-    } else {
-      STATE.candle={time:t.epoch,open:price,high:price,low:price,close:price};
-    }
-    STATE.candleSeries.update(STATE.candle);
-  }
-
-  STATE.tickHistory.unshift({price,dir,change,digit,time:t.epoch});
-  if(STATE.tickHistory.length>200) STATE.tickHistory.pop();
-  STATE.digitFreq[digit]++;
-  $('anaTicks').textContent=STATE.tickHistory.length+' ticks';
-  $('lastTickTime').textContent=new Date(t.epoch*1000).toLocaleTimeString();
-
-  renderTickTable(); renderDigitGrid(); renderMomentum(); renderAnalyzer(); renderHomeLive();
-  autoTickCheck();
-}
-
-function analyze(){
-  const h=STATE.tickHistory;
-  if(h.length<8) return {action:'WAIT',conf:0,reason:'Need more ticks',score:0,risk:0,recovery:0};
-  const sample=h.slice(0,20);
-  let up=0, down=0, sumChange=0;
-  sample.forEach((t,i)=>{if(i===0)return;sumChange+=Math.abs(t.change);if(t.change>0)up++;else if(t.change<0)down++;});
-  const total=up+down;
-  const bullPct=total ? Math.round(up/total*100) : 50;
-  const bearPct=100-bullPct;
-  const avgMove=total ? sumChange/total : 0;
-  const momScore=Math.round((bullPct-bearPct)*0.5+50);
-  const sampleD=h.slice(0,Math.min(100,h.length));
-  const freq=Array(10).fill(0);
-  sampleD.forEach(t=>freq[t.digit]++);
-  const totalD=sampleD.length;
-  let maxIdx=0, minIdx=0;
-  freq.forEach((f,i)=>{if(f>freq[maxIdx])maxIdx=i;if(f<freq[minIdx])minIdx=i;});
-  const maxPct=totalD ? freq[maxIdx]/totalD : 0;
-  const last8=h.slice(0,8).map(t=>t.digit);
-  const recentAvg=last8.reduce((a,b)=>a+b,0)/last8.length;
-  const trendUp=h[0].price>h[Math.min(9,h.length-1)].price;
-  const confPattern=(maxPct-0.10)*250;
-  const confMomentum=Math.abs(bullPct-50)*1.6;
-  const confTrend=trendUp ? 50 : 30;
-  const confDigit=recentAvg>5 ? 60 : 40;
-  let raw=confPattern*0.30+confMomentum*0.25+confTrend*0.20+confDigit*0.15+10;
-  raw=Math.max(5,Math.min(95,Math.round(raw)));
-  let action='WAIT', reason='', contract='DIGITOVER', barrier='1';
-  if(maxIdx===0){action='UNDER 9';contract='DIGITUNDER';barrier='9';reason=`Digit 0 least frequent (${fmt(freq[0]/Math.max(1,totalD)*100,1)}%) — UNDER 9 favored`;}
-  else if(maxIdx<=3){action='OVER 1';contract='DIGITOVER';barrier='1';reason=`Low digits dominate — OVER 1 (top: ${maxIdx} at ${fmt(freq[maxIdx]/Math.max(1,totalD)*100,1)}%)`;}
-  else if(maxIdx>=7){action='UNDER 8';contract='DIGITUNDER';barrier='8';reason=`High digits dominate — UNDER 8 (top: ${maxIdx} at ${fmt(freq[maxIdx]/Math.max(1,totalD)*100,1)}%)`;}
-  else{action='OVER 0';contract='DIGITOVER';barrier='0';reason=`Digit 0 rare — OVER 0 high probability`;}
-  if(!trendUp&&bullPct<40&&raw>60&&contract==='DIGITOVER'){action='UNDER 9';contract='DIGITUNDER';barrier='9';reason='Bearish trend — UNDER 9';}
-  if(trendUp&&bearPct<40&&raw>60&&contract==='DIGITUNDER'){action='OVER 1';contract='DIGITOVER';barrier='1';reason='Bullish trend — OVER 1';}
-  const risk=Math.min(95,Math.round(100-raw));
-  return {action,conf:raw,reason,score:momScore,bullPct,bearPct,avgMove,risk,contract,barrier,recovery:0};
-}
+function analyze(){const h=STATE.tickHistory;if(h.length<8)return{action:'WAIT',conf:0,reason:'Need more ticks',score:0,risk:0,recovery:0};const sample=h.slice(0,20);let up=0,down=0,sumChange=0;sample.forEach((t,i)=>{if(i===0)return;sumChange+=Math.abs(t.change);if(t.change>0)up++;else if(t.change<0)down++;});const total=up+down;const bullPct=total?Math.round(up/total*100):50;const bearPct=100-bullPct;const avgMove=total?sumChange/total:0;const momScore=Math.round((bullPct-bearPct)*0.5+50);const sampleD=h.slice(0,Math.min(100,h.length));const freq=Array(10).fill(0);sampleD.forEach(t=>freq[t.digit]++);const totalD=sampleD.length;let maxIdx=0,minIdx=0;freq.forEach((f,i)=>{if(f>freq[maxIdx])maxIdx=i;if(f<freq[minIdx])minIdx=i;});const maxPct=totalD?freq[maxIdx]/totalD:0;const last8=h.slice(0,8).map(t=>t.digit);const recentAvg=last8.reduce((a,b)=>a+b,0)/last8.length;const trendUp=h[0].price>h[Math.min(9,h.length-1)].price;const confPattern=(maxPct-0.10)*250;const confMomentum=Math.abs(bullPct-50)*1.6;const confTrend=trendUp?50:30;const confDigit=recentAvg>5?60:40;let raw=confPattern*0.30+confMomentum*0.25+confTrend*0.20+confDigit*0.15+10;raw=Math.max(5,Math.min(95,Math.round(raw)));let action='WAIT',reason='',contract='DIGITOVER',barrier='1';if(maxIdx===0){action='UNDER 9';contract='DIGITUNDER';barrier='9';reason=`Digit 0 least frequent (${fmt(freq[0]/Math.max(1,totalD)*100,1)}%) — UNDER 9 favored`;}else if(maxIdx<=3){action='OVER 1';contract='DIGITOVER';barrier='1';reason=`Low digits dominate — OVER 1 (top: ${maxIdx} at ${fmt(freq[maxIdx]/Math.max(1,totalD)*100,1)}%)`;}else if(maxIdx>=7){action='UNDER 8';contract='DIGITUNDER';barrier='8';reason=`High digits dominate — UNDER 8 (top: ${maxIdx} at ${fmt(freq[maxIdx]/Math.max(1,totalD)*100,1)}%)`;}else{action='OVER 0';contract='DIGITOVER';barrier='0';reason=`Digit 0 rare — OVER 0 high probability`;}if(!trendUp&&bullPct<40&&raw>60&&contract==='DIGITOVER'){action='UNDER 9';contract='DIGITUNDER';barrier='9';reason='Bearish trend — UNDER 9';}if(trendUp&&bearPct<40&&raw>60&&contract==='DIGITUNDER'){action='OVER 1';contract='DIGITOVER';barrier='1';reason='Bullish trend — OVER 1';}const risk=Math.min(95,Math.round(100-raw));return{action,conf:raw,reason,score:momScore,bullPct,bearPct,avgMove,risk,contract,barrier,recovery:0};}
 
 let lastSignalSent=0;
-function generateSignal(){
-  const a=analyze();
-  if(a.conf>=STATE.settings.minConfidence && a.action!=='WAIT'){
-    const n=now();
-    if(n-lastSignalSent>15000){
-      lastSignalSent=n;
-      const sig={time:n,action:a.action,conf:a.conf,reason:a.reason,contract:a.contract,barrier:a.barrier};
-      STATE.signals.unshift(sig);
-      if(STATE.signals.length>50) STATE.signals.pop();
-      saveState();
-      STATE.lastSignalConfidence=a.conf;
-      STATE.lastSignalReason=a.reason;
-      STATE.lastMomentum=a.score;
-      if(STATE.settings.notifications && Notification.permission==='granted'){
-        new Notification('Trade7Smart Signal',{body:`${a.action} — ${a.conf}% confidence`});
-      }
-    }
-  }
-  return a;
-}
+function generateSignal(){const a=analyze();if(a.conf>=STATE.settings.minConfidence&&a.action!=='WAIT'){const n=now();if(n-lastSignalSent>15000){lastSignalSent=n;const sig={time:n,action:a.action,conf:a.conf,reason:a.reason,contract:a.contract,barrier:a.barrier};STATE.signals.unshift(sig);if(STATE.signals.length>50)STATE.signals.pop();saveState();STATE.lastSignalConfidence=a.conf;STATE.lastSignalReason=a.reason;STATE.lastMomentum=a.score;if(STATE.settings.notifications&&Notification.permission==='granted'){new Notification('Trade7Smart Signal',{body:`${a.action} — ${a.conf}% confidence`});}}}return a;}
 
-function initChart(){
-  const wrap=$('chartWrap');
-  if(!wrap||STATE.chart) return;
-  STATE.chart=LightweightCharts.createChart(wrap,{
-    layout:{background:{type:'solid',color:'transparent'},textColor:'#8B95A8',fontFamily:'Inter'},
-    grid:{vertLines:{color:'rgba(255,255,255,0.03)'},horzLines:{color:'rgba(255,255,255,0.03)'}},
-    rightPriceScale:{borderColor:'rgba(255,255,255,0.06)'},
-    timeScale:{borderColor:'rgba(255,255,255,0.06)',timeVisible:true,secondsVisible:true},
-    crosshair:{mode:LightweightCharts.CrosshairMode.Normal},
-    width:wrap.clientWidth,height:wrap.clientHeight
-  });
-  STATE.candleSeries=STATE.chart.addCandlestickSeries({upColor:'#22C55E',downColor:'#EF4444',borderUpColor:'#22C55E',borderDownColor:'#EF4444',wickUpColor:'#22C55E',wickDownColor:'#EF4444'});
-  STATE.chartReady=true;
-  const ro=new ResizeObserver(()=>{if(STATE.chart) STATE.chart.applyOptions({width:wrap.clientWidth,height:wrap.clientHeight});});
-  ro.observe(wrap);
-}
+function initChart(){const wrap=$('chartWrap');if(!wrap||STATE.chart)return;STATE.chart=LightweightCharts.createChart(wrap,{layout:{background:{type:'solid',color:'transparent'},textColor:'#8B95A8',fontFamily:'Inter'},grid:{vertLines:{color:'rgba(255,255,255,0.03)'},horzLines:{color:'rgba(255,255,255,0.03)'}},rightPriceScale:{borderColor:'rgba(255,255,255,0.06)'},timeScale:{borderColor:'rgba(255,255,255,0.06)',timeVisible:true,secondsVisible:true},crosshair:{mode:LightweightCharts.CrosshairMode.Normal},width:wrap.clientWidth,height:wrap.clientHeight});STATE.candleSeries=STATE.chart.addCandlestickSeries({upColor:'#22C55E',downColor:'#EF4444',borderUpColor:'#22C55E',borderDownColor:'#EF4444',wickUpColor:'#22C55E',wickDownColor:'#EF4444'});STATE.chartReady=true;const ro=new ResizeObserver(()=>{if(STATE.chart)STATE.chart.applyOptions({width:wrap.clientWidth,height:wrap.clientHeight});});ro.observe(wrap);}
+function setChartSymbol(sym){STATE.currentSymbol=sym;$('symbolName').textContent=sym;$('chartSym').textContent=sym;$('sSymbol').value=sym;STATE.settings.symbol=sym;saveSettings();STATE.tickHistory=[];STATE.digitFreq=Array(10).fill(0);STATE.lastPrice=null;STATE.candle=null;if(STATE.candleSeries)STATE.candleSeries.setData([]);if(STATE.wsReady)subscribeTicks(sym);}
 
-function setChartSymbol(sym){
-  STATE.currentSymbol=sym;
-  $('symbolName').textContent=sym;
-  $('chartSym').textContent=sym;
-  $('sSymbol').value=sym;
-  STATE.settings.symbol=sym;
-  saveSettings();
-  STATE.tickHistory=[]; STATE.digitFreq=Array(10).fill(0); STATE.lastPrice=null; STATE.candle=null;
-  if(STATE.candleSeries) STATE.candleSeries.setData([]);
-  if(STATE.wsReady) subscribeTicks(sym);
-}
+function renderBalance(){const b=STATE.account.balance;const balanceText=STATE.authorized?fmtUSD(b):'$—';$('balance').textContent=balanceText;$('hBalance').textContent=balanceText;$('hAccount').textContent=STATE.account.loginid||(STATE.authorized?'—':'Not connected');const plText=STATE.authorized?((STATE.account.todayPL>=0?'+':'')+fmtUSD(STATE.account.todayPL)):'$0.00';$('hPL').textContent=plText;$('hPL').className='value '+(STATE.account.todayPL>=0?'text-green':'text-red');}
 
-// FIX: Balance rendering shows real authorized data
-function renderBalance(){
-  const b=STATE.account.balance;
-  const balanceText = STATE.authorized ? fmtUSD(b) : '$—';
-  $('balance').textContent=balanceText;
-  $('hBalance').textContent=balanceText;
-  $('hAccount').textContent = STATE.account.loginid || (STATE.authorized ? '—' : 'Not connected');
-  const plText = STATE.authorized ? ((STATE.account.todayPL>=0?'+':'')+fmtUSD(STATE.account.todayPL)) : '$0.00';
-  $('hPL').textContent=plText;
-  $('hPL').className='value '+(STATE.account.todayPL>=0?'text-green':'text-red');
-}
+function renderHome(){const total=STATE.history.length;const wins=STATE.history.filter(h=>h.isWin).length;$('hTrades').textContent=total;$('hWinRate').textContent=total?Math.round(wins/total*100)+'%':'0%';$('hWRSub').textContent=total?`${wins}W / ${total-wins}L`:'No trades yet';const rt=$('recentTrades');if(STATE.history.length){rt.innerHTML='<div class="col gap-2">'+STATE.history.slice(0,4).map(h=>{const dt=new Date((h.time||0)*1000);const tStr=isNaN(dt.getTime())?'—':dt.toLocaleTimeString();return`<div class="row between" style="padding:8px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid var(--border)"><div class="col" style="gap:2px"><span class="mono-s fw-6">${h.contract}</span><span class="text-muted" style="font-size:10px">${tStr}</span></div><span class="mono fw-7 ${h.isWin?'text-green':'text-red'}">${h.isWin?'+':''}${fmt(h.profit,2)}</span></div>`;}).join('')+'</div>';}else{rt.innerHTML='<div class="empty">No recent trades</div>';}const rs=$('recentSignals');if(STATE.signals.length){rs.innerHTML='<div class="col gap-2">'+STATE.signals.slice(0,4).map(s=>`<div class="row between" style="padding:8px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid var(--border)"><div class="col" style="gap:2px"><span class="mono-s fw-6 text-cyan">${s.action}</span><span class="text-muted" style="font-size:10px">${new Date(s.time).toLocaleTimeString()}</span></div><span class="mono fw-7 text-cyan">${s.conf}%</span></div>`).join('')+'</div>';}else{rs.innerHTML='<div class="empty">Awaiting signals</div>';}$('sigCount').textContent=STATE.signals.length;renderNews();renderHomeLive();}
 
-function renderHome(){
-  const total=STATE.history.length;
-  const wins=STATE.history.filter(h=>h.isWin).length;
-  $('hTrades').textContent=total;
-  $('hWinRate').textContent=total ? Math.round(wins/total*100)+'%' : '0%';
-  $('hWRSub').textContent=total ? `${wins}W / ${total-wins}L` : 'No trades yet';
+function renderHomeLive(){const a=analyze();const lastDigit=STATE.tickHistory[0]?.digit;if(a.action!=='WAIT'){$('aiRecHome').textContent=a.action;$('aiRecHome').className='home-card-value text-cyan';$('aiRecSub').textContent=`${a.conf}% confidence`;}else{$('aiRecHome').textContent='SCANNING';$('aiRecHome').className='home-card-value text-dim';$('aiRecSub').textContent=`${STATE.tickHistory.length} ticks`;}if(lastDigit!==undefined){$('mktDigit').textContent=lastDigit;$('mktPrice').textContent=STATE.lastPrice?fmt(STATE.lastPrice,4):'—';$('mktRegime').textContent=a.score>=55?'BULL':a.score<=45?'BEAR':'NEUTRAL';}}
 
-  const rt=$('recentTrades');
-  if(STATE.history.length){
-    rt.innerHTML='<div class="col gap-2">'+STATE.history.slice(0,4).map(h=>{
-      const dt=new Date((h.time||0)*1000);
-      const tStr=isNaN(dt.getTime()) ? '—' : dt.toLocaleTimeString();
-      return `<div class="row between" style="padding:8px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid var(--border)"><div class="col" style="gap:2px"><span class="mono-s fw-6">${h.contract}</span><span class="text-muted" style="font-size:10px">${tStr}</span></div><span class="mono fw-7 ${h.isWin?'text-green':'text-red'}">${h.isWin?'+':''}${fmt(h.profit,2)}</span></div>`;
-    }).join('')+'</div>';
-  } else {rt.innerHTML='<div class="empty">No recent trades</div>';}
-
-  const rs=$('recentSignals');
-  if(STATE.signals.length){
-    rs.innerHTML='<div class="col gap-2">'+STATE.signals.slice(0,4).map(s=>`<div class="row between" style="padding:8px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid var(--border)"><div class="col" style="gap:2px"><span class="mono-s fw-6 text-cyan">${s.action}</span><span class="text-muted" style="font-size:10px">${new Date(s.time).toLocaleTimeString()}</span></div><span class="mono fw-7 text-cyan">${s.conf}%</span></div>`).join('')+'</div>';
-  } else {rs.innerHTML='<div class="empty">Awaiting signals</div>';}
-  $('sigCount').textContent=STATE.signals.length;
-  renderNews(); renderHomeLive();
-}
-
-function renderHomeLive(){
-  const a=analyze();
-  const lastDigit=STATE.tickHistory[0]?.digit;
-  if(a.action!=='WAIT'){$('aiRecHome').textContent=a.action;$('aiRecHome').className='home-card-value text-cyan';$('aiRecSub').textContent=`${a.conf}% confidence`;}
-  else{$('aiRecHome').textContent='SCANNING';$('aiRecHome').className='home-card-value text-dim';$('aiRecSub').textContent=`${STATE.tickHistory.length} ticks`;}
-  if(lastDigit!==undefined){
-    $('mktDigit').textContent=lastDigit;
-    $('mktPrice').textContent=STATE.lastPrice?fmt(STATE.lastPrice,4):'—';
-    $('mktRegime').textContent=a.score>=55?'BULL':a.score<=45?'BEAR':'NEUTRAL';
-  }
-}
-
-function renderNews(){
-  const items=[
-    {t:'AI Pattern Engine',s:`Top digit: ${STATE.tickHistory[0]?.digit??'—'} · ${STATE.tickHistory.length} ticks analyzed`},
-    {t:'Momentum Status',s:`Score ${analyze().score}/100 · ${analyze().bullPct}% bullish`},
-    {t:'Volatility Index',s:`${STATE.currentSymbol} · ${STATE.lastPrice?fmt(STATE.lastPrice,4):'awaiting'}`},
-    {t:'Account',s:STATE.authorized ? `${STATE.account.loginid} · ${fmtUSD(STATE.account.balance)}` : 'Not authorized'},
-    {t:'Auto-Trade',s:STATE.auto.enabled ? `ACTIVE L${STATE.auto.level+1}` : 'Idle'}
-  ];
-  $('newsFeed').innerHTML='<div class="col gap-2">'+items.map(it=>`<div style="padding:8px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid var(--border)"><div class="fw-6" style="font-size:12px">${it.t}</div><div class="text-muted" style="font-size:11px;margin-top:2px">${it.s}</div></div>`).join('')+'</div>';
-}
+function renderNews(){const items=[{t:'AI Pattern Engine',s:`Top digit: ${STATE.tickHistory[0]?.digit??'—'} · ${STATE.tickHistory.length} ticks analyzed`},{t:'Momentum Status',s:`Score ${analyze().score}/100 · ${analyze().bullPct}% bullish`},{t:'Volatility Index',s:`${STATE.currentSymbol} · ${STATE.lastPrice?fmt(STATE.lastPrice,4):'awaiting'}`},{t:'Account',s:STATE.authorized?`${STATE.account.loginid} · ${fmtUSD(STATE.account.balance)}`:'Not authorized'},{t:'Auto-Trade',s:STATE.auto.enabled?`ACTIVE L${STATE.auto.level+1}`:'Idle'}];$('newsFeed').innerHTML='<div class="col gap-2">'+items.map(it=>`<div style="padding:8px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid var(--border)"><div class="fw-6" style="font-size:12px">${it.t}</div><div class="text-muted" style="font-size:11px;margin-top:2px">${it.s}</div></div>`).join('')+'</div>';}
 
 function renderTickTable(){$('tickTable').innerHTML=STATE.tickHistory.slice(0,30).map(t=>{const tStr=new Date(t.time*1000).toLocaleTimeString();const arr=t.dir>0?'▲':t.dir<0?'▼':'◆';const cls=t.dir>0?'arr-up':'arr-down';return`<div class="tick-row"><span class="text-muted">${tStr}</span><span class="${cls}">${arr} ${fmt(t.change,4)}</span><span class="text-cyan">${t.digit}</span><span>${fmt(t.price,4)}</span></div>`;}).join('');}
 
-function renderDigitGrid(){
-  const total=Math.max(1,STATE.tickHistory.length);
-  let grid='';
-  for(let i=0;i<10;i++){
-    const pct=(STATE.digitFreq[i]/total)*100;
-    const intensity=Math.min(1,pct/15);
-    const bg=`rgba(59,130,246,${0.05+intensity*0.25})`;
-    const color=pct>12?'#22D3EE':pct>8?'#3B82F6':pct<5?'#EF4444':'#fff';
-    grid+=`<div class="digit-cell" style="background:${bg}"><span class="d-num" style="color:${color}">${i}</span><span class="d-pct">${pct.toFixed(1)}%</span></div>`;
-  }
-  $('digitGrid').innerHTML=grid;
-  let maxI=0, minI=0;
-  for(let i=0;i<10;i++){if(STATE.digitFreq[i]>STATE.digitFreq[maxI])maxI=i;if(STATE.digitFreq[i]<STATE.digitFreq[minI])minI=i;}
-  $('mostFreq').textContent=`${maxI} (${fmt(STATE.digitFreq[maxI]/total*100,1)}%)`;
-  $('leastFreq').textContent=`${minI} (${fmt(STATE.digitFreq[minI]/total*100,1)}%)`;
-  let even=0, odd=0, over=0, und=0;
-  for(let i=0;i<10;i++){if(i%2===0)even+=STATE.digitFreq[i];else odd+=STATE.digitFreq[i];if(i>4)over+=STATE.digitFreq[i];else und+=STATE.digitFreq[i];}
-  $('evenOdd').textContent=`${even} / ${odd}`;
-  $('overUnder').textContent=`${over} / ${und}`;
-}
+function renderDigitGrid(){const total=Math.max(1,STATE.tickHistory.length);let grid='';for(let i=0;i<10;i++){const pct=(STATE.digitFreq[i]/total)*100;const intensity=Math.min(1,pct/15);const bg=`rgba(59,130,246,${0.05+intensity*0.25})`;const color=pct>12?'#22D3EE':pct>8?'#3B82F6':pct<5?'#EF4444':'#fff';grid+=`<div class="digit-cell" style="background:${bg}"><span class="d-num" style="color:${color}">${i}</span><span class="d-pct">${pct.toFixed(1)}%</span></div>`;}$('digitGrid').innerHTML=grid;let maxI=0,minI=0;for(let i=0;i<10;i++){if(STATE.digitFreq[i]>STATE.digitFreq[maxI])maxI=i;if(STATE.digitFreq[i]<STATE.digitFreq[minI])minI=i;}$('mostFreq').textContent=`${maxI} (${fmt(STATE.digitFreq[maxI]/total*100,1)}%)`;$('leastFreq').textContent=`${minI} (${fmt(STATE.digitFreq[minI]/total*100,1)}%)`;let even=0,odd=0,over=0,und=0;for(let i=0;i<10;i++){if(i%2===0)even+=STATE.digitFreq[i];else odd+=STATE.digitFreq[i];if(i>4)over+=STATE.digitFreq[i];else und+=STATE.digitFreq[i];}$('evenOdd').textContent=`${even} / ${odd}`;$('overUnder').textContent=`${over} / ${und}`;}
 
-function renderMomentum(){
-  const sample=STATE.tickHistory.slice(0,8);
-  $('momentumRow').innerHTML=sample.map(t=>{const cls=t.change>0?'up':t.change<0?'down':'';const sym=t.change>0?'▲':t.change<0?'▼':'◆';return`<div class="arr ${cls}">${sym}</div>`;}).join('');
-  if(sample.length){const sumChange=sample.reduce((a,t)=>a+Math.abs(t.change),0);$('avgMove').textContent='avg: '+fmt(sumChange/sample.length,4);}
-}
+function renderMomentum(){const sample=STATE.tickHistory.slice(0,8);$('momentumRow').innerHTML=sample.map(t=>{const cls=t.change>0?'up':t.change<0?'down':'';const sym=t.change>0?'▲':t.change<0?'▼':'◆';return`<div class="arr ${cls}">${sym}</div>`;}).join('');if(sample.length){const sumChange=sample.reduce((a,t)=>a+Math.abs(t.change),0);$('avgMove').textContent='avg: '+fmt(sumChange/sample.length,4);}}
 
-function renderAnalyzer(){
-  const a=analyze();
-  $('mScore').textContent=a.score;
-  $('mGaugeArc').setAttribute('stroke-dashoffset',377-(377*a.score/100));
-  $('mBull').textContent=a.bullPct+'%'; $('mBear').textContent=a.bearPct+'%';
-  const rec=generateSignal();
-  if(rec.action==='WAIT'){$('aiAction').textContent='ANALYZING...';$('aiAction').className='ai-rec-action text-dim';$('aiReason').textContent=STATE.tickHistory.length<8?'Collecting tick data...':'Market conditions neutral';}
-  else{$('aiAction').textContent=rec.action;$('aiAction').className='ai-rec-action text-cyan';$('aiReason').textContent=rec.reason;}
-  $('aiConf').textContent=rec.conf+'%'; $('aiRec').textContent=rec.recovery+'%';
-  $('riskFill').style.width=rec.risk+'%';
-  $('riskLevelTxt').textContent=rec.risk<33?'LOW':rec.risk<66?'MEDIUM':'HIGH';
-  $('riskLevelTxt').className='mono fw-6 '+(rec.risk<33?'text-green':rec.risk<66?'text-amber':'text-red');
-}
+function renderAnalyzer(){const a=analyze();$('mScore').textContent=a.score;$('mGaugeArc').setAttribute('stroke-dashoffset',377-(377*a.score/100));$('mBull').textContent=a.bullPct+'%';$('mBear').textContent=a.bearPct+'%';const rec=generateSignal();if(rec.action==='WAIT'){$('aiAction').textContent='ANALYZING...';$('aiAction').className='ai-rec-action text-dim';$('aiReason').textContent=STATE.tickHistory.length<8?'Collecting tick data...':'Market conditions neutral';}else{$('aiAction').textContent=rec.action;$('aiAction').className='ai-rec-action text-cyan';$('aiReason').textContent=rec.reason;}$('aiConf').textContent=rec.conf+'%';$('aiRec').textContent=rec.recovery+'%';$('riskFill').style.width=rec.risk+'%';$('riskLevelTxt').textContent=rec.risk<33?'LOW':rec.risk<66?'MEDIUM':'HIGH';$('riskLevelTxt').className='mono fw-6 '+(rec.risk<33?'text-green':rec.risk<66?'text-amber':'text-red');}
 
 let selectedEl=null;
-function selectContract(el){
-  if(selectedEl) selectedEl.classList.remove('selected');
-  el.classList.add('selected');
-  selectedEl=el;
-  STATE.selectedContract.contract=el.dataset.contract;
-  STATE.selectedContract.barrier=el.dataset.barrier;
-  requestProposal();
-}
+function selectContract(el){if(selectedEl)selectedEl.classList.remove('selected');el.classList.add('selected');selectedEl=el;STATE.selectedContract.contract=el.dataset.contract;STATE.selectedContract.barrier=el.dataset.barrier;requestProposal();}
 
-function requestProposal(){
-  if(!STATE.wsReady){toast('WebSocket not connected','error');return;}
-  if(!STATE.authorized){toast('Authorize token first','error');openConnect();return;}
-  const stake=parseFloat($('stakeInput').value)||1;
-  if(stake>STATE.settings.maxStake){toast(`Max stake is $${STATE.settings.maxStake}`,'error');return;}
-  if(STATE.account.balance>0 && stake>STATE.account.balance){toast('Insufficient balance','error');return;}
-  STATE.stake=stake;
-  $('propStatus').textContent='Fetching proposal...';
-  $('buyBtn').disabled=true;
-  $('propContract').textContent=STATE.selectedContract.contract+' '+STATE.selectedContract.barrier;
-  $('propBarrier').textContent=STATE.selectedContract.barrier;
-  $('propStake').textContent=fmtUSD(stake);
-  sendWS({proposal:1,amount:String(stake),basis:'stake',contract_type:STATE.selectedContract.contract,currency:STATE.account.currency||'USD',duration:1,duration_unit:'t',symbol:STATE.currentSymbol,barrier:String(STATE.selectedContract.barrier)});
-  const key=STATE.selectedContract.contract==='DIGITOVER' ? `OVER-${STATE.selectedContract.barrier}` : `UNDER-${STATE.selectedContract.barrier}`;
-  const total=Math.max(1,STATE.tickHistory.length);
-  let prob;
-  if(STATE.selectedContract.contract==='DIGITOVER'){let count=0;for(let i=parseInt(STATE.selectedContract.barrier)+1;i<10;i++)count+=STATE.digitFreq[i];prob=count/total;}
-  else{let count=0;for(let i=0;i<parseInt(STATE.selectedContract.barrier);i++)count+=STATE.digitFreq[i];prob=count/total;}
-  const payoutEstimate=prob>0 ? stake*(1/prob*0.93) : 0;
-  const el=document.getElementById('payout-'+key);
-  if(el) el.textContent=`~${fmtUSD(payoutEstimate)} · ${fmt(prob*100,0)}%`;
-}
+function requestProposal(){if(!STATE.wsReady){toast('WebSocket not connected','error');return;}if(!STATE.authorized){toast('Authorize token first','error');openConnect();return;}const stake=parseFloat($('stakeInput').value)||1;if(stake>STATE.settings.maxStake){toast(`Max stake is $${STATE.settings.maxStake}`,'error');return;}if(STATE.account.balance>0&&stake>STATE.account.balance){toast('Insufficient balance','error');return;}STATE.stake=stake;$('propStatus').textContent='Fetching proposal...';$('buyBtn').disabled=true;$('propContract').textContent=STATE.selectedContract.contract+' '+STATE.selectedContract.barrier;$('propBarrier').textContent=STATE.selectedContract.barrier;$('propStake').textContent=fmtUSD(stake);sendWS({proposal:1,amount:String(stake),basis:'stake',contract_type:STATE.selectedContract.contract,currency:STATE.account.currency||'USD',duration:1,duration_unit:'t',symbol:STATE.currentSymbol,barrier:String(STATE.selectedContract.barrier)});const key=STATE.selectedContract.contract==='DIGITOVER'?`OVER-${STATE.selectedContract.barrier}`:`UNDER-${STATE.selectedContract.barrier}`;const total=Math.max(1,STATE.tickHistory.length);let prob;if(STATE.selectedContract.contract==='DIGITOVER'){let count=0;for(let i=parseInt(STATE.selectedContract.barrier)+1;i<10;i++)count+=STATE.digitFreq[i];prob=count/total;}else{let count=0;for(let i=0;i<parseInt(STATE.selectedContract.barrier);i++)count+=STATE.digitFreq[i];prob=count/total;}const payoutEstimate=prob>0?stake*(1/prob*0.93):0;const el=document.getElementById('payout-'+key);if(el)el.textContent=`~${fmtUSD(payoutEstimate)} · ${fmt(prob*100,0)}%`;}
 
-function renderProposal(){
-  if(!STATE.proposalData) return;
-  const p=STATE.proposalData;
-  const stake=Number(p.ask_price||STATE.stake);
-  const payout=Number(p.payout||0);
-  const profit=payout-stake;
-  $('propPayout').textContent=fmtUSD(payout);
-  $('propProfit').textContent='+'+fmtUSD(profit);
-  $('propProb').textContent=fmt(Number(p.probability)*100||0,1)+'%';
-  $('propRisk').textContent=fmtUSD(stake);
-  const er=profit*Number(p.probability)-stake*(1-Number(p.probability));
-  $('propER').textContent=(er>=0?'+':'')+fmtUSD(er);
-  $('propER').className='v '+(er>=0?'text-green':'text-red');
-  $('propStatus').textContent=STATE.authorized?'✓ Ready to buy':'Authorize token to buy';
-  $('buyBtn').disabled=!STATE.authorized;
-}
+function renderProposal(){if(!STATE.proposalData)return;const p=STATE.proposalData;const stake=Number(p.ask_price||STATE.stake);const payout=Number(p.payout||0);const profit=payout-stake;$('propPayout').textContent=fmtUSD(payout);$('propProfit').textContent='+'+fmtUSD(profit);$('propProb').textContent=fmt(Number(p.probability)*100||0,1)+'%';$('propRisk').textContent=fmtUSD(stake);const er=profit*Number(p.probability)-stake*(1-Number(p.probability));$('propER').textContent=(er>=0?'+':'')+fmtUSD(er);$('propER').className='v '+(er>=0?'text-green':'text-red');$('propStatus').textContent=STATE.authorized?'✓ Ready to buy':'Authorize token to buy';$('buyBtn').disabled=!STATE.authorized;}
 
-function buyContract(){
-  if(!STATE.proposalId){toast('No proposal','error');return;}
-  if(!STATE.authorized){openConnect();return;}
-  $('buyBtn').disabled=true;
-  $('buyBtn').textContent='Sending...';
-  console.log('[BUYING] proposal:',STATE.proposalId,'price:',STATE.proposalData.ask_price);
-  sendWS({buy:STATE.proposalId,price:STATE.proposalData.ask_price});
-  setTimeout(()=>{$('buyBtn').textContent='⚡ BUY';$('buyBtn').disabled=false;},2000);
-}
+function buyContract(){if(!STATE.proposalId){toast('No proposal','error');return;}if(!STATE.authorized){openConnect();return;}$('buyBtn').disabled=true;$('buyBtn').textContent='Sending...';console.log('[BUYING] proposal:',STATE.proposalId,'price:',STATE.proposalData.ask_price);sendWS({buy:STATE.proposalId,price:STATE.proposalData.ask_price});setTimeout(()=>{$('buyBtn').textContent='⚡ BUY';$('buyBtn').disabled=false;},2000);}
 
-function renderOpenMonitor(){
-  const slot=$('openMonitorSlot');
-  if(!STATE.openContractData||!STATE.openContractId){slot.innerHTML='';return;}
-  const c=STATE.openContractData;
-  const current=c.current_spot_display?Number(c.current_spot_display):(c.current_spot||0);
-  const entry=c.entry_tick_display?Number(c.entry_tick_display):Number(c.entry_tick||0);
-  const curDigit=current?parseInt(current.toString().slice(-1),10):0;
-  const entryDigit=entry?parseInt(entry.toString().slice(-1),10):0;
-  const buy=Number(c.buy_price);
-  const payout=Number(c.payout);
-  const curValue=Number(c.bid_price??buy);
-  const profit=curValue-buy;
-  const isWin=c.status==='won';
-  const isLoss=c.status==='lost';
-  const winClass=isWin?'up':isLoss?'down':(profit>0?'up':'down');
-  slot.innerHTML=`<div class="glass monitor-card"><div class="row between" style="margin-bottom:8px"><h3>Open Trade</h3><span class="live-tag">LIVE</span></div><div class="text-muted" style="font-size:11px">${c.contract_type} ${c.barrier}</div><div class="monitor-digit ${winClass}">${curDigit}</div><div class="text-muted mono-s" style="margin-bottom:8px">Current tick: ${current?fmt(current,4):'—'}</div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 0"><div class="hero-stat"><div class="label">Entry Digit</div><div class="value mono">${entryDigit}</div></div><div class="hero-stat"><div class="label">Entry Price</div><div class="value mono">${fmt(entry,4)}</div></div><div class="hero-stat"><div class="label">Stake</div><div class="value mono">${fmtUSD(buy)}</div></div><div class="hero-stat"><div class="label">Potential Payout</div><div class="value mono text-cyan">${fmtUSD(payout)}</div></div></div><div class="monitor-profit ${winClass}">${profit>=0?'+':''}${fmtUSD(profit)}</div><div class="text-muted" style="font-size:11px;margin-top:4px">${isWin?'✅ WIN':isLoss?'❌ LOSS':'Open position...'}</div>${(c.is_sold!==1&&c.status!=='won'&&c.status!=='lost')?'<button class="btn btn-red" style="width:100%;margin-top:12px" onclick="cancelContract()">Cancel (if supported)</button>':''}</div>`;
-}
+function renderOpenMonitor(){const slot=$('openMonitorSlot');if(!STATE.openContractData||!STATE.openContractId){slot.innerHTML='';return;}const c=STATE.openContractData;const current=c.current_spot_display?Number(c.current_spot_display):(c.current_spot||0);const entry=c.entry_tick_display?Number(c.entry_tick_display):Number(c.entry_tick||0);const curDigit=current?parseInt(current.toString().slice(-1),10):0;const entryDigit=entry?parseInt(entry.toString().slice(-1),10):0;const buy=Number(c.buy_price);const payout=Number(c.payout);const curValue=Number(c.bid_price??buy);const profit=curValue-buy;const isWin=c.status==='won';const isLoss=c.status==='lost';const winClass=isWin?'up':isLoss?'down':(profit>0?'up':'down');slot.innerHTML=`<div class="glass monitor-card"><div class="row between" style="margin-bottom:8px"><h3>Open Trade</h3><span class="live-tag">LIVE</span></div><div class="text-muted" style="font-size:11px">${c.contract_type} ${c.barrier}</div><div class="monitor-digit ${winClass}">${curDigit}</div><div class="text-muted mono-s" style="margin-bottom:8px">Current tick: ${current?fmt(current,4):'—'}</div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 0"><div class="hero-stat"><div class="label">Entry Digit</div><div class="value mono">${entryDigit}</div></div><div class="hero-stat"><div class="label">Entry Price</div><div class="value mono">${fmt(entry,4)}</div></div><div class="hero-stat"><div class="label">Stake</div><div class="value mono">${fmtUSD(buy)}</div></div><div class="hero-stat"><div class="label">Potential Payout</div><div class="value mono text-cyan">${fmtUSD(payout)}</div></div></div><div class="monitor-profit ${winClass}">${profit>=0?'+':''}${fmtUSD(profit)}</div><div class="text-muted" style="font-size:11px;margin-top:4px">${isWin?'✅ WIN':isLoss?'❌ LOSS':'Open position...'}</div>${(c.is_sold!==1&&c.status!=='won'&&c.status!=='lost')?'<button class="btn btn-red" style="width:100%;margin-top:12px" onclick="cancelContract()">Cancel (if supported)</button>':''}</div>`;}
 function cancelContract(){if(STATE.openContractId)sendWS({sell:STATE.openContractId,price:0});}
 
-function showResult(entry){
-  $('openMonitorSlot').innerHTML=`<div class="glass result-card ${entry.isWin?'win':'loss'}"><div class="result-icon">${entry.isWin?'✓':'✕'}</div><h2 style="color:${entry.isWin?'var(--green)':'var(--red)'}">${entry.isWin?'PROFIT':'LOSS'}</h2><div class="result-amt">${entry.isWin?'+':''}${fmtUSD(entry.profit)}</div><div class="text-muted mono-s" style="font-size:12px">Return: ${fmtUSD(entry.payout)} from ${fmtUSD(entry.stake)}</div><div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);text-align:left"><div class="stat-line"><span class="k">Contract</span><span class="v">${entry.contract}</span></div><div class="stat-line"><span class="k">Entry / Exit</span><span class="v">${entry.entry} → ${entry.exit}</span></div><div class="stat-line"><span class="k">Confidence Used</span><span class="v text-cyan">${entry.confidence}%</span></div><div class="stat-line"><span class="k">Momentum Score</span><span class="v text-purple">${entry.momentum}</span></div><div class="stat-line"><span class="k">AI Reason</span><span class="v" style="font-size:11px;text-align:right;max-width:60%">${entry.reason}</span></div></div><button class="btn btn-primary btn-lg" style="width:100%;margin-top:14px" onclick="document.getElementById('openMonitorSlot').innerHTML=''">Continue</button></div>`;
-  if(entry.isWin&&STATE.settings.sound) playBeep(1200,150);
-  if(!entry.isWin&&STATE.settings.sound) playBeep(300,250);
-}
+function showResult(entry){$('openMonitorSlot').innerHTML=`<div class="glass result-card ${entry.isWin?'win':'loss'}"><div class="result-icon">${entry.isWin?'✓':'✕'}</div><h2 style="color:${entry.isWin?'var(--green)':'var(--red)'}">${entry.isWin?'PROFIT':'LOSS'}</h2><div class="result-amt">${entry.isWin?'+':''}${fmtUSD(entry.profit)}</div><div class="text-muted mono-s" style="font-size:12px">Return: ${fmtUSD(entry.payout)} from ${fmtUSD(entry.stake)}</div><div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);text-align:left"><div class="stat-line"><span class="k">Contract</span><span class="v">${entry.contract}</span></div><div class="stat-line"><span class="k">Entry / Exit</span><span class="v">${entry.entry} → ${entry.exit}</span></div><div class="stat-line"><span class="k">Confidence Used</span><span class="v text-cyan">${entry.confidence}%</span></div><div class="stat-line"><span class="k">Momentum Score</span><span class="v text-purple">${entry.momentum}</span></div><div class="stat-line"><span class="k">AI Reason</span><span class="v" style="font-size:11px;text-align:right;max-width:60%">${entry.reason}</span></div></div><button class="btn btn-primary btn-lg" style="width:100%;margin-top:14px" onclick="document.getElementById('openMonitorSlot').innerHTML=''">Continue</button></div>`;if(entry.isWin&&STATE.settings.sound)playBeep(1200,150);if(!entry.isWin&&STATE.settings.sound)playBeep(300,250);}
 
-function renderHistory(){
-  const tb=$('histBody'),empty=$('histEmpty');
-  if(!STATE.history.length){tb.innerHTML='';empty.style.display='block';$('histStats').textContent='0 trades';return;}
-  empty.style.display='none';
-  tb.innerHTML=STATE.history.slice(0,100).map(h=>{const dt=new Date((h.time||0)*1000);const tStr=isNaN(dt.getTime())?'—':dt.toLocaleString();return`<tr><td class="text-dim">${tStr}</td><td>${h.contract}</td><td>${h.entry}</td><td>${h.exit||'—'}</td><td>${fmtUSD(h.stake)}</td><td class="${h.isWin?'win':'loss'}">${h.isWin?'+':''}${fmt(h.profit,2)}</td><td class="text-cyan">${h.confidence||0}%</td><td class="text-purple">${h.momentum||0}</td><td class="text-muted" style="font-size:10px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${h.reason||''}">${h.reason||'—'}</td></tr>`;}).join('');
-  const wins=STATE.history.filter(h=>h.isWin).length;
-  const total=STATE.history.length;
-  $('histStats').textContent=`${total} trades · ${wins}W/${total-wins}L · ${total?Math.round(wins/total*100):0}% win`;
-}
+function renderHistory(){const tb=$('histBody'),empty=$('histEmpty');if(!STATE.history.length){tb.innerHTML='';empty.style.display='block';$('histStats').textContent='0 trades';return;}empty.style.display='none';tb.innerHTML=STATE.history.slice(0,100).map(h=>{const dt=new Date((h.time||0)*1000);const tStr=isNaN(dt.getTime())?'—':dt.toLocaleString();return`<tr><td class="text-dim">${tStr}</td><td>${h.contract}</td><td>${h.entry}</td><td>${h.exit||'—'}</td><td>${fmtUSD(h.stake)}</td><td class="${h.isWin?'win':'loss'}">${h.isWin?'+':''}${fmt(h.profit,2)}</td><td class="text-cyan">${h.confidence||0}%</td><td class="text-purple">${h.momentum||0}</td><td class="text-muted" style="font-size:10px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${h.reason||''}">${h.reason||'—'}</td></tr>`;}).join('');const wins=STATE.history.filter(h=>h.isWin).length;const total=STATE.history.length;$('histStats').textContent=`${total} trades · ${wins}W/${total-wins}L · ${total?Math.round(wins/total*100):0}% win`;}
 
 function exportHistory(){const data={settings:STATE.settings,history:STATE.history,signals:STATE.signals,exported:new Date().toISOString()};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`trade7smart-${Date.now()}.json`;a.click();toast('Data exported','success');}
 function clearHistory(){if(confirm('Clear all trade history?')){STATE.history=[];saveState();renderHistory();renderHome();toast('History cleared','success');}}
@@ -1305,223 +877,31 @@ function initParticles(){const c=$('particles');if(!c)return;const ctx=c.getCont
 let stakeTimer=null;
 $('stakeInput').addEventListener('input',()=>{clearTimeout(stakeTimer);stakeTimer=setTimeout(()=>{if(selectedEl)requestProposal();},400);});
 
-/* ====================================================================
-   AUTO-TRADE ENGINE
-   ==================================================================== */
 function buildLadder(){const ladder=[STATE.auto.baseStake];let sum=STATE.auto.baseStake;for(let i=1;i<8;i++){const next=+(sum*2.15/STATE.auto.profitBuffer).toFixed(2);ladder.push(next);sum+=next;}return ladder;}
 
-function selectAutoContract(){
-  const a=analyze();
-  let contract='DIGITOVER',barrier='1';
-  if(a.action.includes('OVER 0')){contract='DIGITOVER';barrier='0';}
-  else if(a.action.includes('OVER 1')){contract='DIGITOVER';barrier='1';}
-  else if(a.action.includes('UNDER 8')){contract='DIGITUNDER';barrier='8';}
-  else if(a.action.includes('UNDER 9')){contract='DIGITUNDER';barrier='9';}
-  else{
-    let maxI=0,minI=0;
-    for(let i=0;i<10;i++){if(STATE.digitFreq[i]>STATE.digitFreq[maxI])maxI=i;if(STATE.digitFreq[i]<STATE.digitFreq[minI])minI=i;}
-    if(maxI>=7){contract='DIGITUNDER';barrier='8';}
-    else if(maxI<=3){contract='DIGITOVER';barrier='1';}
-    else{contract='DIGITOVER';barrier='0';}
-  }
-  STATE.auto.contract=contract;
-  STATE.auto.barrier=barrier;
-  STATE.auto.requiredDir=1;
-  if(contract==='DIGITUNDER') STATE.auto.requiredDir=-1;
-}
+function selectAutoContract(){const a=analyze();let contract='DIGITOVER',barrier='1';if(a.action.includes('OVER 0')){contract='DIGITOVER';barrier='0';}else if(a.action.includes('OVER 1')){contract='DIGITOVER';barrier='1';}else if(a.action.includes('UNDER 8')){contract='DIGITUNDER';barrier='8';}else if(a.action.includes('UNDER 9')){contract='DIGITUNDER';barrier='9';}else{let maxI=0,minI=0;for(let i=0;i<10;i++){if(STATE.digitFreq[i]>STATE.digitFreq[maxI])maxI=i;if(STATE.digitFreq[i]<STATE.digitFreq[minI])minI=i;}if(maxI>=7){contract='DIGITUNDER';barrier='8';}else if(maxI<=3){contract='DIGITOVER';barrier='1';}else{contract='DIGITOVER';barrier='0';}}STATE.auto.contract=contract;STATE.auto.barrier=barrier;STATE.auto.requiredDir=1;if(contract==='DIGITUNDER')STATE.auto.requiredDir=-1;}
 
-function selectAutoContractUI(){
-  document.querySelectorAll('.contract-btn').forEach(b=>{
-    b.classList.toggle('selected',b.dataset.contract===STATE.auto.contract&&b.dataset.barrier===STATE.auto.barrier);
-  });
-  selectedEl=document.querySelector(`.contract-btn[data-contract="${STATE.auto.contract}"][data-barrier="${STATE.auto.barrier}"]`);
-  STATE.selectedContract.contract=STATE.auto.contract;
-  STATE.selectedContract.barrier=STATE.auto.barrier;
-}
+function selectAutoContractUI(){document.querySelectorAll('.contract-btn').forEach(b=>{b.classList.toggle('selected',b.dataset.contract===STATE.auto.contract&&b.dataset.barrier===STATE.auto.barrier);});selectedEl=document.querySelector(`.contract-btn[data-contract="${STATE.auto.contract}"][data-barrier="${STATE.auto.barrier}"]`);STATE.selectedContract.contract=STATE.auto.contract;STATE.selectedContract.barrier=STATE.auto.barrier;}
 
-function autoReset(){
-  STATE.auto.level=0;
-  STATE.auto.arrowCount=0;
-  STATE.auto.ladder=buildLadder();
-  STATE.auto.pendingBuy=false;
-  STATE.auto.activeContractId=null;
-  STATE.auto.cooldown=false;
-  STATE.auto.scanning=false;
-  updateAutoUI();
-}
+function autoReset(){STATE.auto.level=0;STATE.auto.arrowCount=0;STATE.auto.ladder=buildLadder();STATE.auto.pendingBuy=false;STATE.auto.activeContractId=null;STATE.auto.cooldown=false;STATE.auto.scanning=false;updateAutoUI();}
 
-function startAutoTrade(){
-  if(!STATE.authorized){toast('Connect Deriv first','error');openConnect();return;}
-  if(STATE.auto.enabled){stopAutoTrade();return;}
-  STATE.auto.enabled=true;
-  STATE.auto.baseStake=parseFloat($('stakeInput').value)||1;
-  STATE.auto.arrowsNeeded=parseInt($('autoArrows').value)||3;
-  STATE.auto.profitBuffer=parseFloat($('autoBuffer').value)||0.91;
-  STATE.auto.ladder=buildLadder();
-  STATE.auto.arrowCount=0;
-  STATE.auto.level=0;
-  STATE.auto.scanning=true;
-  selectAutoContract();
-  selectAutoContractUI();
-  requestProposal();
-  updateAutoUI();
-  toast(`Auto-trade ON · scanning ${STATE.auto.arrowsNeeded} ${STATE.auto.requiredDir===1?'UP':'DOWN'} arrows`,'info');
-}
+function startAutoTrade(){if(!STATE.authorized){toast('Connect Deriv first','error');openConnect();return;}if(STATE.auto.enabled){stopAutoTrade();return;}STATE.auto.enabled=true;STATE.auto.baseStake=parseFloat($('stakeInput').value)||1;STATE.auto.arrowsNeeded=parseInt($('autoArrows').value)||3;STATE.auto.profitBuffer=parseFloat($('autoBuffer').value)||0.91;STATE.auto.ladder=buildLadder();STATE.auto.arrowCount=0;STATE.auto.level=0;STATE.auto.scanning=true;selectAutoContract();selectAutoContractUI();requestProposal();updateAutoUI();toast(`Auto-trade ON · scanning ${STATE.auto.arrowsNeeded} ${STATE.auto.requiredDir===1?'UP':'DOWN'} arrows`,'info');}
 
-function stopAutoTrade(){
-  STATE.auto.enabled=false;
-  STATE.auto.scanning=false;
-  STATE.auto.cooldown=false;
-  updateAutoUI();
-  toast('Auto-trade OFF','info');
-}
+function stopAutoTrade(){STATE.auto.enabled=false;STATE.auto.scanning=false;STATE.auto.cooldown=false;updateAutoUI();toast('Auto-trade OFF','info');}
 
-function autoTickCheck(){
-  if(!STATE.auto.enabled||STATE.auto.cooldown) return;
-  if(STATE.auto.pendingBuy) return;
-  if(STATE.tickHistory.length<2) return;
-  const last=STATE.tickHistory[0];
-  const dirMatches=STATE.auto.requiredDir===1 ? last.change>0 : last.change<0;
-  if(dirMatches){
-    STATE.auto.arrowCount++;
-    pulseArrowCount();
-    updateAutoUI();
-    if(STATE.auto.arrowCount>=STATE.auto.arrowsNeeded){
-      STATE.auto.arrowCount=0;
-      executeAutoBuy();
-    }
-  } else {
-    STATE.auto.arrowCount=0;
-    updateAutoUI();
-  }
-}
+function autoTickCheck(){if(!STATE.auto.enabled||STATE.auto.cooldown)return;if(STATE.auto.pendingBuy)return;if(STATE.tickHistory.length<2)return;const last=STATE.tickHistory[0];const dirMatches=STATE.auto.requiredDir===1?last.change>0:last.change<0;if(dirMatches){STATE.auto.arrowCount++;pulseArrowCount();updateAutoUI();if(STATE.auto.arrowCount>=STATE.auto.arrowsNeeded){STATE.auto.arrowCount=0;executeAutoBuy();}}else{STATE.auto.arrowCount=0;updateAutoUI();}}
 
-function executeAutoBuy(){
-  if(!STATE.proposalId||!STATE.proposalData){
-    requestProposal();
-    setTimeout(executeAutoBuy,800);
-    return;
-  }
-  const stake=STATE.auto.ladder[Math.min(STATE.auto.level,STATE.auto.ladder.length-1)];
-  // Check balance for ladder level
-  if(STATE.account.balance > 0 && stake > STATE.account.balance){
-    toast(`Insufficient balance for L${STATE.auto.level+1}`,'error',3000);
-    stopAutoTrade();
-    return;
-  }
-  // Request fresh proposal at this stake
-  sendWS({
-    proposal:1,
-    amount:String(stake),
-    basis:'stake',
-    contract_type:STATE.auto.contract,
-    currency:STATE.account.currency||'USD',
-    duration:1,
-    duration_unit:'t',
-    symbol:STATE.currentSymbol,
-    barrier:String(STATE.auto.barrier)
-  });
-  STATE.auto.pendingBuy=true;
-  setTimeout(()=>{
-    if(STATE.proposalId && STATE.proposalData){
-      sendWS({buy:STATE.proposalId,price:STATE.proposalData.ask_price});
-      STATE.auto.activeContractId=STATE.proposalId;
-      $('autoLevel').textContent=STATE.auto.level+1;
-      $('autoStake').textContent=fmtUSD(stake);
-      toast(`Auto BUY L${STATE.auto.level+1} · ${fmtUSD(stake)}`,'info',1800);
-      updateAutoUI();
-    }
-    STATE.auto.pendingBuy=false;
-  },600);
-}
+function executeAutoBuy(){if(!STATE.proposalId||!STATE.proposalData){requestProposal();setTimeout(executeAutoBuy,800);return;}const stake=STATE.auto.ladder[Math.min(STATE.auto.level,STATE.auto.ladder.length-1)];if(STATE.account.balance>0&&stake>STATE.account.balance){toast(`Insufficient balance for L${STATE.auto.level+1}`,'error',3000);stopAutoTrade();return;}sendWS({proposal:1,amount:String(stake),basis:'stake',contract_type:STATE.auto.contract,currency:STATE.account.currency||'USD',duration:1,duration_unit:'t',symbol:STATE.currentSymbol,barrier:String(STATE.auto.barrier)});STATE.auto.pendingBuy=true;setTimeout(()=>{if(STATE.proposalId&&STATE.proposalData){sendWS({buy:STATE.proposalId,price:STATE.proposalData.ask_price});STATE.auto.activeContractId=STATE.proposalId;$('autoLevel').textContent=STATE.auto.level+1;$('autoStake').textContent=fmtUSD(stake);toast(`Auto BUY L${STATE.auto.level+1} · ${fmtUSD(stake)}`,'info',1800);updateAutoUI();}STATE.auto.pendingBuy=false;},600);}
 
-function onAutoSettlement(profit){
-  if(!STATE.auto.enabled) return;
-  STATE.auto.cooldown=true;
-  setTimeout(()=>{STATE.auto.cooldown=false;},2000);
+function onAutoSettlement(profit){if(!STATE.auto.enabled)return;STATE.auto.cooldown=true;setTimeout(()=>{STATE.auto.cooldown=false;},2000);if(profit>0){toast(`✓ Auto WIN +${fmtUSD(profit)} — ladder reset`,'success');autoReset();STATE.auto.enabled=true;STATE.auto.scanning=true;selectAutoContract();selectAutoContractUI();setTimeout(()=>requestProposal(),500);}else{STATE.auto.level++;if(STATE.auto.level>=STATE.auto.ladder.length){toast('Auto-trade: max ladder reached','error');stopAutoTrade();return;}toast(`✗ Auto LOSS — recovery L${STATE.auto.level+1}`,'error',2000);recoverySwitch();}updateAutoUI();}
 
-  if(profit>0){
-    toast(`✓ Auto WIN +${fmtUSD(profit)} — ladder reset`,'success');
-    autoReset();
-    STATE.auto.enabled=true;
-    STATE.auto.scanning=true;
-    selectAutoContract();
-    selectAutoContractUI();
-    setTimeout(()=>requestProposal(),500);
-  } else {
-    STATE.auto.level++;
-    if(STATE.auto.level>=STATE.auto.ladder.length){
-      toast('Auto-trade: max ladder reached','error');
-      stopAutoTrade();
-      return;
-    }
-    toast(`✗ Auto LOSS — recovery L${STATE.auto.level+1}`,'error',2000);
-    recoverySwitch();
-  }
-  updateAutoUI();
-}
+function recoverySwitch(){if(STATE.auto.contract==='DIGITOVER'){STATE.auto.contract='DIGITUNDER';STATE.auto.barrier='7';STATE.auto.requiredDir=-1;}else{STATE.auto.contract='DIGITOVER';STATE.auto.barrier='2';STATE.auto.requiredDir=1;}STATE.auto.arrowCount=0;selectAutoContractUI();requestProposal();updateAutoUI();}
 
-function recoverySwitch(){
-  // OVER → UNDER 7, UNDER → OVER 2 — IMMEDIATE switch, no delay
-  if(STATE.auto.contract==='DIGITOVER'){
-    STATE.auto.contract='DIGITUNDER';
-    STATE.auto.barrier='7';
-    STATE.auto.requiredDir=-1;
-  } else {
-    STATE.auto.contract='DIGITOVER';
-    STATE.auto.barrier='2';
-    STATE.auto.requiredDir=1;
-  }
-  STATE.auto.arrowCount=0;
-  selectAutoContractUI();
-  requestProposal();
-  updateAutoUI();
-}
+function updateAutoUI(){const on=STATE.auto.enabled;$('autoBtn').textContent=on?'⏹ STOP AUTO-TRADE':'▶ SCAN & AUTO-TRADE';$('autoBtn').classList.toggle('btn-red',on);$('autoBtn').classList.toggle('btn-primary',!on);$('autoBtn').classList.toggle('live',on);$('autoStatus').textContent=on?(STATE.auto.cooldown?'⏳ Cooldown...':STATE.auto.scanning?`🔍 Scanning ${STATE.auto.contract} ${STATE.auto.barrier}`:'⏸ Idle'):'Stopped';$('autoStatus').className=on?'mono fw-6 text-cyan':'mono fw-6 text-muted';$('autoArrowsNow').textContent=`${STATE.auto.arrowCount}/${STATE.auto.arrowsNeeded}`;const arrows=document.querySelectorAll('.auto-arrow');arrows.forEach((a,i)=>{a.classList.toggle('lit',on&&i<STATE.auto.arrowCount);});$('autoLevel').textContent=STATE.auto.level+1;$('autoStake').textContent=fmtUSD(STATE.auto.ladder[Math.min(STATE.auto.level,STATE.auto.ladder.length-1)]);$('autoLadderView').innerHTML=STATE.auto.ladder.slice(0,5).map((s,i)=>{const active=i===STATE.auto.level;return`<div class="ladder-row ${active?'active':''}"><span class="text-muted">L${i+1}</span><span class="mono fw-6">${fmtUSD(s)}</span></div>`;}).join('');const sysAuto=$('sysAuto'),sbAuto=$('sbAuto');if(sysAuto){sysAuto.textContent=on?'● ACTIVE':'○ IDLE';sysAuto.className='value '+(on?'text-green text-cyan':'text-muted');}if(sbAuto){sbAuto.textContent=on?'● ON':'○ OFF';sbAuto.className='mono-s '+(on?'text-green':'text-muted');}}
 
-function updateAutoUI(){
-  const on=STATE.auto.enabled;
-  $('autoBtn').textContent=on?'⏹ STOP AUTO-TRADE':'▶ SCAN & AUTO-TRADE';
-  $('autoBtn').classList.toggle('btn-red',on);
-  $('autoBtn').classList.toggle('btn-primary',!on);
-  $('autoBtn').classList.toggle('live',on);
-  $('autoStatus').textContent=on?(STATE.auto.cooldown?'⏳ Cooldown...':STATE.auto.scanning?`🔍 Scanning ${STATE.auto.contract} ${STATE.auto.barrier}`:'⏸ Idle'):'Stopped';
-  $('autoStatus').className=on?'mono fw-6 text-cyan':'mono fw-6 text-muted';
-  $('autoArrowsNow').textContent=`${STATE.auto.arrowCount}/${STATE.auto.arrowsNeeded}`;
-  const arrows=document.querySelectorAll('.auto-arrow');
-  arrows.forEach((a,i)=>{a.classList.toggle('lit',on&&i<STATE.auto.arrowCount);});
-  $('autoLevel').textContent=STATE.auto.level+1;
-  $('autoStake').textContent=fmtUSD(STATE.auto.ladder[Math.min(STATE.auto.level,STATE.auto.ladder.length-1)]);
-  $('autoLadderView').innerHTML=STATE.auto.ladder.slice(0,5).map((s,i)=>{const active=i===STATE.auto.level;return`<div class="ladder-row ${active?'active':''}"><span class="text-muted">L${i+1}</span><span class="mono fw-6">${fmtUSD(s)}</span></div>`;}).join('');
-  const sysAuto=$('sysAuto'),sbAuto=$('sbAuto');
-  if(sysAuto){sysAuto.textContent=on?'● ACTIVE':'○ IDLE';sysAuto.className='value '+(on?'text-green text-cyan':'text-muted');}
-  if(sbAuto){sbAuto.textContent=on?'● ON':'○ OFF';sbAuto.className='mono-s '+(on?'text-green':'text-muted');}
-}
+function pulseArrowCount(){const arrows=document.querySelectorAll('.auto-arrow');if(arrows[STATE.auto.arrowCount-1]){arrows[STATE.auto.arrowCount-1].classList.add('pulse');setTimeout(()=>arrows[STATE.auto.arrowCount-1]?.classList.remove('pulse'),400);}}
 
-function pulseArrowCount(){
-  const arrows=document.querySelectorAll('.auto-arrow');
-  if(arrows[STATE.auto.arrowCount-1]){
-    arrows[STATE.auto.arrowCount-1].classList.add('pulse');
-    setTimeout(()=>arrows[STATE.auto.arrowCount-1]?.classList.remove('pulse'),400);
-  }
-}
-
-function init(){
-  loadState();
-  applySettings();
-  runPreloader();
-  STATE.auto.ladder=buildLadder();
-  updateAutoUI();
-  setTimeout(()=>{
-    initChart();
-    setChartSymbol(STATE.settings.symbol||'R_100');
-    initParticles();
-    renderHome();
-    connectDeriv();
-    setTimeout(()=>{if(STATE.wsReady&&STATE.authorized)requestProposal();},2500);
-    setInterval(()=>{if(STATE.wsReady&&STATE.authorized)requestProposal();},5000);
-    setInterval(()=>{if(STATE.page==='home')renderHome();},2000);
-  },3000);
-}
+function init(){loadState();applySettings();runPreloader();STATE.auto.ladder=buildLadder();updateAutoUI();setTimeout(()=>{initChart();setChartSymbol(STATE.settings.symbol||'R_100');initParticles();renderHome();connectDeriv();setTimeout(()=>{if(STATE.wsReady&&STATE.authorized)requestProposal();},2500);setInterval(()=>{if(STATE.wsReady&&STATE.authorized)requestProposal();},5000);setInterval(()=>{if(STATE.page==='home')renderHome();},2000);},3000);}
 init();
 
 window.addEventListener('hashchange',()=>{const h=location.hash.replace('#','');if(['home','analyzer','trade','history','settings'].includes(h))navigate(h);});

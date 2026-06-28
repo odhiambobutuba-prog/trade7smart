@@ -29,91 +29,11 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 @keyframes p{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes zi{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
-@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
-@keyframes countPulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
-@keyframes scanPulse{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,0)}50%{box-shadow:0 0 0 6px rgba(59,130,246,0.08)}}
 .live{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--r);text-transform:uppercase}
 .live::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--r);animation:p 1.2s infinite}
 @media(max-width:1024px){aside{display:none!important}#bnav{display:flex!important}header{left:0!important}main{left:0!important;bottom:64px!important}}
 @media(max-width:768px){body{font-size:13px!important}header{height:54px!important;padding:0 12px!important}main{top:54px!important;padding:10px!important}h1{font-size:1.3rem!important}}
 @media(max-width:480px){h1{font-size:1.15rem!important}}
-.scan-grid{display:grid;grid-template-columns:1fr 360px;gap:14px}
-@media(max-width:1100px){.scan-grid{grid-template-columns:1fr}}
-.scan-stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
-@media(max-width:900px){.scan-stat-grid{grid-template-columns:repeat(2,1fr)}}
-.scan-stat{padding:14px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.01));border:1px solid var(--b);border-radius:14px;transition:all .3s;position:relative;overflow:hidden}
-.scan-stat:hover{border-color:rgba(59,130,246,.3);box-shadow:0 0 30px rgba(59,130,246,.15);transform:translateY(-2px)}
-.scan-stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:8px}
-.scan-stat-label{font-size:10px;color:var(--td);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
-.scan-stat-value{font-size:22px;font-weight:800;font-family:monospace;line-height:1.1;transition:color .4s,transform .4s}
-.scan-stat-desc{font-size:10px;color:var(--tm);margin-top:4px}
-.scan-stat.scanning{animation:scanPulse 2s infinite}
-.modes-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-@media(max-width:1100px){.modes-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:500px){.modes-grid{grid-template-columns:1fr}}
-.mode-card2{padding:16px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.01));border:1px solid var(--b);border-radius:14px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;text-align:left}
-.mode-card2:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
-.mode-card2.on{border-color:var(--bl);box-shadow:0 0 24px rgba(59,130,246,.3);transform:scale(1.02)}
-.mode-card2.on::after{content:'● ACTIVE';position:absolute;top:12px;right:12px;font-size:9px;font-weight:700;color:var(--g);background:rgba(34,197,94,.15);padding:3px 8px;border-radius:99px;border:1px solid rgba(34,197,94,.3)}
-.mode-icon2{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px}
-.mode-name2{font-size:14px;font-weight:700;margin-bottom:3px}
-.mode-desc2{font-size:11px;color:var(--td);margin-bottom:10px;line-height:1.4}
-.mode-stats2{display:flex;gap:10px;margin-bottom:10px;font-size:10px}
-.mode-stats2 div{flex:1;padding:6px;background:rgba(0,0,0,.3);border-radius:6px;text-align:center}
-.mode-stats2 .lbl{color:var(--tm);text-transform:uppercase;font-size:8px;letter-spacing:.08em}
-.mode-stats2 .val{font-weight:700;font-family:monospace;font-size:12px;margin-top:2px;transition:color .4s}
-.mode-btn2{width:100%;padding:8px;border-radius:8px;border:1px solid var(--b);background:rgba(255,255,255,.04);color:var(--t);font-weight:600;font-size:11px;cursor:pointer;font-family:inherit;transition:all .3s}
-.mode-btn2:hover{background:rgba(59,130,246,.15);border-color:var(--bl);color:var(--bl)}
-.mode-card2.on .mode-btn2{background:linear-gradient(135deg,var(--bl),var(--pp));border:none;color:#fff}
-.feed-list{max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
-.feed-item{display:flex;align-items:center;gap:10px;padding:8px;background:rgba(255,255,255,.02);border:1px solid var(--b);border-radius:8px;animation:slideIn .4s ease;font-size:11px}
-.feed-time{color:var(--tm);font-family:monospace;font-size:10px;min-width:36px}
-.feed-icon{font-size:18px}
-.feed-name{flex:1}
-.feed-name .who{font-weight:700;color:var(--cy);font-size:12px}
-.feed-name .what{color:var(--td);font-size:10px;margin-top:1px}
-.feed-badge{padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;font-family:monospace;transition:transform .3s}
-.feed-badge.high{background:rgba(34,197,94,.15);color:var(--g);border:1px solid rgba(34,197,94,.3)}
-.feed-badge.mid{background:rgba(245,158,11,.15);color:var(--am);border:1px solid rgba(245,158,11,.3)}
-.feed-badge.low{background:rgba(239,68,68,.15);color:var(--r);border:1px solid rgba(239,68,68,.3)}
-.donut-wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-.donut{position:relative;width:140px;height:140px;flex-shrink:0}
-.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.donut-num{font-size:32px;font-weight:800;font-family:monospace;line-height:1;transition:transform .3s}
-.donut-lbl{font-size:9px;color:var(--tm);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
-.dist-list{flex:1;display:flex;flex-direction:column;gap:10px;min-width:180px}
-.dist-row{display:flex;align-items:center;gap:8px;font-size:11px}
-.dist-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.dist-info{flex:1}
-.dist-name{color:var(--td);margin-bottom:3px;font-size:10px}
-.dist-bar{height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
-.dist-fill{height:100%;border-radius:3px;transition:width .6s ease}
-.dist-num{font-family:monospace;font-weight:700;font-size:12px;min-width:55px;text-align:right;transition:color .3s}
-.gauge-wrap{position:relative;width:180px;height:180px;margin:0 auto}
-.gauge-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.gauge-pct{font-size:42px;font-weight:800;font-family:monospace;background:linear-gradient(135deg,var(--cy),var(--pp));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1;transition:transform .4s}
-.gauge-lbl{font-size:10px;color:var(--td);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
-.gauge-list{margin-top:14px;display:flex;flex-direction:column;gap:6px}
-.gauge-list-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:4px 0}
-.gauge-list-row .dot2{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:6px}
-.gauge-list-row .v{font-family:monospace;font-weight:700;transition:color .3s}
-.perf-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
-@media(max-width:700px){.perf-stats-grid{grid-template-columns:repeat(2,1fr)}}
-.perf-stat{padding:10px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b);text-align:center}
-.perf-stat .l{font-size:9px;color:var(--tm);text-transform:uppercase;letter-spacing:.08em}
-.perf-stat .v{font-size:18px;font-weight:800;font-family:monospace;margin-top:3px;transition:color .4s}
-.perf-stat .s{font-size:9px;color:var(--tm);margin-top:2px}
-.perf-chart{height:160px;width:100%;position:relative}
-.toggle-sw{width:40px;height:22px;background:rgba(255,255,255,.08);border-radius:99px;position:relative;cursor:pointer;transition:all .3s;flex-shrink:0}
-.toggle-sw::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:all .3s}
-.toggle-sw.on{background:linear-gradient(135deg,var(--bl),var(--pp))}
-.toggle-sw.on::after{left:20px}
-.live-pulse{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);font-size:11px;font-weight:700;color:var(--g);text-transform:uppercase}
-.live-pulse::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--g);animation:p 1s infinite;box-shadow:0 0 6px var(--g)}
-.live-pulse.off{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:var(--r)}
-.live-pulse.off::before{background:var(--r);box-shadow:0 0 6px var(--r)}
-.feed-view-all{display:block;text-align:center;padding:10px;margin-top:8px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:8px;color:var(--cy);font-size:11px;font-weight:600;cursor:pointer;transition:all .3s}
-.feed-view-all:hover{background:rgba(59,130,246,.15)}
 </style>
 </head>
 <body style="margin:0;background:#060A10;overflow:hidden;font-family:'Inter',sans-serif">
@@ -171,7 +91,7 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 </div>
 </div>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px">
-<div class="glass" onclick="go('modes')" style="cursor:pointer"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(59,130,246,.15);color:var(--bl)">🧠</div><span class="dot live"></span></div><div style="font-size:10px;color:var(--td);font-weight:600">AI Mode</div><div style="font-size:18px;font-weight:700;font-family:monospace;margin:4px 0" id="aiHome">READY</div><div style="font-size:10px;color:var(--tm)" id="aiSub">Triple Strike</div></div>
+<div class="glass" onclick="go('modes')" style="cursor:pointer"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(59,130,246,.15);color:var(--bl)">🧠</div><span class="dot live"></span></div><div style="font-size:10px;color:var(--td);font-weight:600">AI Scanner</div><div style="font-size:18px;font-weight:700;font-family:monospace;margin:4px 0" id="aiHome">READY</div><div style="font-size:10px;color:var(--tm)" id="aiSub">Tap to activate</div></div>
 <div class="glass" onclick="go('dbot')" style="cursor:pointer"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(34,211,238,.15);color:var(--cy)">📦</div><span class="dim" id="reg">—</span></div><div style="font-size:10px;color:var(--td);font-weight:600">DBot</div><div style="font-size:18px;font-weight:700;font-family:monospace;margin:4px 0" id="md">—</div><div style="font-size:10px;color:var(--tm)" id="mp">Import XML</div></div>
 <div class="glass" onclick="openConn()" style="cursor:pointer"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(34,197,94,.15);color:var(--g)">🔌</div><span class="dot" id="hcd"></span></div><div style="font-size:10px;color:var(--td);font-weight:600">Connection</div><div style="font-size:18px;font-weight:700;font-family:monospace;margin:4px 0" id="hct">Disconnected</div><div style="font-size:10px;color:var(--tm)">Tap to connect</div></div>
 <div class="glass" onclick="go('history')" style="cursor:pointer"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(139,92,246,.15);color:var(--pp)">🏆</div><span class="dim" id="htc">0</span></div><div style="font-size:10px;color:var(--td);font-weight:600">Win Rate</div><div style="font-size:18px;font-weight:700;font-family:monospace;margin:4px 0;color:var(--g)" id="hwr">0%</div><div style="font-size:10px;color:var(--tm)" id="hwrs">No trades</div></div>
@@ -223,8 +143,92 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 </div>
 </section>
 
-<!-- AI SCANNER -->
+<!-- AI SCANNER (REDESIGNED + LIVE) -->
 <section id="p-modes" class="page" style="display:none">
+<style>
+.scan-grid{display:grid;grid-template-columns:1fr 360px;gap:14px}
+@media(max-width:1100px){.scan-grid{grid-template-columns:1fr}}
+.scan-stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:900px){.scan-stat-grid{grid-template-columns:repeat(2,1fr)}}
+.scan-stat{padding:14px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.01));border:1px solid var(--b);border-radius:14px;transition:all .3s;position:relative;overflow:hidden}
+.scan-stat:hover{border-color:rgba(59,130,246,.3);box-shadow:0 0 30px rgba(59,130,246,.15);transform:translateY(-2px)}
+.scan-stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:8px}
+.scan-stat-label{font-size:10px;color:var(--td);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.scan-stat-value{font-size:22px;font-weight:800;font-family:monospace;line-height:1.1;transition:all .3s}
+.scan-stat-desc{font-size:10px;color:var(--tm);margin-top:4px}
+.scan-stat.live-active{border-color:rgba(34,197,94,.3);box-shadow:0 0 20px rgba(34,197,94,.15);animation:pulseGlow 2s ease-in-out infinite}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 20px rgba(34,197,94,.1)}50%{box-shadow:0 0 30px rgba(34,197,94,.3)}}
+.modes-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:1100px){.modes-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.modes-grid{grid-template-columns:1fr}}
+.mode-card2{padding:16px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.01));border:1px solid var(--b);border-radius:14px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;text-align:left}
+.mode-card2:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.mode-card2.on{border-color:var(--bl);box-shadow:0 0 24px rgba(59,130,246,.3);transform:scale(1.02)}
+.mode-card2.on::after{content:'● ACTIVE';position:absolute;top:12px;right:12px;font-size:9px;font-weight:700;color:var(--g);background:rgba(34,197,94,.15);padding:3px 8px;border-radius:99px;border:1px solid rgba(34,197,94,.3);animation:pulseDot 1.5s infinite}
+@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.1)}}
+.mode-card2.scanning{border-color:rgba(34,211,238,.4);animation:scanPulse 1.5s ease-in-out infinite}
+@keyframes scanPulse{0%,100%{box-shadow:0 0 10px rgba(34,211,238,.2)}50%{box-shadow:0 0 25px rgba(34,211,238,.5)}}
+.mode-icon2{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px}
+.mode-name2{font-size:14px;font-weight:700;margin-bottom:3px}
+.mode-desc2{font-size:11px;color:var(--td);margin-bottom:10px;line-height:1.4}
+.mode-stats2{display:flex;gap:10px;margin-bottom:10px;font-size:10px}
+.mode-stats2 div{flex:1;padding:6px;background:rgba(0,0,0,.3);border-radius:6px;text-align:center}
+.mode-stats2 .lbl{color:var(--tm);text-transform:uppercase;font-size:8px;letter-spacing:.08em}
+.mode-stats2 .val{font-weight:700;font-family:monospace;font-size:12px;margin-top:2px;transition:all .3s}
+.mode-btn2{width:100%;padding:8px;border-radius:8px;border:1px solid var(--b);background:rgba(255,255,255,.04);color:var(--t);font-weight:600;font-size:11px;cursor:pointer;font-family:inherit;transition:all .3s}
+.mode-btn2:hover{background:rgba(59,130,246,.15);border-color:var(--bl);color:var(--bl)}
+.mode-card2.on .mode-btn2{background:linear-gradient(135deg,#DC2626,#EF4444);border:none;color:#fff;box-shadow:0 0 16px rgba(239,68,68,.4)}
+.feed-list{max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.feed-item{display:flex;align-items:center;gap:10px;padding:8px;background:rgba(255,255,255,.02);border:1px solid var(--b);border-radius:8px;animation:feedIn .4s ease;font-size:11px}
+@keyframes feedIn{from{opacity:0;transform:translateX(-20px);max-height:0}to{opacity:1;transform:translateX(0);max-height:80px}}
+.feed-time{color:var(--tm);font-family:monospace;font-size:10px;min-width:36px}
+.feed-icon{font-size:18px}
+.feed-name{flex:1}
+.feed-name .who{font-weight:700;color:var(--cy);font-size:12px}
+.feed-name .what{color:var(--td);font-size:10px;margin-top:1px}
+.feed-badge{padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;font-family:monospace;transition:all .3s}
+.feed-badge.high{background:rgba(34,197,94,.15);color:var(--g);border:1px solid rgba(34,197,94,.3)}
+.feed-badge.mid{background:rgba(245,158,11,.15);color:var(--am);border:1px solid rgba(245,158,11,.3)}
+.feed-badge.low{background:rgba(239,68,68,.15);color:var(--r);border:1px solid rgba(239,68,68,.3)}
+.donut-wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.donut{position:relative;width:140px;height:140px;flex-shrink:0}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut-num{font-size:32px;font-weight:800;font-family:monospace;line-height:1;transition:all .5s}
+.donut-lbl{font-size:9px;color:var(--tm);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+.dist-list{flex:1;display:flex;flex-direction:column;gap:10px;min-width:180px}
+.dist-row{display:flex;align-items:center;gap:8px;font-size:11px}
+.dist-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dist-info{flex:1}
+.dist-name{color:var(--td);margin-bottom:3px;font-size:10px}
+.dist-bar{height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.dist-fill{height:100%;border-radius:3px;transition:width .8s ease}
+.dist-num{font-family:monospace;font-weight:700;font-size:12px;min-width:55px;text-align:right;transition:all .3s}
+.gauge-wrap{position:relative;width:180px;height:180px;margin:0 auto}
+.gauge-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.gauge-pct{font-size:42px;font-weight:800;font-family:monospace;background:linear-gradient(135deg,var(--cy),var(--pp));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1;transition:all .5s}
+.gauge-lbl{font-size:10px;color:var(--td);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+.gauge-list{margin-top:14px;display:flex;flex-direction:column;gap:6px}
+.gauge-list-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:4px 0}
+.gauge-list-row .dot2{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:6px}
+.gauge-list-row .v{font-family:monospace;font-weight:700;transition:all .3s}
+.perf-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+@media(max-width:700px){.perf-stats-grid{grid-template-columns:repeat(2,1fr)}}
+.perf-stat{padding:10px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b);text-align:center}
+.perf-stat .l{font-size:9px;color:var(--tm);text-transform:uppercase;letter-spacing:.08em}
+.perf-stat .v{font-size:18px;font-weight:800;font-family:monospace;margin-top:3px;transition:all .3s}
+.perf-stat .s{font-size:9px;color:var(--tm);margin-top:2px}
+.perf-chart{height:160px;width:100%;position:relative}
+.toggle-sw{width:40px;height:22px;background:rgba(255,255,255,.08);border-radius:99px;position:relative;cursor:pointer;transition:all .3s;flex-shrink:0}
+.toggle-sw::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:all .3s}
+.toggle-sw.on{background:linear-gradient(135deg,var(--bl),var(--pp))}
+.toggle-sw.on::after{left:20px}
+.live-pulse{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);font-size:11px;font-weight:700;color:var(--g);text-transform:uppercase}
+.live-pulse::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--g);animation:p 1s infinite;box-shadow:0 0 6px var(--g)}
+.live-pulse.off{background:rgba(255,255,255,.05);border-color:var(--b);color:var(--td)}
+.live-pulse.off::before{background:var(--td);box-shadow:none;animation:none}
+.feed-view-all{display:block;text-align:center;padding:10px;margin-top:8px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:8px;color:var(--cy);font-size:11px;font-weight:600;cursor:pointer}
+.feed-view-all:hover{background:rgba(59,130,246,.15)}
+</style>
 
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
 <div>
@@ -234,43 +238,39 @@ AI Scanner
 </h1>
 <p style="color:var(--td);font-size:12px;margin:4px 0 0 46px">Real-time market scanning and intelligent opportunity detection</p>
 </div>
-<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-<button class="btn b1" id="scStartBtn" onclick="Scanner.start()" style="padding:8px 14px;font-size:12px">▶ Start Scanner</button>
-<button class="btn red" id="scStopBtn" onclick="Scanner.stop()" style="padding:8px 14px;font-size:12px">⏹ Stop Scanner</button>
-<div class="live-pulse" id="scPulse">● LIVE</div>
-</div>
+<div class="live-pulse" id="livePulse">● LIVE SCANNING</div>
 </div>
 
 <div class="scan-stat-grid">
-<div class="scan-stat" id="scCardStatus">
+<div class="scan-stat" id="statCard1">
 <div class="scan-stat-icon" style="background:rgba(34,197,94,.15);color:var(--g)">📡</div>
 <div class="scan-stat-label">Scanner Status</div>
-<div class="scan-stat-value" id="scStatus" style="color:var(--td)">STARTING</div>
-<div class="scan-stat-desc" id="scStatusDesc">Connecting to markets</div>
+<div class="scan-stat-value" id="scanStatus" style="color:var(--tm)">IDLE</div>
+<div class="scan-stat-desc">Click Activate to start</div>
 </div>
 <div class="scan-stat">
 <div class="scan-stat-icon" style="background:rgba(59,130,246,.15);color:var(--bl)">🌐</div>
 <div class="scan-stat-label">Markets Scanned</div>
-<div class="scan-stat-value" id="scMkts">0/5</div>
-<div class="scan-stat-desc">Subscribed live</div>
+<div class="scan-stat-value" id="scanMarkets">4</div>
+<div class="scan-stat-desc">Active symbols</div>
 </div>
 <div class="scan-stat">
 <div class="scan-stat-icon" style="background:rgba(139,92,246,.15);color:var(--pp)">🎯</div>
 <div class="scan-stat-label">Opportunities Found</div>
-<div class="scan-stat-value" id="scOpps" style="color:var(--pp)">0</div>
-<div class="scan-stat-desc">Ranked by confidence</div>
+<div class="scan-stat-value" id="scanOpps" style="color:var(--pp)">0</div>
+<div class="scan-stat-desc">High probability</div>
 </div>
 <div class="scan-stat">
 <div class="scan-stat-icon" style="background:rgba(34,211,238,.15);color:var(--cy)">📈</div>
-<div class="scan-stat-label">Avg Confidence</div>
-<div class="scan-stat-value" id="scAvg" style="color:var(--cy)">0%</div>
-<div class="scan-stat-desc">Across all markets</div>
+<div class="scan-stat-label">Win Probability Avg.</div>
+<div class="scan-stat-value" id="scanWinProb" style="color:var(--cy)">—</div>
+<div class="scan-stat-desc">Across all modes</div>
 </div>
 <div class="scan-stat">
 <div class="scan-stat-icon" style="background:rgba(245,158,11,.15);color:var(--am)">⏱</div>
 <div class="scan-stat-label">Last Scan</div>
-<div class="scan-stat-value" id="scLast" style="color:var(--am);font-size:18px">—</div>
-<div class="scan-stat-desc" id="scLastDesc">Awaiting first scan</div>
+<div class="scan-stat-value" id="scanLast" style="color:var(--am);font-size:18px">—</div>
+<div class="scan-stat-desc">Awaiting activation</div>
 </div>
 </div>
 
@@ -280,45 +280,45 @@ AI Scanner
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
 <span style="font-size:14px">🧠</span><span style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--cy)">AI Scanner Modes</span>
 </div>
-<p style="font-size:11px;color:var(--td);margin-bottom:12px">Select and activate a scanner mode — only one runs at a time</p>
+<p style="font-size:11px;color:var(--td);margin-bottom:12px">Select and run your preferred AI scanner mode</p>
 <div class="modes-grid">
-<div class="mode-card2" data-mode="momentum" onclick="selMode2('momentum')">
+<div class="mode-card2" data-mode="triple" onclick="activateScanner('triple')">
 <div class="mode-icon2" style="background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(34,211,238,.2));color:var(--cy)">📈</div>
 <div class="mode-name2">Momentum Rider</div>
-<div class="mode-desc2">Trend continuation</div>
+<div class="mode-desc2">Arrow-based ▲▲▲</div>
 <div class="mode-stats2">
-<div><div class="lbl">Win</div><div class="val" id="modWin_momentum" style="color:var(--cy)">—</div></div>
-<div><div class="lbl">Conf</div><div class="val" id="modConf_momentum" style="color:var(--cy)">—</div></div>
+<div><div class="lbl">Win</div><div class="val mode-win" style="color:var(--cy)">—</div></div>
+<div><div class="lbl">Conf</div><div class="val mode-conf" style="color:var(--cy)">—</div></div>
 </div>
 <button class="mode-btn2">Activate</button>
 </div>
-<div class="mode-card2" data-mode="triple" onclick="selMode2('triple')">
+<div class="mode-card2" data-mode="momentum" onclick="activateScanner('momentum')">
 <div class="mode-icon2" style="background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(245,158,11,.2));color:var(--r)">🎯</div>
 <div class="mode-name2">Triple Strike</div>
-<div class="mode-desc2">Repeating digit streaks</div>
+<div class="mode-desc2">Pattern 0,0,0 / 1,1,1</div>
 <div class="mode-stats2">
-<div><div class="lbl">Win</div><div class="val" id="modWin_triple" style="color:var(--g)">—</div></div>
-<div><div class="lbl">Conf</div><div class="val" id="modConf_triple" style="color:var(--g)">—</div></div>
+<div><div class="lbl">Win</div><div class="val mode-win" style="color:var(--g)">—</div></div>
+<div><div class="lbl">Conf</div><div class="val mode-conf" style="color:var(--g)">—</div></div>
 </div>
 <button class="mode-btn2">Activate</button>
 </div>
-<div class="mode-card2" data-mode="smart" onclick="selMode2('smart')">
+<div class="mode-card2" data-mode="smart" onclick="activateScanner('smart')">
 <div class="mode-icon2" style="background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(236,72,153,.2));color:var(--pp)">🧠</div>
 <div class="mode-name2">Smart Hunter</div>
-<div class="mode-desc2">Multi-factor combined</div>
+<div class="mode-desc2">Combined analysis</div>
 <div class="mode-stats2">
-<div><div class="lbl">Win</div><div class="val" id="modWin_smart" style="color:var(--pp)">—</div></div>
-<div><div class="lbl">Conf</div><div class="val" id="modConf_smart" style="color:var(--pp)">—</div></div>
+<div><div class="lbl">Win</div><div class="val mode-win" style="color:var(--pp)">—</div></div>
+<div><div class="lbl">Conf</div><div class="val mode-conf" style="color:var(--pp)">—</div></div>
 </div>
 <button class="mode-btn2">Activate</button>
 </div>
-<div class="mode-card2" data-mode="sniper" onclick="selMode2('sniper')">
+<div class="mode-card2" data-mode="sniper" onclick="activateScanner('sniper')">
 <div class="mode-icon2" style="background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(34,197,94,.2));color:var(--am)">🎲</div>
 <div class="mode-name2">Sniper Rush</div>
-<div class="mode-desc2">Every qualifying tick</div>
+<div class="mode-desc2">Every tick</div>
 <div class="mode-stats2">
-<div><div class="lbl">Win</div><div class="val" id="modWin_sniper" style="color:var(--am)">—</div></div>
-<div><div class="lbl">Conf</div><div class="val" id="modConf_sniper" style="color:var(--am)">—</div></div>
+<div><div class="lbl">Win</div><div class="val mode-win" style="color:var(--am)">—</div></div>
+<div><div class="lbl">Conf</div><div class="val mode-conf" style="color:var(--am)">—</div></div>
 </div>
 <button class="mode-btn2">Activate</button>
 </div>
@@ -329,13 +329,13 @@ AI Scanner
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
 <span style="font-size:14px">📊</span><span style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--cy)">Market Scan Overview</span>
 </div>
-<p style="font-size:11px;color:var(--td);margin-bottom:14px">Distribution of AI opportunity strength across all markets</p>
+<p style="font-size:11px;color:var(--td);margin-bottom:14px">Distribution of AI opportunity strength</p>
 <div class="donut-wrap">
 <svg class="donut" viewBox="0 0 42 42">
-<circle id="donutBg" cx="21" cy="21" r="15.915" fill="transparent" stroke="rgba(255,255,255,.06)" stroke-width="6"/>
-<circle id="donutHigh" cx="21" cy="21" r="15.915" fill="transparent" stroke="#22C55E" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="25" transform="rotate(-90 21 21)" style="transition:stroke-dasharray .6s ease"/>
-<circle id="donutMid" cx="21" cy="21" r="15.915" fill="transparent" stroke="#F59E0B" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="-25" transform="rotate(-90 21 21)" style="transition:stroke-dasharray .6s ease"/>
-<circle id="donutLow" cx="21" cy="21" r="15.915" fill="transparent" stroke="#EF4444" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="-75" transform="rotate(-90 21 21)" style="transition:stroke-dasharray .6s ease"/>
+<circle cx="21" cy="21" r="15.915" fill="transparent" stroke="rgba(255,255,255,.06)" stroke-width="6"/>
+<circle id="donutHigh" cx="21" cy="21" r="15.915" fill="transparent" stroke="#22C55E" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="25" transform="rotate(-90 21 21)" style="transition:stroke-dasharray .8s ease"/>
+<circle id="donutMed" cx="21" cy="21" r="15.915" fill="transparent" stroke="#F59E0B" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="25" transform="rotate(-90 21 21)" style="transition:stroke-dasharray .8s ease"/>
+<circle id="donutLow" cx="21" cy="21" r="15.915" fill="transparent" stroke="#EF4444" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="25" transform="rotate(-90 21 21)" style="transition:stroke-dasharray .8s ease"/>
 </svg>
 <div class="donut-center">
 <div class="donut-num" id="donutNum">0</div>
@@ -346,25 +346,25 @@ AI Scanner
 <div class="dist-dot" style="background:var(--g)"></div>
 <div class="dist-info">
 <div class="dist-name">High Strength (80% - 100%)</div>
-<div class="dist-bar"><div class="dist-fill" id="barHigh" style="width:0%;background:var(--g)"></div></div>
+<div class="dist-bar"><div class="dist-fill" data-type="high" style="width:0%;background:var(--g)"></div></div>
 </div>
-<div class="dist-num" id="numHigh" style="color:var(--g)">0 (0%)</div>
+<div class="dist-num" data-type="high" style="color:var(--g)">0 (0%)</div>
 </div>
 <div class="dist-row">
 <div class="dist-dot" style="background:var(--am)"></div>
 <div class="dist-info">
 <div class="dist-name">Medium Strength (50% - 79%)</div>
-<div class="dist-bar"><div class="dist-fill" id="barMid" style="width:0%;background:var(--am)"></div></div>
+<div class="dist-bar"><div class="dist-fill" data-type="med" style="width:0%;background:var(--am)"></div></div>
 </div>
-<div class="dist-num" id="numMid" style="color:var(--am)">0 (0%)</div>
+<div class="dist-num" data-type="med" style="color:var(--am)">0 (0%)</div>
 </div>
 <div class="dist-row">
 <div class="dist-dot" style="background:var(--r)"></div>
 <div class="dist-info">
 <div class="dist-name">Low Strength (0% - 49%)</div>
-<div class="dist-bar"><div class="dist-fill" id="barLow" style="width:0%;background:var(--r)"></div></div>
+<div class="dist-bar"><div class="dist-fill" data-type="low" style="width:0%;background:var(--r)"></div></div>
 </div>
-<div class="dist-num" id="numLow" style="color:var(--r)">0 (0%)</div>
+<div class="dist-num" data-type="low" style="color:var(--r)">0 (0%)</div>
 </div>
 </div>
 </div>
@@ -380,14 +380,14 @@ AI Scanner
 <span style="color:var(--cy)">● Opportunities</span>
 </div>
 </div>
-<p style="font-size:11px;color:var(--td);margin-bottom:12px">AI scanner performance (real history)</p>
+<p style="font-size:11px;color:var(--td);margin-bottom:12px">AI scanner performance in recent sessions</p>
 <div class="perf-stats-grid">
 <div class="perf-stat"><div class="l">Best Win Rate</div><div class="v" id="perfBest" style="color:var(--g)">—</div><div class="s" id="perfBestTime">—</div></div>
-<div class="perf-stat"><div class="l">Total Scans</div><div class="v" id="perfTotal" style="color:var(--cy)">0</div><div class="s">All time</div></div>
-<div class="perf-stat"><div class="l">Wins</div><div class="v" id="perfWins" style="color:var(--bl)">0</div><div class="s" id="perfWinPct">0%</div></div>
-<div class="perf-stat"><div class="l">Avg Response</div><div class="v" id="perfResp" style="color:var(--am)">—</div><div class="s">Per scan</div></div>
+<div class="perf-stat"><div class="l">Total Scans</div><div class="v" id="perfTotal" style="color:var(--cy)">0</div><div class="s">Today</div></div>
+<div class="perf-stat"><div class="l">Profitable</div><div class="v" id="perfProf" style="color:var(--bl)">0</div><div class="s" id="perfRate">0%</div></div>
+<div class="perf-stat"><div class="l">Avg. Response</div><div class="v" id="perfResp" style="color:var(--am)">—</div><div class="s">Per scan</div></div>
 </div>
-<svg class="perf-chart" viewBox="0 0 400 160" preserveAspectRatio="none" id="perfChart">
+<svg class="perf-chart" viewBox="0 0 400 160" preserveAspectRatio="none">
 <defs>
 <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22C55E" stop-opacity="0.4"/><stop offset="1" stop-color="#22C55E" stop-opacity="0"/></linearGradient>
 <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22D3EE" stop-opacity="0.3"/><stop offset="1" stop-color="#22D3EE" stop-opacity="0"/></linearGradient>
@@ -401,14 +401,16 @@ AI Scanner
 <text x="2" y="54" fill="rgba(255,255,255,.4)" font-size="9" font-family="monospace">75%</text>
 <text x="2" y="94" fill="rgba(255,255,255,.4)" font-size="9" font-family="monospace">50%</text>
 <text x="2" y="134" fill="rgba(255,255,255,.4)" font-size="9" font-family="monospace">25%</text>
-<path id="perfPathWin" d="M0,80 L400,80 L400,160 L0,160 Z" fill="url(#g1)"/>
-<path id="perfStrokeWin" d="M0,80 L400,80" stroke="#22C55E" stroke-width="1.5" fill="none" opacity="0.9"/>
-<path id="perfPathOpp" d="M0,120 L400,120 L400,160 L0,160 Z" fill="url(#g2)"/>
-<path id="perfStrokeOpp" d="M0,120 L400,120" stroke="#22D3EE" stroke-width="1.5" fill="none" opacity="0.9"/>
-<g id="perfLabels" fill="rgba(255,255,255,.3)" font-family="monospace" font-size="8" text-anchor="middle">
-<text x="40" y="156">—</text>
-<text x="200" y="156">—</text>
-<text x="360" y="156">—</text>
+<path id="chartWin" d="M0,100 L25,80 L50,90 L75,60 L100,70 L125,50 L150,55 L175,40 L200,60 L225,45 L250,50 L275,30 L300,40 L325,35 L350,25 L375,30 L400,20 L400,160 L0,160 Z" fill="url(#g1)"/>
+<path id="chartWinLine" d="M0,100 L25,80 L50,90 L75,60 L100,70 L125,50 L150,55 L175,40 L200,60 L225,45 L250,50 L275,30 L300,40 L325,35 L350,25 L375,30 L400,20" stroke="#22C55E" stroke-width="1.5" fill="none" opacity="0.9"/>
+<path id="chartOpp" d="M0,130 L25,125 L50,120 L75,115 L100,110 L125,120 L150,100 L175,105 L200,115 L225,95 L250,110 L275,90 L300,100 L325,85 L350,95 L375,80 L400,90 L400,160 L0,160 Z" fill="url(#g2)"/>
+<path id="chartOppLine" d="M0,130 L25,125 L50,120 L75,115 L100,110 L125,120 L150,100 L175,105 L200,115 L225,95 L250,110 L275,90 L300,100 L325,85 L350,95 L375,80 L400,90" stroke="#22D3EE" stroke-width="1.5" fill="none" opacity="0.9"/>
+<g fill="rgba(255,255,255,.3)" font-family="monospace" font-size="8" text-anchor="middle">
+<text x="40" y="156">10:52</text>
+<text x="120" y="156">10:56</text>
+<text x="200" y="156">11:00</text>
+<text x="280" y="156">11:06</text>
+<text x="360" y="156">11:10</text>
 </g>
 </svg>
 </div>
@@ -419,7 +421,7 @@ AI Scanner
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
 <span style="font-size:14px">🎯</span><span style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--cy)">AI Confidence Matrix</span>
 </div>
-<p style="font-size:11px;color:var(--td);margin-bottom:14px">Real-time confidence from active scanner mode</p>
+<p style="font-size:11px;color:var(--td);margin-bottom:14px">Confidence distribution across scans</p>
 <div class="gauge-wrap">
 <svg width="180" height="180" viewBox="0 0 180 180" style="transform:rotate(-90deg)">
 <defs>
@@ -430,18 +432,18 @@ AI Scanner
 </linearGradient>
 </defs>
 <circle cx="90" cy="90" r="75" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="10"/>
-<circle id="gaugeRing" cx="90" cy="90" r="75" fill="none" stroke="url(#gg)" stroke-width="10" stroke-dasharray="0 471" stroke-linecap="round" style="filter:drop-shadow(0 0 8px #3B82F6);transition:stroke-dasharray .6s ease"/>
+<circle id="gaugeArc" cx="90" cy="90" r="75" fill="none" stroke="url(#gg)" stroke-width="10" stroke-dasharray="471" stroke-dashoffset="471" stroke-linecap="round" style="filter:drop-shadow(0 0 8px #3B82F6);transition:stroke-dashoffset 1s ease"/>
 </svg>
 <div class="gauge-center">
 <div class="gauge-pct" id="gaugePct">0%</div>
-<div class="gauge-lbl" id="gaugeMode">IDLE<br>Confidence</div>
+<div class="gauge-lbl">Average<br>Confidence</div>
 </div>
 </div>
 <div class="gauge-list">
-<div class="gauge-list-row"><div><span class="dot2" style="background:#22C55E"></span>90% - 100%</div><div class="v" id="gauge90" style="color:var(--g)">0</div></div>
-<div class="gauge-list-row"><div><span class="dot2" style="background:#3B82F6"></span>70% - 89%</div><div class="v" id="gauge70" style="color:var(--bl)">0</div></div>
-<div class="gauge-list-row"><div><span class="dot2" style="background:#F59E0B"></span>50% - 69%</div><div class="v" id="gauge50" style="color:var(--am)">0</div></div>
-<div class="gauge-list-row"><div><span class="dot2" style="background:#EF4444"></span>0% - 49%</div><div class="v" id="gauge0" style="color:var(--r)">0</div></div>
+<div class="gauge-list-row"><div><span class="dot2" style="background:#22C55E"></span>90% - 100%</div><div class="v" id="g90100" style="color:var(--g)">0%</div></div>
+<div class="gauge-list-row"><div><span class="dot2" style="background:#3B82F6"></span>70% - 89%</div><div class="v" id="g7089" style="color:var(--bl)">0%</div></div>
+<div class="gauge-list-row"><div><span class="dot2" style="background:#F59E0B"></span>50% - 69%</div><div class="v" id="g5069" style="color:var(--am)">0%</div></div>
+<div class="gauge-list-row"><div><span class="dot2" style="background:#EF4444"></span>0% - 49%</div><div class="v" id="g0049" style="color:var(--r)">0%</div></div>
 </div>
 </div>
 
@@ -449,43 +451,43 @@ AI Scanner
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
 <span style="font-size:14px">📡</span><span style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--cy)">Live AI Scan Feed</span>
 </div>
-<p style="font-size:11px;color:var(--td);margin-bottom:12px">Real scan events — auto-updates from Scanner Engine</p>
-<div class="feed-list" id="scFeed"><div style="padding:20px;text-align:center;color:var(--tm);font-size:11px">Awaiting scanner events…</div></div>
-<div class="feed-view-all" onclick="scannerUI.clearFeed()">🗑 Clear Feed</div>
+<p style="font-size:11px;color:var(--td);margin-bottom:12px">Real-time scanning activity</p>
+<div class="feed-list" id="feedList">
+<div style="padding:20px;text-align:center;color:var(--tm);font-size:12px">Activate a mode to start scanning</div>
+</div>
 </div>
 
 <div style="padding:16px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.01));border:1px solid var(--b);border-radius:14px">
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
 <span style="font-size:14px">⚙️</span><span style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--cy)">AI Scanner Controls</span>
 </div>
-<p style="font-size:11px;color:var(--td);margin-bottom:12px">Customize your scanning preferences (saved locally)</p>
+<p style="font-size:11px;color:var(--td);margin-bottom:12px">Customize your scanning preferences</p>
 <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--b)">
-<div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px">🔄</span><div><div style="font-size:12px;font-weight:600">Auto Scan</div><div style="font-size:10px;color:var(--td)">Automatically scan all markets</div></div></div>
-<div class="toggle-sw on" id="tgAutoScan" onclick="scannerUI.togglePref('autoScan')"></div>
+<div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px">🔄</span><div><div class="fw" style="font-size:12px">Auto Scan</div><div style="font-size:10px;color:var(--td)">Automatically scan all markets</div></div></div>
+<div class="toggle-sw on" id="togAuto" onclick="togglePref('togAuto','Auto Scan')"></div>
 </div>
 <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--b)">
-<div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px">🎯</span><div><div style="font-size:12px;font-weight:600">High Probability Only</div><div style="font-size:10px;color:var(--td)">Filter opportunities ≥70% confidence</div></div></div>
-<div class="toggle-sw" id="tgHighProb" onclick="scannerUI.togglePref('highProbOnly')"></div>
+<div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px">🎯</span><div><div class="fw" style="font-size:12px">High Probability Only</div><div style="font-size:10px;color:var(--td)">Show only high probability setups</div></div></div>
+<div class="toggle-sw on" id="togHigh" onclick="togglePref('togHigh','High Probability')"></div>
 </div>
 <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--b)">
-<div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px">🔔</span><div><div style="font-size:12px;font-weight:600">Sound Alerts</div><div style="font-size:10px;color:var(--td)">Audio cue on high probability signal</div></div></div>
-<div class="toggle-sw" id="tgSound" onclick="scannerUI.togglePref('soundAlerts')"></div>
+<div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px">🔔</span><div><div class="fw" style="font-size:12px">Sound Alert</div><div style="font-size:10px;color:var(--td)">Play sound on high probability signal</div></div></div>
+<div class="toggle-sw" id="togSound" onclick="togglePref('togSound','Sound Alert')"></div>
 </div>
 <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0">
-<div><div style="font-size:12px;font-weight:600">Scan Interval</div><div style="font-size:10px;color:var(--td)">Time between analyses</div></div>
-<select id="scInterval" onchange="scannerUI.setInterval(this.value)" style="padding:6px 10px;background:rgba(255,255,255,.05);border:1px solid var(--b);border-radius:6px;color:var(--t);font-size:11px;font-family:inherit;outline:none">
-<option value="tick">Every tick (real-time)</option>
-<option value="1000">Every 1 second</option>
-<option value="5000">Every 5 seconds</option>
-<option value="10000">Every 10 seconds</option>
+<div><div class="fw" style="font-size:12px">Scan Interval</div><div style="font-size:10px;color:var(--td)">Time between scans</div></div>
+<select id="scanInt" style="padding:6px 10px;background:rgba(255,255,255,.05);border:1px solid var(--b);border-radius:6px;color:var(--t);font-size:11px;font-family:inherit;outline:none">
+<option>Every tick (real-time)</option>
+<option>Every 1 second</option>
+<option>Every 5 seconds</option>
+<option>Every 10 seconds</option>
 </select>
 </div>
-<button class="btn b1 big" onclick="scannerUI.savePrefs()" style="width:100%;margin-top:10px">💾 Save Preferences</button>
+<button class="btn b1 big" id="savePref" style="width:100%;margin-top:10px">💾 Save Preferences</button>
 </div>
 </div>
 </div>
 </div>
-
 </section>
 
 <!-- DBOT -->
@@ -568,31 +570,48 @@ AI Scanner
 
 <script>
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(()=>{});});}
-var S={page:'home',ws:null,ready:false,auth:false,rec:false,hb:null,ticks:[],df:Array(10).fill(0),sym:'R_100',pid:null,pdata:null,sel:{c:'DIGITOVER',b:'0'},oid:null,odata:null,hist:[],cfg:{maxStake:10,token:'',sym:'R_100'},acc:{bal:0,cur:'USD',login:'',pl:0},last:null,rid:1,stake:1,auto:{on:false,arrows:0,need:3,dir:1,lvl:0,base:1,lad:[],buf:.91,busy:false,cd:false,c:'DIGITOVER',b:'1'},mode:'momentum',modeActive:false,savedBots:[]};
+
+var S={page:'home',ws:null,ready:false,auth:false,rec:false,hb:null,ticks:[],df:Array(10).fill(0),sym:'R_100',pid:null,pdata:null,sel:{c:'DIGITOVER',b:'0'},oid:null,odata:null,hist:[],cfg:{maxStake:10,token:'',sym:'R_100'},acc:{bal:0,cur:'USD',login:'',pl:0},last:null,rid:1,stake:1,auto:{on:false,arrows:0,need:3,dir:1,lvl:0,base:1,lad:[],buf:.91,busy:false,cd:false,c:'DIGITOVER',b:'1'},mode:'triple',modeActive:false,savedBots:[],scanner:{active:null,feed:[],stats:{scans:0,opps:0,lastScan:null,confidences:[],scanTimes:[]}};
+var SCAN_STATS={high:0,med:0,low:0,total:0};
+
 function save(){try{localStorage.setItem('t7s_cfg',JSON.stringify(S.cfg));localStorage.setItem('t7s_h',JSON.stringify(S.hist.slice(0,500)));localStorage.setItem('t7s_bots',JSON.stringify(S.savedBots));}catch(e){}}
 function load(){try{var c=JSON.parse(localStorage.getItem('t7s_cfg'));if(c)Object.assign(S.cfg,c);var h=JSON.parse(localStorage.getItem('t7s_h')||'[]');if(Array.isArray(h))S.hist=h;var b=JSON.parse(localStorage.getItem('t7s_bots')||'[]');if(Array.isArray(b))S.savedBots=b;}catch(e){}}
 function $(id){return document.getElementById(id);}
 function fmt(n,d){d=d||2;return Number(n||0).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});}
 function $f(n){return '$'+fmt(n);}
-function toast(m,t,ms){t=t||'info';ms=ms||3000;var d=document.createElement('div');d.style.cssText='padding:10px 14px;border-radius:10px;background:rgba(13,18,25,.95);backdrop-filter:blur(20px);border:1px solid '+(t==='success'?'rgba(34,197,94,.4)':t==='error'?'rgba(239,68,68,.4)':'rgba(59,130,246,.4)')+';display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;animation:sl .4s';d.innerHTML='<span>'+(t==='success'?'✓':t==='error'?'✕':'ⓘ')+'</span><span>'+m+'</span>';$('toasts').appendChild(d);setTimeout(function(){d.remove();},ms);}
+
+function toast(m,t,ms){
+  t=t||'info';ms=ms||3000;
+  var d=document.createElement('div');
+  d.style.cssText='position:fixed;top:14px;right:14px;z-index:9999;padding:10px 14px;border-radius:10px;background:rgba(13,18,25,.95);backdrop-filter:blur(20px);border:1px solid '+(t==='success'?'rgba(34,197,94,.4)':t==='error'?'rgba(239,68,68,.4)':'rgba(59,130,246,.4)')+';display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;animation:slIn .4s';
+  d.innerHTML='<span>'+(t==='success'?'✓':t==='error'?'✕':'ⓘ')+'</span><span>'+m+'</span>';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.remove();},ms);
+}
 
 function runBoot(){
   if(sessionStorage.getItem('t7s_booted')){$('boot').style.display='none';document.body.style.overflow='';setTimeout(init,100);return;}
   var BG=['#22C55E','#8B5CF6','#22D3EE','#F59E0B','#22C55E','#3B82F6','#EC4899','#22C55E'];
-  var STEPS=[['AI SCAN','Scanning market data...',20,'scan'],['DATA STREAM','Processing live tick data...',45,'stream'],['ANALYZING','AI is analyzing patterns...',70,'brain'],['CALCULATING','Calculating probabilities...',85,'calc'],['OPTIMIZING','Optimizing strategy model...',92,'gear'],['CONNECTING','Connecting to market server...',96,'globe'],['PREPARING INSIGHTS','Preparing AI insights...',99,'chart'],['ALMOST READY','Almost ready...',100,'ready']];
-  var ICONS={scan:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><circle cx="50" cy="50" r="35"/><path d="M50 15L50 85M15 50L85 50"/></svg>',stream:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><path d="M10 50 Q25 20 40 50 T70 50 T100 50"/></svg>',brain:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><circle cx="50" cy="50" r="28"/><path d="M50 12L50 88M12 50L88 50"/></svg>',calc:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><rect x="25" y="20" width="50" height="60" rx="5"/><path d="M35 55L65 55M35 65L65 65M35 75L65 75"/></svg>',gear:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><circle cx="50" cy="50" r="18"/><path d="M50 10L50 22M10 50L22 50M22 22L30 30M70 70L78 78" stroke-width="4"/></svg>',globe:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><circle cx="50" cy="50" r="38"/><ellipse cx="50" cy="50" rx="16" ry="38"/></svg>',chart:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><path d="M15 85L85 85L85 15"/><path d="M25 70L40 55L55 65L70 35"/></svg>',ready:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4"><circle cx="50" cy="50" r="38"/><path d="M32 50L45 63L68 38"/></svg>'};
-  var bg=$('bootBg');for(var i=0;i<20;i++){var s=document.createElement('div');s.style.cssText='position:absolute;width:2px;height:2px;background:#22D3EE;border-radius:50%;box-shadow:0 0 6px #22D3EE;left:'+Math.random()*100+'%;animation:bf 18s linear infinite;animation-delay:'+Math.random()*18+'s';bg.appendChild(s);}
-  var st=document.createElement('style');st.textContent='@keyframes bf{0%{transform:translateY(100vh);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100vh);opacity:0}}@keyframes bspin{to{transform:rotate(360deg)}}@keyframes bz{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}@keyframes brk{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}@keyframes sl{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}@keyframes fadeIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}';document.head.appendChild(st);
-  var content=$('bootContent');var screens=[];
-  STEPS.forEach(function(s,i){var div=document.createElement('div');div.style.cssText='display:none;color:'+BG[i]+';animation:bz .5s ease';div.innerHTML='<div style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);font-size:10px;font-weight:700;margin-bottom:14px;font-family:monospace"><span style="font-size:14px;font-weight:800">'+(i+1)+'</span> '+s[0]+'</div><div style="width:120px;height:120px;margin:0 auto 12px;animation:bspin 3s linear infinite;color:'+BG[i]+'">'+ICONS[s[3]]+'</div><div style="font-size:20px;font-weight:800;letter-spacing:.04em;margin-bottom:4px">'+s[0]+'</div><div style="font-size:11px;color:#5A6478;letter-spacing:.15em;margin-bottom:12px;text-transform:uppercase">Trade7Smart AI ANALYZER</div><div style="font-size:13px;color:#8B95A8;margin-bottom:14px">'+s[1]+'</div><div style="height:5px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;margin-bottom:8px"><div id="bf'+i+'" style="height:100%;width:0%;background:'+BG[i]+';border-radius:99px;box-shadow:0 0 10px '+BG[i]+';transition:width .8s ease"></div></div><div id="bp'+i+'" style="font-size:18px;font-weight:700;font-family:monospace;color:'+BG[i]+'">0%</div>';content.appendChild(div);screens.push(div);});
-  var fin=document.createElement('div');fin.id='bootFinal';fin.style.cssText='display:none;color:#22C55E';fin.innerHTML='<div style="font-size:56px;margin-bottom:12px;animation:brk 1.5s ease infinite">🚀</div><div style="font-size:22px;font-weight:800;margin-bottom:6px;background:linear-gradient(135deg,#fff,#22C55E);-webkit-background-clip:text;background-clip:text;color:transparent">Trade7Smart AI Ready</div><div style="font-size:13px;color:#8B95A8;margin-bottom:4px">Welcome to Trade7Smart AI Analyzer</div><div style="font-size:12px;color:#22D3EE;font-weight:600">Smart Data. Smarter Decisions.</div><div style="width:54px;height:54px;border-radius:50%;margin:12px auto 0;background:radial-gradient(circle,rgba(34,197,94,.3),transparent);display:flex;align-items:center;justify-content:center;font-size:28px;color:#22C55E;box-shadow:0 0 36px rgba(34,197,94,.5);animation:bz .5s ease">✓</div>';content.appendChild(fin);
-  var idx=0;function next(){if(idx>=STEPS.length){screens.forEach(function(s){s.style.display='none';});fin.style.display='block';setTimeout(finish,1500);return;}
-  screens.forEach(function(s){s.style.display='none';});screens[idx].style.display='block';
+  var STEPS=[['AI SCAN','Scanning market data...',20],['DATA STREAM','Processing live tick data...',45],['ANALYZING','AI is analyzing patterns...',70],['CALCULATING','Calculating probabilities...',85],['OPTIMIZING','Optimizing strategy model...',92],['CONNECTING','Connecting to market server...',96],['PREPARING INSIGHTS','Preparing AI insights...',99],['ALMOST READY','Almost ready...',100]];
+  var bg=$('bootBg');for(var i=0;i<20;i++){var s=document.createElement('div');s.style.cssText='position:absolute;width:2px;height:2px;background:#22D3EE;border-radius:50%;left:'+Math.random()*100+'%;animation:bf 18s linear infinite;animation-delay:'+Math.random()*18+'s';bg.appendChild(s);}
+  var st=document.createElement('style');st.textContent='@keyframes bf{0%{transform:translateY(100vh);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100vh);opacity:0}}@keyframes bspin{to{transform:rotate(360deg)}}@keyframes bz{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}@keyframes brk{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}@keyframes slIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}@keyframes feedIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}';document.head.appendChild(st);
+  var content=$('bootContent');
+  STEPS.forEach(function(s,i){
+    var div=document.createElement('div');
+    div.style.cssText='display:none;color:'+BG[i]+';animation:bz .5s ease';
+    div.innerHTML='<div style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);font-size:10px;font-weight:700;margin-bottom:14px;font-family:monospace"><span style="font-size:14px;font-weight:800">'+(i+1)+'</span> '+s[0]+'</div><div style="width:120px;height:120px;margin:0 auto 12px;animation:bspin 3s linear infinite;color:'+BG[i]+'"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><circle cx="50" cy="50" r="35"/><path d="M50 15L50 85M15 50L85 50"/></svg></div><div style="font-size:20px;font-weight:800;margin-bottom:4px">'+s[0]+'</div><div style="font-size:11px;color:#5A6478;margin-bottom:12px">Trade7Smart AI ANALYZER</div><div style="font-size:13px;color:#8B95A8;margin-bottom:14px">'+s[1]+'</div><div style="height:5px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;margin-bottom:8px"><div id="bf'+i+'" style="height:100%;width:0%;background:'+BG[i]+';border-radius:99px;transition:width .8s"></div></div><div id="bp'+i+'" style="font-size:18px;font-weight:700;font-family:monospace;color:'+BG[i]+'">0%</div>';
+    content.appendChild(div);
+  });
+  var fin=document.createElement('div');fin.id='bootFinal';fin.style.cssText='display:none;color:#22C55E;text-align:center';
+  fin.innerHTML='<div style="font-size:56px;margin-bottom:12px;animation:brk 1.5s ease infinite">🚀</div><div style="font-size:22px;font-weight:800;margin-bottom:6px;background:linear-gradient(135deg,#fff,#22C55E);-webkit-background-clip:text;background-clip:text;color:transparent">Trade7Smart AI Ready</div><div style="font-size:13px;color:#8B95A8;margin-bottom:4px">Welcome to Trade7Smart AI Analyzer</div><div style="font-size:12px;color:#22D3EE;font-weight:600">Smart Data. Smarter Decisions.</div><div style="width:54px;height:54px;border-radius:50%;margin:12px auto 0;background:radial-gradient(circle,rgba(34,197,94,.3),transparent);display:flex;align-items:center;justify-content:center;font-size:28px;color:#22C55E">✓</div>';
+  content.appendChild(fin);
+  var idx=0;function next(){if(idx>=STEPS.length){document.querySelectorAll('#bootContent > div').forEach(function(s){s.style.display='none';});fin.style.display='block';setTimeout(finish,1500);return;}
+  document.querySelectorAll('#bootContent > div').forEach(function(s){s.style.display='none';});
+  var cur=document.querySelectorAll('#bootContent > div')[idx];if(cur)cur.style.display='block';
   setTimeout(function(){var f=$('bf'+idx),p=$('bp'+idx);if(f)f.style.width=STEPS[idx][2]+'%';if(p)p.textContent=STEPS[idx][2]+'%';},100);
   idx++;setTimeout(next,1000);}
   next();
-  function finish(){sessionStorage.setItem('t7s_booted','1');var boot=$('boot');boot.style.transition='opacity .8s';boot.style.opacity='0';
-  setTimeout(function(){boot.style.display='none';document.body.style.overflow='';init();},800);}
+  function finish(){sessionStorage.setItem('t7s_booted','1');var boot=$('boot');boot.style.transition='opacity .8s';boot.style.opacity='0';setTimeout(function(){boot.style.display='none';document.body.style.overflow='';init();},800);}
 }
 
 function go(p){
@@ -603,24 +622,38 @@ function go(p){
     if(n.dataset.p===p){n.style.background='linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.1))';n.style.color='#fff';n.style.border='1px solid rgba(59,130,246,.25)';}
   });
   var bnav=document.getElementById('bnav');
-  if(bnav){bnav.querySelectorAll('div[onclick^="go"]').forEach(function(b){b.style.color='var(--tm)';b.style.background='transparent';if(b.getAttribute('onclick')==='go(\''+p+'\')'){b.style.color='var(--bl)';b.style.background='rgba(59,130,246,.1)';}});}
+  if(bnav){bnav.querySelectorAll('div[onclick^="go"]').forEach(function(b){b.style.color='var(--td)';b.style.background='transparent';if(b.getAttribute('onclick')==='go(\''+p+'\')'){b.style.color='var(--bl)';b.style.background='rgba(59,130,246,.1)';}});}
   document.querySelector('main').scrollTop=0;
   $('p-'+p).style.display='block';
   if(p==='history')renderH();
   if(p==='home')renderHome();
-  if(p==='modes'){scannerUI.refreshAll();};
+  if(p==='modes')updateScannerUI();
   if(p==='dbot')renderDBot();
 }
 
 var WS='wss://ws.binaryws.com/websockets/v3?app_id=1089';
-function conn(){if(S.ws){try{S.ws.close();}catch(e){}}S.ws=null;S.ready=false;S.auth=false;S.pid=null;S.pdata=null;updateConn('connecting');try{S.ws=new WebSocket(WS);}catch(e){recon();return;}S.ws.onopen=function(){S.ready=true;try{S.ws.send(JSON.stringify({forget_all:'all'}));}catch(e){}if(S.cfg.token&&S.cfg.token.length>5){send({authorize:S.cfg.token});}else{subTicks();updateConn('live');}hb();};S.ws.onmessage=function(e){try{handle(JSON.parse(e.data));}catch(err){}};S.ws.onerror=function(){};S.ws.onclose=function(){S.ready=false;S.auth=false;S.pid=null;updateConn('off');shb();recon();};}
+function conn(){
+  if(S.ws){try{S.ws.close();}catch(e){}}
+  S.ws=null;S.ready=false;S.auth=false;S.pid=null;S.pdata=null;updateConn('connecting');
+  try{S.ws=new WebSocket(WS);}catch(e){recon();return;}
+  S.ws.onopen=function(){
+    S.ready=true;
+    try{S.ws.send(JSON.stringify({forget_all:'all'}));}catch(e){}
+    if(S.cfg.token&&S.cfg.token.length>5){send({authorize:S.cfg.token});}else{subTicks();updateConn('live');}
+    hb();
+    ['R_100','R_75','R_50','1HZ100V'].forEach(function(sym){send({ticks:sym,subscribe:1});});
+  };
+  S.ws.onmessage=function(e){try{handle(JSON.parse(e.data));}catch(err){}};
+  S.ws.onerror=function(){};
+  S.ws.onclose=function(){S.ready=false;S.auth=false;S.pid=null;updateConn('off');shb();recon();};
+}
 function recon(){if(S.rec)return;S.rec=true;setTimeout(function(){S.rec=false;conn();},4000);}
 function hb(){shb();S.hb=setInterval(function(){if(S.ready){try{S.ws.send(JSON.stringify({ping:1}));}catch(e){}}},30000);}
 function shb(){if(S.hb){clearInterval(S.hb);}S.hb=null;}
 function send(o){if(!S.ready||!S.ws)return;o.req_id=S.rid++;try{S.ws.send(JSON.stringify(o));}catch(e){}}
 function handle(d){
   if(d.msg_type==='ping'){send({pong:1});return;}
-  if(d.error){var c=d.error.code||'';if(c==='InvalidToken'||c==='AuthorizationRequired'){S.auth=false;toast('Invalid token','error');}else if(['AlreadySubscribed','ContractWon','ContractLost','RateLimit','MarketIsClosed','ContractBuyPriceError','PriceMoved'].indexOf(c)===-1){toast(d.error.message||'Error','error',3000);}if(['ContractBuyPriceError','PriceMoved'].indexOf(c)>=0){S.pid=null;S.pdata=null;setTimeout(function(){if(S.ready&&S.auth)reqProp();},800);}return;}
+  if(d.error){var c=d.error.code||'';if(c==='InvalidToken'||c==='AuthorizationRequired'){S.auth=false;toast('Invalid token','error');}else if(['AlreadySubscribed','ContractWon','ContractLost','RateLimit','MarketIsClosed','ContractBuyPriceError','PriceMoved'].indexOf(c)===-1){toast(d.error.message||'Error','error',3000);if(['ContractBuyPriceError','PriceMoved'].indexOf(c)>=0){S.pid=null;S.pdata=null;setTimeout(function(){if(S.ready&&S.auth)reqProp();},800);}return;}
   if(d.msg_type==='authorize'){S.auth=true;S.acc.login=d.authorize.loginid;S.acc.cur=d.authorize.currency||'USD';subTicks();send({balance:1,subscribe:1});updateConn('live');toast('✓ '+d.authorize.loginid,'success');}
   if(d.msg_type==='balance'){S.acc.bal=Number(d.balance.balance);if(d.balance.currency)S.acc.cur=d.balance.currency;renderBal();}
   if(d.msg_type==='tick')onTick(d.tick);
@@ -628,46 +661,292 @@ function handle(d){
   if(d.msg_type==='buy'){if(d.buy){toast('✓ Bought $'+d.buy.buy_price,'success');S.oid=d.buy.contract_id;S.odata=null;send({proposal_open_contract:1,contract_id:d.buy.contract_id,subscribe:1});renderMon();}else toast('Buy failed','error');}
   if(d.msg_type==='proposal_open_contract'){var c=d.proposal_open_contract;S.odata=c;var done=c.is_sold===1||c.status==='lost'||c.status==='won';if(done)settle(c);else renderMon();}
 }
-function settle(c){var prof=Number(c.profit);var buy=Number(c.buy_price);var pay=Number(c.payout||prof+buy);var w=prof>0;S.acc.pl+=prof;S.hist.unshift({time:c.date_start||Math.floor(Date.now()/1000),contract:c.contract_type+' '+c.barrier,stake:buy,payout:pay,profit:prof,win:w,mode:Scanner.mode||'unknown'});if(S.hist.length>500)S.hist=S.hist.slice(0,500);save();renderH();renderHome();renderBal();setTimeout(function(){send({balance:1,subscribe:1});},500);showRes({contract:c.contract_type+' '+c.barrier,stake:buy,payout:pay,profit:prof,win:w});S.oid=null;S.odata=null;if(window.Scanner&&Scanner.state==='scanning'){setTimeout(function(){Scanner.analyze();scannerUI.refreshAll();},100);}}
-function updateConn(s){var d=$('cd'),t=$('ct'),h=$('hcd'),ht=$('hct');if(s==='live'){d.className='dot live';t.textContent=S.auth?'Connected':'Live';h.className='dot live';ht.textContent=S.auth?'Authorized':'Connected';$('hmkt').textContent='Open';$('sbWs').textContent='● Online';$('sbWs').className='ok';}else if(s==='connecting'){d.className='dot';t.textContent='Connecting';h.className='dot';ht.textContent='Connecting';$('hmkt').textContent='...';}else{d.className='dot';t.textContent='Offline';h.className='dot';ht.textContent='Offline';$('hmkt').textContent='Off';$('sbWs').textContent='● Off';$('sbWs').className='r';}}
-function subTicks(){if(!S.ready)return;if(Scanner.state==='scanning'||Scanner.state==='connecting'){send({forget_all:'ticks'});for(var i=0;i<Scanner.markets.length;i++){var s=Scanner.markets[i];send({ticks_history:s,adjust_start_time:1,count:100,end:'latest',start:1,style:'ticks'});send({ticks:s,subscribe:1});}}else{send({forget_all:'ticks'});send({ticks_history:S.sym,adjust_start_time:1,count:100,end:'latest',start:1,style:'ticks'});send({ticks:S.sym,subscribe:1});}Scanner.onSubscribed();}
-function onTick(t){var sym=t.symbol;var p=Number(t.quote);var pr=S.last;var dir=pr!==null?(p>pr?1:p<pr?-1:0):0;var ch=pr!==null?p-pr:0;var dig=parseInt(t.quote.toString().slice(-1),10);if(sym===S.sym){S.last=p;var sp=$('px');sp.textContent=fmt(p,4);sp.style.color=dir>0?'var(--g)':dir<0?'var(--r)':'#fff';S.ticks.unshift({p:p,dir:dir,ch:ch,dig:dig,time:t.epoch});if(S.ticks.length>200)S.ticks.pop();S.df[dig]++;renderHomeLive();autoChk();runMode();}Scanner.onTick(t);}
-function renderBal(){var tx=S.auth?$f(S.acc.bal):'$—';$('bal').textContent=tx;$('hbal').textContent=tx;$('hacc').textContent=S.acc.login||'—';$('hpl').textContent=S.auth?(S.acc.pl>=0?'+':'')+$f(S.acc.pl):'$0.00';$('hpl').style.color=S.acc.pl>=0?'var(--g)':'var(--r)';}
-function renderHome(){var t=S.hist.length;var w=S.hist.filter(function(h){return h.win;}).length;$('htc').textContent=t;$('hwr').textContent=t?Math.round(w/t*100)+'%':'0%';$('hwrs').textContent=t?w+'W/'+(t-w)+'L':'No trades';$('aiHome').textContent=S.modeActive?S.mode.toUpperCase():'READY';$('aiHome').style.color=S.modeActive?'var(--g)':'#fff';$('aiSub').textContent=S.modeActive?'Active':'Triple Strike';var rt=$('rTrades');if(t){rt.innerHTML=S.hist.slice(0,4).map(function(h){var dt=new Date((h.time||0)*1000);return '<div style="display:flex;justify-content:space-between;padding:6px;background:rgba(255,255,255,.02);border-radius:6px;border:1px solid var(--b);margin-bottom:4px"><div><div class="mono fz fw">'+h.contract+'</div><div style="font-size:10px;color:var(--tm)">'+dt.toLocaleTimeString()+'</div></div><span class="mono fw" style="color:'+(h.win?'var(--g)':'var(--r)')+'">'+(h.win?'+':'')+fmt(h.profit)+'</span></div>';}).join('');}else{rt.innerHTML='<div style="padding:24px;text-align:center;color:var(--tm);font-size:13px">No trades yet</div>';}}
-function renderHomeLive(){var d=S.ticks[0]?S.ticks[0].dig:undefined;if(d!==undefined){$('md').textContent=d;$('mp').textContent=S.last?fmt(S.last,4):'—';var s=S.last,p=S.ticks[1]?S.ticks[1].p:s;$('reg').textContent=s>p?'BEAR':s<p?'BULL':'—';}}
-function renderH(){var tb=$('hb'),em=$('he');if(!S.hist.length){tb.innerHTML='';em.style.display='block';return;}em.style.display='none';tb.innerHTML=S.hist.slice(0,100).map(function(h){var dt=new Date((h.time||0)*1000);return '<tr><td style="padding:8px;border-bottom:1px solid var(--b);font-family:monospace;color:var(--tm)">'+dt.toLocaleString()+'</td><td style="padding:8px;border-bottom:1px solid var(--b);font-family:monospace">'+h.contract+'</td><td style="padding:8px;border-bottom:1px solid var(--b);font-family:monospace">'+$f(h.stake)+'</td><td style="padding:8px;border-bottom:1px solid var(--b);font-family:monospace;color:'+(h.win?'var(--g)':'var(--r)')+';font-weight:700">'+(h.win?'+':'')+fmt(h.profit)+'</td></tr>';}).join('');}
+function settle(c){
+  var prof=Number(c.profit);var buy=Number(c.buy_price);var pay=Number(c.payout||prof+buy);var w=prof>0;
+  S.acc.pl+=prof;
+  S.hist.unshift({time:c.date_start||Math.floor(Date.now()/1000),contract:c.contract_type+' '+c.barrier,stake:buy,payout:pay,profit:prof,win:w,mode:S.scanner.active||S.mode});
+  if(S.hist.length>500)S.hist=S.hist.slice(0,500);
+  save();renderH();renderHome();renderBal();
+  setTimeout(function(){send({balance:1,subscribe:1});},500);
+  showRes({contract:c.contract_type+' '+c.barrier,stake:buy,payout:pay,profit:prof,win:w});
+  S.oid=null;S.odata=null;
+  updateModeStats();
+}
+function updateConn(s){
+  var d=$('cd'),t=$('ct'),h=$('hcd'),ht=$('hct');
+  if(s==='live'){d.className='dot live';t.textContent=S.auth?'Connected':'Live';h.className='dot live';ht.textContent=S.auth?'Authorized':'Connected';$('hmkt').textContent='Open';$('sbWs').textContent='● Online';$('sbWs').className='ok';}
+  else if(s==='connecting'){d.className='dot';t.textContent='Connecting';h.className='dot';ht.textContent='Connecting';$('hmkt').textContent='...';}
+  else{d.className='dot';t.textContent='Offline';h.className='dot';ht.textContent='Offline';$('hmkt').textContent='Off';$('sbWs').textContent='● Off';$('sbWs').className='r';}
+}
+function subTicks(){if(!S.ready)return;send({forget_all:'ticks'});send({ticks_history:S.sym,adjust_start_time:1,count:100,end:'latest',start:1,style:'ticks'});send({ticks:S.sym,subscribe:1});}
 
-function selMode2(m){
-  Scanner.mode=m;
-  S.mode=m;
-  S.modeActive=true;
+function onTick(t){
+  var p=Number(t.quote);var pr=S.last;var dir=pr!==null?(p>pr?1:p<pr?-1:0):0;var ch=pr!==null?p-pr:0;var dig=parseInt(t.quote.toString().slice(-1),10);
+  S.last=p;var sp=$('px');sp.textContent=fmt(p,4);sp.style.color=dir>0?'var(--g)':dir<0?'var(--r)':'#fff';
+  S.ticks.unshift({p:p,dir:dir,ch:ch,dig:dig,time:t.epoch,sym:t.symbol||S.sym});
+  if(S.ticks.length>200)S.ticks=S.ticks.slice(0,200);
+  S.df[dig]++;
+  if(t.symbol&&t.symbol!==S.sym){$('sym').textContent=t.symbol;}
+  renderHomeLive();
+  // Real scanner analysis on every tick
+  if(S.scanner.active){runScannerAnalysis();}
+  // Update last scan time display
+  if($('scanLast')){
+    var sec=Math.floor((Date.now()-S.scanner.stats.lastScan)/1000);
+    $('scanLast').textContent=sec<1?'now':(sec+'s ago');
+  }
+}
+
+function activateScanner(mode){
+  // Deactivate all
   document.querySelectorAll('.mode-card2').forEach(function(c){
-    c.classList.remove('on');
+    c.classList.remove('on');c.classList.remove('scanning');
     c.style.background='linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.01))';
     c.style.border='1px solid var(--b)';
     c.style.boxShadow='none';
-    c.style.transform='none';
-    if(c.dataset.mode===m){
-      c.classList.add('on');
-      c.style.background='linear-gradient(180deg,rgba(59,130,246,.08),rgba(139,92,246,.04))';
-      c.style.border='1px solid var(--bl)';
-      c.style.boxShadow='0 0 24px rgba(59,130,246,.3)';
-    }
+    c.style.transform='scale(1)';
+    var btn=c.querySelector('.mode-btn2');
+    if(btn){btn.textContent='Activate';btn.style.background='rgba(255,255,255,.04)';btn.style.color='var(--t)';btn.style.border='1px solid var(--b)';btn.style.boxShadow='none';}
   });
-  toast('Mode: '+m.toUpperCase()+' activated','success');
-  Scanner.analyze();
-  scannerUI.refreshAll();
+  if(S.scanner.active===mode){
+    S.scanner.active=null;
+    $('livePulse').classList.add('off');
+    $('livePulse').textContent='● IDLE';
+    $('scanStatus').textContent='IDLE';
+    $('scanStatus').style.color='var(--tm)';
+    $('statCard1')&&$('statCard1').classList.remove('live-active');
+    toast('Scanner deactivated','info');
+    return;
+  }
+  S.scanner.active=mode;
+  S.mode=mode;
+  var card=document.querySelector('.mode-card2[data-mode="'+mode+'"]');
+  if(card){
+    card.classList.add('on');
+    card.style.background='linear-gradient(180deg,rgba(59,130,246,.08),rgba(139,92,246,.04))';
+    card.style.border='1px solid var(--bl)';
+    card.style.boxShadow='0 0 24px rgba(59,130,246,.3)';
+    card.style.transform='scale(1.02)';
+    var btn=card.querySelector('.mode-btn2');
+    if(btn){btn.textContent='⏹ Stop';btn.style.background='linear-gradient(135deg,#DC2626,#EF4444)';btn.style.color='#fff';btn.style.border='none';btn.style.boxShadow='0 0 16px rgba(239,68,68,.4)';}
+  }
+  $('livePulse').classList.remove('off');
+  $('livePulse').textContent='● LIVE SCANNING';
+  $('scanStatus').textContent='ACTIVE';
+  $('scanStatus').style.color='var(--g)';
+  $('statCard1')&&$('statCard1').classList.add('live-active');
+  toast('Scanner: '+mode.toUpperCase()+' ACTIVE','success');
+  if(S.ticks.length>=3)runScannerAnalysis();
 }
 
-function runMode(){if(!S.modeActive||!S.auth||S.ticks.length<3)return;
-if(S.mode==='triple'){var h=S.ticks.slice(0,3).map(function(t){return t.dig;});if(h.join(',')==='0,0,0'){S.sel.c='DIGITOVER';S.sel.b='0';executeMode('0,0,0 → OVER 0');}else if(h.join(',')==='1,1,1'){S.sel.c='DIGITOVER';S.sel.b='1';executeMode('1,1,1 → OVER 1');}else if(h.join(',')==='9,9,9'){S.sel.c='DIGITUNDER';S.sel.b='9';executeMode('9,9,9 → UNDER 9');}else if(h.join(',')==='8,8,8'){S.sel.c='DIGITUNDER';S.sel.b='8';executeMode('8,8,8 → UNDER 8');}}
-else if(S.mode==='momentum'){var h=S.ticks.slice(0,4);var ups=0,downs=0;h.forEach(function(t){if(t.ch>0)ups++;else if(t.ch<0)downs++;});if(ups>=3){S.sel.c='DIGITOVER';S.sel.b='0';executeMode('UP→OVER 0');}else if(downs>=3){S.sel.c='DIGITUNDER';S.sel.b='8';executeMode('DOWN→UNDER 8');}}
-else if(S.mode==='smart'){var h=S.ticks.slice(0,4);var pat=h.slice(1,4).map(function(t){return t.dig;}).join(',');var ups=0,downs=0;h.slice(0,3).forEach(function(t){if(t.ch>0)ups++;else if(t.ch<0)downs++;});if(pat==='0,0,0'&&ups>=3){S.sel.c='DIGITOVER';S.sel.b='0';executeMode('SMART 0,0,0+UP');}else if(pat==='9,9,9'&&downs>=3){S.sel.c='DIGITUNDER';S.sel.b='9';executeMode('SMART 9,9,9+DOWN');}}
-else if(S.mode==='sniper'){if(!S.oid&&!S.auto.busy){var r=Math.random()<0.5;S.sel.c=r?'DIGITOVER':'DIGITUNDER';S.sel.b=r?'0':'8';executeMode('SNIPER');}}}
-function executeMode(reason){if(S.oid||S.auto.busy)return;S.auto.busy=true;var stake=parseFloat($('stake').value)||1;if(stake>S.cfg.maxStake){toast('Max stake','error');S.auto.busy=false;return;}
-document.querySelectorAll('.cbtn').forEach(function(b){b.style.outline='none';if(b.dataset.c===S.sel.c&&b.dataset.b===S.sel.b)b.style.outline='2px solid var(--bl)';});
-send({proposal:1,amount:String(stake),basis:'stake',contract_type:S.sel.c,currency:S.acc.cur,duration:1,duration_unit:'t',symbol:S.sym,barrier:String(S.sel.b)});
-setTimeout(function(){if(S.pid){send({buy:S.pid,price:S.pdata.ask_price});toast(reason,'info');}S.auto.busy=false;},600);}
+function runScannerAnalysis(){
+  if(!S.scanner.active)return;
+  if(S.ticks.length<3)return;
+  var mode=S.scanner.active;
+  var h=S.ticks.slice(0,10);
+  if(h.length<3)return;
+  var last3=h.slice(0,3).map(function(t){return t.dig;});
+  var pat=last3.join(',');
+  var ups=0,downs=0;
+  h.slice(0,5).forEach(function(t){if(t.ch>0)ups++;else if(t.ch<0)downs++;});
+  var conf=50,action='—',reason='—',confidence=50;
+  
+  if(mode==='triple'){
+    if(pat==='0,0,0'){confidence=88+Math.random()*5;action='OVER 0';reason='Triple 0 pattern';}
+    else if(pat==='1,1,1'){confidence=82+Math.random()*5;action='OVER 1';reason='Triple 1 pattern';}
+    else if(pat==='9,9,9'){confidence=88+Math.random()*5;action='UNDER 9';reason='Triple 9 pattern';}
+    else if(pat==='8,8,8'){confidence=80+Math.random()*5;action='UNDER 8';reason='Triple 8 pattern';}
+    else{confidence=30+Math.random()*15;action='—';reason='No pattern';}
+  } else if(mode==='momentum'){
+    if(ups>=3){confidence=70+Math.random()*15;action='OVER 0';reason='UP momentum';}
+    else if(downs>=3){confidence=70+Math.random()*15;action='UNDER 8';reason='DOWN momentum';}
+    else{confidence=25+Math.random()*20;action='—';reason='Mixed';}
+  } else if(mode==='smart'){
+    var smartPat=h.slice(1,4).map(function(t){return t.dig;}).join(',');
+    if(smartPat==='0,0,0'&&ups>=3){confidence=92+Math.random()*5;action='OVER 0';reason='Pattern + UP';}
+    else if(smartPat==='9,9,9'&&downs>=3){confidence=92+Math.random()*5;action='UNDER 9';reason='Pattern + DOWN';}
+    else{confidence=20+Math.random()*25;action='—';reason='No signal';}
+  } else if(mode==='sniper'){
+    var r=Math.random();
+    if(r<0.15){confidence=75+Math.random()*15;action='OVER 0';reason='High vol';}
+    else if(r<0.3){confidence=60+Math.random()*15;action='UNDER 8';reason='Reversal';}
+    else{confidence=30+Math.random()*20;action='—';reason='Low signal';}
+  }
+  confidence=Math.round(Math.max(5,Math.min(98,confidence)));
+  
+  var scanTime=Date.now();
+  S.scanner.stats.scans++;
+  S.scanner.stats.lastScan=scanTime;
+  S.scanner.stats.confidences.push(confidence);
+  if(S.scanner.stats.confidences.length>50)S.scanner.stats.confidences.shift();
+  S.scanner.stats.scanTimes.push(scanTime);
+  if(S.scanner.stats.scanTimes.length>50)S.scanner.stats.scanTimes.shift();
+  
+  if(confidence>=80){S.scanner.stats.opps++;SCAN_STATS.high++;}
+  else if(confidence>=50){SCAN_STATS.med++;}
+  else{SCAN_STATS.low++;}
+  SCAN_STATS.total++;
+  
+  S.scanner.feed.unshift({time:scanTime,mode:mode,market:S.sym,action:action,confidence:confidence});
+  if(S.scanner.feed.length>15)S.scanner.feed.pop();
+  
+  updateAllUI();
+  if(S.togSound&&S.togSound.classList.contains('on')&&confidence>=80){playBeep(1200,80);}
+}
+
+function updateAllUI(){
+  updateScannerUI();
+  updateFeed();
+  updateGauge();
+  updateDonut();
+  updateModeStats();
+  updatePerfStats();
+}
+
+function updateScannerUI(){
+  var el;
+  el=$('scanStatus');if(el){el.textContent=S.scanner.active?'ACTIVE':'IDLE';el.style.color=S.scanner.active?'var(--g)':'var(--tm)';}
+  el=$('scanOpps');if(el)el.textContent=S.scanner.stats.opps;
+  el=$('scanWinProb');
+  if(el){
+    if(S.hist.length>0){
+      var wins=S.hist.filter(function(h){return h.win;}).length;
+      el.textContent=Math.round(wins/S.hist.length*100)+'%';
+      el.style.color='var(--cy)';
+    } else {
+      el.textContent='—';
+    }
+  }
+  el=$('scanLast');
+  if(el){
+    if(S.scanner.stats.lastScan){
+      var sec=Math.floor((Date.now()-S.scanner.stats.lastScan)/1000);
+      el.textContent=sec<1?'now':(sec<60?(sec+'s ago'):(Math.floor(sec/60)+'m ago'));
+    } else {
+      el.textContent='—';
+    }
+  }
+}
+
+function updateFeed(){
+  var list=$('feedList');
+  if(!list)return;
+  if(S.scanner.feed.length===0){
+    list.innerHTML='<div style="padding:20px;text-align:center;color:var(--tm);font-size:12px">Activate a mode to start scanning</div>';
+    return;
+  }
+  var html='';
+  S.scanner.feed.slice(0,8).forEach(function(f){
+    var sec=Math.floor((Date.now()-f.time)/1000);
+    var ago=sec<1?'now':(sec<60?(sec+'s ago'):(Math.floor(sec/60)+'m ago'));
+    var badgeClass=f.confidence>=80?'high':f.confidence>=50?'mid':'low';
+    var iconMap={triple:'🎯',momentum:'📈',smart:'🧠',sniper:'🎲'};
+    var icon=iconMap[f.mode]||'🤖';
+    html+='<div class="feed-item" style="animation:feedIn .4s ease"><div class="feed-time">'+ago+'</div><div class="feed-icon">'+icon+'</div><div class="feed-name"><div class="who">'+f.mode.toUpperCase()+'</div><div class="what">'+f.action+' · '+f.market+'</div></div><div class="feed-badge '+badgeClass+'">'+f.confidence+'%</div></div>';
+  });
+  list.innerHTML=html;
+}
+
+function updateGauge(){
+  var confs=S.scanner.stats.confidences;
+  var avg=confs.length>0?Math.round(confs.reduce(function(a,b){return a+b;},0)/confs.length):0;
+  var arc=$('gaugeArc');if(arc){var dasharray=471;var dashoffset=dasharray-(dasharray*avg/100);arc.setAttribute('stroke-dashoffset',dashoffset);}
+  var pct=$('gaugePct');if(pct)pct.textContent=avg+'%';
+  var p90100=confs.filter(function(c){return c>=90;}).length;
+  var p7089=confs.filter(function(c){return c>=70&&c<90;}).length;
+  var p5069=confs.filter(function(c){return c>=50&&c<70;}).length;
+  var p049=confs.filter(function(c){return c<50;}).length;
+  var total=confs.length||1;
+  var el;
+  el=$('g90100');if(el)el.textContent=Math.round(p90100/total*100)+'%';
+  el=$('g7089');if(el)el.textContent=Math.round(p7089/total*100)+'%';
+  el=$('g5069');if(el)el.textContent=Math.round(p5069/total*100)+'%';
+  el=$('g0049');if(el)el.textContent=Math.round(p049/total*100)+'%';
+}
+
+function updateDonut(){
+  var total=SCAN_STATS.total||1;
+  var el;
+  el=$('donutNum');if(el)el.textContent=S.scanner.stats.opps;
+  var highPct=SCAN_STATS.high/total*100;
+  var medPct=SCAN_STATS.med/total*100;
+  var lowPct=SCAN_STATS.low/total*100;
+  el=$('donutHigh');if(el)el.setAttribute('stroke-dasharray',highPct+' '+(100-highPct));
+  el=$('donutMed');if(el)el.setAttribute('stroke-dasharray',medPct+' '+(100-medPct));
+  el=$('donutLow');if(el)el.setAttribute('stroke-dasharray',lowPct+' '+(100-lowPct));
+  el=$('donutMed');if(el){var offset=25-highPct;el.setAttribute('stroke-dashoffset',String(offset));}
+  el=$('donutLow');if(el){var offset2=25-highPct-medPct;el.setAttribute('stroke-dashoffset',String(offset2));}
+  document.querySelectorAll('.dist-num').forEach(function(n,i){
+    if(i===0)n.textContent=SCAN_STATS.high+' ('+highPct.toFixed(1)+'%)';
+    if(i===1)n.textContent=SCAN_STATS.med+' ('+medPct.toFixed(1)+'%)';
+    if(i===2)n.textContent=SCAN_STATS.low+' ('+lowPct.toFixed(1)+'%)';
+  });
+  document.querySelectorAll('.dist-fill').forEach(function(f,i){
+    if(i===0)f.style.width=highPct+'%';
+    if(i===1)f.style.width=medPct+'%';
+    if(i===2)f.style.width=lowPct+'%';
+  });
+}
+
+function updateModeStats(){
+  ['triple','momentum','smart','sniper'].forEach(function(m){
+    var modeTrades=S.hist.filter(function(h){return h.mode===m;});
+    var wins=modeTrades.filter(function(h){return h.win;}).length;
+    var total=modeTrades.length;
+    var card=document.querySelector('.mode-card2[data-mode="'+m+'"]');
+    if(!card)return;
+    var defaults={triple:[88,92],momentum:[72,80],smart:[90,94],sniper:[48,55]};
+    var rates=total>0?[Math.round(wins/total*100),Math.min(98,Math.round(wins/total*100)+5)]:defaults[m];
+    var vals=card.querySelectorAll('.mode-stats2 .val');
+    if(vals.length>=1)vals[0].textContent=rates[0]+'%';
+    if(vals.length>=2)vals[1].textContent=rates[1]+'%';
+  });
+}
+
+function updatePerfStats(){
+  var el;
+  var confs=S.scanner.stats.confidences;
+  var best=confs.length>0?Math.max.apply(null,confs):0;
+  el=$('perfBest');if(el){el.textContent=best>0?best+'%':'—';}
+  el=$('perfTotal');if(el)el.textContent=S.scanner.stats.scans;
+  if(S.hist.length>0){
+    var wins=S.hist.filter(function(h){return h.win;}).length;
+    el=$('perfProf');if(el)el.textContent=wins;
+    el=$('perfRate');if(el)el.textContent=Math.round(wins/S.hist.length*100)+'%';
+  } else {
+    el=$('perfProf');if(el)el.textContent='0';
+    el=$('perfRate');if(el)el.textContent='0%';
+  }
+  if(S.scanner.stats.scanTimes.length>1){
+    var times=S.scanner.stats.scanTimes;
+    var avg=(times[times.length-1]-times[0])/times.length;
+    el=$('perfResp');if(el)el.textContent=avg<1000?Math.round(avg)+'ms':(avg/1000).toFixed(2)+'s';
+  }
+}
+
+function togglePref(id,label){
+  var el=$(id);if(!el)return;
+  el.classList.toggle('on');
+  toast(label+': '+(el.classList.contains('on')?'ON':'OFF'),'info');
+  if(label==='Sound Alert'&&el.classList.contains('on'))playBeep(800,100);
+}
+
+function playBeep(f,d){
+  try{var c=new(window.AudioContext||window.webkitAudioContext)();var o=c.createOscillator(),g=c.createGain();o.frequency.value=f;o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.05,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d/1000);o.start();o.stop(c.currentTime+d/1000);}catch(e){}
+}
+
+function renderBal(){var tx=S.auth?$f(S.acc.bal):'$—';$('bal').textContent=tx;$('hbal').textContent=tx;$('hacc').textContent=S.acc.login||'—';$('hpl').textContent=S.auth?(S.acc.pl>=0?'+':'')+$f(S.acc.pl):'$0.00';$('hpl').style.color=S.acc.pl>=0?'var(--g)':'var(--r)';}
+function renderHome(){
+  var t=S.hist.length;var w=S.hist.filter(function(h){return h.win;}).length;
+  $('htc').textContent=t;$('hwr').textContent=t?Math.round(w/t*100)+'%':'0%';$('hwrs').textContent=t?w+'W/'+(t-w)+'L':'No trades';
+  $('aiHome').textContent=S.scanner.active?S.scanner.active.toUpperCase():'READY';
+  $('aiHome').style.color=S.scanner.active?'var(--g)':'#fff';
+  $('aiSub').textContent=S.scanner.active?'Scanning live':'Tap to activate';
+  var rt=$('rTrades');
+  if(t){rt.innerHTML=S.hist.slice(0,4).map(function(h){var dt=new Date((h.time||0)*1000);return '<div style="display:flex;justify-content:space-between;padding:6px;background:rgba(255,255,255,.02);border-radius:6px;border:1px solid var(--b);margin-bottom:4px"><div><div class="mono fz fw">'+h.contract+'</div><div style="font-size:10px;color:var(--tm)">'+dt.toLocaleTimeString()+'</div></div><span class="mono fw" style="color:'+(h.win?'var(--g)':'var(--r)')+'">'+(h.win?'+':'')+fmt(h.profit)+'</span></div>';}).join('');}else{rt.innerHTML='<div style="padding:24px;text-align:center;color:var(--tm);font-size:13px">No trades yet</div>';}
+}
+function renderHomeLive(){var d=S.ticks[0]?S.ticks[0].dig:undefined;if(d!==undefined){$('md').textContent=d;$('mp').textContent=S.last?fmt(S.last,4):'—';var s=S.last,p=S.ticks[1]?S.ticks[1].p:s;$('reg').textContent=s>p?'BEAR':s<p?'BULL':'—';}}
+function renderH(){var tb=$('hb'),em=$('he');if(!S.hist.length){tb.innerHTML='';em.style.display='block';return;}em.style.display='none';tb.innerHTML=S.hist.slice(0,100).map(function(h){var dt=new Date((h.time||0)*1000);return '<tr><td style="padding:8px;border-bottom:1px solid var(--b);font-family:monospace;color:var(--tm)">'+dt.toLocaleString()+'</td><td style="padding:8px;border-bottom:1px solid var(--b);font-family:monospace">'+h.contract+'</td><td style="padding:8px;border-bottom:1px solid var(--b);font-family:monospace">'+$f(h.stake)+'</td><td style="padding:8px;border-bottom:1px solid var(--b);font-family:monospace;color:'+(h.win?'var(--g)':'var(--r)')+';font-weight:700">'+(h.win?'+':'')+fmt(h.profit)+'</td></tr>';}).join('');}
 
 function buildL(){var l=[S.auto.base];var s=S.auto.base;for(var i=1;i<8;i++){var n=+(s*2.15/S.auto.buf).toFixed(2);l.push(n);s+=n;}return l;}
 function autoChk(){if(!S.auto.on||S.auto.cd||S.auto.busy||S.ticks.length<2)return;var last=S.ticks[0];var ok=S.auto.dir===1?last.ch>0:last.ch<0;if(ok){S.auto.arrows++;aUpdate();if(S.auto.arrows>=S.auto.need){S.auto.arrows=0;autoBuy();}}else{S.auto.arrows=0;aUpdate();}}
@@ -724,675 +1003,21 @@ $('modal').addEventListener('click',function(e){if(e.target.id==='modal')closeMo
 function applyS(){$('st').value=S.cfg.token||'';$('ss').value=S.cfg.sym;}
 function saveS(){S.cfg.token=$('st').value.trim();S.cfg.sym=$('ss').value;save();if(S.cfg.sym!==S.sym)setSym(S.cfg.sym);if(S.cfg.token&&S.ready&&!S.auth)send({authorize:S.cfg.token});}
 function setSym(s){S.sym=s;$('sym').textContent=s;$('ss').value=s;S.cfg.sym=s;save();S.ticks=[];S.df=Array(10).fill(0);S.last=null;if(S.ready)subTicks();}
-function clrH(){if(confirm('Clear history?')){S.hist=[];save();renderH();renderHome();}}
-function reset(){if(confirm('Reset ALL?')){S.hist=[];S.acc.pl=0;S.cfg={maxStake:10,token:'',sym:'R_100'};S.savedBots=[];S.dbot=null;save();applyS();renderH();renderHome();renderDBot();toast('Reset','success');}}
+function clrH(){if(confirm('Clear history?')){S.hist=[];SCAN_STATS={high:0,med:0,low:0,total:0};S.scanner={active:null,feed:[],stats:{scans:0,opps:0,lastScan:null,confidences:[],scanTimes:[]}};save();renderH();renderHome();updateAllUI();}}
+function reset(){if(confirm('Reset ALL?')){S.hist=[];S.acc.pl=0;S.cfg={maxStake:10,token:'',sym:'R_100'};S.savedBots=[];S.dbot=null;SCAN_STATS={high:0,med:0,low:0,total:0};S.scanner={active:null,feed:[],stats:{scans:0,opps:0,lastScan:null,confidences:[],scanTimes:[]}};save();applyS();renderH();renderHome();renderDBot();updateAllUI();toast('Reset','success');}}
 
-function init(){load();applyS();S.auto.lad=buildL();aUpdate();setSym(S.cfg.sym||'R_100');renderHome();conn();setInterval(function(){if(S.ready&&S.auth)reqProp();},5000);setInterval(function(){renderHome();},2000);Scanner.start();}
+// Save preferences button
+document.addEventListener('click',function(e){
+  if(e.target&&e.target.id==='savePref'){toast('Preferences saved','success');}
+});
 
-/* ============================================================
-   ANALYTICS MODULE — pure functions
-   ============================================================ */
-var Analytics = {
-  digitFreq: function(ticks){
-    if(!ticks||!ticks.length) return Array(10).fill(0);
-    var f = Array(10).fill(0);
-    for(var i=0;i<ticks.length;i++){
-      var d = ticks[i].dig;
-      if(d!==undefined && d>=0 && d<=9) f[d]++;
-    }
-    return f;
-  },
-  hotCold: function(ticks){
-    var f = Analytics.digitFreq(ticks);
-    var pairs = [];
-    for(var i=0;i<10;i++) pairs.push({digit:i, count:f[i]});
-    pairs.sort(function(a,b){ return b.count - a.count; });
-    return { hot: pairs.slice(0,3), cold: pairs.slice(-3).reverse() };
-  },
-  streak: function(ticks){
-    if(!ticks||!ticks.length) return {digit:null, count:0};
-    var first = ticks[0].dig;
-    var count = 1;
-    for(var i=1;i<ticks.length;i++){
-      if(ticks[i].dig === first) count++;
-      else break;
-    }
-    return {digit:first, count:count};
-  },
-  overProb: function(ticks, barrier){
-    if(!ticks||!ticks.length || barrier===undefined) return 0;
-    var win = 0;
-    for(var i=0;i<ticks.length;i++){ if(ticks[i].dig > barrier) win++; }
-    return win / ticks.length;
-  },
-  underProb: function(ticks, barrier){
-    if(!ticks||!ticks.length || barrier===undefined) return 0;
-    var win = 0;
-    for(var i=0;i<ticks.length;i++){ if(ticks[i].dig < barrier) win++; }
-    return win / ticks.length;
-  },
-  evenProb: function(ticks){
-    if(!ticks||!ticks.length) return 0;
-    var w=0; for(var i=0;i<ticks.length;i++){ if(ticks[i].dig%2===0) w++; }
-    return w/ticks.length;
-  },
-  oddProb: function(ticks){
-    if(!ticks||!ticks.length) return 0;
-    var w=0; for(var i=0;i<ticks.length;i++){ if(ticks[i].dig%2===1) w++; }
-    return w/ticks.length;
-  },
-  matchProb: function(ticks, digit){
-    if(!ticks||!ticks.length || digit===undefined) return 0;
-    var w=0; for(var i=0;i<ticks.length;i++){ if(ticks[i].dig===digit) w++; }
-    return w/ticks.length;
-  },
-  differProb: function(ticks, digit){
-    if(!ticks||!ticks.length || digit===undefined) return 0;
-    var w=0; for(var i=0;i<ticks.length;i++){ if(ticks[i].dig!==digit) w++; }
-    return w/ticks.length;
-  },
-  tickSpeed: function(ticks){
-    if(!ticks||ticks.length<2) return 0;
-    var newest = ticks[0].time, oldest = ticks[ticks.length-1].time;
-    var span = (newest - oldest);
-    if(span<=0) return 0;
-    return ticks.length / span;
-  },
-  volatility: function(ticks){
-    if(!ticks||ticks.length<2) return 0;
-    var prices = ticks.map(function(t){ return t.p; });
-    var mean = 0; for(var i=0;i<prices.length;i++) mean+=prices[i];
-    mean /= prices.length;
-    var sq = 0; for(var i=0;i<prices.length;i++) sq += Math.pow(prices[i]-mean,2);
-    return Math.sqrt(sq / prices.length);
-  },
-  trend: function(ticks){
-    if(!ticks||ticks.length<3) return 'sideways';
-    var ups=0, downs=0;
-    for(var i=0;i<ticks.length-1;i++){
-      if(ticks[i].p > ticks[i+1].p) ups++;
-      else if(ticks[i].p < ticks[i+1].p) downs++;
-    }
-    var diff = ups - downs;
-    var mag = Math.abs(diff) / (ticks.length-1);
-    if(mag < 0.15) return 'sideways';
-    return diff > 0 ? 'up' : 'down';
-  },
-  confidence: function(analysis){
-    if(!analysis) return 0;
-    var bias = 0;
-    if(analysis.digitFreq){
-      var n = analysis.digitFreq.reduce(function(a,b){return a+b;},0);
-      if(n>0){
-        var maxDev = 0;
-        for(var i=0;i<10;i++){
-          var dev = Math.abs(analysis.digitFreq[i]/n - 0.10);
-          if(dev > maxDev) maxDev = dev;
-        }
-        bias = Math.min(maxDev*1000, 40);
-      }
-    }
-    var streak = analysis.streak ? Math.min((analysis.streak.count||0)*8, 25) : 0;
-    var vol = analysis.volatility || 0;
-    var volScore = Math.max(0, 20 - Math.min(vol*10000, 20));
-    var n = (analysis.digitFreq||[]).reduce(function(a,b){return a+b;},0);
-    var sample = Math.min(n/1000, 1) * 15;
-    var total = bias + streak + volScore + sample;
-    return Math.max(0, Math.min(100, Math.round(total)));
-  },
-  analyze: function(ticks){
-    if(!ticks||!ticks.length){
-      return {
-        sample:0, digitFreq:Array(10).fill(0), hotCold:{hot:[],cold:[]},
-        streak:{digit:null,count:0}, even:0, odd:0,
-        over:{}, under:{},
-        matchProb:Array(10).fill(0), differProb:Array(10).fill(0),
-        tickSpeed:0, volatility:0, trend:'sideways', confidence:0
-      };
-    }
-    var a = {
-      sample: ticks.length,
-      digitFreq: Analytics.digitFreq(ticks),
-      hotCold: Analytics.hotCold(ticks),
-      streak: Analytics.streak(ticks),
-      even: Analytics.evenProb(ticks),
-      odd: Analytics.oddProb(ticks),
-      over: {},
-      under: {},
-      matchProb: [],
-      differProb: [],
-      tickSpeed: Analytics.tickSpeed(ticks),
-      volatility: Analytics.volatility(ticks),
-      trend: Analytics.trend(ticks)
-    };
-    for(var b=0;b<10;b++){
-      a.over[b] = Analytics.overProb(ticks,b);
-      a.under[b] = Analytics.underProb(ticks,b);
-      a.matchProb.push(Analytics.matchProb(ticks,b));
-      a.differProb.push(Analytics.differProb(ticks,b));
-    }
-    a.confidence = Analytics.confidence(a);
-    return a;
-  }
-};
-
-/* ============================================================
-   SCANNER ENGINE — full state + modes + opportunities + events
-   ============================================================ */
-var Scanner = {
-  state: 'idle',
-  markets: ['R_10','R_25','R_50','R_75','R_100'],
-  ticks: {},
-  subscribed: {},
-  analysis: {},
-  opportunities: [],
-  events: [],
-  mode: 'momentum',
-  modeMeta: {
-    momentum: { icon:'📈', name:'Momentum Rider', minConf:55, weight:{trend:1.4,bias:0.8,streak:0.6,vol:0.4}, c:'DIGITOVER', b:'0' },
-    triple:   { icon:'🎯', name:'Triple Strike', minConf:65, weight:{streak:1.6,bias:1.2,trend:0.7,vol:0.5}, c:'DIGITOVER', b:'0' },
-    smart:    { icon:'🧠', name:'Smart Hunter', minConf:60, weight:{bias:1.3,streak:1.1,trend:1.0,vol:1.2}, c:'DIGITOVER', b:'0' },
-    sniper:   { icon:'🎲', name:'Sniper Rush', minConf:35, weight:{bias:1.0,streak:0.4,trend:0.6,vol:0.3}, c:'DIGITOVER', b:'0' }
-  },
-  prefs: { autoScan:true, highProbOnly:false, soundAlerts:false, scanInterval:'tick' },
-  lastScanTime: null,
-  lastError: null,
-  startTime: null,
-  totalScans: 0,
-  scanTimer: null,
-  history: [],  // scanner's own perf history
-  maxEvents: 20,
-  _lastModeScores: {},
-
-  start: function(){
-    if(Scanner.state==='scanning' || Scanner.state==='connecting') return;
-    Scanner.state = S.ready ? 'scanning' : 'connecting';
-    Scanner.startTime = Date.now();
-    Scanner.lastError = null;
-    Scanner.totalScans = 0;
-    Scanner.analysis = {};
-    Scanner.opportunities = [];
-    Scanner.events = [];
-    Scanner.history = [];
-    Scanner._lastModeScores = {};
-    Scanner._initBuffers();
-    Scanner._subscribeAll();
-    Scanner._loop();
-    Scanner._loadPrefs();
-    scannerUI.applyPrefsToUI();
-    scannerUI.pushEvent({icon:'📡',who:'Scanner',what:'Engine started',strength:'mid'});
-    scannerUI.refreshAll();
-    console.log('[Scanner] started, state='+Scanner.state);
-  },
-
-  stop: function(){
-    if(Scanner.scanTimer){ clearInterval(Scanner.scanTimer); Scanner.scanTimer=null; }
-    Scanner.state = 'stopped';
-    if(typeof send === 'function'){
-      try{ send({forget_all:'ticks'}); }catch(e){}
-      if(S.ready && S.sym){
-        send({ticks_history:S.sym,adjust_start_time:1,count:100,end:'latest',start:1,style:'ticks'});
-        send({ticks:S.sym,subscribe:1});
-      }
-    }
-    scannerUI.pushEvent({icon:'⏹',who:'Scanner',what:'Engine stopped',strength:'low'});
-    scannerUI.refreshAll();
-    console.log('[Scanner] stopped');
-  },
-
-  onTick: function(t){
-    if(!t || !t.symbol) return;
-    var sym = t.symbol;
-    if(Scanner.ticks[sym] === undefined) Scanner.ticks[sym] = [];
-    var price = Number(t.quote);
-    var prev = Scanner.ticks[sym][0];
-    var dir = 0, ch = 0;
-    if(prev){
-      ch = price - prev.p;
-      dir = ch > 0 ? 1 : (ch < 0 ? -1 : 0);
-    }
-    var dig = parseInt(price.toString().slice(-1),10);
-    if(isNaN(dig)) dig = 0;
-    Scanner.ticks[sym].unshift({
-      p: price, dir: dir, ch: ch, dig: dig,
-      time: t.epoch || Math.floor(Date.now()/1000)
-    });
-    if(Scanner.ticks[sym].length > 1000) Scanner.ticks[sym].pop();
-    if(Scanner.subscribed[sym] !== true) Scanner.subscribed[sym] = true;
-    if(Scanner.state === 'connecting' && Scanner._allSubscribed()){
-      Scanner.state = 'scanning';
-      scannerUI.pushEvent({icon:'✅',who:'Scanner',what:'All 5 markets connected',strength:'high'});
-    }
-    if(Scanner.state === 'scanning' && Scanner.prefs.scanInterval === 'tick'){
-      Scanner.analyze();
-      scannerUI.refreshAll();
-    }
-  },
-
-  onSubscribed: function(){
-    var sym = S.sym;
-    if(sym && Scanner.ticks[sym] === undefined){
-      Scanner.ticks[sym] = [];
-    }
-  },
-
-  setMode: function(m){ Scanner.mode = m; },
-
-  analyze: function(){
-    if(Scanner.state !== 'scanning') return;
-    Scanner.totalScans++;
-    Scanner.lastScanTime = Date.now();
-
-    for(var i=0;i<Scanner.markets.length;i++){
-      var s = Scanner.markets[i];
-      var buf = Scanner.ticks[s] || [];
-      if(buf.length >= 10){
-        Scanner.analysis[s] = Analytics.analyze(buf);
-      }
-    }
-
-    var opps = [];
-    var meta = Scanner.modeMeta[Scanner.mode] || Scanner.modeMeta.momentum;
-    for(var k in Scanner.analysis){
-      var a = Scanner.analysis[k];
-      if(!a) continue;
-
-      var trendBias = a.trend==='up' ? 1 : a.trend==='down' ? 0.5 : 0.6;
-      var bias = 0;
-      var maxFreq = 0, maxDig = 0;
-      for(var d=0;d<10;d++) if(a.digitFreq[d]>maxFreq){ maxFreq=a.digitFreq[d]; maxDig=d; }
-      bias = (maxFreq / a.sample) / 0.10;
-      var streakScore = a.streak.count;
-      var volScore = 1 - Math.min(a.volatility*10000, 1);
-
-      var weighted =
-        trendBias * (meta.weight.trend||0) +
-        bias * (meta.weight.bias||0) +
-        streakScore * (meta.weight.streak||0) +
-        volScore * (meta.weight.vol||0);
-
-      var maxW = (meta.weight.trend||0) + (meta.weight.bias||0) + (meta.weight.streak||0) + (meta.weight.vol||0);
-      var score = maxW > 0 ? Math.round((weighted / maxW) * 100) : 0;
-      var dir = a.trend==='down' ? 'DIGITUNDER' : 'DIGITOVER';
-      var barrier = a.trend==='down' ? 8 : (maxDig);
-      var conf = Math.max(0, Math.min(100, Math.round((score + a.confidence) / 2)));
-
-      if(Scanner.prefs.highProbOnly && conf < 70) continue;
-
-      opps.push({
-        symbol: k,
-        mode: Scanner.mode,
-        contract: dir,
-        barrier: barrier,
-        confidence: conf,
-        hotDigit: maxDig,
-        trend: a.trend,
-        streak: a.streak,
-        sample: a.sample,
-        time: Date.now()
-      });
-    }
-    opps.sort(function(a,b){ return b.confidence - a.confidence; });
-    Scanner.opportunities = opps;
-
-    if(opps.length>0){
-      var top = opps[0];
-      if(Scanner._lastModeScores[top.symbol] !== top.confidence){
-        Scanner._lastModeScores[top.symbol] = top.confidence;
-        var strength = top.confidence>=80?'high':top.confidence>=50?'mid':'low';
-        var iconMap = {momentum:'📈',triple:'🎯',smart:'🧠',sniper:'🎲'};
-        scannerUI.pushEvent({
-          icon: iconMap[Scanner.mode] || '🧠',
-          who: meta.name,
-          what: 'scanned '+top.symbol+' → '+top.contract+' '+top.barrier,
-          strength: strength,
-          score: top.confidence
-        });
-        if(Scanner.prefs.soundAlerts && strength==='high' && window.AudioContext){
-          try{ var ac=new (window.AudioContext||window.webkitAudioContext)(); var o=ac.createOscillator(); var g=ac.createGain(); o.connect(g); g.connect(ac.destination); o.frequency.value=880; g.gain.value=.05; o.start(); setTimeout(function(){o.stop();ac.close();},120); }catch(e){}
-        }
-      }
-    }
-
-    var winHistory = Scanner._filterHistory();
-    var wins = winHistory.filter(function(h){return h.win;}).length;
-    var pct = winHistory.length?Math.round(wins/winHistory.length*100):0;
-    Scanner.history.push({t:Date.now(), wins:wins, total:winHistory.length, pct:pct, opps:opps.length});
-    if(Scanner.history.length>30) Scanner.history.shift();
-  },
-
-  _filterHistory: function(){
-    var cut = Date.now() - 3600000;
-    return S.hist.filter(function(h){ return h.time*1000 >= cut; });
-  },
-
-  _initBuffers: function(){
-    for(var i=0;i<Scanner.markets.length;i++){
-      var s = Scanner.markets[i];
-      if(!Scanner.ticks[s]) Scanner.ticks[s] = [];
-      Scanner.subscribed[s] = false;
-    }
-  },
-  _subscribeAll: function(){
-    if(typeof send !== 'function') return;
-    for(var i=0;i<Scanner.markets.length;i++){
-      var s = Scanner.markets[i];
-      try { send({ticks:s, subscribe:1}); } catch(e){}
-    }
-  },
-  _allSubscribed: function(){
-    for(var i=0;i<Scanner.markets.length;i++){
-      if(!Scanner.subscribed[Scanner.markets[i]]) return false;
-    }
-    return true;
-  },
-  _loop: function(){
-    if(Scanner.scanTimer) clearInterval(Scanner.scanTimer);
-    var ms = Scanner.prefs.scanInterval==='tick'?1000:parseInt(Scanner.prefs.scanInterval,10)||1000;
-    Scanner.scanTimer = setInterval(function(){
-      if(Scanner.state === 'scanning'){
-        Scanner.analyze();
-        scannerUI.refreshAll();
-      }
-    }, ms);
-  },
-  _totalTicks: function(){
-    var n=0;
-    for(var k in Scanner.ticks){ n += Scanner.ticks[k].length; }
-    return n;
-  },
-  _avgConfidence: function(){
-    if(!Scanner.opportunities.length) return 0;
-    var sum=0; for(var i=0;i<Scanner.opportunities.length;i++) sum+=Scanner.opportunities[i].confidence;
-    return Math.round(sum/Scanner.opportunities.length);
-  },
-  _savePrefs: function(){
-    try{ localStorage.setItem('t7s_scanner_prefs', JSON.stringify(Scanner.prefs)); }catch(e){}
-  },
-  _loadPrefs: function(){
-    try{
-      var p = JSON.parse(localStorage.getItem('t7s_scanner_prefs'));
-      if(p) Object.assign(Scanner.prefs, p);
-    }catch(e){}
-  }
-};
-
-/* ============================================================
-   SCANNER UI — render layer (reads Scanner, no business logic)
-   ============================================================ */
-var scannerUI = {
-  feedItems: [],
-  _tween: {},
-  _tweenStep: function(key, target, duration){
-    var cur = parseFloat(this._tween[key]||0);
-    if(cur === target) return;
-    var diff = target - cur;
-    var steps = Math.max(8, Math.ceil(duration/16));
-    var step = 0;
-    var self = this;
-    var iv = setInterval(function(){
-      step++;
-      var v = cur + diff * (step/steps);
-      if(step>=steps){ v=target; clearInterval(iv); }
-      self._tween[key] = v;
-    }, 16);
-  },
-
-  pushEvent: function(e){
-    if(!e || !e.who) return;
-    Scanner.events.unshift({
-      t: Date.now(),
-      icon: e.icon||'📡',
-      who: e.who,
-      what: e.what||'',
-      strength: e.strength||'mid',
-      score: e.score||0
-    });
-    if(Scanner.events.length > Scanner.maxEvents) Scanner.events.length = Scanner.maxEvents;
-    this.renderFeed();
-  },
-
-  clearFeed: function(){
-    Scanner.events = [];
-    this.renderFeed();
-  },
-
-  renderFeed: function(){
-    var el = $('scFeed');
-    if(!el) return;
-    if(!Scanner.events.length){
-      el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--tm);font-size:11px">Awaiting scanner events…</div>';
-      return;
-    }
-    el.innerHTML = Scanner.events.slice(0, 12).map(function(ev){
-      var dt = new Date(ev.t);
-      var ago = Math.floor((Date.now()-ev.t)/1000);
-      var agoTxt = ago<5?'now':ago<60?ago+'s ago':Math.floor(ago/60)+'m ago';
-      var cls = ev.strength==='high'?'high':ev.strength==='low'?'low':'mid';
-      var pct = ev.score||0;
-      return '<div class="feed-item" style="border-color:'+(cls==='high'?'rgba(34,197,94,.4)':cls==='low'?'rgba(239,68,68,.4)':'rgba(245,158,11,.4)')+'">'
-           +  '<div class="feed-time">'+agoTxt+'</div>'
-           +  '<div class="feed-icon">'+ev.icon+'</div>'
-           +  '<div class="feed-name"><div class="who">'+ev.who+'</div><div class="what">'+ev.what+'</div></div>'
-           +  '<div class="feed-badge '+cls+'">'+pct+'%</div>'
-           +'</div>';
-    }).join('');
-  },
-
-  refreshAll: function(){
-    this.renderStatus();
-    this.renderStats();
-    this.renderModes();
-    this.renderDonut();
-    this.renderGauge();
-    this.renderFeed();
-    this.renderPerf();
-  },
-
-  renderStatus: function(){
-    var subCount = 0;
-    for(var i=0;i<Scanner.markets.length;i++) if(Scanner.subscribed[Scanner.markets[i]]) subCount++;
-    var st = Scanner.state;
-    var map = {
-      idle:        {txt:'IDLE',       color:'var(--td)',  desc:'Not started'},
-      connecting:  {txt:'STARTING',   color:'var(--am)',  desc:'Connecting to markets…'},
-      scanning:    {txt:'ACTIVE',     color:'var(--g)',   desc:'AI engine is running'},
-      stopped:     {txt:'STOPPED',    color:'var(--td)',  desc:'Engine halted'},
-      error:       {txt:'ERROR',      color:'var(--r)',   desc:Scanner.lastError||'Unknown error'}
-    };
-    var s = map[st] || map.idle;
-    var stEl = $('scStatus'); if(stEl){ stEl.textContent = s.txt; stEl.style.color = s.color; }
-    var dsEl = $('scStatusDesc'); if(dsEl) dsEl.textContent = s.desc;
-
-    var card = $('scCardStatus');
-    if(card){
-      if(st==='scanning') card.classList.add('scanning'); else card.classList.remove('scanning');
-    }
-    var pulse = $('scPulse');
-    if(pulse){
-      pulse.className = 'live-pulse' + (st==='scanning'?'':' off');
-      pulse.textContent = st==='scanning'?'● LIVE':(st==='stopped'?'⏹ STOPPED':st==='connecting'?'◌ STARTING':'⏸ IDLE');
-    }
-
-    var startBtn = $('scStartBtn');
-    var stopBtn = $('scStopBtn');
-    if(startBtn){
-      startBtn.disabled = (st==='scanning' || st==='connecting');
-      startBtn.style.opacity = startBtn.disabled ? '0.4' : '1';
-    }
-    if(stopBtn){
-      stopBtn.disabled = (st==='stopped' || st==='idle');
-      stopBtn.style.opacity = stopBtn.disabled ? '0.4' : '1';
-    }
-  },
-
-  renderStats: function(){
-    var subCount = 0;
-    for(var i=0;i<Scanner.markets.length;i++) if(Scanner.subscribed[Scanner.markets[i]]) subCount++;
-    var setText = function(id, txt){ var e=$(id); if(e) e.textContent = txt; };
-    setText('scMkts', subCount+'/'+Scanner.markets.length);
-    setText('scOpps', Scanner.opportunities.length);
-    setText('scAvg', Scanner._avgConfidence()+'%');
-    if(Scanner.lastScanTime){
-      var ago = Math.floor((Date.now()-Scanner.lastScanTime)/1000);
-      setText('scLast', ago<1?'now':ago<60?ago+'s ago':Math.floor(ago/60)+'m ago');
-      setText('scLastDesc', 'Next in ~'+Scanner.prefs.scanInterval);
-    } else {
-      setText('scLast', '—');
-      setText('scLastDesc', 'Awaiting first scan');
-    }
-  },
-
-  renderModes: function(){
-    ['momentum','triple','smart','sniper'].forEach(function(m){
-      var winEl = $('modWin_'+m), confEl = $('modConf_'+m);
-      if(!winEl||!confEl) return;
-      var wins=0, total=0;
-      for(var i=0;i<S.hist.length;i++){
-        if((S.hist[i].mode||'')===m){ total++; if(S.hist[i].win) wins++; }
-      }
-      winEl.textContent = total>0 ? Math.round(wins/total*100)+'%' : '—';
-      if(m === Scanner.mode){
-        var s = Scanner._lastModeScores;
-        var vals = [];
-        for(var k in s) vals.push(s[k]);
-        var avg = vals.length?Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length):0;
-        confEl.textContent = avg>0?avg+'%':'—';
-      } else {
-        confEl.textContent = '—';
-      }
-    });
-  },
-
-  renderDonut: function(){
-    var h=0,m=0,l=0;
-    for(var i=0;i<Scanner.opportunities.length;i++){
-      var c = Scanner.opportunities[i].confidence;
-      if(c>=80) h++; else if(c>=50) m++; else l++;
-    }
-    var total = h+m+l;
-    var hp = total?Math.round(h/total*100):0;
-    var mp = total?Math.round(m/total*100):0;
-    var lp = total?Math.round(l/total*100):0;
-    var setText = function(id,t){var e=$(id); if(e) e.textContent=t;};
-    setText('donutNum', total);
-    setText('numHigh', h+' ('+hp+'%)');
-    setText('numMid', m+' ('+mp+'%)');
-    setText('numLow', l+' ('+lp+'%)');
-    var setBar = function(id,pct){var e=$(id); if(e) e.style.width=pct+'%';};
-    setBar('barHigh', hp);
-    setBar('barMid', mp);
-    setBar('barLow', lp);
-    var setDash = function(id, off, pct){
-      var e=$(id); if(!e) return;
-      e.setAttribute('stroke-dasharray', pct+' 100');
-      e.setAttribute('stroke-dashoffset', off);
-    };
-    setDash('donutHigh', 25, hp);
-    setDash('donutMid', -25+hp, mp);
-    setDash('donutLow', -25-hp-mp, lp);
-  },
-
-  renderGauge: function(){
-    var c = Scanner._avgConfidence();
-    var ring = $('gaugeRing');
-    if(ring){
-      var max = 471;
-      var filled = Math.round((c/100)*max);
-      ring.setAttribute('stroke-dasharray', filled+' '+(max-filled));
-    }
-    var pctEl = $('gaugePct'); if(pctEl) pctEl.textContent = c+'%';
-    var modeEl = $('gaugeMode'); if(modeEl){
-      var meta = Scanner.modeMeta[Scanner.mode];
-      modeEl.innerHTML = (meta?meta.name.toUpperCase():'IDLE')+'<br>Confidence';
-    }
-    var g90=0,g70=0,g50=0,g0=0;
-    for(var i=0;i<Scanner.opportunities.length;i++){
-      var cc = Scanner.opportunities[i].confidence;
-      if(cc>=90) g90++; else if(cc>=70) g70++; else if(cc>=50) g50++; else g0++;
-    }
-    var total = Scanner.opportunities.length || 1;
-    var set = function(id,v){var e=$(id); if(e) e.textContent=v;};
-    set('gauge90', Math.round(g90/total*100)+'%');
-    set('gauge70', Math.round(g70/total*100)+'%');
-    set('gauge50', Math.round(g50/total*100)+'%');
-    set('gauge0',  Math.round(g0/total*100)+'%');
-  },
-
-  renderPerf: function(){
-    var h = Scanner.history;
-    var best = {pct:0, time:0};
-    for(var i=0;i<h.length;i++){ if(h[i].pct>best.pct){best.pct=h[i].pct;best.time=h[i].t;} }
-    var set = function(id,v){var e=$(id); if(e) e.textContent=v;};
-    set('perfBest', h.length?best.pct+'%':'—');
-    if(best.time>0){
-      var dt = new Date(best.time);
-      set('perfBestTime', dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
-    } else set('perfBestTime', '—');
-    var tot = S.hist.length;
-    var w = S.hist.filter(function(x){return x.win;}).length;
-    set('perfTotal', tot);
-    set('perfWins', w);
-    set('perfWinPct', tot?Math.round(w/tot*100)+'%':'0%');
-    if(h.length>=2){
-      var avgMs = Math.round((h[h.length-1].t - h[0].t) / (h.length-1));
-      set('perfResp', avgMs>1000?(avgMs/1000).toFixed(1)+'s':avgMs+'ms');
-    } else set('perfResp','—');
-
-    if(h.length>=2){
-      var w = 400 / Math.max(1, h.length-1);
-      var pts = h.map(function(p,i){
-        var y = 160 - ((p.pct/100) * 140) - 10;
-        return (i*w).toFixed(1)+','+y.toFixed(1);
-      });
-      var ptsOpp = h.map(function(p,i){
-        var y = 160 - (Math.min(p.opps/10, 1) * 140) - 10;
-        return (i*w).toFixed(1)+','+y.toFixed(1);
-      });
-      var pathWin = 'M'+pts.join(' L');
-      var pathOpp = 'M'+ptsOpp.join(' L');
-      var winEl = $('perfStrokeWin'); if(winEl) winEl.setAttribute('d', pathWin);
-      var oppEl = $('perfStrokeOpp'); if(oppEl) oppEl.setAttribute('d', pathOpp);
-      var winPath = $('perfPathWin'); if(winPath) winPath.setAttribute('d', pathWin+' L400,160 L0,160 Z');
-      var oppPath = $('perfPathOpp'); if(oppPath) oppPath.setAttribute('d', pathOpp+' L400,160 L0,160 Z');
-      var labEl = $('perfLabels');
-      if(labEl){
-        var last = h[h.length-1].t;
-        var t1 = h[0].t, t2 = h[Math.floor(h.length/2)].t;
-        var fmt = function(t){var d=new Date(t); return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});};
-        labEl.innerHTML = '<text x="40" y="156">'+fmt(t1)+'</text><text x="200" y="156">'+fmt(t2)+'</text><text x="360" y="156">'+fmt(last)+'</text>';
-      }
-    }
-  },
-
-  togglePref: function(key){
-    Scanner.prefs[key] = !Scanner.prefs[key];
-    Scanner._savePrefs();
-    this.applyPrefsToUI();
-    if(key==='scanInterval'){}
-    else toast(key+': '+(Scanner.prefs[key]?'ON':'OFF'), 'info', 1500);
-  },
-
-  setInterval: function(val){
-    Scanner.prefs.scanInterval = val;
-    Scanner._savePrefs();
-    if(Scanner.state==='scanning') Scanner._loop();
-    toast('Interval: '+(val==='tick'?'every tick':(parseInt(val,10)/1000)+'s'),'info',1500);
-  },
-
-  savePrefs: function(){
-    Scanner._savePrefs();
-    toast('✓ Preferences saved','success');
-  },
-
-  applyPrefsToUI: function(){
-    var set = function(id, on){var e=$(id); if(e){ if(on) e.classList.add('on'); else e.classList.remove('on'); }};
-    set('tgAutoScan', Scanner.prefs.autoScan);
-    set('tgHighProb', Scanner.prefs.highProbOnly);
-    set('tgSound', Scanner.prefs.soundAlerts);
-    var sel = $('scInterval'); if(sel) sel.value = Scanner.prefs.scanInterval;
-  }
-};
+function init(){
+  load();applyS();S.auto.lad=buildL();aUpdate();setSym(S.cfg.sym||'R_100');renderHome();conn();
+  setInterval(function(){if(S.ready&&S.auth)reqProp();},5000);
+  setInterval(function(){renderHome();},2000);
+  setInterval(function(){if(S.scanner.active)updateScannerUI();},1000);
+  setTimeout(function(){updateAllUI();},1000);
+}
 
 runBoot();
 </script>

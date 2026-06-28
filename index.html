@@ -609,7 +609,10 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 <section id="p-history" class="page" style="display:none">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
 <h2 style="font-size:1.1rem;font-weight:700">📜 Trade History</h2>
+<div style="display:flex;gap:6px">
+<button class="btn s" onclick="exportCSV()">📥 Export CSV</button>
 <button class="btn s" onclick="clrH()">Clear</button>
+</div>
 </div>
 <div class="glass" style="overflow-x:auto">
 <table style="width:100%;border-collapse:collapse;font-size:11px">
@@ -1264,8 +1267,8 @@ function runMode(){
     tk.forEach(function(t){if(t.ch>0)ups++;else if(t.ch<0)downs++;});
     if(ups>=4){S.sel.c='DIGITOVER';S.sel.b='0';contract='OVER 0';reason=ups+'/5 ticks bullish — strong upward momentum';fired=true;}
     else if(ups>=3){S.sel.c='DIGITOVER';S.sel.b='0';contract='OVER 0';reason=ups+'/5 ticks bullish — momentum building';fired=true;}
-    else if(downs>=4){S.sel.c='DIGITUNDER';S.sel.b='8';contract='UNDER 8';reason=downs+'/5 ticks bearish — strong downward momentum';fired=true;}
-    else if(downs>=3){S.sel.c='DIGITUNDER';S.sel.b='8';contract='UNDER 8';reason=downs+'/5 ticks bearish — momentum building';fired=true;}
+    else if(downs>=4){S.sel.c='DIGITUNDER';S.sel.b='9';contract='UNDER 9';reason=downs+'/5 ticks bearish — strong downward momentum';fired=true;}
+    else if(downs>=3){S.sel.c='DIGITUNDER';S.sel.b='9';contract='UNDER 9';reason=downs+'/5 ticks bearish — momentum building';fired=true;}
   }
   else if(S.mode==='smart'){
     var tk=S.ticks.slice(0,4);
@@ -1274,7 +1277,7 @@ function runMode(){
     if(pat==='0,0,0'&&ups>=2){S.sel.c='DIGITOVER';S.sel.b='0';contract='OVER 0';reason='Pattern 0,0,0 + '+ups+'/3 bullish ticks — combined signal';fired=true;}
     else if(pat==='9,9,9'&&downs>=2){S.sel.c='DIGITUNDER';S.sel.b='9';contract='UNDER 9';reason='Pattern 9,9,9 + '+downs+'/3 bearish ticks — combined signal';fired=true;}
     else if(pat==='1,1,1'&&ups>=2){S.sel.c='DIGITOVER';S.sel.b='1';contract='OVER 1';reason='Pattern 1,1,1 + '+ups+'/3 bullish ticks — combined signal';fired=true;}
-    else if(pat==='8,8,8'&&downs>=2){S.sel.c='DIGITUNDER';S.sel.b='8';contract='UNDER 8';reason='Pattern 8,8,8 + '+downs+'/3 bearish ticks — combined signal';fired=true;}
+    else if(pat==='8,8,8'&&downs>=2){S.sel.c='DIGITUNDER';S.sel.b='9';contract='UNDER 9';reason='Pattern 8,8,8 + '+downs+'/3 bearish ticks — combined signal';fired=true;}
   }
   else if(S.mode==='sniper'){
     if(!S.oid&&!S.auto.busy&&SC.ticks>0&&SC.ticks%5===0){
@@ -1282,7 +1285,7 @@ function runMode(){
       var ups=tk.filter(function(t){return t.ch>0;}).length;
       var downs=tk.filter(function(t){return t.ch<0;}).length;
       if(ups>downs){S.sel.c='DIGITOVER';S.sel.b='0';contract='OVER 0';reason=ups+'/6 ticks bullish — directional bias OVER 0';fired=true;}
-      else if(downs>ups){S.sel.c='DIGITUNDER';S.sel.b='8';contract='UNDER 8';reason=downs+'/6 ticks bearish — directional bias UNDER 8';fired=true;}
+      else if(downs>ups){S.sel.c='DIGITUNDER';S.sel.b='9';contract='UNDER 9';reason=downs+'/6 ticks bearish — directional bias UNDER 9';fired=true;}
     }
   }
   if(fired){
@@ -1560,7 +1563,7 @@ if(S.acc.bal>0&&stake>S.acc.bal){addJournalEntry('⚠ Insufficient balance','err
 S.sel.c=(contractType==='UNDER')?'DIGITUNDER':'DIGITOVER';
 S.sel.b=barrier;
 send({proposal:1,amount:String(stake),basis:'stake',contract_type:S.sel.c,currency:S.acc.cur,duration:1,duration_unit:'t',symbol:symbol,barrier:String(S.sel.b)});
-setTimeout(function(){if(S.pid&&S.pdata){send({buy:S.pid,price:S.pdata.ask_price});
+setTimeout(function(){if(!S.dbot.running){callback();return;}if(S.pid&&S.pdata){send({buy:S.pid,price:S.pdata.ask_price});
 S.dbot.stats.totalStake+=stake;
 addJournalEntry('✓ Bought '+S.sel.c+' '+S.sel.b+' for $'+fmt(stake),'success');
 addTransaction(S.sel.c+' '+S.sel.b,stake,'pending');
@@ -1648,7 +1651,8 @@ function applyS(){$('st').value=S.cfg.token||'';$('ss').value=S.cfg.sym;$('stake
 function saveS(){S.cfg.token=$('st').value.trim();S.cfg.sym=$('ss').value;save();if(S.cfg.sym!==S.sym)setSym(S.cfg.sym);if(S.cfg.token&&S.ready&&!S.auth)send({authorize:S.cfg.token});}
 function setSym(s){S.sym=s;$('sym').textContent=s;$('ss').value=s;S.cfg.sym=s;save();S.ticks=[];S.df=Array(10).fill(0);S.last=null;if(S.ready)subTicks();}
 function clrH(){if(confirm('Clear history?')){S.hist=[];save();renderH();renderHome();}}
-function reset(){if(confirm('Reset ALL?')){S.hist=[];S.acc.pl=0;S.cfg={maxStake:10,token:'',sym:'R_100'};S.savedBots=[];S.dbot=null;save();applyS();renderH();renderHome();renderDBot();toast('Reset','success');}}
+function exportCSV(){if(!S.hist.length){toast('No data to export','error');return;}var rows=['Time,Contract,Stake,Payout,Profit,Win,Mode'];S.hist.forEach(function(h){var dt=new Date((h.time||0)*1000);rows.push(dt.toLocaleString()+','+h.contract+','+h.stake+','+h.payout+','+h.profit+','+(h.win?'Yes':'No')+','+(h.mode||'manual'));});var csv=rows.join('\n');var blob=new Blob([csv],{type:'text/csv'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='trade7smart_history_'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);toast('CSV exported','success');}
+function reset(){if(confirm('Reset ALL?')){S.hist=[];S.acc.pl=0;S.cfg={maxStake:200,token:'',sym:'R_100'};S.savedBots=[];S.dbot=null;save();applyS();renderH();renderHome();renderDBot();toast('Reset','success');}}
 
 // ===== INIT =====
 function init(){load();applyS();S.auto.lad=buildL();aUpdate();setSym(S.cfg.sym||'R_100');renderHome();mgUpdate();conn();setInterval(function(){if(S.ready&&S.auth)reqProp();},5000);setInterval(function(){renderHome();},2000);}

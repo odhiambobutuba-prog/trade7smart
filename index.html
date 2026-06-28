@@ -487,22 +487,23 @@ AI Scanner
 </div>
 </div>
 
-<!-- ===================== STEP 1 DIAGNOSTIC PANEL ===================== -->
+<!-- ===================== STEP 2 DIAGNOSTIC PANEL ===================== -->
 <div id="scDiag" style="margin-top:14px;padding:16px;background:linear-gradient(180deg,rgba(245,158,11,.08),rgba(245,158,11,.02));border:1px solid rgba(245,158,11,.3);border-radius:14px">
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
 <span style="font-size:14px">🔧</span>
-<span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--am)">Scanner Engine — Step 1 Diagnostic</span>
+<span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--am)">Scanner Engine — Step 2 (Real Analytics)</span>
 </div>
-<div style="font-size:11px;color:var(--td);margin-bottom:10px">Verifies Scanner Engine + Analytics wiring. This panel will be removed in Step 4.</div>
+<div style="font-size:11px;color:var(--td);margin-bottom:10px">Analytics now runs every second on all 5 markets. Real numbers below — no placeholders.</div>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px">
 <div class="perf-stat"><div class="l">Engine State</div><div class="v" style="color:var(--am);font-size:14px" id="scDiagState">IDLE</div><div class="s" id="scDiagStateDesc">Not started</div></div>
 <div class="perf-stat"><div class="l">Markets Wired</div><div class="v" style="color:var(--cy);font-size:14px" id="scDiagMkts">0/5</div><div class="s">Subscribed</div></div>
 <div class="perf-stat"><div class="l">Total Ticks Buffered</div><div class="v" style="color:var(--bl);font-size:14px" id="scDiagTicks">0</div><div class="s">Across all markets</div></div>
-<div class="perf-stat"><div class="l">Last Tick</div><div class="v" style="color:var(--pp);font-size:14px" id="scDiagLast">—</div><div class="s">—</div></div>
+<div class="perf-stat"><div class="l">Scans Completed</div><div class="v" style="color:var(--pp);font-size:14px" id="scDiagScans">0</div><div class="s">Since start</div></div>
 </div>
 <div style="margin-top:10px;display:grid;grid-template-columns:repeat(5,1fr);gap:6px" id="scDiagBars"></div>
+<div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:6px" id="scDiagAnalytics"></div>
 </div>
-<!-- ===================== END STEP 1 DIAGNOSTIC PANEL ===================== -->
+<!-- ===================== END STEP 2 DIAGNOSTIC PANEL ===================== -->
 
 </section>
 
@@ -728,17 +729,9 @@ function reset(){if(confirm('Reset ALL?')){S.hist=[];S.acc.pl=0;S.cfg={maxStake:
 function init(){load();applyS();S.auto.lad=buildL();aUpdate();setSym(S.cfg.sym||'R_100');renderHome();conn();setInterval(function(){if(S.ready&&S.auth)reqProp();},5000);setInterval(function(){renderHome();},2000);}
 
 /* ============================================================
-   STEP 1: ANALYTICS MODULE (pure functions, no DOM)
-   ------------------------------------------------------------
-   - Returns real calculated values from tick arrays
-   - Each function takes an array of tick objects and returns data
-   - No DOM access, no side effects (except Step 1 stubs that
-     return zero/empty placeholders to prove wiring)
-   - Will be fully implemented in Step 2 with real math
+   ANALYTICS MODULE — pure functions, no DOM access
    ============================================================ */
 var Analytics = {
-  _stub: function(name){ return function(){ console.warn('[Analytics.'+name+'] not implemented yet (Step 2)'); return null; }; },
-
   digitFreq: function(ticks){
     if(!ticks||!ticks.length) return Array(10).fill(0);
     var f = Array(10).fill(0);
@@ -748,7 +741,6 @@ var Analytics = {
     }
     return f;
   },
-
   hotCold: function(ticks){
     var f = Analytics.digitFreq(ticks);
     var pairs = [];
@@ -756,7 +748,6 @@ var Analytics = {
     pairs.sort(function(a,b){ return b.count - a.count; });
     return { hot: pairs.slice(0,3), cold: pairs.slice(-3).reverse() };
   },
-
   streak: function(ticks){
     if(!ticks||!ticks.length) return {digit:null, count:0};
     var first = ticks[0].dig;
@@ -767,45 +758,38 @@ var Analytics = {
     }
     return {digit:first, count:count};
   },
-
   overProb: function(ticks, barrier){
     if(!ticks||!ticks.length || barrier===undefined) return 0;
     var win = 0;
     for(var i=0;i<ticks.length;i++){ if(ticks[i].dig > barrier) win++; }
     return win / ticks.length;
   },
-
   underProb: function(ticks, barrier){
     if(!ticks||!ticks.length || barrier===undefined) return 0;
     var win = 0;
     for(var i=0;i<ticks.length;i++){ if(ticks[i].dig < barrier) win++; }
     return win / ticks.length;
   },
-
   evenProb: function(ticks){
     if(!ticks||!ticks.length) return 0;
     var w=0; for(var i=0;i<ticks.length;i++){ if(ticks[i].dig%2===0) w++; }
     return w/ticks.length;
   },
-
   oddProb: function(ticks){
     if(!ticks||!ticks.length) return 0;
     var w=0; for(var i=0;i<ticks.length;i++){ if(ticks[i].dig%2===1) w++; }
     return w/ticks.length;
   },
-
   matchProb: function(ticks, digit){
     if(!ticks||!ticks.length || digit===undefined) return 0;
     var w=0; for(var i=0;i<ticks.length;i++){ if(ticks[i].dig===digit) w++; }
     return w/ticks.length;
   },
-
   differProb: function(ticks, digit){
     if(!ticks||!ticks.length || digit===undefined) return 0;
     var w=0; for(var i=0;i<ticks.length;i++){ if(ticks[i].dig!==digit) w++; }
     return w/ticks.length;
   },
-
   tickSpeed: function(ticks){
     if(!ticks||ticks.length<2) return 0;
     var newest = ticks[0].time, oldest = ticks[ticks.length-1].time;
@@ -813,7 +797,6 @@ var Analytics = {
     if(span<=0) return 0;
     return ticks.length / span;
   },
-
   volatility: function(ticks){
     if(!ticks||ticks.length<2) return 0;
     var prices = ticks.map(function(t){ return t.p; });
@@ -822,7 +805,6 @@ var Analytics = {
     var sq = 0; for(var i=0;i<prices.length;i++) sq += Math.pow(prices[i]-mean,2);
     return Math.sqrt(sq / prices.length);
   },
-
   trend: function(ticks){
     if(!ticks||ticks.length<3) return 'sideways';
     var ups=0, downs=0;
@@ -835,7 +817,6 @@ var Analytics = {
     if(mag < 0.15) return 'sideways';
     return diff > 0 ? 'up' : 'down';
   },
-
   confidence: function(analysis){
     if(!analysis) return 0;
     var bias = 0;
@@ -857,31 +838,59 @@ var Analytics = {
     var sample = Math.min(n/1000, 1) * 15;
     var total = bias + streak + volScore + sample;
     return Math.max(0, Math.min(100, Math.round(total)));
+  },
+  analyze: function(ticks){
+    if(!ticks||!ticks.length){
+      return {
+        sample:0, digitFreq:Array(10).fill(0), hotCold:{hot:[],cold:[]},
+        streak:{digit:null,count:0}, even:0, odd:0,
+        over:{0:0,1:0,2:0,3:0,4:0}, under:{5:0,6:0,7:0,8:0,9:0},
+        matchProb:Array(10).fill(0), differProb:Array(10).fill(0),
+        tickSpeed:0, volatility:0, trend:'sideways', confidence:0
+      };
+    }
+    var a = {
+      sample: ticks.length,
+      digitFreq: Analytics.digitFreq(ticks),
+      hotCold: Analytics.hotCold(ticks),
+      streak: Analytics.streak(ticks),
+      even: Analytics.evenProb(ticks),
+      odd: Analytics.oddProb(ticks),
+      over: {},
+      under: {},
+      matchProb: [],
+      differProb: [],
+      tickSpeed: Analytics.tickSpeed(ticks),
+      volatility: Analytics.volatility(ticks),
+      trend: Analytics.trend(ticks)
+    };
+    for(var b=0;b<5;b++) a.over[b] = Analytics.overProb(ticks,b);
+    for(var b2=5;b2<10;b2++) a.under[b2] = Analytics.underProb(ticks,b2);
+    for(var d=0;d<10;d++){
+      a.matchProb.push(Analytics.matchProb(ticks,d));
+      a.differProb.push(Analytics.differProb(ticks,d));
+    }
+    a.confidence = Analytics.confidence(a);
+    return a;
   }
 };
 
 /* ============================================================
-   STEP 1: SCANNER ENGINE
-   ------------------------------------------------------------
-   - Manages connection state, tick buffers, scanner loop
-   - Receives ticks via Scanner.onTick(t) from existing onTick()
-   - Stores last 1000 ticks per market
-   - State machine: idle → connecting → scanning → stopped
-   - Does NOT yet compute analytics (Step 2)
-   - Does NOT yet rank opportunities (Step 3)
+   SCANNER ENGINE
    ============================================================ */
 var Scanner = {
-  state: 'idle',                          // idle|connecting|scanning|error|stopped
-  markets: ['R_10','R_25','R_50','R_75','R_100'],  // Decision A
-  ticks: {},                              // Map<symbol, []> — last 1000 ticks per market
-  subscribed: {},                         // Map<symbol, bool>
-  opportunities: [],                      // Step 3 will populate
-  mode: 'momentum',                       // current scanner mode
+  state: 'idle',
+  markets: ['R_10','R_25','R_50','R_75','R_100'],
+  ticks: {},
+  subscribed: {},
+  analysis: {},
+  opportunities: [],
+  mode: 'momentum',
   prefs: {
     autoScan: true,
     highProbOnly: false,
     soundAlerts: false,
-    scanInterval: 'tick'                  // tick|1s|5s|10s
+    scanInterval: 'tick'
   },
   lastScanTime: null,
   lastError: null,
@@ -889,12 +898,14 @@ var Scanner = {
   totalScans: 0,
   scanTimer: null,
 
-  /* Public API */
   start: function(){
     if(Scanner.state==='scanning' || Scanner.state==='connecting') return;
     Scanner.state = S.ready ? 'scanning' : 'connecting';
     Scanner.startTime = Date.now();
     Scanner.lastError = null;
+    Scanner.totalScans = 0;
+    Scanner.analysis = {};
+    Scanner.opportunities = [];
     Scanner._initBuffers();
     Scanner._subscribeAll();
     Scanner._loop();
@@ -927,19 +938,14 @@ var Scanner = {
       time: t.epoch || Math.floor(Date.now()/1000)
     });
     if(Scanner.ticks[sym].length > 1000) Scanner.ticks[sym].pop();
-
-    if(Scanner.subscribed[sym] !== true){
-      Scanner.subscribed[sym] = true;
-    }
+    if(Scanner.subscribed[sym] !== true) Scanner.subscribed[sym] = true;
     if(Scanner.state === 'connecting' && Scanner._allSubscribed()){
       Scanner.state = 'scanning';
       console.log('[Scanner] all markets subscribed → scanning');
     }
-    Scanner._renderDiag();
   },
 
   onSubscribed: function(){
-    /* Called from subTicks() — we piggyback on existing single-sym sub */
     var sym = S.sym;
     if(sym && Scanner.ticks[sym] === undefined){
       Scanner.ticks[sym] = [];
@@ -950,7 +956,6 @@ var Scanner = {
   setMode: function(m){ Scanner.mode = m; },
   getOpportunities: function(){ return Scanner.opportunities.slice(0); },
 
-  /* Internal */
   _initBuffers: function(){
     for(var i=0;i<Scanner.markets.length;i++){
       var s = Scanner.markets[i];
@@ -958,51 +963,62 @@ var Scanner = {
       Scanner.subscribed[s] = false;
     }
   },
-
   _subscribeAll: function(){
-    /* Reuse existing send() helper to add multi-market subscriptions.
-       send() checks S.ready and S.ws — both already managed by existing conn(). */
     if(typeof send !== 'function') return;
     for(var i=0;i<Scanner.markets.length;i++){
       var s = Scanner.markets[i];
       try { send({ticks:s, subscribe:1}); } catch(e){}
     }
   },
-
   _allSubscribed: function(){
     for(var i=0;i<Scanner.markets.length;i++){
       if(!Scanner.subscribed[Scanner.markets[i]]) return false;
     }
     return true;
   },
-
+  _analyze: function(){
+    for(var i=0;i<Scanner.markets.length;i++){
+      var s = Scanner.markets[i];
+      var buf = Scanner.ticks[s] || [];
+      if(buf.length >= 10){
+        Scanner.analysis[s] = Analytics.analyze(buf);
+      }
+    }
+  },
   _loop: function(){
-    /* Scan every 1s — Step 3 will replace with tick-driven scan */
     if(Scanner.scanTimer) clearInterval(Scanner.scanTimer);
     Scanner.scanTimer = setInterval(function(){
       if(Scanner.state === 'scanning'){
         Scanner.totalScans++;
         Scanner.lastScanTime = Date.now();
-        /* Step 3 will run Analytics + rank opportunities here */
+        Scanner._analyze();
         Scanner._renderDiag();
       }
     }, 1000);
   },
-
   _totalTicks: function(){
     var n=0;
     for(var k in Scanner.ticks){ n += Scanner.ticks[k].length; }
     return n;
   },
-
+  _avgConfidence: function(){
+    var sum=0, n=0;
+    for(var k in Scanner.analysis){
+      if(Scanner.analysis[k] && Scanner.analysis[k].confidence){
+        sum += Scanner.analysis[k].confidence;
+        n++;
+      }
+    }
+    return n>0 ? Math.round(sum/n) : 0;
+  },
   _renderDiag: function(){
-    /* Updates diagnostic panel only — no other UI */
     var stateEl  = $('scDiagState');
     var stateDs  = $('scDiagStateDesc');
     var mktsEl   = $('scDiagMkts');
     var ticksEl  = $('scDiagTicks');
-    var lastEl   = $('scDiagLast');
+    var scansEl  = $('scDiagScans');
     var barsEl   = $('scDiagBars');
+    var analyticsEl = $('scDiagAnalytics');
     if(!stateEl) return;
 
     var subCount = 0;
@@ -1024,25 +1040,8 @@ var Scanner = {
     stateDs.textContent = descMap[Scanner.state] || '—';
     mktsEl.textContent = subCount+'/'+Scanner.markets.length;
     ticksEl.textContent = totalT;
+    scansEl.textContent = Scanner.totalScans;
 
-    /* Find most recent tick across all markets */
-    var newest = 0, lastSym = '—';
-    for(var k in Scanner.ticks){
-      if(Scanner.ticks[k][0] && Scanner.ticks[k][0].time > newest){
-        newest = Scanner.ticks[k][0].time;
-        lastSym = k;
-      }
-    }
-    if(newest>0){
-      var dt = new Date(newest*1000);
-      var hh = String(dt.getHours()).padStart(2,'0');
-      var mm = String(dt.getMinutes()).padStart(2,'0');
-      var ss = String(dt.getSeconds()).padStart(2,'0');
-      lastEl.textContent = hh+':'+mm+':'+ss;
-      lastEl.nextElementSibling.textContent = lastSym;
-    }
-
-    /* Per-market bars */
     var html = '';
     for(var i=0;i<Scanner.markets.length;i++){
       var s = Scanner.markets[i];
@@ -1058,14 +1057,33 @@ var Scanner = {
             +'</div>';
     }
     barsEl.innerHTML = html;
+
+    var ahtml = '';
+    var hotAll = [];
+    for(var k in Scanner.analysis){
+      var a = Scanner.analysis[k];
+      if(!a) continue;
+      var hotDigit = a.hotCold.hot[0];
+      var conf = a.confidence;
+      var streak = a.streak;
+      var confColor = conf>=70?'var(--g)':conf>=50?'var(--am)':'var(--r)';
+      ahtml += '<div style="padding:8px;background:rgba(0,0,0,.3);border-radius:6px;border:1px solid var(--b)">'
+            +  '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:10px;color:var(--cy);font-weight:700">'+k+'</span><span class="mono" style="font-size:11px;font-weight:700;color:'+confColor+'">'+conf+'%</span></div>'
+            +  '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10px">'
+            +    '<div><span style="color:var(--tm)">Sample:</span> <span class="mono fw">'+a.sample+'</span></div>'
+            +    '<div><span style="color:var(--tm)">Speed:</span> <span class="mono fw">'+(a.tickSpeed?a.tickSpeed.toFixed(1):'0')+'/s</span></div>'
+            +    '<div><span style="color:var(--tm)">Hot:</span> <span class="mono fw">'+ (hotDigit?hotDigit.digit:'—') +'</span></div>'
+            +    '<div><span style="color:var(--tm)">Streak:</span> <span class="mono fw">'+(streak.count>0?streak.digit+'(×'+streak.count+')':'—')+'</span></div>'
+            +    '<div><span style="color:var(--tm)">Vol:</span> <span class="mono fw">'+(a.volatility*10000).toFixed(2)+'</span></div>'
+            +    '<div><span style="color:var(--tm)">Trend:</span> <span class="mono fw" style="color:'+(a.trend==='up'?'var(--g)':a.trend==='down'?'var(--r)':'var(--am)')+'">'+a.trend.toUpperCase()+'</span></div>'
+            +  '</div>'
+            +'</div>';
+    }
+    if(!ahtml) ahtml = '<div style="padding:14px;text-align:center;color:var(--tm);font-size:11px;grid-column:1/-1">Analytics running… need at least 10 ticks per market</div>';
+    analyticsEl.innerHTML = ahtml;
   }
 };
 
-/* ============================================================
-   STEP 1: AUTO-START SCANNER WHEN CONNECTION GOES LIVE
-   - Polls connection state once per second
-   - Starts Scanner when WS becomes ready
-   ============================================================ */
 (function ScannerAutoStart(){
   setInterval(function(){
     if(S.ready && Scanner.state !== 'scanning' && Scanner.state !== 'connecting'){
@@ -1073,7 +1091,6 @@ var Scanner = {
     }
     if(!S.ready && Scanner.state === 'scanning'){
       Scanner.state = 'connecting';
-      Scanner._renderDiag();
     }
   }, 1000);
 })();

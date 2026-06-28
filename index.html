@@ -2,14 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#060A10">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Trade7Smart AI</title>
+
+<!-- PWA -->
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="T7Smart">
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQ0IiBmaWxsPSJ1cmwoI2cpIi8+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzNiOEQ2RiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzAwODRmZiIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjx0ZXh0IHg9Ijk2IiB5PSIxMzAiIGZvbnQtc2l6ZT0iOTAiIGZvbnQtd2VpZ2h0PSI4MDAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+VDc8L3RleHQ+PC9zdmc+">
+
 <style>
 :root{--bg:#060A10;--b:rgba(255,255,255,.06);--bb:rgba(255,255,255,.12);--bl:#3B82F6;--pp:#8B5CF6;--cy:#22D3EE;--g:#22C55E;--r:#EF4444;--am:#F59E0B;--t:#E6EAF2;--td:#8B95A8;--tm:#5A6478}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -32,47 +34,91 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 @keyframes zi{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
 .live{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--r);text-transform:uppercase}
 .live::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--r);animation:p 1.2s infinite}
+
+/* ===== SCANNER ENHANCEMENTS ===== */
+/* Smooth counter number transitions */
+.scan-val{transition:color .3s}
+/* Feed entry slide-in */
 @keyframes feedIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 .feed-row{animation:feedIn .25s ease;border-radius:5px;padding:5px 7px;margin-bottom:3px;background:rgba(255,255,255,.02);display:flex;justify-content:space-between;align-items:flex-start;gap:6px;border-left:2px solid transparent}
-.feed-row.success{border-left-color:var(--g)}.feed-row.error{border-left-color:var(--r)}.feed-row.signal{border-left-color:var(--am);background:rgba(245,158,11,.05)}.feed-row.info{border-left-color:var(--bl)}.feed-row.dim{border-left-color:var(--tm)}
+.feed-row.success{border-left-color:var(--g)}
+.feed-row.error{border-left-color:var(--r)}
+.feed-row.signal{border-left-color:var(--am);background:rgba(245,158,11,.05)}
+.feed-row.info{border-left-color:var(--bl)}
+.feed-row.dim{border-left-color:var(--tm)}
+/* Confidence gauge smooth */
 #confArc{transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1),stroke .5s ease}
+/* Mode card status pills */
 .mstat{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:99px;font-size:9px;font-weight:700;letter-spacing:.05em;margin-top:5px}
 .mstat.waiting{background:rgba(90,100,120,.2);color:var(--td);border:1px solid var(--b)}
 .mstat.scanning{background:rgba(34,211,238,.1);color:var(--cy);border:1px solid rgba(34,211,238,.3)}
 .mstat.scanning::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--cy);animation:p 1s infinite;display:inline-block}
 .mstat.signal{background:rgba(245,158,11,.12);color:var(--am);border:1px solid rgba(245,158,11,.3)}
 .mstat.cooldown{background:rgba(139,92,246,.1);color:var(--pp);border:1px solid rgba(139,92,246,.3)}
+/* High-confidence alert */
 @keyframes alertPop{0%{opacity:0;transform:translateY(20px) scale(.95)}60%{transform:translateY(-3px) scale(1.01)}100%{opacity:1;transform:none}}
 .hconf-alert{position:fixed;bottom:80px;right:16px;z-index:500;max-width:300px;background:linear-gradient(135deg,rgba(13,18,25,.98),rgba(20,28,40,.98));border:1px solid rgba(245,158,11,.5);border-radius:14px;padding:14px 16px;box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 0 1px rgba(245,158,11,.15);animation:alertPop .35s cubic-bezier(.34,1.56,.64,1)}
+/* AI Explanation panel slide */
 @keyframes expIn{from{opacity:0;max-height:0}to{opacity:1;max-height:400px}}
 .ai-exp{animation:expIn .3s ease;overflow:hidden}
+/* Digit bar transitions */
 .dbar{transition:height .5s cubic-bezier(.4,0,.2,1),background .4s}
+/* Value flash on update */
 @keyframes flashG{0%,100%{color:inherit}50%{color:var(--g)}}
 @keyframes flashR{0%,100%{color:inherit}50%{color:var(--r)}}
-.flash-g{animation:flashG .6s}.flash-r{animation:flashR .6s}
+.flash-g{animation:flashG .6s}
+.flash-r{animation:flashR .6s}
+/* Pulse ring on ACTIVATE */
 @keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}100%{box-shadow:0 0 0 12px rgba(34,197,94,0)}}
 .btn-scanning{animation:pulseRing 1.5s infinite}
+/* Stat card highlight */
+.stat-card{transition:border-color .3s,background .3s}
+
+/* DBot Tab Styles */
 .dbot-tab{transition:all .2s}
 .dbot-tab.active{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.3);color:var(--bl)}
 .dbot-tab-panel{display:none}
 .dbot-tab-panel.active{display:block}
+
+/* DBot Chart */
+#dbotChart canvas{width:100% !important;height:100% !important}
+
+/* DBot Run Button Animation */
 @keyframes pulseBtn{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{box-shadow:0 0 0 8px rgba(34,197,94,0)}}
 .btn-running{animation:pulseBtn 1.5s infinite;background:linear-gradient(135deg,#DC2626,#EF4444) !important;border:none !important}
-.tx-row{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(255,255,255,.02);border-radius:6px;margin-bottom:4px;border-left:3px solid transparent;font-size:11px}
+
+/* Transaction Row */
+.tx-row{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(255,255,255,.02);border-radius:6px;margin-bottom:4px;border-left:3px solid transparent}
 .tx-row.win{border-left-color:var(--g);background:rgba(34,197,94,.05)}
 .tx-row.loss{border-left-color:var(--r);background:rgba(239,68,68,.05)}
-@media(max-width:1024px){aside{display:none!important}#bnav{display:flex!important}header{left:0!important}main{left:0!important;bottom:64px!important}}
-@media(max-width:768px){body{font-size:13px!important}header{height:54px!important;padding:0 12px!important}main{top:54px!important;padding:10px!important}h1{font-size:1.3rem!important}}
-@media(max-width:480px){h1{font-size:1.15rem!important}}
+
+/* MOBILE FIX */
+@media(max-width:1024px){
+  aside{display:none!important}
+  #bnav{display:flex!important}
+  header{left:0!important}
+  main{left:0!important;bottom:64px!important}
+}
+@media(max-width:768px){
+  body{font-size:13px!important}
+  header{height:54px!important;padding:0 12px!important}
+  main{top:54px!important;padding:10px!important}
+  h1{font-size:1.3rem!important}
+}
+@media(max-width:480px){
+  h1{font-size:1.15rem!important}
+}
 </style>
 </head>
 <body style="margin:0;background:#060A10;overflow:hidden;font-family:'Inter',sans-serif">
 
+<!-- BOOT PRELOADER -->
 <div id="boot" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#060A10;z-index:99999;display:flex;align-items:center;justify-content:center;overflow:hidden">
 <div id="bootBg" style="position:absolute;inset:0;overflow:hidden;opacity:.6;pointer-events:none"></div>
 <div id="bootContent" style="position:relative;z-index:10;text-align:center;color:#fff;width:90%;max-width:480px"></div>
 </div>
 
+<!-- SIDEBAR (Desktop) -->
 <aside style="position:fixed;left:0;top:0;bottom:0;width:240px;background:linear-gradient(180deg,rgba(13,18,25,.92),rgba(13,18,25,.7));backdrop-filter:blur(20px);border-right:1px solid var(--b);padding:16px 12px;display:flex;flex-direction:column;gap:4px;overflow-y:auto;z-index:50">
 <div style="display:flex;align-items:center;gap:10px;padding:4px 8px 14px">
 <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--bl),var(--pp));display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px">T7</div>
@@ -80,15 +126,16 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 </div>
 <div class="nav on" data-p="home" onclick="go('home')" style="padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.1));color:#fff;border:1px solid rgba(59,130,246,.25)">🏠 <span>Home</span></div>
 <div class="nav" data-p="trade" onclick="go('trade')" style="padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--td);border:1px solid transparent">🎯 <span>Trade</span></div>
-<div class="nav" data-p="modes" onclick="go('modes')" style="padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--td);border:1px solid transparent">🧠 <span>AI Scanner</span></div>
+<div class="nav" data-p="modes" onclick="go('modes')" style="padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--td);border:1px solid transparent">🧠 <span>Modes</span></div>
 <div class="nav" data-p="dbot" onclick="go('dbot')" style="padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--td);border:1px solid transparent">📦 <span>DBot</span></div>
 <div class="nav" data-p="history" onclick="go('history')" style="padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--td);border:1px solid transparent">📜 <span>History</span></div>
 <div class="nav" data-p="settings" onclick="go('settings')" style="padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--td);border:1px solid transparent">⚙️ <span>Settings</span></div>
 <div style="margin-top:auto;padding-top:12px;border-top:1px solid var(--b);font-size:11px">
-<div style="display:flex;justify-content:space-between"><span style="color:var(--td)">v3.1.0</span><span style="color:var(--g)" id="sbWs">● Online</span></div>
+<div style="display:flex;justify-content:space-between"><span style="color:var(--td)">v3.0.0</span><span style="color:var(--g)" id="sbWs">● Online</span></div>
 </div>
 </aside>
 
+<!-- HEADER -->
 <header style="position:fixed;top:0;left:240px;right:0;height:60px;background:rgba(13,18,25,.7);backdrop-filter:blur(20px);border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;padding:0 16px;gap:10px;z-index:40">
 <div style="display:flex;align-items:center;gap:8px">
 <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;background:rgba(255,255,255,.04);border:1px solid var(--b);font-size:11px;font-weight:600"><span class="dot live"></span><span id="sym">R_100</span></div>
@@ -100,6 +147,7 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 </div>
 </header>
 
+<!-- MAIN -->
 <main style="position:fixed;top:60px;left:240px;right:0;bottom:0;overflow-y:auto;padding:14px">
 
 <!-- HOME -->
@@ -120,16 +168,18 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 <button class="btn" onclick="go('dbot')" style="flex:1;min-width:110px">📦 DBot</button>
 </div>
 </div>
+
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px">
 <div class="glass" onclick="go('modes')" style="cursor:pointer"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(59,130,246,.15);color:var(--bl)">🧠</div><span class="dot live"></span></div><div style="font-size:10px;color:var(--td);font-weight:600">AI Mode</div><div style="font-size:18px;font-weight:700;font-family:monospace;margin:4px 0" id="aiHome">READY</div><div style="font-size:10px;color:var(--tm)" id="aiSub">Triple Strike</div></div>
 <div class="glass" onclick="go('dbot')" style="cursor:pointer"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(34,211,238,.15);color:var(--cy)">📦</div><span class="dim" id="reg">—</span></div><div style="font-size:10px;color:var(--td);font-weight:600">DBot</div><div style="font-size:18px;font-weight:700;font-family:monospace;margin:4px 0" id="md">—</div><div style="font-size:10px;color:var(--tm)" id="mp">Import XML</div></div>
 <div class="glass" onclick="openConn()" style="cursor:pointer"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(34,197,94,.15);color:var(--g)">🔌</div><span class="dot" id="hcd"></span></div><div style="font-size:10px;color:var(--td);font-weight:600">Connection</div><div style="font-size:18px;font-weight:700;font-family:monospace;margin:4px 0" id="hct">Disconnected</div><div style="font-size:10px;color:var(--tm)">Tap to connect</div></div>
 <div class="glass" onclick="go('history')" style="cursor:pointer"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(139,92,246,.15);color:var(--pp)">🏆</div><span class="dim" id="htc">0</span></div><div style="font-size:10px;color:var(--td);font-weight:600">Win Rate</div><div style="font-size:18px;font-weight:700;font-family:monospace;margin:4px 0;color:var(--g)" id="hwr">0%</div><div style="font-size:10px;color:var(--tm)" id="hwrs">No trades</div></div>
 </div>
+
 <div class="glass"><h3 style="font-size:13px;font-weight:600;margin-bottom:8px">Recent Trades</h3><div id="rTrades" style="padding:24px 12px;text-align:center;color:var(--tm);font-size:11px">No trades yet</div></div>
 </section>
 
-<!-- TRADE — only 3 contracts: OVER 0, OVER 1, UNDER 9 -->
+<!-- TRADE -->
 <section id="p-trade" class="page" style="display:none">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
 <h2 style="font-size:1.1rem;font-weight:700">🎯 Trade Terminal</h2>
@@ -138,7 +188,7 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 <div style="display:grid;grid-template-columns:1fr 320px;gap:10px;align-items:start">
 <div>
 <div class="glass" style="margin-bottom:10px"><h3 style="font-size:13px;font-weight:600;margin-bottom:8px">Select Contract</h3>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
 <div class="cbtn over on" data-c="DIGITOVER" data-b="0" onclick="pick(this)" style="padding:14px 10px;border-radius:12px;border:1px solid var(--b);background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(34,211,238,.05));cursor:pointer;text-align:center;outline:2px solid var(--bl);outline-offset:2px"><div style="font-size:13px;font-weight:700">OVER 0</div><div style="font-size:9px;color:var(--tm);margin-top:2px">Last digit > 0</div></div>
 <div class="cbtn over" data-c="DIGITOVER" data-b="1" onclick="pick(this)" style="padding:14px 10px;border-radius:12px;border:1px solid var(--b);background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(34,211,238,.05));cursor:pointer;text-align:center"><div style="font-size:13px;font-weight:700">OVER 1</div><div style="font-size:9px;color:var(--tm);margin-top:2px">Last digit > 1</div></div>
 <div class="cbtn under" data-c="DIGITUNDER" data-b="9" onclick="pick(this)" style="padding:14px 10px;border-radius:12px;border:1px solid var(--b);background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(245,158,11,.05));cursor:pointer;text-align:center"><div style="font-size:13px;font-weight:700">UNDER 9</div><div style="font-size:9px;color:var(--tm);margin-top:2px">Last digit < 9</div></div>
@@ -157,7 +207,7 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 <div class="arr" style="width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,.04);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--td)">3</div>
 </div>
 <div style="display:flex;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:8px"><div id="lad" style="display:flex;flex-direction:column;gap:3px"></div><button class="btn b1 big" id="aBtn" onclick="autoStart()">▶ SCAN</button></div>
-<div style="font-size:11px;color:var(--tm);text-align:center;margin-top:10px">Recovery: OVER→UNDER 9 · UNDER→OVER 1</div>
+<div style="font-size:11px;color:var(--tm);text-align:center;margin-top:10px">Recovery: OVER→UNDER 7 · UNDER→OVER 2</div>
 </div>
 <div id="omon" style="margin-top:10px"></div>
 </div>
@@ -175,6 +225,8 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 
 <!-- MODES -->
 <section id="p-modes" class="page" style="display:none">
+
+<!-- Title row -->
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
 <h2 style="font-size:1.1rem;font-weight:700">🧠 AI Scanner Modes</h2>
 <div style="display:flex;align-items:center;gap:8px">
@@ -182,27 +234,82 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 <div id="scanStatusBadge" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.04);border:1px solid var(--b);font-size:10px;font-weight:700;color:var(--td);transition:all .3s">⏸ IDLE</div>
 </div>
 </div>
+
+<!-- Scanner Status Bar -->
 <div class="glass" style="margin-bottom:10px;background:linear-gradient(135deg,rgba(59,130,246,.06),rgba(139,92,246,.04));border:1px solid rgba(59,130,246,.2)">
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px">
-<div class="stat-card" style="padding:8px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b);text-align:center"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Ticks Scanned</div><div class="mono fw cy scan-val" style="font-size:16px" id="scanTickCount">0</div></div>
-<div class="stat-card" style="padding:8px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b);text-align:center"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Signals Found</div><div class="mono fw am scan-val" style="font-size:16px" id="scanOpCount">0</div></div>
-<div class="stat-card" style="padding:8px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b);text-align:center"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Trades Taken</div><div class="mono fw g scan-val" style="font-size:16px" id="scanTradeCount">0</div></div>
-<div class="stat-card" style="padding:8px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b);text-align:center"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Avg Confidence</div><div class="mono fw scan-val" style="font-size:16px;color:var(--bl)" id="scanAvgConf">—</div></div>
-<div class="stat-card" style="padding:8px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b);text-align:center"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Mode Win %</div><div class="mono fw g scan-val" style="font-size:16px" id="scanWinRate">—</div></div>
-<div class="stat-card" style="padding:8px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b);text-align:center"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Last Signal</div><div class="mono fw scan-val" style="font-size:10px;color:var(--t)" id="scanLastSig">—</div></div>
+<div class="stat-card" style="padding:8px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b);text-align:center">
+<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Ticks Scanned</div>
+<div class="mono fw cy scan-val" style="font-size:16px" id="scanTickCount">0</div>
+</div>
+<div class="stat-card" style="padding:8px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b);text-align:center">
+<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Signals Found</div>
+<div class="mono fw am scan-val" style="font-size:16px" id="scanOpCount">0</div>
+</div>
+<div class="stat-card" style="padding:8px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b);text-align:center">
+<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Trades Taken</div>
+<div class="mono fw g scan-val" style="font-size:16px" id="scanTradeCount">0</div>
+</div>
+<div class="stat-card" style="padding:8px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b);text-align:center">
+<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Avg Confidence</div>
+<div class="mono fw scan-val" style="font-size:16px;color:var(--bl)" id="scanAvgConf">—</div>
+</div>
+<div class="stat-card" style="padding:8px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b);text-align:center">
+<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Mode Win %</div>
+<div class="mono fw g scan-val" style="font-size:16px" id="scanWinRate">—</div>
+</div>
+<div class="stat-card" style="padding:8px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b);text-align:center">
+<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Last Signal</div>
+<div class="mono fw scan-val" style="font-size:10px;color:var(--t)" id="scanLastSig">—</div>
 </div>
 </div>
+</div>
+
+<!-- Mode Cards + Confidence -->
 <div style="display:grid;grid-template-columns:1fr 210px;gap:10px;margin-bottom:10px;align-items:start">
+
+<!-- Mode Cards -->
 <div class="glass">
 <h3 style="font-size:13px;margin-bottom:10px">🎯 Select Mode</h3>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px">
-<div onclick="selMode('triple')" data-mode="triple" class="mode-card" style="padding:12px;border-radius:12px;background:rgba(59,130,246,.1);border:1px solid var(--bl);cursor:pointer;transition:all .2s"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="font-size:20px">🎯</div><div id="mstat-triple" class="mstat waiting">IDLE</div></div><div style="font-size:12px;font-weight:700;margin-top:5px">Triple Strike</div><div style="font-size:9px;color:var(--td)">3× same digit</div><div class="mono fw" style="font-size:10px;margin-top:5px;color:var(--g)" id="stat-triple">—</div><div style="font-size:9px;color:var(--tm);margin-top:3px" id="msig-triple">Last: —</div></div>
-<div onclick="selMode('momentum')" data-mode="momentum" class="mode-card" style="padding:12px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid var(--b);cursor:pointer;transition:all .2s"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="font-size:20px">📊</div><div id="mstat-momentum" class="mstat waiting">IDLE</div></div><div style="font-size:12px;font-weight:700;margin-top:5px">Momentum</div><div style="font-size:9px;color:var(--td)">3 up / 3 down</div><div class="mono fw" style="font-size:10px;margin-top:5px;color:var(--g)" id="stat-momentum">—</div><div style="font-size:9px;color:var(--tm);margin-top:3px" id="msig-momentum">Last: —</div></div>
-<div onclick="selMode('smart')" data-mode="smart" class="mode-card" style="padding:12px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid var(--b);cursor:pointer;transition:all .2s"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="font-size:20px">🧠</div><div id="mstat-smart" class="mstat waiting">IDLE</div></div><div style="font-size:12px;font-weight:700;margin-top:5px">Smart Hunter</div><div style="font-size:9px;color:var(--td)">Pattern + trend</div><div class="mono fw" style="font-size:10px;margin-top:5px;color:var(--g)" id="stat-smart">—</div><div style="font-size:9px;color:var(--tm);margin-top:3px" id="msig-smart">Last: —</div></div>
-<div onclick="selMode('sniper')" data-mode="sniper" class="mode-card" style="padding:12px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid var(--b);cursor:pointer;transition:all .2s"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="font-size:20px">🎲</div><div id="mstat-sniper" class="mstat waiting">IDLE</div></div><div style="font-size:12px;font-weight:700;margin-top:5px">Sniper</div><div style="font-size:9px;color:var(--td)">Directional bias</div><div class="mono fw" style="font-size:10px;margin-top:5px;color:var(--g)" id="stat-sniper">—</div><div style="font-size:9px;color:var(--tm);margin-top:3px" id="msig-sniper">Last: —</div></div>
+
+<div onclick="selMode('triple')" data-mode="triple" class="mode-card" style="padding:12px;border-radius:12px;background:rgba(59,130,246,.1);border:1px solid var(--bl);cursor:pointer;transition:all .2s">
+<div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="font-size:20px">🎯</div><div id="mstat-triple" class="mstat waiting">IDLE</div></div>
+<div style="font-size:12px;font-weight:700;margin-top:5px">Triple Strike</div>
+<div style="font-size:9px;color:var(--td)">3× same digit</div>
+<div class="mono fw" style="font-size:10px;margin-top:5px;color:var(--g)" id="stat-triple">—</div>
+<div style="font-size:9px;color:var(--tm);margin-top:3px" id="msig-triple">Last: —</div>
+</div>
+
+<div onclick="selMode('momentum')" data-mode="momentum" class="mode-card" style="padding:12px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid var(--b);cursor:pointer;transition:all .2s">
+<div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="font-size:20px">📊</div><div id="mstat-momentum" class="mstat waiting">IDLE</div></div>
+<div style="font-size:12px;font-weight:700;margin-top:5px">Momentum</div>
+<div style="font-size:9px;color:var(--td)">3 up / 3 down</div>
+<div class="mono fw" style="font-size:10px;margin-top:5px;color:var(--g)" id="stat-momentum">—</div>
+<div style="font-size:9px;color:var(--tm);margin-top:3px" id="msig-momentum">Last: —</div>
+</div>
+
+<div onclick="selMode('smart')" data-mode="smart" class="mode-card" style="padding:12px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid var(--b);cursor:pointer;transition:all .2s">
+<div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="font-size:20px">🧠</div><div id="mstat-smart" class="mstat waiting">IDLE</div></div>
+<div style="font-size:12px;font-weight:700;margin-top:5px">Smart Hunter</div>
+<div style="font-size:9px;color:var(--td)">Pattern + trend</div>
+<div class="mono fw" style="font-size:10px;margin-top:5px;color:var(--g)" id="stat-smart">—</div>
+<div style="font-size:9px;color:var(--tm);margin-top:3px" id="msig-smart">Last: —</div>
+</div>
+
+<div onclick="selMode('sniper')" data-mode="sniper" class="mode-card" style="padding:12px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid var(--b);cursor:pointer;transition:all .2s">
+<div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="font-size:20px">🎲</div><div id="mstat-sniper" class="mstat waiting">IDLE</div></div>
+<div style="font-size:12px;font-weight:700;margin-top:5px">Sniper</div>
+<div style="font-size:9px;color:var(--td)">Directional bias</div>
+<div class="mono fw" style="font-size:10px;margin-top:5px;color:var(--g)" id="stat-sniper">—</div>
+<div style="font-size:9px;color:var(--tm);margin-top:3px" id="msig-sniper">Last: —</div>
+</div>
+
 </div>
 <button class="btn b1 big" id="modeBtn" onclick="modeToggle()" style="width:100%;margin-top:12px;transition:all .2s">▶ ACTIVATE</button>
 </div>
+
+<!-- Confidence Gauge -->
 <div class="glass" style="text-align:center">
 <h3 style="font-size:13px;margin-bottom:8px">🎯 Signal Strength</h3>
 <div style="position:relative;width:120px;height:120px;margin:0 auto 8px">
@@ -215,18 +322,26 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 <div style="font-size:9px;color:var(--tm)">SIGNAL</div>
 </div>
 </div>
-<div style="font-size:11px;font-weight:700;margin-bottom:4px;transition:color .4s;color:var(--td)" id="confStrength">—</div>
+<!-- Strength label -->
+<div style="font-size:11px;font-weight:700;margin-bottom:4px;transition:color .4s" id="confStrength" style="color:var(--td)">—</div>
+<!-- Trend + Recommendation -->
 <div style="display:flex;gap:4px;justify-content:center;margin-bottom:8px">
 <div style="padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.04);border:1px solid var(--b);font-size:9px;font-weight:700;color:var(--td);transition:all .3s" id="confTrend">— TREND</div>
-<div style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;transition:all .3s;background:rgba(255,255,255,.04);border:1px solid var(--b);color:var(--td)" id="confRec">WAIT</div>
+<div style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;transition:all .3s" id="confRec" style="background:rgba(255,255,255,.04);border:1px solid var(--b);color:var(--td)">WAIT</div>
 </div>
+<!-- Pattern -->
 <div style="padding:6px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b)">
 <div style="font-size:9px;color:var(--tm);margin-bottom:2px">Pattern</div>
 <div class="mono fw" style="font-size:11px;color:var(--cy)" id="confPattern">—</div>
 </div>
 </div>
-</div>
+
+</div><!-- end grid -->
+
+<!-- Live AI Feed + Digit Distribution -->
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+
+<!-- Live AI Feed -->
 <div class="glass" style="padding:14px">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
 <h3 style="font-size:13px">📡 Live AI Feed</h3>
@@ -239,6 +354,8 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 <div style="font-size:11px;color:var(--td);text-align:center;padding:20px 0">Activate scanner to begin streaming</div>
 </div>
 </div>
+
+<!-- Digit Distribution -->
 <div class="glass" style="padding:14px">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
 <h3 style="font-size:13px">📊 Digit Distribution</h3>
@@ -252,7 +369,10 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 <span style="font-size:9px;color:var(--tm)">0</span><span style="font-size:9px;color:var(--tm)">1</span><span style="font-size:9px;color:var(--tm)">2</span><span style="font-size:9px;color:var(--tm)">3</span><span style="font-size:9px;color:var(--tm)">4</span><span style="font-size:9px;color:var(--tm)">5</span><span style="font-size:9px;color:var(--tm)">6</span><span style="font-size:9px;color:var(--tm)">7</span><span style="font-size:9px;color:var(--tm)">8</span><span style="font-size:9px;color:var(--tm)">9</span>
 </div>
 </div>
-</div>
+
+</div><!-- end feed+chart grid -->
+
+<!-- AI Explanation Panel -->
 <div id="aiExplain" class="glass ai-exp" style="margin-bottom:10px;display:none;border:1px solid rgba(245,158,11,.25);background:linear-gradient(135deg,rgba(245,158,11,.04),rgba(59,130,246,.03))">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
 <h3 style="font-size:13px;color:var(--am)">🤖 AI Explanation</h3>
@@ -260,91 +380,111 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 </div>
 <div id="aiExplainBody" style="font-size:11px;line-height:1.7;color:var(--t)"></div>
 </div>
+
+<!-- Martingale Recovery Panel -->
 <div class="glass" style="margin-bottom:10px;border:1px solid rgba(139,92,246,.25);background:linear-gradient(135deg,rgba(139,92,246,.05),rgba(59,130,246,.03))">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-<div style="display:flex;align-items:center;gap:8px">
-<h3 style="font-size:13px">🔄 Martingale Recovery</h3>
-<div id="mgBadge" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.04);border:1px solid var(--b);font-size:9px;font-weight:700;color:var(--td)">OFF</div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <h3 style="font-size:13px">🔄 Martingale Recovery</h3>
+    <div id="mgBadge" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.04);border:1px solid var(--b);font-size:9px;font-weight:700;color:var(--td)">OFF</div>
+  </div>
+  <label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none">
+    <div id="mgToggleWrap" onclick="mgToggle()" style="width:38px;height:20px;border-radius:99px;background:rgba(255,255,255,.08);border:1px solid var(--b);position:relative;cursor:pointer;transition:background .3s">
+      <div id="mgKnob" style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.5)"></div>
+    </div>
+    <span style="font-size:11px;color:var(--td)">Auto-recovery on loss</span>
+  </label>
 </div>
-<label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none">
-<div id="mgToggleWrap" onclick="mgToggle()" style="width:38px;height:20px;border-radius:99px;background:rgba(255,255,255,.08);border:1px solid var(--b);position:relative;cursor:pointer;transition:background .3s">
-<div id="mgKnob" style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.5)"></div>
-</div>
-<span style="font-size:11px;color:var(--td)">Auto-recovery on loss</span>
-</label>
-</div>
+
+<!-- Settings Grid -->
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:12px">
-<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)">
-<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:6px">Base Stake ($)</div>
-<input id="mgBase" type="number" min="0.35" max="100" step="0.01" value="1" class="input" style="font-size:14px;font-weight:700;font-family:monospace;padding:6px 8px" oninput="mgUpdate()">
-<div style="font-size:9px;color:var(--tm);margin-top:4px">First trade amount</div>
+
+  <div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)">
+    <div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:6px">Base Stake ($)</div>
+    <input id="mgBase" type="number" min="0.35" max="100" step="0.01" value="1" class="input" style="font-size:14px;font-weight:700;font-family:monospace;padding:6px 8px" oninput="mgUpdate()">
+    <div style="font-size:9px;color:var(--tm);margin-top:4px">First trade amount</div>
+  </div>
+
+  <div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)">
+    <div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:6px">Multiplier (×)</div>
+    <input id="mgMult" type="number" min="1.1" max="5" step="0.1" value="2.1" class="input" style="font-size:14px;font-weight:700;font-family:monospace;padding:6px 8px" oninput="mgUpdate()">
+    <div style="font-size:9px;color:var(--tm);margin-top:4px">Stake × on each loss</div>
+  </div>
+
+  <div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)">
+    <div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:6px">Max Steps</div>
+    <input id="mgMaxSteps" type="number" min="1" max="10" step="1" value="5" class="input" style="font-size:14px;font-weight:700;font-family:monospace;padding:6px 8px" oninput="mgUpdate()">
+    <div style="font-size:9px;color:var(--tm);margin-top:4px">Stop after N losses</div>
+  </div>
+
+  <div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)">
+    <div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:6px">Stop Loss ($)</div>
+    <input id="mgStopLoss" type="number" min="0" max="1000" step="0.5" value="10" class="input" style="font-size:14px;font-weight:700;font-family:monospace;padding:6px 8px" oninput="mgUpdate()">
+    <div style="font-size:9px;color:var(--tm);margin-top:4px">0 = disabled</div>
+  </div>
+
+  <div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)">
+    <div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:6px">Take Profit ($)</div>
+    <input id="mgTakeProfit" type="number" min="0" max="1000" step="0.5" value="5" class="input" style="font-size:14px;font-weight:700;font-family:monospace;padding:6px 8px" oninput="mgUpdate()">
+    <div style="font-size:9px;color:var(--tm);margin-top:4px">0 = disabled</div>
+  </div>
+
+  <div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)">
+    <div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:6px">Reset After Win</div>
+    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:6px">
+      <div id="mgResetWrap" onclick="mgResetToggle()" style="width:34px;height:18px;border-radius:99px;background:rgba(34,197,94,.5);border:1px solid rgba(34,197,94,.4);position:relative;cursor:pointer;transition:background .3s">
+        <div id="mgResetKnob" style="position:absolute;top:2px;left:16px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .25s"></div>
+      </div>
+      <span style="font-size:11px;color:var(--t);font-weight:600" id="mgResetLabel">ON</span>
+    </label>
+    <div style="font-size:9px;color:var(--tm);margin-top:4px">Return to base on win</div>
+  </div>
+
 </div>
-<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)">
-<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:6px">Multiplier (×)</div>
-<input id="mgMult" type="number" min="1.1" max="5" step="0.1" value="2.1" class="input" style="font-size:14px;font-weight:700;font-family:monospace;padding:6px 8px" oninput="mgUpdate()">
-<div style="font-size:9px;color:var(--tm);margin-top:4px">Stake × on each loss</div>
-</div>
-<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)">
-<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:6px">Max Steps</div>
-<input id="mgMaxSteps" type="number" min="1" max="10" step="1" value="5" class="input" style="font-size:14px;font-weight:700;font-family:monospace;padding:6px 8px" oninput="mgUpdate()">
-<div style="font-size:9px;color:var(--tm);margin-top:4px">Stop after N losses</div>
-</div>
-<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)">
-<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:6px">Stop Loss ($)</div>
-<input id="mgStopLoss" type="number" min="0" max="1000" step="0.5" value="10" class="input" style="font-size:14px;font-weight:700;font-family:monospace;padding:6px 8px" oninput="mgUpdate()">
-<div style="font-size:9px;color:var(--tm);margin-top:4px">0 = disabled</div>
-</div>
-<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)">
-<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:6px">Take Profit ($)</div>
-<input id="mgTakeProfit" type="number" min="0" max="1000" step="0.5" value="5" class="input" style="font-size:14px;font-weight:700;font-family:monospace;padding:6px 8px" oninput="mgUpdate()">
-<div style="font-size:9px;color:var(--tm);margin-top:4px">0 = disabled</div>
-</div>
-<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)">
-<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:6px">Reset After Win</div>
-<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:6px">
-<div id="mgResetWrap" onclick="mgResetToggle()" style="width:34px;height:18px;border-radius:99px;background:rgba(34,197,94,.5);border:1px solid rgba(34,197,94,.4);position:relative;cursor:pointer;transition:background .3s">
-<div id="mgResetKnob" style="position:absolute;top:2px;left:16px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .25s"></div>
-</div>
-<span style="font-size:11px;color:var(--t);font-weight:600" id="mgResetLabel">ON</span>
-</label>
-<div style="font-size:9px;color:var(--tm);margin-top:4px">Return to base on win</div>
-</div>
-</div>
+
+<!-- Ladder Preview -->
 <div style="margin-bottom:12px">
-<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:6px">Stake Ladder Preview</div>
-<div id="mgLadder" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+  <div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:6px">Stake Ladder Preview</div>
+  <div id="mgLadder" style="display:flex;gap:6px;flex-wrap:wrap"></div>
 </div>
+
+<!-- Live Recovery Status -->
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px">
-<div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b);text-align:center">
-<div style="font-size:9px;color:var(--tm);margin-bottom:2px">Current Step</div>
-<div class="mono fw" style="font-size:16px;color:var(--cy)" id="mgStep">0</div>
+  <div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b);text-align:center">
+    <div style="font-size:9px;color:var(--tm);margin-bottom:2px">Current Step</div>
+    <div class="mono fw" style="font-size:16px;color:var(--cy)" id="mgStep">0</div>
+  </div>
+  <div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b);text-align:center">
+    <div style="font-size:9px;color:var(--tm);margin-bottom:2px">Next Stake</div>
+    <div class="mono fw" style="font-size:16px;color:var(--am)" id="mgNextStake">$1.00</div>
+  </div>
+  <div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b);text-align:center">
+    <div style="font-size:9px;color:var(--tm);margin-bottom:2px">Consecutive Losses</div>
+    <div class="mono fw" style="font-size:16px;color:var(--r)" id="mgLosses">0</div>
+  </div>
+  <div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b);text-align:center">
+    <div style="font-size:9px;color:var(--tm);margin-bottom:2px">Session P/L</div>
+    <div class="mono fw" style="font-size:16px" id="mgSessionPL">$0.00</div>
+  </div>
+  <div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b);text-align:center">
+    <div style="font-size:9px;color:var(--tm);margin-bottom:2px">Status</div>
+    <div class="mono fw" style="font-size:10px;color:var(--td)" id="mgStatus">Waiting</div>
+  </div>
 </div>
-<div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b);text-align:center">
-<div style="font-size:9px;color:var(--tm);margin-bottom:2px">Next Stake</div>
-<div class="mono fw" style="font-size:16px;color:var(--am)" id="mgNextStake">$1.00</div>
+
 </div>
-<div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b);text-align:center">
-<div style="font-size:9px;color:var(--tm);margin-bottom:2px">Consecutive Losses</div>
-<div class="mono fw" style="font-size:16px;color:var(--r)" id="mgLosses">0</div>
-</div>
-<div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b);text-align:center">
-<div style="font-size:9px;color:var(--tm);margin-bottom:2px">Session P/L</div>
-<div class="mono fw" style="font-size:16px" id="mgSessionPL">$0.00</div>
-</div>
-<div style="padding:8px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b);text-align:center">
-<div style="font-size:9px;color:var(--tm);margin-bottom:2px">Status</div>
-<div class="mono fw" style="font-size:10px;color:var(--td)" id="mgStatus">Waiting</div>
-</div>
-</div>
-</div>
+
+<!-- Performance Panel -->
 <div class="glass" style="margin-bottom:10px">
 <h3 style="font-size:13px;margin-bottom:10px">📊 Performance</h3>
 <div id="modePerf" style="font-size:12px;color:var(--td)">Activate scanner to see performance</div>
 </div>
+
 </section>
 
 <!-- DBOT -->
 <section id="p-dbot" class="page" style="display:none">
+<!-- Import Modal (Hidden by default) -->
 <div id="dbotImportModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:20px">
 <div style="width:100%;max-width:500px;background:linear-gradient(180deg,#0D1219,#0A0F16);border:1px solid var(--bb);border-radius:18px;padding:24px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
@@ -357,8 +497,12 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 <button class="btn b1 big" onclick="parseBot()" style="width:100%">📥 Load Bot</button>
 </div>
 </div>
+
+<!-- Main DBot Layout -->
 <div style="display:grid;grid-template-columns:1fr 320px;gap:12px;height:calc(100vh - 80px)">
+<!-- Left: Chart Area -->
 <div style="display:flex;flex-direction:column;gap:10px">
+<!-- Chart Header -->
 <div class="glass" style="padding:12px;display:flex;justify-content:space-between;align-items:center">
 <div>
 <div style="font-size:11px;color:var(--tm);margin-bottom:2px">SYMBOL</div>
@@ -369,6 +513,7 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 <button class="btn s" onclick="editBotXml()" id="editBtn" style="display:none">✏️ Edit</button>
 </div>
 </div>
+<!-- Chart Container -->
 <div class="glass" style="flex:1;min-height:400px;position:relative;overflow:hidden">
 <div id="dbotChart" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">
 <div style="text-align:center;color:var(--td)">
@@ -377,25 +522,34 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 <div style="font-size:11px;color:var(--tm);margin-top:4px">Import a bot to begin</div>
 </div>
 </div>
+<!-- Bot Name Overlay (shown when bot loaded) -->
 <div id="botNameOverlay" style="position:absolute;top:12px;left:12px;padding:6px 12px;background:rgba(13,18,25,.9);border:1px solid var(--b);border-radius:8px;display:none">
 <div style="font-size:10px;color:var(--tm)">BOT</div>
 <div style="font-size:12px;font-weight:700;color:var(--cy)" id="loadedBotName">—</div>
 </div>
 </div>
 </div>
+
+<!-- Right: Control Panel -->
 <div style="display:flex;flex-direction:column;gap:10px">
+<!-- Run Button & Status -->
 <div class="glass" style="padding:16px;text-align:center">
 <button id="dbotRunBtn" onclick="toggleDBotRun()" class="btn b1 big" style="width:100%;padding:16px;font-size:15px;margin-bottom:12px">▶ Run</button>
 <div id="dbotStatus" style="font-size:12px;color:var(--td);font-weight:500">Bot is not running</div>
 </div>
+
+<!-- Tabs -->
 <div class="glass" style="padding:8px">
 <div style="display:flex;gap:4px;margin-bottom:8px">
 <button onclick="switchDBotTab('summary')" class="dbot-tab btn s" data-tab="summary" style="flex:1;background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.3);color:var(--bl)">Summary</button>
 <button onclick="switchDBotTab('transactions')" class="dbot-tab btn s" data-tab="transactions" style="flex:1">Transactions</button>
 <button onclick="switchDBotTab('journal')" class="dbot-tab btn s" data-tab="journal" style="flex:1">Journal</button>
 </div>
+
+<!-- Tab Content -->
 <div id="dbotTabContent" style="min-height:200px">
-<div id="tab-summary" class="dbot-tab-panel active">
+<!-- Summary Tab -->
+<div id="tab-summary" class="dbot-tab-panel">
 <div id="dbotEmptyState" style="text-align:center;padding:40px 20px;color:var(--td)">
 <div style="font-size:32px;margin-bottom:8px">🚀</div>
 <div style="font-size:12px">When you're ready to trade, hit Run.</div>
@@ -403,21 +557,43 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 </div>
 <div id="dbotSummaryStats" style="display:none">
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b)"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:4px">Total stake</div><div class="mono fw" style="font-size:14px" id="dbotTotalStake">$0.00</div></div>
-<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b)"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:4px">Total payout</div><div class="mono fw cy" style="font-size:14px" id="dbotTotalPayout">$0.00</div></div>
-<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b)"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:4px">No. of runs</div><div class="mono fw" style="font-size:14px" id="dbotRuns">0</div></div>
-<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b)"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:4px">Contracts lost</div><div class="mono fw r" style="font-size:14px" id="dbotLost">0</div></div>
-<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b)"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:4px">Contracts won</div><div class="mono fw g" style="font-size:14px" id="dbotWon">0</div></div>
-<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b)"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:4px">Total profit/loss</div><div class="mono fw" style="font-size:14px" id="dbotPL">$0.00</div></div>
+<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b)">
+<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:4px">Total stake</div>
+<div class="mono fw" style="font-size:14px" id="dbotTotalStake">$0.00</div>
+</div>
+<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b)">
+<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:4px">Total payout</div>
+<div class="mono fw cy" style="font-size:14px" id="dbotTotalPayout">$0.00</div>
+</div>
+<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b)">
+<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:4px">No. of runs</div>
+<div class="mono fw" style="font-size:14px" id="dbotRuns">0</div>
+</div>
+<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b)">
+<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:4px">Contracts lost</div>
+<div class="mono fw r" style="font-size:14px" id="dbotLost">0</div>
+</div>
+<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b)">
+<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:4px">Contracts won</div>
+<div class="mono fw g" style="font-size:14px" id="dbotWon">0</div>
+</div>
+<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid var(--b)">
+<div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:4px">Total profit/loss</div>
+<div class="mono fw" style="font-size:14px" id="dbotPL">$0.00</div>
+</div>
 </div>
 <button class="btn s" onclick="resetDBotStats()" style="width:100%">Reset</button>
 </div>
 </div>
+
+<!-- Transactions Tab -->
 <div id="tab-transactions" class="dbot-tab-panel" style="display:none">
 <div id="dbotTransactions" style="max-height:280px;overflow-y:auto">
 <div style="text-align:center;padding:30px;color:var(--td);font-size:11px">No transactions yet</div>
 </div>
 </div>
+
+<!-- Journal Tab -->
 <div id="tab-journal" class="dbot-tab-panel" style="display:none">
 <div id="dbotJournal" style="max-height:280px;overflow-y:auto;font-family:monospace;font-size:10px">
 <div style="text-align:center;padding:30px;color:var(--td);font-size:11px">No journal entries</div>
@@ -459,15 +635,17 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 </section>
 </main>
 
+<!-- BOTTOM NAV (MOBILE) -->
 <nav id="bnav" style="display:none;position:fixed;bottom:0;left:0;right:0;height:60px;background:rgba(13,18,25,.95);backdrop-filter:blur(20px);border-top:1px solid var(--bb);z-index:100;padding:6px 4px">
 <div onclick="go('home')" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--tm);font-size:9px;cursor:pointer"><div style="font-size:18px">🏠</div><span>Home</span></div>
 <div onclick="go('trade')" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--tm);font-size:9px;cursor:pointer"><div style="font-size:18px">🎯</div><span>Trade</span></div>
-<div onclick="go('modes')" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--tm);font-size:9px;cursor:pointer"><div style="font-size:18px">🧠</div><span>AI</span></div>
+<div onclick="go('modes')" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--tm);font-size:9px;cursor:pointer"><div style="font-size:18px">🧠</div><span>Modes</span></div>
 <div onclick="go('dbot')" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--tm);font-size:9px;cursor:pointer"><div style="font-size:18px">📦</div><span>DBot</span></div>
 <div onclick="go('history')" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--tm);font-size:9px;cursor:pointer"><div style="font-size:18px">📜</div><span>History</span></div>
 <div onclick="go('settings')" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--tm);font-size:9px;cursor:pointer"><div style="font-size:18px">⚙️</div><span>Settings</span></div>
 </nav>
 
+<!-- TOASTS + MODAL -->
 <div id="toasts" style="position:fixed;top:14px;right:14px;z-index:2000;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:calc(100vw - 28px)"></div>
 <div id="modal" style="position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:14px">
 <div style="width:100%;max-width:380px;background:linear-gradient(180deg,#0D1219,#0A0F16);border:1px solid var(--bb);border-radius:18px;padding:18px">
@@ -476,6 +654,1007 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--t);font
 </div>
 </div>
 
-<script src="app.js"></script>
+<script>
+// ===== SERVICE WORKER REGISTRATION (PWA) =====
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg=>console.log('✅ PWA ready'))
+      .catch(err=>console.log('❌ PWA error:',err));
+  });
+}
+
+// ===== STATE =====
+var S={page:'home',ws:null,ready:false,auth:false,rec:false,hb:null,ticks:[],df:Array(10).fill(0),sym:'R_100',pid:null,pdata:null,sel:{c:'DIGITOVER',b:'0'},oid:null,odata:null,hist:[],cfg:{maxStake:10,token:'',sym:'R_100',targetProfit:0,targetLoss:0},acc:{bal:0,cur:'USD',login:'',pl:0},last:null,rid:1,stake:1,auto:{on:false,arrows:0,need:3,dir:1,lvl:0,base:1,lad:[],buf:.91,busy:false,cd:false,c:'DIGITOVER',b:'0'},mode:'triple',modeActive:false,savedBots:[],mg:{on:false,resetOnWin:true,step:0,losses:0,sessionPL:0,lastContract:null,lastBarrier:null,lastContractType:null,paused:false},dbot:{loaded:null,running:false,stats:{totalStake:0,totalPayout:0,runs:0,won:0,lost:0,pl:0},transactions:[],journal:[],chartData:[]},volMarkets:['R_100','R_75','R_50','R_25','R_15'],curMarketIdx:0};
+// Scanner runtime state — reset on each activate
+var SC={ticks:0,signals:0,trades:0,feed:[],lastSig:'—',confHistory:[],lastAnalysis:0,modeLastSig:{triple:'—',momentum:'—',smart:'—',sniper:'—'},modeSigCount:{triple:0,momentum:0,smart:0,sniper:0},cooldown:false};
+
+function save(){try{localStorage.setItem('t7s_cfg',JSON.stringify(S.cfg));localStorage.setItem('t7s_h',JSON.stringify(S.hist.slice(0,500)));localStorage.setItem('t7s_bots',JSON.stringify(S.savedBots));}catch(e){}}
+function load(){try{var c=JSON.parse(localStorage.getItem('t7s_cfg'));if(c)Object.assign(S.cfg,c);var h=JSON.parse(localStorage.getItem('t7s_h')||'[]');if(Array.isArray(h))S.hist=h;var b=JSON.parse(localStorage.getItem('t7s_bots')||'[]');if(Array.isArray(b))S.savedBots=b;}catch(e){}}
+function $(id){return document.getElementById(id);}
+function fmt(n,d){d=d||2;return Number(n||0).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function $f(n){return '$'+fmt(n);}
+function toast(m,t,ms){t=t||'info';ms=ms||3000;var d=document.createElement('div');d.style.cssText='padding:10px 14px;border-radius:10px;background:rgba(13,18,25,.95);backdrop-filter:blur(20px);border:1px solid '+(t==='success'?'rgba(34,197,94,.4)':t==='error'?'rgba(239,68,68,.4)':'rgba(59,130,246,.4)')+';display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;animation:sl .4s';d.innerHTML='<span>'+(t==='success'?'✓':t==='error'?'✕':'ⓘ')+'</span><span>'+m+'</span>';$('toasts').appendChild(d);setTimeout(function(){d.remove();},ms);}
+
+// ===== BOOT ANIMATION =====
+function runBoot(){
+  try{
+    if(sessionStorage.getItem('t7s_booted')){
+      var boot=$('boot');
+      if(boot){boot.style.display='none';}
+      document.body.style.overflow='';
+      setTimeout(init,100);
+      return;
+    }
+    var BG=['#22C55E','#8B5CF6','#22D3EE','#F59E0B','#22C55E','#3B82F6','#EC4899','#22C55E'];
+    var STEPS=[['AI SCAN','Scanning market data...',20,'scan'],['DATA STREAM','Processing live tick data...',45,'stream'],['ANALYZING','AI is analyzing patterns...',70,'brain'],['CALCULATING','Calculating probabilities...',85,'calc'],['OPTIMIZING','Optimizing strategy model...',92,'gear'],['CONNECTING','Connecting to market server...',96,'globe'],['PREPARING INSIGHTS','Preparing AI insights...',99,'chart'],['ALMOST READY','Almost ready...',100,'ready']];
+    var ICONS={scan:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><circle cx="50" cy="50" r="35"/><circle cx="50" cy="50" r="45" stroke-dasharray="5 5" opacity=".5"/><path d="M50 15L50 85M15 50L85 50"/></svg>',stream:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><path d="M10 50 Q25 20 40 50 T70 50 T100 50"/><path d="M10 70 Q25 40 40 70 T70 70 T100 70" opacity=".6"/></svg>',brain:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><circle cx="50" cy="50" r="28"/><circle cx="50" cy="50" r="38" stroke-dasharray="4 4" opacity=".5"/><path d="M50 12L50 88M12 50L88 50"/></svg>',calc:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><rect x="25" y="20" width="50" height="60" rx="5"/><circle cx="40" cy="35" r="3" fill="currentColor"/><circle cx="60" cy="35" r="3" fill="currentColor"/><path d="M35 55L65 55M35 65L65 65M35 75L65 75"/></svg>',gear:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><circle cx="50" cy="50" r="18"/><path d="M50 10L50 22M50 78L50 90M10 50L22 50M78 50L90 50M22 22L30 30M70 70L78 78M22 78L30 70M70 30L78 22" stroke-width="4"/></svg>',globe:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><circle cx="50" cy="50" r="38"/><ellipse cx="50" cy="50" rx="16" ry="38"/><path d="M12 50L88 50"/></svg>',chart:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><path d="M15 85L85 85L85 15"/><path d="M25 70L40 55L55 65L70 35L82 45"/></svg>',ready:'<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4"><circle cx="50" cy="50" r="38"/><path d="M32 50L45 63L68 38"/></svg>'};
+    var bg=$('bootBg');
+    if(bg){
+      for(var i=0;i<20;i++){
+        var s=document.createElement('div');
+        s.style.cssText='position:absolute;width:2px;height:2px;background:#22D3EE;border-radius:50%;box-shadow:0 0 6px #22D3EE;left:'+Math.random()*100+'%;animation:bf 18s linear infinite;animation-delay:'+Math.random()*18+'s';
+        bg.appendChild(s);
+      }
+    }
+    var st=document.createElement('style');
+    st.textContent='@keyframes bf{0%{transform:translateY(100vh);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100vh);opacity:0}}@keyframes bspin{to{transform:rotate(360deg)}}@keyframes bz{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}@keyframes brk{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}@keyframes sl{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}';
+    document.head.appendChild(st);
+    var content=$('bootContent');
+    if(!content){
+      // Fallback if boot elements missing
+      document.body.style.overflow='';
+      init();
+      return;
+    }
+    var screens=[];
+    STEPS.forEach(function(s,i){
+      var div=document.createElement('div');
+      div.style.cssText='display:none;color:'+BG[i]+';animation:bz .5s ease';
+      div.innerHTML='<div style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);font-size:10px;font-weight:700;margin-bottom:14px;font-family:monospace"><span style="font-size:14px;font-weight:800">'+(i+1)+'</span> '+s[0]+'</div><div style="width:120px;height:120px;margin:0 auto 12px;animation:bspin 3s linear infinite;color:'+BG[i]+'">'+ICONS[s[3]]+'</div><div style="font-size:20px;font-weight:800;letter-spacing:.04em;margin-bottom:4px">'+s[0]+'</div><div style="font-size:11px;color:#5A6478;letter-spacing:.15em;margin-bottom:12px;text-transform:uppercase">Trade7Smart AI ANALYZER</div><div style="font-size:13px;color:#8B95A8;margin-bottom:14px">'+s[1]+'</div><div style="height:5px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;margin-bottom:8px"><div id="bf'+i+'" style="height:100%;width:0%;background:'+BG[i]+';border-radius:99px;box-shadow:0 0 10px '+BG[i]+';transition:width .8s ease"></div></div><div id="bp'+i+'" style="font-size:18px;font-weight:700;font-family:monospace;color:'+BG[i]+'">0%</div>';
+      content.appendChild(div);
+      screens.push(div);
+    });
+    var fin=document.createElement('div');
+    fin.id='bootFinal';
+    fin.style.cssText='display:none;color:#22C55E';
+    fin.innerHTML='<div style="font-size:56px;margin-bottom:12px;animation:brk 1.5s ease infinite">🚀</div><div style="font-size:22px;font-weight:800;margin-bottom:6px;background:linear-gradient(135deg,#fff,#22C55E);-webkit-background-clip:text;background-clip:text;color:transparent">Trade7Smart AI Ready</div><div style="font-size:13px;color:#8B95A8;margin-bottom:4px">Welcome to Trade7Smart AI Analyzer</div><div style="font-size:12px;color:#22D3EE;font-weight:600">Smart Data. Smarter Decisions.</div><div style="width:54px;height:54px;border-radius:50%;margin:12px auto 0;background:radial-gradient(circle,rgba(34,197,94,.3),transparent);display:flex;align-items:center;justify-content:center;font-size:28px;color:#22C55E;box-shadow:0 0 36px rgba(34,197,94,.5);animation:bz .5s ease">✓</div>';
+    content.appendChild(fin);
+    var idx=0;
+    function next(){
+      if(idx>=STEPS.length){
+        screens.forEach(function(s){s.style.display='none';});
+        fin.style.display='block';
+        setTimeout(finish,1500);
+        return;
+      }
+      screens.forEach(function(s){s.style.display='none';});
+      screens[idx].style.display='block';
+      setTimeout(function(){
+        var f=$('bf'+idx),p=$('bp'+idx);
+        if(f)f.style.width=STEPS[idx][2]+'%';
+        if(p)p.textContent=STEPS[idx][2]+'%';
+      },100);
+      idx++;
+      setTimeout(next,1000);
+    }
+    next();
+    function finish(){
+      sessionStorage.setItem('t7s_booted','1');
+      var boot=$('boot');
+      if(boot){
+        boot.style.transition='opacity .8s';
+        boot.style.opacity='0';
+        setTimeout(function(){
+          boot.style.display='none';
+          document.body.style.overflow='';
+          init();
+        },800);
+      }else{
+        document.body.style.overflow='';
+        init();
+      }
+    }
+  }catch(e){
+    console.error('Boot error:',e);
+    // Fallback: skip boot animation on error
+    var boot=$('boot');
+    if(boot)boot.style.display='none';
+    document.body.style.overflow='';
+    init();
+  }
+}
+
+// ===== NAVIGATION =====
+function go(p){
+  S.page=p;
+  document.querySelectorAll('.page').forEach(function(x){x.style.display='none';});
+  document.querySelectorAll('.nav').forEach(function(n){
+    n.style.background='transparent';n.style.color='var(--td)';n.style.border='1px solid transparent';
+    if(n.dataset.p===p){n.style.background='linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.1))';n.style.color='#fff';n.style.border='1px solid rgba(59,130,246,.25)';}
+  });
+  var bnav=document.getElementById('bnav');
+  if(bnav){
+    bnav.querySelectorAll('div[onclick^="go"]').forEach(function(b){
+      b.style.color='var(--tm)';b.style.background='transparent';
+      if(b.getAttribute('onclick')==='go(\''+p+'\')'){b.style.color='var(--bl)';b.style.background='rgba(59,130,246,.1)';}
+    });
+  }
+  document.querySelector('main').scrollTop=0;
+  $('p-'+p).style.display='block';
+  if(p==='history')renderH();
+  if(p==='home')renderHome();
+  if(p==='modes')renderModes();
+  if(p==='dbot')renderDBot();
+}
+
+// ===== DERIV WEBSOCKET =====
+var WS='wss://ws.binaryws.com/websockets/v3?app_id=1089';
+function conn(){
+  if(S.ws){try{S.ws.close();}catch(e){}}
+  S.ws=null;S.ready=false;S.auth=false;S.pid=null;S.pdata=null;updateConn('connecting');
+  try{S.ws=new WebSocket(WS);}catch(e){recon();return;}
+  S.ws.onopen=function(){S.ready=true;try{S.ws.send(JSON.stringify({forget_all:'all'}));}catch(e){}
+    if(S.cfg.token&&S.cfg.token.length>5){send({authorize:S.cfg.token});}else{subTicks();updateConn('live');}hb();};
+  S.ws.onmessage=function(e){try{handle(JSON.parse(e.data));}catch(err){}};
+  S.ws.onerror=function(){};S.ws.onclose=function(){S.ready=false;S.auth=false;S.pid=null;updateConn('off');shb();recon();};
+}
+function recon(){if(S.rec)return;S.rec=true;setTimeout(function(){S.rec=false;conn();},4000);}
+function hb(){shb();S.hb=setInterval(function(){if(S.ready){try{S.ws.send(JSON.stringify({ping:1}));}catch(e){}}},30000);}
+function shb(){if(S.hb){clearInterval(S.hb);}S.hb=null;}
+function send(o){if(!S.ready||!S.ws)return;o.req_id=S.rid++;try{S.ws.send(JSON.stringify(o));}catch(e){}}
+function handle(d){
+  if(d.msg_type==='ping'){send({pong:1});return;}
+  if(d.error){var c=d.error.code||'';
+    if(c==='InvalidToken'||c==='AuthorizationRequired'){S.auth=false;toast('Invalid token','error');}
+    else if(['AlreadySubscribed','ContractWon','ContractLost','RateLimit','MarketIsClosed','ContractBuyPriceError','PriceMoved'].indexOf(c)===-1){toast(d.error.message||'Error','error',3000);}
+    if(['ContractBuyPriceError','PriceMoved'].indexOf(c)>=0){S.pid=null;S.pdata=null;setTimeout(function(){if(S.ready&&S.auth)reqProp();},800);}
+    return;}
+  if(d.msg_type==='authorize'){S.auth=true;S.acc.login=d.authorize.loginid;S.acc.cur=d.authorize.currency||'USD';subTicks();send({balance:1,subscribe:1});updateConn('live');toast('✓ '+d.authorize.loginid,'success');}
+  if(d.msg_type==='balance'){S.acc.bal=Number(d.balance.balance);if(d.balance.currency)S.acc.cur=d.balance.currency;renderBal();}
+  if(d.msg_type==='tick')onTick(d.tick);
+  if(d.msg_type==='proposal'){S.pid=d.proposal.id;S.pdata=d.proposal;renderProp();}
+  if(d.msg_type==='buy'){if(d.buy){toast('✓ Bought $'+d.buy.buy_price,'success');S.oid=d.buy.contract_id;S.odata=null;send({proposal_open_contract:1,contract_id:d.buy.contract_id,subscribe:1});renderMon();}else toast('Buy failed','error');}
+  if(d.msg_type==='proposal_open_contract'){var c=d.proposal_open_contract;S.odata=c;var done=c.is_sold===1||c.status==='lost'||c.status==='won';if(done)settle(c);else renderMon();}
+}
+function settle(c){
+  var prof=Number(c.profit);var buy=Number(c.buy_price);var pay=Number(c.payout||prof+buy);var w=prof>0;
+  S.acc.pl+=prof;
+  S.hist.unshift({time:c.date_start||Math.floor(Date.now()/1000),contract:c.contract_type+' '+c.barrier,stake:buy,payout:pay,profit:prof,win:w,mode:S.modeActive?S.mode:'manual'});
+  if(S.hist.length>500)S.hist=S.hist.slice(0,500);
+  save();renderH();renderHome();renderBal();
+  // Martingale handler — runs before feed entry so step is updated first
+  mgOnResult(w,prof);
+  if(S.modeActive){
+    addFeedEntry((w?'✅ WIN':'❌ LOSS')+' '+(w?'+':'')+fmt(prof)+' · '+c.contract_type+' '+c.barrier+(S.mg.on?' · Step '+S.mg.step:''),w?'success':'error');
+  }
+  // DBot stats update
+  if(S.dbot&&S.dbot.running){
+    S.dbot.stats.totalPayout+=pay;
+    S.dbot.stats.pl+=prof;
+    if(w){S.dbot.stats.won++;}else{S.dbot.stats.lost++;}
+    updateDBotStats();
+    // Update transaction result
+    if(S.dbot.transactions.length>0){
+      S.dbot.transactions[0].result=w?'win':'loss';
+      S.dbot.transactions[0].payout=pay;
+      renderTransactions();
+    }
+    addJournalEntry((w?'✅ WIN':'❌ LOSS')+' '+(w?'+':'')+fmt(prof)+' · '+c.contract_type+' '+c.barrier,w?'success':'error');
+  }
+  setTimeout(function(){send({balance:1,subscribe:1});},500);
+  showRes({contract:c.contract_type+' '+c.barrier,stake:buy,payout:pay,profit:prof,win:w});
+  S.oid=null;S.odata=null;
+  if(S.page==='modes')renderModes();
+}
+function updateConn(s){
+  var d=$('cd'),t=$('ct'),h=$('hcd'),ht=$('hct');
+  if(s==='live'){d.className='dot live';t.textContent=S.auth?'Connected':'Live';h.className='dot live';ht.textContent=S.auth?'Authorized':'Connected';$('hmkt').textContent='Open';$('sbWs').textContent='● Online';$('sbWs').className='ok';}
+  else if(s==='connecting'){d.className='dot';t.textContent='Connecting';h.className='dot';ht.textContent='Connecting';$('hmkt').textContent='...';}
+  else{d.className='dot';t.textContent='Offline';h.className='dot';ht.textContent='Offline';$('hmkt').textContent='Off';$('sbWs').textContent='● Off';$('sbWs').className='r';}
+}
+function subTicks(){if(!S.ready)return;send({forget_all:'ticks'});send({ticks_history:S.sym,adjust_start_time:1,count:100,end:'latest',start:1,style:'ticks'});send({ticks:S.sym,subscribe:1});}
+function onTick(t){
+  var p=Number(t.quote);var pr=S.last;var dir=pr!==null?(p>pr?1:p<pr?-1:0):0;var ch=pr!==null?p-pr:0;var dig=parseInt(t.quote.toString().slice(-1),10);
+  S.last=p;var sp=$('px');sp.textContent=fmt(p,4);sp.style.color=dir>0?'var(--g)':dir<0?'var(--r)':'#fff';
+  S.ticks.unshift({p:p,dir:dir,ch:ch,dig:dig,time:t.epoch});if(S.ticks.length>200)S.ticks.pop();S.df[dig]++;
+  renderHomeLive();autoChk();runMode();renderModesLive();
+  updateDBotChart();
+}
+function renderBal(){var tx=S.auth?$f(S.acc.bal):'$—';$('bal').textContent=tx;$('hbal').textContent=tx;$('hacc').textContent=S.acc.login||'—';$('hpl').textContent=S.auth?(S.acc.pl>=0?'+':'')+$f(S.acc.pl):'$0.00';$('hpl').style.color=S.acc.pl>=0?'var(--g)':'var(--r)';}
+function renderHome(){var t=S.hist.length;var w=S.hist.filter(function(h){return h.win;}).length;$('htc').textContent=t;$('hwr').textContent=t?Math.round(w/t*100)+'%':'0%';$('hwrs').textContent=t?w+'W/'+(t-w)+'L':'No trades';$('aiHome').textContent=S.modeActive?S.mode.toUpperCase():'READY';$('aiHome').style.color=S.modeActive?'var(--g)':'#fff';$('aiSub').textContent=S.modeActive?'Active':'Triple Strike';
+  var rt=$('rTrades');if(t){rt.innerHTML=S.hist.slice(0,4).map(function(h){var dt=new Date((h.time||0)*1000);return '<div style="display:flex;justify-content:space-between;padding:6px;background:rgba(255,255,255,.02);border-radius:6px;border:1px solid var(--b);margin-bottom:4px"><div><div class="mono fz fw">'+h.contract+'</div><div style="font-size:10px;color:var(--tm)">'+dt.toLocaleTimeString()+'</div></div><span class="mono fw" style="color:'+(h.win?'var(--g)':'var(--r)')+'">'+(h.win?'+':'')+fmt(h.profit)+'</span></div>';}).join('');}else{rt.innerHTML='<div style="padding:24px;text-align:center;color:var(--tm);font-size:13px">No trades yet</div>';}}
+function renderHomeLive(){var d=S.ticks[0]?S.ticks[0].dig:undefined;if(d!==undefined){$('md').textContent=d;$('mp').textContent=S.last?fmt(S.last,4):'—';var s=S.last,p=S.ticks[1]?S.ticks[1].p:s;$('reg').textContent=s>p?'BEAR':s<p?'BULL':'—';}}
+function renderH(){var tb=$('hb'),em=$('he');if(!S.hist.length){tb.innerHTML='';em.style.display='block';return;}em.style.display='none';tb.innerHTML=S.hist.slice(0,100).map(function(h){var dt=new Date((h.time||0)*1000);return '<tr><td style="padding:8px;border-bottom:1px solid var(--b);font-family:monospace;color:var(--tm)">'+dt.toLocaleString()+'</td><td style="padding:8px;border-bottom:1px solid var(--b);font-family:monospace">'+h.contract+'</td><td style="padding:8px;border-bottom:1px solid var(--b);font-family:monospace">'+$f(h.stake)+'</td><td style="padding:8px;border-bottom:1px solid var(--b);font-family:monospace;color:'+(h.win?'var(--g)':'var(--r)')+';font-weight:700">'+(h.win?'+':'')+fmt(h.profit)+'</td></tr>';}).join('');}
+
+// ===== MODES — PRODUCTION ENGINE =====
+var _confSmoothed=0;
+var _confPrev=0;
+var _modeCooldowns={triple:0,momentum:0,smart:0,sniper:0};
+
+// ── selMode ──────────────────────────────────────────────────────────────────
+function selMode(m){
+  if(S.modeActive){
+    S.modeActive=false;
+    SC.cooldown=false;
+    updateScannerUI();
+    addFeedEntry('Mode switched to '+m.toUpperCase()+' — scanner stopped','dim');
+  }
+  S.mode=m;
+  _confSmoothed=0;_confPrev=0;
+  applyModeCardStyle();
+  renderModes();
+}
+
+function applyModeCardStyle(){
+  document.querySelectorAll('.mode-card').forEach(function(c){
+    var isActive=c.dataset.mode===S.mode;
+    c.style.background=isActive?'rgba(59,130,246,.1)':'rgba(255,255,255,.02)';
+    c.style.border=isActive?'1px solid var(--bl)':'1px solid var(--b)';
+  });
+}
+
+// ── renderModeStats ───────────────────────────────────────────────────────────
+function renderModeStats(){
+  ['triple','momentum','smart','sniper'].forEach(function(m){
+    var el=$('stat-'+m);if(!el)return;
+    var mh=S.hist.filter(function(h){return h.mode===m;});
+    if(!mh.length){el.textContent='No trades';el.style.color='var(--td)';return;}
+    var wr=Math.round(mh.filter(function(h){return h.win;}).length/mh.length*100);
+    el.textContent=wr+'% ('+mh.length+'t)';
+    el.style.color=wr>=60?'var(--g)':wr>=45?'var(--am)':'var(--r)';
+  });
+  // Last signal per card
+  ['triple','momentum','smart','sniper'].forEach(function(m){
+    var el=$('msig-'+m);if(el)el.textContent='Last: '+(SC.modeLastSig[m]||'—');
+  });
+  // Mode status pills
+  ['triple','momentum','smart','sniper'].forEach(function(m){
+    var el=$('mstat-'+m);if(!el)return;
+    if(!S.modeActive||S.mode!==m){el.className='mstat waiting';el.textContent='IDLE';return;}
+    if(SC.cooldown){el.className='mstat cooldown';el.textContent='COOLDOWN';return;}
+    if(SC.signals>0&&SC.lastSig!=='—'){el.className='mstat signal';el.textContent='SIGNAL';}
+    else{el.className='mstat scanning';el.textContent='SCANNING';}
+  });
+}
+
+// ── renderModes ───────────────────────────────────────────────────────────────
+function renderModes(){
+  renderModeStats();
+  applyModeCardStyle();
+  updateScannerUI();
+  renderDigitChart();
+  // Performance panel
+  var mh=S.hist.filter(function(h){return h.mode===S.mode;});
+  var allH=S.hist;
+  var mwr=mh.length?Math.round(mh.filter(function(h){return h.win;}).length/mh.length*100):0;
+  var mpl=mh.reduce(function(a,h){return a+h.profit;},0);
+  var allWr=allH.length?Math.round(allH.filter(function(h){return h.win;}).length/allH.length*100):0;
+  var avgConf=SC.confHistory.length?Math.round(SC.confHistory.reduce(function(a,b){return a+b;},0)/SC.confHistory.length):0;
+  $('modePerf').innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:8px">'
+    +'<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Mode</div><div style="font-size:13px;font-weight:700;font-family:monospace;color:var(--cy)">'+S.mode.toUpperCase()+'</div></div>'
+    +'<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Mode Trades</div><div class="scan-val" style="font-size:16px;font-weight:700;font-family:monospace" id="perf-trades">'+mh.length+'</div></div>'
+    +'<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Mode Win%</div><div class="scan-val" id="perf-wr" style="font-size:16px;font-weight:700;font-family:monospace;color:'+(mwr>=50?'var(--g)':'var(--r)')+'">'+mwr+'%</div></div>'
+    +'<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Mode P/L</div><div class="scan-val" id="perf-pl" style="font-size:16px;font-weight:700;font-family:monospace;color:'+(mpl>=0?'var(--g)':'var(--r)')+'">'+(mpl>=0?'+':'')+fmt(mpl)+'</div></div>'
+    +'<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">All Win%</div><div class="scan-val" style="font-size:16px;font-weight:700;font-family:monospace;color:'+(allWr>=50?'var(--g)':'var(--r)')+'">'+allWr+'%</div></div>'
+    +'<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Signals</div><div class="scan-val" style="font-size:16px;font-weight:700;font-family:monospace;color:var(--am)">'+SC.signals+'</div></div>'
+    +'<div style="padding:10px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--b)"><div style="font-size:9px;color:var(--tm);text-transform:uppercase;margin-bottom:3px">Avg Conf</div><div class="scan-val" style="font-size:16px;font-weight:700;font-family:monospace;color:var(--bl)">'+avgConf+'%</div></div>'
+    +'</div>';
+}
+
+// ── updateScannerUI ───────────────────────────────────────────────────────────
+function updateScannerUI(){
+  var active=S.modeActive;
+  var btn=$('modeBtn');if(!btn)return;
+  if(active){
+    btn.textContent='⏹ Stop Scanner';
+    btn.className='btn red big btn-scanning';
+  } else {
+    btn.textContent='▶ Activate';
+    btn.className='btn b1 big';
+  }
+  var badge=$('scanStatusBadge');if(badge){
+    badge.textContent=active?'🟢 SCANNING':'⏸ IDLE';
+    badge.style.color=active?'var(--g)':'var(--td)';
+    badge.style.borderColor=active?'rgba(34,197,94,.4)':'var(--b)';
+    badge.style.background=active?'rgba(34,197,94,.08)':'rgba(255,255,255,.04)';
+  }
+  // Feed status label
+  var fs=$('feedStatus');if(fs){fs.textContent=active?'● STREAMING':'● IDLE';fs.style.color=active?'var(--r)':'var(--td)';}
+  // Animate counters
+  setElText('scanTickCount',SC.ticks.toLocaleString());
+  setElText('scanOpCount',SC.signals);
+  setElText('scanTradeCount',SC.trades);
+  if($('scanLastSig'))$('scanLastSig').textContent=SC.lastSig;
+  // Avg confidence
+  var avgConf=SC.confHistory.length?Math.round(SC.confHistory.reduce(function(a,b){return a+b;},0)/SC.confHistory.length):0;
+  if($('scanAvgConf')){$('scanAvgConf').textContent=avgConf?avgConf+'%':'—';$('scanAvgConf').style.color=avgConf>=70?'var(--g)':avgConf>=45?'var(--am)':'var(--bl)';}
+  // Win rate
+  var mh=S.hist.filter(function(h){return h.mode===S.mode;});
+  if($('scanWinRate')){
+    if(!mh.length){$('scanWinRate').textContent='—';}
+    else{var wr=Math.round(mh.filter(function(h){return h.win;}).length/mh.length*100);$('scanWinRate').textContent=wr+'%';$('scanWinRate').style.color=wr>=50?'var(--g)':'var(--r)';}
+  }
+}
+
+// Animate value change on element
+function setElText(id,val){
+  var el=$(id);if(!el)return;
+  var prev=el.textContent;
+  var next=String(val);
+  if(prev===next)return;
+  el.textContent=next;
+  // Flash green if went up, red if went down (numeric only)
+  var pn=parseFloat(prev),nn=parseFloat(next);
+  if(!isNaN(pn)&&!isNaN(nn)&&nn!==pn){
+    el.classList.remove('flash-g','flash-r');
+    void el.offsetWidth;// force reflow
+    el.classList.add(nn>pn?'flash-g':'flash-r');
+    setTimeout(function(){el.classList.remove('flash-g','flash-r');},700);
+  }
+}
+
+// ── modeToggle ────────────────────────────────────────────────────────────────
+function modeToggle(){
+  var btn=$('modeBtn');
+  if(!S.ready){
+    if(btn){btn.style.transform='scale(.97)';setTimeout(function(){btn.style.transform='';},150);}
+    toast('Not connected — WebSocket connecting…','error');return;
+  }
+  if(!S.auth){
+    if(btn){btn.style.transform='scale(.97)';setTimeout(function(){btn.style.transform='';},150);}
+    toast('Connect your Deriv account first','error');openConn();return;
+  }
+  if(S.auto.on){toast('Stop Auto-Trade on Trade page first','error');return;}
+  if(S.modeActive){
+    S.modeActive=false;SC.cooldown=false;
+    updateScannerUI();renderModeStats();
+    addFeedEntry('⏹ Scanner stopped · '+SC.ticks+' ticks · '+SC.signals+' signals','dim');
+    showAiExplanation('Scanner stopped','You ran '+S.mode.toUpperCase()+' for '+SC.ticks+' ticks. '+SC.signals+' signals were detected, '+SC.trades+' trades executed.','');
+    toast(S.mode.toUpperCase()+' stopped','info');
+    return;
+  }
+  // Activate
+  SC={ticks:0,signals:0,trades:0,feed:[],lastSig:'—',confHistory:[],lastAnalysis:0,
+    modeLastSig:{triple:'—',momentum:'—',smart:'—',sniper:'—'},
+    modeSigCount:{triple:0,momentum:0,smart:0,sniper:0},cooldown:false};
+  // Reset Martingale session counters
+  S.mg.step=0;S.mg.losses=0;S.mg.sessionPL=0;S.mg.paused=false;
+  S.mg.lastContract=null;S.mg.lastBarrier=null;
+  _confSmoothed=0;_confPrev=0;
+  S.modeActive=true;
+  updateScannerUI();renderModeStats();mgUpdate();
+  var modeDesc={triple:'Watching for 3 consecutive identical last digits.',momentum:'Watching for 3+ directional moves in a row.',smart:'Watching for digit pattern combined with directional trend.',sniper:'Reading directional bias from last 6 ticks.'};
+  addFeedEntry('▶ '+S.mode.toUpperCase()+' scanner activated','success');
+  addFeedEntry('Strategy: '+modeDesc[S.mode],'info');
+  addFeedEntry('Duration: 1 tick per trade · Martingale: '+(S.mg.on?'ON ×'+($('mgMult')?$('mgMult').value:'2.1'):'OFF'),'info');
+  addFeedEntry('Symbol: '+S.sym+' · Base Stake: $'+fmt(getMgStake()),'info');
+  showAiExplanation('Scanner Activated — '+S.mode.toUpperCase(),
+    modeDesc[S.mode]+'\n\nThe AI will evaluate every incoming tick from Deriv. When pattern conditions are met, it will request a live proposal from Deriv and execute a buy if conditions hold.',
+    'Awaiting live ticks…');
+  toast(S.mode.toUpperCase()+' ACTIVATED','success');
+}
+
+// ── calcConfidence ────────────────────────────────────────────────────────────
+function calcConfidence(){
+  if(S.ticks.length<3)return 0;
+  var raw=0;
+  var h=S.ticks.slice(0,6);
+  var d0=h[0].dig,d1=h[1]?h[1].dig:-1,d2=h[2]?h[2].dig:-1,d3=h[3]?h[3].dig:-1;
+  // Digit streak scoring
+  if(d0===d1&&d1===d2&&d2===d3)raw+=65;
+  else if(d0===d1&&d1===d2)raw+=50;
+  else if(d0===d1||d1===d2)raw+=20;
+  // Directional consistency
+  var ups=h.filter(function(t){return t.ch>0;}).length;
+  var downs=h.filter(function(t){return t.ch<0;}).length;
+  raw+=Math.round((Math.abs(ups-downs)/h.length)*30);
+  // Digit frequency skew
+  var tot=S.df.reduce(function(a,b){return a+b;},0);
+  if(tot>20){var maxD=Math.max.apply(null,S.df);raw+=maxD/tot>0.18?12:0;}
+  // Mode bonus
+  if(S.mode==='triple'&&d0===d1&&d1===d2)raw=Math.min(raw+15,100);
+  if(S.mode==='sniper')raw=Math.max(raw,30);
+  if(S.mode==='momentum'&&(ups>=4||downs>=4))raw=Math.min(raw+20,100);
+  raw=Math.min(raw,100);
+  // Smooth the value (ease toward raw, don't snap)
+  _confPrev=_confSmoothed;
+  _confSmoothed=_confSmoothed*0.65+raw*0.35;
+  return _confSmoothed;
+}
+
+function getConfTrend(){
+  var diff=_confSmoothed-_confPrev;
+  if(diff>2)return{label:'↑ RISING',color:'var(--g)'};
+  if(diff<-2)return{label:'↓ FALLING',color:'var(--r)'};
+  return{label:'→ STABLE',color:'var(--td)'};
+}
+
+function getRecommendation(pct){
+  if(pct>=75)return{label:'ENTRY',color:'var(--g)',bg:'rgba(34,197,94,.15)',border:'rgba(34,197,94,.4)'};
+  if(pct>=50)return{label:'WATCH',color:'var(--am)',bg:'rgba(245,158,11,.1)',border:'rgba(245,158,11,.3)'};
+  return{label:'WAIT',color:'var(--td)',bg:'rgba(255,255,255,.04)',border:'var(--b)'};
+}
+
+function getCurrentPattern(){
+  if(S.ticks.length<3)return '—';
+  var d=S.ticks.slice(0,5).map(function(t){return t.dig;});
+  var dirs=S.ticks.slice(0,5).map(function(t){return t.ch>0?'↑':t.ch<0?'↓':'·';});
+  return d.join(' ')+' | '+dirs.join('');
+}
+
+// ── renderConfidenceGauge ─────────────────────────────────────────────────────
+function renderConfidenceGauge(pct){
+  var arc=$('confArc');if(!arc)return;
+  var offset=314-(pct/100*314);
+  arc.style.strokeDashoffset=offset;
+  var clr=pct>=70?'var(--g)':pct>=45?'var(--am)':'var(--bl)';
+  arc.style.stroke=clr;
+  if($('confVal')){$('confVal').textContent=Math.round(pct)+'%';$('confVal').style.color=pct>=70?'var(--g)':pct>=45?'var(--am)':'#fff';}
+  // Strength label
+  var strength=pct>=75?'Strong':pct>=50?'Moderate':pct>=25?'Weak':'Scanning…';
+  var strengthClr=pct>=75?'var(--g)':pct>=50?'var(--am)':pct>=25?'var(--bl)':'var(--td)';
+  if($('confStrength')){$('confStrength').textContent=strength;$('confStrength').style.color=strengthClr;}
+  // Trend
+  var trend=getConfTrend();
+  if($('confTrend')){$('confTrend').textContent=trend.label;$('confTrend').style.color=trend.color;$('confTrend').style.borderColor=trend.color;}
+  // Recommendation
+  var rec=getRecommendation(pct);
+  if($('confRec')){
+    $('confRec').textContent=rec.label;
+    $('confRec').style.color=rec.color;
+    $('confRec').style.background=rec.bg;
+    $('confRec').style.borderColor=rec.border;
+    $('confRec').style.border='1px solid '+rec.border;
+  }
+  if($('confPattern'))$('confPattern').textContent=getCurrentPattern();
+  // Track for avg
+  if(S.modeActive&&pct>0){SC.confHistory.push(Math.round(pct));if(SC.confHistory.length>200)SC.confHistory.shift();}
+}
+
+// ── renderDigitChart ──────────────────────────────────────────────────────────
+function renderDigitChart(){
+  var el=$('digitChart');if(!el)return;
+  // Use last 100 ticks for distribution
+  var recent=S.ticks.slice(0,100);
+  var df=Array(10).fill(0);
+  recent.forEach(function(t){df[t.dig]++;});
+  var tot=recent.length;
+  if($('dfTotal'))$('dfTotal').textContent=tot;
+  if(tot===0){el.innerHTML='<div style="font-size:10px;color:var(--td)">Waiting for ticks…</div>';return;}
+  var maxV=Math.max.apply(null,df)||1;
+  // Find dominant (most frequent) and hot (currently repeating)
+  var domIdx=df.indexOf(maxV);
+  var hotIdx=S.ticks.length>=3&&S.ticks[0].dig===S.ticks[1].dig?S.ticks[0].dig:-1;
+  if($('dfDominant'))$('dfDominant').textContent=domIdx;
+  if($('dfHot'))$('dfHot').textContent=hotIdx>=0?hotIdx:'—';
+  // Build bars - update heights in place if bars already exist (smooth animation)
+  var bars=el.querySelectorAll('.dbar-wrap');
+  if(bars.length===10){
+    // update existing bars
+    df.forEach(function(v,i){
+      var h=Math.max(4,Math.round((v/maxV)*74));
+      var pct=Math.round(v/tot*100);
+      var isDom=i===domIdx,isHot=i===hotIdx;
+      var clr=isHot?'var(--cy)':isDom?'var(--am)':'rgba(59,130,246,.55)';
+      var bar=bars[i].querySelector('.dbar');
+      if(bar){bar.style.height=h+'px';bar.style.background=clr;}
+      var pctEl=bars[i].querySelector('.dbar-pct');
+      if(pctEl)pctEl.textContent=pct+'%';
+    });
+  } else {
+    el.innerHTML=df.map(function(v,i){
+      var h=Math.max(4,Math.round((v/maxV)*74));
+      var pct=Math.round(v/tot*100);
+      var isDom=i===domIdx,isHot=i===hotIdx;
+      var clr=isHot?'var(--cy)':isDom?'var(--am)':'rgba(59,130,246,.55)';
+      return '<div class="dbar-wrap" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px" title="Digit '+i+': '+v+' / '+pct+'%">'
+        +'<div class="dbar-pct" style="font-size:8px;color:var(--tm)">'+pct+'%</div>'
+        +'<div class="dbar" style="width:100%;background:'+clr+';border-radius:3px 3px 0 0;height:'+h+'px"></div>'
+        +'</div>';
+    }).join('');
+  }
+}
+
+// ── addFeedEntry ──────────────────────────────────────────────────────────────
+function addFeedEntry(msg,type){
+  var ts=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  SC.feed.unshift({msg:msg,type:type||'info',time:ts});
+  if(SC.feed.length>50)SC.feed.pop();
+  if(S.page==='modes')renderAiFeed();
+}
+
+function clearFeed(){SC.feed=[];renderAiFeed();}
+
+function renderAiFeed(){
+  var el=$('aiFeed');if(!el)return;
+  if(!SC.feed.length){
+    el.innerHTML='<div style="font-size:11px;color:var(--td);text-align:center;padding:20px 0">Activate scanner to begin streaming</div>';
+    return;
+  }
+  el.innerHTML=SC.feed.slice(0,30).map(function(f,i){
+    var clr=f.type==='success'?'var(--g)':f.type==='error'?'var(--r)':f.type==='signal'?'var(--am)':f.type==='dim'?'var(--tm)':'var(--cy)';
+    return '<div class="feed-row '+f.type+'" style="'+(i===0?'background:rgba(255,255,255,.04);':'')+'">'
+      +'<span style="font-family:monospace;font-size:10px;color:'+clr+';line-height:1.4">'+f.msg+'</span>'
+      +'<span style="font-size:9px;color:var(--tm);flex-shrink:0;font-family:monospace">'+f.time+'</span>'
+      +'</div>';
+  }).join('');
+  // Auto-scroll to top (newest entry)
+  el.scrollTop=0;
+}
+
+// ── showAiExplanation ─────────────────────────────────────────────────────────
+function showAiExplanation(title,body,footer){
+  var panel=$('aiExplain');var bdy=$('aiExplainBody');if(!panel||!bdy)return;
+  var lines=body.split('\n');
+  bdy.innerHTML='<div style="font-weight:700;color:var(--am);margin-bottom:6px">'+title+'</div>'
+    +lines.map(function(l){return l?'<div style="margin-bottom:4px;padding-left:8px;border-left:2px solid rgba(245,158,11,.3)">'+l+'</div>':''}).join('')
+    +(footer?'<div style="margin-top:8px;font-size:10px;color:var(--td)">'+footer+'</div>':'');
+  panel.style.display='block';
+}
+
+// ── showHighConfAlert ─────────────────────────────────────────────────────────
+function showHighConfAlert(mode,contract,conf,reason){
+  var existing=document.querySelector('.hconf-alert');if(existing)existing.remove();
+  var d=document.createElement('div');d.className='hconf-alert';
+  d.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
+    +'<div style="font-size:10px;font-weight:800;color:var(--am);text-transform:uppercase;letter-spacing:.08em">⚡ High Confidence Signal</div>'
+    +'<button onclick="this.parentNode.parentNode.remove()" style="background:none;border:none;color:var(--td);font-size:16px;cursor:pointer;line-height:1">×</button></div>'
+    +'<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px">'+contract+'</div>'
+    +'<div style="font-size:11px;color:var(--td);margin-bottom:6px">'+reason+'</div>'
+    +'<div style="display:flex;gap:6px">'
+    +'<div style="padding:3px 10px;border-radius:99px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.4);font-size:10px;font-weight:700;color:var(--am)">'+mode.toUpperCase()+'</div>'
+    +'<div style="padding:3px 10px;border-radius:99px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.4);font-size:10px;font-weight:700;color:var(--g)">'+Math.round(conf)+'% CONF</div>'
+    +'</div>';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode){d.style.transition='opacity .5s';d.style.opacity='0';setTimeout(function(){d.remove();},500);}},6000);
+}
+
+// ── buildFeedAnalysis — descriptive tick analysis for feed ────────────────────
+function buildFeedAnalysis(){
+  if(S.ticks.length<3)return;
+  var h=S.ticks.slice(0,5);
+  var d=h.map(function(t){return t.dig;});
+  var dirs=h.map(function(t){return t.ch>0?'UP':t.ch<0?'DN':'--';});
+  var ups=dirs.filter(function(x){return x==='UP';}).length;
+  var downs=dirs.filter(function(x){return x==='DN';}).length;
+  var streak=1;for(var i=1;i<d.length;i++){if(d[i]===d[0])streak++;else break;}
+  var msgs=[];
+  if(streak>=3)msgs.push('🔴 Digit '+d[0]+' repeated '+streak+'× — pattern forming');
+  else if(streak===2)msgs.push('👀 Digit '+d[0]+' appeared twice — watching');
+  if(ups>=3)msgs.push('📈 '+ups+'/5 ticks bullish — momentum detected');
+  else if(downs>=3)msgs.push('📉 '+downs+'/5 ticks bearish — downward pressure');
+  if(msgs.length===0){
+    // Generic tick info every 5 ticks
+    if(SC.ticks%5===0)msgs.push('📡 Tick '+SC.ticks+' · Digit: '+d[0]+' · Price: '+fmt(S.last,4));
+  }
+  msgs.forEach(function(m){addFeedEntry(m,'info');});
+}
+
+// ── renderModesLive — called every tick ───────────────────────────────────────
+function renderModesLive(){
+  if(S.modeActive)SC.ticks++;
+  var conf=calcConfidence();
+  if(S.page==='modes'){
+    renderConfidenceGauge(conf);
+    renderDigitChart();
+    updateScannerUI();
+    if(S.modeActive){
+      buildFeedAnalysis();
+      renderModeStats();
+    }
+  }
+}
+
+// ── runMode ───────────────────────────────────────────────────────────────────
+function runMode(){
+  if(!S.modeActive||!S.auth||S.ticks.length<3)return;
+  if(_modeCooldowns[S.mode]&&Date.now()-_modeCooldowns[S.mode]<3000)return;
+  var fired=false;var reason='';var contract='';
+  if(S.mode==='triple'){
+    var h=S.ticks.slice(0,3).map(function(t){return t.dig;});
+    if(h[0]===h[1]&&h[1]===h[2]){
+      var dig=h[0];
+      if(dig<=1){S.sel.c='DIGITOVER';S.sel.b=String(dig);contract='OVER '+dig;reason='Digits '+h.join(',')+' — triple repeat, stat edge on OVER '+dig;fired=true;}
+      else if(dig>=8){S.sel.c='DIGITUNDER';S.sel.b=String(dig);contract='UNDER '+dig;reason='Digits '+h.join(',')+' — triple repeat, stat edge on UNDER '+dig;fired=true;}
+    }
+  }
+  else if(S.mode==='momentum'){
+    var tk=S.ticks.slice(0,5);var ups=0,downs=0;
+    tk.forEach(function(t){if(t.ch>0)ups++;else if(t.ch<0)downs++;});
+    if(ups>=4){S.sel.c='DIGITOVER';S.sel.b='0';contract='OVER 0';reason=ups+'/5 ticks bullish — strong upward momentum';fired=true;}
+    else if(ups>=3){S.sel.c='DIGITOVER';S.sel.b='0';contract='OVER 0';reason=ups+'/5 ticks bullish — momentum building';fired=true;}
+    else if(downs>=4){S.sel.c='DIGITUNDER';S.sel.b='8';contract='UNDER 8';reason=downs+'/5 ticks bearish — strong downward momentum';fired=true;}
+    else if(downs>=3){S.sel.c='DIGITUNDER';S.sel.b='8';contract='UNDER 8';reason=downs+'/5 ticks bearish — momentum building';fired=true;}
+  }
+  else if(S.mode==='smart'){
+    var tk=S.ticks.slice(0,4);
+    var pat=tk.slice(0,3).map(function(t){return t.dig;}).join(',');
+    var ups=0,downs=0;tk.slice(0,3).forEach(function(t){if(t.ch>0)ups++;else if(t.ch<0)downs++;});
+    if(pat==='0,0,0'&&ups>=2){S.sel.c='DIGITOVER';S.sel.b='0';contract='OVER 0';reason='Pattern 0,0,0 + '+ups+'/3 bullish ticks — combined signal';fired=true;}
+    else if(pat==='9,9,9'&&downs>=2){S.sel.c='DIGITUNDER';S.sel.b='9';contract='UNDER 9';reason='Pattern 9,9,9 + '+downs+'/3 bearish ticks — combined signal';fired=true;}
+    else if(pat==='1,1,1'&&ups>=2){S.sel.c='DIGITOVER';S.sel.b='1';contract='OVER 1';reason='Pattern 1,1,1 + '+ups+'/3 bullish ticks — combined signal';fired=true;}
+    else if(pat==='8,8,8'&&downs>=2){S.sel.c='DIGITUNDER';S.sel.b='8';contract='UNDER 8';reason='Pattern 8,8,8 + '+downs+'/3 bearish ticks — combined signal';fired=true;}
+  }
+  else if(S.mode==='sniper'){
+    if(!S.oid&&!S.auto.busy&&SC.ticks>0&&SC.ticks%5===0){
+      var tk=S.ticks.slice(0,6);
+      var ups=tk.filter(function(t){return t.ch>0;}).length;
+      var downs=tk.filter(function(t){return t.ch<0;}).length;
+      if(ups>downs){S.sel.c='DIGITOVER';S.sel.b='0';contract='OVER 0';reason=ups+'/6 ticks bullish — directional bias OVER 0';fired=true;}
+      else if(downs>ups){S.sel.c='DIGITUNDER';S.sel.b='8';contract='UNDER 8';reason=downs+'/6 ticks bearish — directional bias UNDER 8';fired=true;}
+    }
+  }
+  if(fired){
+    SC.signals++;
+    SC.modeLastSig[S.mode]=contract+' @ '+fmt(S.last,4);
+    SC.modeSigCount[S.mode]=(SC.modeSigCount[S.mode]||0)+1;
+    SC.lastSig=contract+' @ '+fmt(S.last,4);
+    var conf=Math.round(_confSmoothed);
+    addFeedEntry('🎯 SIGNAL · '+contract+' · '+conf+'% conf','signal');
+    addFeedEntry('↳ '+reason,'info');
+    // High confidence alert
+    if(conf>=75){showHighConfAlert(S.mode,contract,conf,reason);}
+    // AI Explanation
+    showAiExplanation(
+      'Signal Detected — '+contract,
+      reason+'\n\nConfidence: '+conf+'% ('+getRecommendation(conf).label+')\nRecommendation: '+(conf>=75?'Execute trade — strong conditions':'Watch — conditions forming'),
+      'Executing via Deriv API…'
+    );
+    // Per-mode cooldown to prevent spam
+    _modeCooldowns[S.mode]=Date.now();
+    setTimeout(function(){if(S.page==='modes')renderModeStats();},3000);
+    executeMode(reason,contract);
+  }
+}
+
+// ── getMgStake — returns current martingale stake ─────────────────────────────
+function getMgStake(){
+  var base=parseFloat(($('mgBase')&&$('mgBase').value)||1)||1;
+  var mult=parseFloat(($('mgMult')&&$('mgMult').value)||2.1)||2.1;
+  var step=S.mg.step;
+  if(step<=0)return base;
+  var s=base;for(var i=0;i<step;i++)s=+(s*mult).toFixed(2);
+  return s;
+}
+
+function getMgLadder(){
+  var base=parseFloat(($('mgBase')&&$('mgBase').value)||1)||1;
+  var mult=parseFloat(($('mgMult')&&$('mgMult').value)||2.1)||2.1;
+  var steps=parseInt(($('mgMaxSteps')&&$('mgMaxSteps').value)||5)||5;
+  var lad=[];var s=base;
+  for(var i=0;i<=steps;i++){lad.push(+s.toFixed(2));s=+(s*mult).toFixed(2);}
+  return lad;
+}
+
+// ── mgUpdate — refresh UI whenever inputs change ──────────────────────────────
+function mgUpdate(){
+  var lad=getMgLadder();
+  var el=$('mgLadder');
+  if(el){
+    el.innerHTML=lad.map(function(v,i){
+      var active=i===S.mg.step;
+      return '<div style="padding:4px 10px;border-radius:8px;font-family:monospace;font-size:11px;font-weight:700;background:'+(active?'rgba(139,92,246,.2)':'rgba(0,0,0,.3)')+';border:1px solid '+(active?'rgba(139,92,246,.5)':'var(--b)')+';color:'+(active?'var(--pp)':'var(--td)')+'">L'+(i+1)+' · $'+fmt(v)+'</div>';
+    }).join('');
+  }
+  var next=getMgStake();
+  if($('mgNextStake'))$('mgNextStake').textContent='$'+fmt(next);
+  if($('mgStep'))$('mgStep').textContent=S.mg.step;
+  if($('mgLosses'))$('mgLosses').textContent=S.mg.losses;
+  var pl=S.mg.sessionPL;
+  if($('mgSessionPL')){$('mgSessionPL').textContent=(pl>=0?'+':'')+$f(pl);$('mgSessionPL').style.color=pl>=0?'var(--g)':'var(--r)';}
+}
+
+// ── mgToggle — on/off switch ──────────────────────────────────────────────────
+function mgToggle(){
+  S.mg.on=!S.mg.on;
+  var wrap=$('mgToggleWrap'),knob=$('mgKnob'),badge=$('mgBadge');
+  if(S.mg.on){
+    if(wrap){wrap.style.background='rgba(139,92,246,.6)';wrap.style.borderColor='rgba(139,92,246,.5)';}
+    if(knob)knob.style.left='20px';
+    if(badge){badge.textContent='ON';badge.style.color='var(--pp)';badge.style.borderColor='rgba(139,92,246,.4)';badge.style.background='rgba(139,92,246,.1)';}
+    toast('Martingale Recovery ON','success');
+    addFeedEntry('🔄 Martingale enabled · ×'+($('mgMult')?$('mgMult').value:'2.1')+' multiplier · '+$('mgMaxSteps').value+' max steps','info');
+  } else {
+    if(wrap){wrap.style.background='rgba(255,255,255,.08)';wrap.style.borderColor='var(--b)';}
+    if(knob)knob.style.left='2px';
+    if(badge){badge.textContent='OFF';badge.style.color='var(--td)';badge.style.borderColor='var(--b)';badge.style.background='rgba(255,255,255,.04)';}
+    S.mg.step=0;S.mg.losses=0;S.mg.paused=false;
+    mgUpdate();
+    toast('Martingale Recovery OFF','info');
+  }
+}
+
+function mgResetToggle(){
+  S.mg.resetOnWin=!S.mg.resetOnWin;
+  var wrap=$('mgResetWrap'),knob=$('mgResetKnob'),lbl=$('mgResetLabel');
+  if(S.mg.resetOnWin){
+    if(wrap){wrap.style.background='rgba(34,197,94,.5)';wrap.style.borderColor='rgba(34,197,94,.4)';}
+    if(knob)knob.style.left='16px';
+    if(lbl)lbl.textContent='ON';
+  } else {
+    if(wrap){wrap.style.background='rgba(255,255,255,.08)';wrap.style.borderColor='var(--b)';}
+    if(knob)knob.style.left='2px';
+    if(lbl)lbl.textContent='OFF';
+  }
+}
+
+// ── mgOnResult — called from settle() with win/loss result ────────────────────
+function mgOnResult(win,profit){
+  if(!S.mg.on||!S.modeActive)return;
+  S.mg.sessionPL=+(S.mg.sessionPL+profit).toFixed(2);
+  var stopLoss=parseFloat(($('mgStopLoss')&&$('mgStopLoss').value)||0);
+  var takeProfit=parseFloat(($('mgTakeProfit')&&$('mgTakeProfit').value)||0);
+  // Check take profit / stop loss limits
+  if(takeProfit>0&&S.mg.sessionPL>=takeProfit){
+    S.mg.paused=true;S.mg.step=0;S.mg.losses=0;
+    addFeedEntry('🎯 Take Profit $'+fmt(takeProfit)+' reached · Scanner paused','success');
+    if($('mgStatus'))$('mgStatus').textContent='TAKE PROFIT';
+    toast('✅ Take Profit $'+fmt(takeProfit)+' reached!','success');
+    S.modeActive=false;updateScannerUI();
+    mgUpdate();return;
+  }
+  if(stopLoss>0&&S.mg.sessionPL<=-stopLoss){
+    S.mg.paused=true;S.mg.step=0;S.mg.losses=0;
+    addFeedEntry('🛑 Stop Loss $'+fmt(stopLoss)+' hit · Scanner paused','error');
+    if($('mgStatus'))$('mgStatus').textContent='STOP LOSS';
+    toast('🛑 Stop Loss $'+fmt(stopLoss)+' hit — scanner stopped','error');
+    S.modeActive=false;updateScannerUI();
+    mgUpdate();return;
+  }
+  var maxSteps=parseInt(($('mgMaxSteps')&&$('mgMaxSteps').value)||5);
+  if(win){
+    var wasRecovery=S.mg.step>0;
+    if(S.mg.resetOnWin){S.mg.step=0;S.mg.losses=0;}
+    if($('mgStatus'))$('mgStatus').textContent=wasRecovery?'Recovered ✓':'Win';
+    addFeedEntry('✅ WIN'+(wasRecovery?' · Recovery complete':'')+(S.mg.resetOnWin?' · Reset to base stake':''),'success');
+  } else {
+    S.mg.losses++;
+    if(S.mg.step<maxSteps){
+      S.mg.step++;
+      var next=getMgStake();
+      addFeedEntry('❌ LOSS · Step '+S.mg.step+'/'+maxSteps+' · Next stake $'+fmt(next),'error');
+      if($('mgStatus'))$('mgStatus').textContent='Recovery L'+S.mg.step;
+    } else {
+      S.mg.step=0;S.mg.losses=0;
+      addFeedEntry('⚠ Max steps reached · Resetting to base stake','dim');
+      if($('mgStatus'))$('mgStatus').textContent='Reset (max steps)';
+      toast('Martingale max steps reached — resetting','info');
+    }
+  }
+  mgUpdate();
+}
+
+// ── executeMode — enforces 1-tick duration, uses Martingale stake ─────────────
+function executeMode(reason,contract){
+  if(S.oid||S.auto.busy)return;
+  if(S.mg.paused){addFeedEntry('⏸ Recovery paused (TP/SL hit)','dim');return;}
+  S.auto.busy=true;
+  // Get stake: Martingale if on, else base stake from input
+  var stake;
+  if(S.mg.on){
+    stake=getMgStake();
+  } else {
+    stake=parseFloat(($('mgBase')&&$('mgBase').value)||($('stake')&&$('stake').value)||1)||1;
+  }
+  stake=+stake.toFixed(2);
+  // Safety checks
+  if(stake>S.cfg.maxStake){
+    addFeedEntry('⚠ Stake $'+fmt(stake)+' exceeds max $'+S.cfg.maxStake+' — skipped','error');
+    S.auto.busy=false;return;
+  }
+  if(S.acc.bal>0&&stake>S.acc.bal){
+    addFeedEntry('⚠ Insufficient balance $'+fmt(S.acc.bal)+' for stake $'+fmt(stake),'error');
+    S.auto.busy=false;return;
+  }
+  // Store last contract info for Martingale recovery (re-use same contract)
+  S.mg.lastContract=S.sel.c;
+  S.mg.lastBarrier=S.sel.b;
+  S.mg.lastContractType=S.sel.c;
+  // Highlight on trade page
+  document.querySelectorAll('.cbtn').forEach(function(b){
+    b.style.outline='none';
+    if(b.dataset.c===S.sel.c&&b.dataset.b===S.sel.b)b.style.outline='2px solid var(--bl)';
+  });
+  // Always 1-tick duration
+  send({proposal:1,amount:String(stake),basis:'stake',contract_type:S.sel.c,
+    currency:S.acc.cur,duration:1,duration_unit:'t',symbol:S.sym,barrier:String(S.sel.b)});
+  setTimeout(function(){
+    if(S.pid&&S.pdata){
+      send({buy:S.pid,price:S.pdata.ask_price});
+      SC.trades++;
+      var stepTxt=S.mg.on&&S.mg.step>0?' [MG L'+S.mg.step+']':'';
+      addFeedEntry('⚡ BUY'+stepTxt+' · 1 tick · '+S.sel.c.replace('DIGIT','')+' '+S.sel.b+' · $'+fmt(stake),'success');
+      toast('⚡ '+(contract||S.sel.c+' '+S.sel.b)+' · $'+fmt(stake)+(S.mg.on&&S.mg.step>0?' [MG L'+S.mg.step+']':''),'info');
+      updateScannerUI();
+    } else {
+      addFeedEntry('⚠ Proposal not ready — skipped','dim');
+    }
+    S.auto.busy=false;
+  },700);
+}
+
+// ===== AUTO-TRADE =====
+function buildL(){var l=[S.auto.base];var s=S.auto.base;for(var i=1;i<8;i++){var n=+(s*2.15/S.auto.buf).toFixed(2);l.push(n);s+=n;}return l;}
+function autoChk(){if(!S.auto.on||S.auto.cd||S.auto.busy||S.ticks.length<2)return;var last=S.ticks[0];var ok=S.auto.dir===1?last.ch>0:last.ch<0;if(ok){S.auto.arrows++;aUpdate();if(S.auto.arrows>=S.auto.need){S.auto.arrows=0;autoBuy();}}else{S.auto.arrows=0;aUpdate();}}
+function autoBuy(){if(!S.pid||!S.pdata){reqProp();setTimeout(autoBuy,800);return;}var st=S.auto.lad[Math.min(S.auto.lvl,S.auto.lad.length-1)];if(S.acc.bal>0&&st>S.acc.bal){toast('Low balance','error');autoStop();return;}send({proposal:1,amount:String(st),basis:'stake',contract_type:S.auto.c,currency:S.acc.cur,duration:1,duration_unit:'t',symbol:S.sym,barrier:String(S.auto.b)});S.auto.busy=true;setTimeout(function(){if(S.pid){send({buy:S.pid,price:S.pdata.ask_price});toast('Auto L'+(S.auto.lvl+1)+' $'+st,'info');}$('alv').textContent=S.auto.lvl+1;$('astk').textContent=$f(st);aUpdate();S.auto.busy=false;},600);}
+function autoStart(){if(!S.auth){toast('Connect first','error');openConn();return;}if(S.auto.on){autoStop();return;}S.auto.on=true;S.auto.base=parseFloat($('stake').value)||1;S.auto.need=parseInt($('aa').value)||3;S.auto.buf=parseFloat($('ab').value)||0.91;S.auto.lad=buildL();S.auto.arrows=0;S.auto.lvl=0;aUpdate();toast('Auto ON','info');}
+function autoStop(){S.auto.on=false;S.auto.cd=false;aUpdate();toast('Auto OFF','info');}
+function aUpdate(){var on=S.auto.on;$('aBtn').textContent=on?'⏹ STOP':'▶ SCAN';$('aBtn').classList.toggle('red',on);$('aBtn').classList.toggle('b1',!on);$('aStat').textContent=on?'Scanning':'Stopped';$('anow').textContent=S.auto.arrows+'/'+S.auto.need;document.querySelectorAll('.arr').forEach(function(a,i){a.classList.toggle('on',on&&i<S.auto.arrows);if(on&&i<S.auto.arrows){a.style.background='linear-gradient(135deg,var(--bl),var(--cy))';a.style.color='#fff';a.style.borderColor='var(--bl)';}else{a.style.background='rgba(255,255,255,.04)';a.style.color='var(--td)';a.style.borderColor='var(--b)';}});$('alv').textContent=S.auto.lvl+1;$('astk').textContent=$f(S.auto.lad[Math.min(S.auto.lvl,S.auto.lad.length-1)]);$('lad').innerHTML=S.auto.lad.slice(0,5).map(function(s,i){return '<div class="lrow '+(i===S.auto.lvl?'on':'')+'" style="display:flex;justify-content:space-between;padding:4px 8px;border-radius:5px;font-size:11px;background:'+(i===S.auto.lvl?'rgba(59,130,246,.15)':'rgba(255,255,255,.02)')+';border:1px solid '+(i===S.auto.lvl?'rgba(59,130,246,.4)':'var(--b)')+'"><span style="color:var(--td)">L'+(i+1)+'</span><span class="mono fw">'+$f(s)+'</span></div>';}).join('');}
+
+// ===== TRADE =====
+var selEl=null;
+function pick(el){if(selEl){selEl.style.outline='none';}el.style.outline='2px solid var(--bl)';el.style.outlineOffset='2px';selEl=el;S.sel.c=el.dataset.c;S.sel.b=el.dataset.b;S.auto.c=el.dataset.c;S.auto.b=el.dataset.b;reqProp();}
+function reqProp(){if(!S.ready){toast('Not connected','error');return;}if(!S.auth){toast('Authorize first','error');openConn();return;}var st=parseFloat($('stake').value)||1;if(st>S.cfg.maxStake){toast('Max $'+S.cfg.maxStake,'error');return;}if(S.acc.bal>0&&st>S.acc.bal){toast('Insufficient','error');return;}S.stake=st;$('pst').textContent='Fetching...';$('buyBtn').disabled=true;$('pc').textContent=S.sel.c+' '+S.sel.b;$('ps').textContent=$f(st);send({proposal:1,amount:String(st),basis:'stake',contract_type:S.sel.c,currency:S.acc.cur,duration:1,duration_unit:'t',symbol:S.sym,barrier:String(S.sel.b)});}
+function renderProp(){if(!S.pdata)return;var p=S.pdata;var st=Number(p.ask_price||S.stake);var po=Number(p.payout||0);var pr=po-st;$('pc').textContent=S.sel.c+' '+S.sel.b;$('ps').textContent=$f(st);$('ppo').textContent=$f(po);$('ppr').textContent=(pr>=0?'+':'')+$f(pr);if($('ppr'))$('ppr').style.color=pr>=0?'var(--g)':'var(--r)';$('pst').textContent=S.auth?'Ready':'Authorize';$('buyBtn').disabled=!S.auth;}
+function buy(){if(!S.pid||!S.auth)return;$('buyBtn').disabled=true;$('buyBtn').textContent='...';send({buy:S.pid,price:S.pdata.ask_price});setTimeout(function(){$('buyBtn').textContent='⚡ BUY';$('buyBtn').disabled=false;},2000);}
+function renderMon(){var sl=$('omon');if(!S.odata||!S.oid){sl.innerHTML='';return;}var c=S.odata;var cur=c.current_spot_display?Number(c.current_spot_display):(c.current_spot||0);var en=c.entry_tick_display?Number(c.entry_tick_display):(c.entry_tick||0);var cd=cur?parseInt(cur.toString().slice(-1),10):0;var ed=en?parseInt(en.toString().slice(-1),10):0;var buy=Number(c.buy_price);var cv=Number(c.bid_price!==undefined?c.bid_price:buy);var pr=cv-buy;var wc=c.status==='won'?'up':c.status==='lost'?'down':(pr>0?'up':'down');sl.innerHTML='<div class="glass" style="padding:18px;text-align:center;max-width:480px;margin:0 auto"><span class="live">● LIVE</span><div style="font-size:11px;color:var(--td);margin-top:8px">'+c.contract_type+' '+c.barrier+'</div><div style="font-size:clamp(50px,10vw,80px);font-weight:800;font-family:monospace;line-height:1;margin:6px 0;color:'+(wc==='up'?'var(--g)':'var(--r)')+'">'+cd+'</div><div style="font-family:monospace;font-size:11px;color:var(--td)">Entry: '+ed+'</div></div>';}
+function showRes(e){$('omon').innerHTML='<div class="glass" style="padding:24px;text-align:center;max-width:400px;margin:0 auto;border-radius:20px"><div style="width:70px;height:70px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;background:radial-gradient(circle,rgba('+(e.win?'34,197,94':'239,68,68')+',.3),transparent);color:'+(e.win?'var(--g)':'var(--r)')+'">'+(e.win?'✓':'✕')+'</div><h2 style="color:'+(e.win?'var(--g)':'var(--r)')+'">'+(e.win?'PROFIT':'LOSS')+'</h2><div style="font-size:30px;font-weight:800;font-family:monospace;margin:6px 0">'+(e.win?'+':'')+fmt(e.profit)+'</div><div style="font-family:monospace;font-size:11px;color:var(--td)">'+e.contract+'</div><button class="btn big" onclick="$(\'omon\').innerHTML=\'\'" style="width:100%;margin-top:14px">Continue</button></div>';}
+
+// ===== DBOT =====
+// Modal functions
+window.openImportModal=function(){$('dbotImportModal').style.display='flex';};
+window.closeImportModal=function(){$('dbotImportModal').style.display='none';};
+window.editBotXml=function(){if(!S.dbot.loaded){toast('No bot loaded','error');return;}$('botXml').value=S.dbot.loaded.xml;openImportModal();};
+
+// Tab switching
+window.switchDBotTab=function(tab){document.querySelectorAll('.dbot-tab').forEach(function(t){t.classList.remove('active');if(t.dataset.tab===tab)t.classList.add('active');});document.querySelectorAll('.dbot-tab-panel').forEach(function(p){p.classList.remove('active');if('tab-'+tab===p.id)p.classList.add('active');});};
+
+// Load bot file
+window.loadBotFile=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){$('botXml').value=ev.target.result;};r.readAsText(f);};
+
+// Parse bot XML
+function parseBot(){var xml=$('botXml').value.trim();if(!xml){toast('Paste XML first','error');return;}var blocks=[];var blockRegex=/<block\s+type="([^"]+)"[^>]*>([\s\S]*?)<\/block>/g;var match;
+while((match=blockRegex.exec(xml))!==null){var type=match[1];var content=match[2];var params={};var fieldRegex=/<field\s+name="([^"]+)"[^>]*>([^<]*)<\/field>/g;var fm;while((fm=fieldRegex.exec(content))!==null){params[fm[1].toLowerCase()]=fm[2];}
+blocks.push({type:type,params:params,id:Date.now()+Math.random()});}
+if(blocks.length===0){toast('No blocks found','error');return;}
+var name=prompt('Save bot as:','Bot1');if(!name)return;
+S.dbot.loaded={name:name,xml:xml,blocks:blocks};
+S.dbot.stats={totalStake:0,totalPayout:0,runs:0,won:0,lost:0,pl:0};
+S.dbot.transactions=[];
+S.dbot.journal=[];
+S.savedBots=S.savedBots.filter(function(b){return b.name!==name;});
+S.savedBots.push({name:name,xml:xml,time:Date.now()});save();
+closeImportModal();
+$('loadedBotName').textContent=name;
+$('botNameOverlay').style.display='block';
+$('editBtn').style.display='inline-flex';
+$('dbotEmptyState').style.display='none';
+$('dbotSummaryStats').style.display='block';
+updateDBotStats();
+initDBotChart();
+addJournalEntry('Bot loaded: '+name+' with '+blocks.length+' blocks','info');
+toast('Bot loaded successfully','success');}
+
+// Toggle run/stop
+window.toggleDBotRun=function(){if(!S.auth){toast('Connect first','error');openConn();return;}if(!S.dbot.loaded){toast('Import a bot first','error');openImportModal();return;}
+if(S.dbot.running){stopDBot();}else{startDBot();}};
+
+function startDBot(){S.dbot.running=true;S.dbot.stats.runs++;
+$('dbotRunBtn').textContent='⏹ Stop';
+$('dbotRunBtn').classList.add('btn-running');
+$('dbotRunBtn').classList.remove('b1');
+$('dbotStatus').textContent='Bot is running';
+$('dbotStatus').style.color='var(--g)';
+addJournalEntry('▶ Bot started','success');
+executeDBotBlocks();}
+
+function stopDBot(){S.dbot.running=false;
+$('dbotRunBtn').textContent='▶ Run';
+$('dbotRunBtn').classList.remove('btn-running');
+$('dbotRunBtn').classList.add('b1');
+$('dbotStatus').textContent='Bot is not running';
+$('dbotStatus').style.color='var(--td)';
+addJournalEntry('⏹ Bot stopped','dim');}
+
+// Execute bot blocks
+function executeDBotBlocks(){if(!S.dbot.running||!S.dbot.loaded)return;var blocks=S.dbot.loaded.blocks;var idx=0;
+function nextBlock(){if(!S.dbot.running)return;if(idx>=blocks.length){addJournalEntry('✓ All blocks executed','success');stopDBot();return;}
+var b=blocks[idx];addJournalEntry('Executing block '+(idx+1)+': '+b.type,'info');
+if(b.type==='purchase'){executePurchase(b.params,function(){idx++;setTimeout(nextBlock,500);});}else{idx++;setTimeout(nextBlock,200);}}
+nextBlock();}
+
+function executePurchase(params,callback){var contractType=params.contract_type||'CALL';var barrier=params.barrier||'0';var stake=parseFloat(params.amount||params.stake||1);var symbol=params.symbol||S.sym;
+if(stake>S.cfg.maxStake){addJournalEntry('⚠ Stake exceeds max','error');callback();return;}
+if(S.acc.bal>0&&stake>S.acc.bal){addJournalEntry('⚠ Insufficient balance','error');callback();return;}
+S.sel.c=(contractType==='UNDER')?'DIGITUNDER':'DIGITOVER';
+S.sel.b=barrier;
+send({proposal:1,amount:String(stake),basis:'stake',contract_type:S.sel.c,currency:S.acc.cur,duration:1,duration_unit:'t',symbol:symbol,barrier:String(S.sel.b)});
+setTimeout(function(){if(S.pid&&S.pdata){send({buy:S.pid,price:S.pdata.ask_price});
+S.dbot.stats.totalStake+=stake;
+addJournalEntry('✓ Bought '+S.sel.c+' '+S.sel.b+' for $'+fmt(stake),'success');
+addTransaction(S.sel.c+' '+S.sel.b,stake,'pending');
+}else{addJournalEntry('⚠ Proposal failed','error');}callback();},800);}
+
+// Update stats display
+function updateDBotStats(){$('dbotTotalStake').textContent=$f(S.dbot.stats.totalStake);
+$('dbotTotalPayout').textContent=$f(S.dbot.stats.totalPayout);
+$('dbotRuns').textContent=S.dbot.stats.runs;
+$('dbotLost').textContent=S.dbot.stats.lost;
+$('dbotWon').textContent=S.dbot.stats.won;
+var pl=S.dbot.stats.pl;
+$('dbotPL').textContent=(pl>=0?'+':'')+$f(pl);
+$('dbotPL').style.color=pl>=0?'var(--g)':'var(--r)';}
+
+// Add transaction
+function addTransaction(contract,stake,result){var tx={time:new Date().toLocaleTimeString(),contract:contract,stake:stake,result:result,payout:0};
+S.dbot.transactions.unshift(tx);if(S.dbot.transactions.length>50)S.dbot.transactions.pop();
+renderTransactions();}
+
+// Render transactions
+function renderTransactions(){var el=$('dbotTransactions');if(!el)return;if(S.dbot.transactions.length===0){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--td);font-size:11px">No transactions yet</div>';return;}
+el.innerHTML=S.dbot.transactions.map(function(tx){var cls=tx.result==='win'?'win':tx.result==='loss'?'loss':'';
+return '<div class="tx-row '+cls+'"><div><div class="mono fw" style="font-size:11px">'+tx.contract+'</div><div style="font-size:9px;color:var(--tm)">'+tx.time+'</div></div><div class="mono fw" style="font-size:11px">$'+fmt(tx.stake)+'</div></div>';}).join('');}
+
+// Add journal entry
+function addJournalEntry(msg,type){var entry={time:new Date().toLocaleTimeString(),msg:msg,type:type};
+S.dbot.journal.unshift(entry);if(S.dbot.journal.length>100)S.dbot.journal.pop();
+renderJournal();}
+
+// Render journal
+function renderJournal(){var el=$('dbotJournal');if(!el)return;if(S.dbot.journal.length===0){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--td);font-size:11px">No journal entries</div>';return;}
+el.innerHTML=S.dbot.journal.map(function(j){var clr=j.type==='success'?'var(--g)':j.type==='error'?'var(--r)':j.type==='dim'?'var(--tm)':'var(--cy)';
+return '<div style="color:'+clr+';margin-bottom:2px;padding:4px;border-bottom:1px solid rgba(255,255,255,.02)"><span style="color:var(--tm)">['+j.time+']</span> '+j.msg+'</div>';}).join('');}
+
+// Reset stats
+window.resetDBotStats=function(){if(!confirm('Reset all stats?'))return;
+S.dbot.stats={totalStake:0,totalPayout:0,runs:0,won:0,lost:0,pl:0};
+S.dbot.transactions=[];
+S.dbot.journal=[];
+updateDBotStats();
+renderTransactions();
+renderJournal();
+$('dbotEmptyState').style.display='block';
+$('dbotSummaryStats').style.display='none';
+toast('Stats reset','info');};
+
+// Initialize chart (simple canvas-based line chart)
+function initDBotChart(){var canvas=document.createElement('canvas');var ctx=canvas.getContext('2d');
+var container=$('dbotChart');container.innerHTML='';container.appendChild(canvas);
+canvas.width=container.offsetWidth;canvas.height=container.offsetHeight;
+S.dbot.chartData=[];
+// Draw initial empty chart
+drawChart(ctx,canvas.width,canvas.height);
+// Subscribe to ticks for chart
+if(S.ready)subTicks();}
+
+function drawChart(ctx,w,h){ctx.clearRect(0,0,w,h);
+if(S.dbot.chartData.length<2){ctx.fillStyle='var(--td)';ctx.font='12px Inter';ctx.textAlign='center';ctx.fillText('Waiting for data...',w/2,h/2);return;}
+var data=S.dbot.chartData;var min=Math.min.apply(null,data);var max=Math.max.apply(null,data);var range=max-min||1;
+var padding=40;var chartW=w-padding*2;var chartH=h-padding*2;
+ctx.strokeStyle='rgba(59,130,246,.5)';ctx.lineWidth=2;ctx.beginPath();
+data.forEach(function(v,i){var x=padding+(i/(data.length-1))*chartW;var y=h-padding-((v-min)/range)*chartH;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+ctx.stroke();
+// Gradient fill
+var grad=ctx.createLinearGradient(0,0,0,h);grad.addColorStop(0,'rgba(59,130,246,.2)');grad.addColorStop(1,'rgba(59,130,246,0)');
+ctx.lineTo(padding+chartW,h-padding);ctx.lineTo(padding,h-padding);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+// Grid lines
+ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
+for(var i=0;i<=5;i++){var y=padding+(i/5)*chartH;ctx.beginPath();ctx.moveTo(padding,y);ctx.lineTo(w-padding,y);ctx.stroke();}}
+
+function updateDBotChart(){if(S.page!=='dbot'||!S.last||!S.dbot)return;S.dbot.chartData.push(S.last);if(S.dbot.chartData.length>100)S.dbot.chartData.shift();
+var canvas=$('dbotChart').querySelector('canvas');if(canvas){var ctx=canvas.getContext('2d');drawChart(ctx,canvas.width,canvas.height);}}
+
+// Override old renderDBot
+function renderDBot(){if(S.dbot&&S.dbot.loaded&&!$('dbotChart').querySelector('canvas')){initDBotChart();}if(S.dbot){updateDBotStats();renderTransactions();renderJournal();}}
+
+// ===== SETTINGS =====
+function openModal(t,b){$('mtitle').textContent=t;$('mbody').innerHTML=b;$('modal').style.display='flex';}
+function closeModal(){$('modal').style.display='none';}
+function openConn(){openModal('Connect Deriv','<p style="font-size:11px;color:var(--td);margin-bottom:10px">Get free token at api.deriv.com</p><input type="password" class="input" id="tIn" placeholder="API Token" value="'+(S.cfg.token||'')+'" style="margin-bottom:10px"><button class="btn b1 big" onclick="doConn()" style="width:100%">⚡ Connect</button>');setTimeout(function(){$('tIn')&&$('tIn').focus();},100);}
+function doConn(){var t=$('tIn').value.trim();if(!t){toast('Enter token','error');return;}S.cfg.token=t;$('st').value=t;save();closeModal();if(S.ready){send({authorize:t});}else{conn();setTimeout(function(){if(S.ready)send({authorize:t});},1500);}}
+$('modal').addEventListener('click',function(e){if(e.target.id==='modal')closeModal();});
+function applyS(){$('st').value=S.cfg.token||'';$('ss').value=S.cfg.sym;$('stake').value='1';}
+function saveS(){S.cfg.token=$('st').value.trim();S.cfg.sym=$('ss').value;save();if(S.cfg.sym!==S.sym)setSym(S.cfg.sym);if(S.cfg.token&&S.ready&&!S.auth)send({authorize:S.cfg.token});}
+function setSym(s){S.sym=s;$('sym').textContent=s;$('ss').value=s;S.cfg.sym=s;save();S.ticks=[];S.df=Array(10).fill(0);S.last=null;if(S.ready)subTicks();}
+function clrH(){if(confirm('Clear history?')){S.hist=[];save();renderH();renderHome();}}
+function reset(){if(confirm('Reset ALL?')){S.hist=[];S.acc.pl=0;S.cfg={maxStake:10,token:'',sym:'R_100'};S.savedBots=[];S.dbot=null;save();applyS();renderH();renderHome();renderDBot();toast('Reset','success');}}
+
+// ===== INIT =====
+function init(){load();applyS();S.auto.lad=buildL();aUpdate();setSym(S.cfg.sym||'R_100');renderHome();mgUpdate();conn();setInterval(function(){if(S.ready&&S.auth)reqProp();},5000);setInterval(function(){renderHome();},2000);}
+
+// START
+runBoot();
+</script>
 </body>
 </html>

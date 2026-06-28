@@ -928,6 +928,13 @@ var Scanner = {
   stop: function(){
     if(Scanner.scanTimer){ clearInterval(Scanner.scanTimer); Scanner.scanTimer=null; }
     Scanner.state = 'stopped';
+    if(typeof send === 'function'){
+      try{ send({forget_all:'ticks'}); }catch(e){}
+      if(S.ready && S.sym){
+        send({ticks_history:S.sym,adjust_start_time:1,count:100,end:'latest',start:1,style:'ticks'});
+        send({ticks:S.sym,subscribe:1});
+      }
+    }
     scannerUI.pushEvent({icon:'⏹',who:'Scanner',what:'Engine stopped',strength:'low'});
     scannerUI.refreshAll();
     console.log('[Scanner] stopped');
@@ -1205,6 +1212,17 @@ var scannerUI = {
     if(pulse){
       pulse.className = 'live-pulse' + (st==='scanning'?'':' off');
       pulse.textContent = st==='scanning'?'● LIVE':(st==='stopped'?'⏹ STOPPED':st==='connecting'?'◌ STARTING':'⏸ IDLE');
+    }
+
+    var startBtn = $('scStartBtn');
+    var stopBtn = $('scStopBtn');
+    if(startBtn){
+      startBtn.disabled = (st==='scanning' || st==='connecting');
+      startBtn.style.opacity = startBtn.disabled ? '0.4' : '1';
+    }
+    if(stopBtn){
+      stopBtn.disabled = (st==='stopped' || st==='idle');
+      stopBtn.style.opacity = stopBtn.disabled ? '0.4' : '1';
     }
   },
 

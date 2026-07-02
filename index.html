@@ -156,6 +156,23 @@ select option{background:var(--bg2)}
 #rfChart{height:240px;border-radius:12px;overflow:hidden;margin-bottom:10px;background:var(--bg2)}
 #homeChart{height:180px;border-radius:12px;overflow:hidden;margin-bottom:10px;background:var(--bg2)}
 
+/* ── Timeframe chips ─────────────────────────────── */
+.tf-row{display:flex;gap:5px;margin-bottom:8px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tf-chip{flex-shrink:0;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;background:var(--card2);border:1px solid var(--border);color:var(--text3);cursor:pointer;transition:all .12s;white-space:nowrap}
+.tf-chip.active{background:rgba(34,211,238,.15);border-color:var(--cyan);color:var(--cyan)}
+
+/* ── Running contracts banner ─────────────────────── */
+#activeContractsBanner{margin-bottom:10px}
+.active-contract-card{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.25);border-radius:12px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.active-contract-label{font-size:11px;font-weight:700;color:var(--amber)}
+.active-contract-info{font-size:11px;color:var(--text3)}
+
+/* ── Digit signal ─────────────────────────────────── */
+.digit-bar-wrap{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;height:40px;align-items:flex-end;margin:8px 0}
+.digit-bar-item{display:flex;flex-direction:column;align-items:center;gap:1px}
+.digit-bar{border-radius:3px 3px 0 0;transition:height .3s,background .3s;min-height:3px}
+.digit-bar-lbl{font-size:8px;color:var(--text3);font-weight:700}
+
 /* ── Indicator cards ──────────────────────────────── */
 .ind-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px}
 .ind-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:10px 8px;text-align:center;transition:border-color .3s}
@@ -327,7 +344,16 @@ td.loss{color:var(--red);font-weight:700}
           <div class="t-12" style="margin-top:6px" id="homeSymName">Volatility 100</div>
         </div>
       </div>
-      <!-- mini chart -->
+      <!-- Timeframe selector -->
+      <div class="tf-row" id="homeTfRow">
+        <div class="tf-chip active" data-gran="60" onclick="homeTfSelect(60,this)">1m</div>
+        <div class="tf-chip" data-gran="300" onclick="homeTfSelect(300,this)">5m</div>
+        <div class="tf-chip" data-gran="900" onclick="homeTfSelect(900,this)">15m</div>
+        <div class="tf-chip" data-gran="3600" onclick="homeTfSelect(3600,this)">1h</div>
+        <div class="tf-chip" data-gran="14400" onclick="homeTfSelect(14400,this)">4h</div>
+        <div class="tf-chip" data-gran="86400" onclick="homeTfSelect(86400,this)">1D</div>
+      </div>
+      <!-- candlestick chart -->
       <div id="homeChart"></div>
       <div class="row" style="gap:12px;flex-wrap:wrap">
         <div><div class="t-12">Balance</div><div class="mono fw-7 t-14" id="homeBalance">—</div></div>
@@ -439,6 +465,60 @@ td.loss{color:var(--red);font-weight:700}
       <div class="arrow-row" id="rfArrows">
         <div class="text-dim t-12">No arrows yet</div>
       </div>
+    </div>
+
+    <!-- Digit / Overs Signal -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Digit Over/Under Signal</div>
+        <div class="badge badge-amber" id="digitSigBadge" style="display:none">● LIVE</div>
+      </div>
+      <!-- Digit frequency bars -->
+      <div class="digit-bar-wrap" id="digitBars"></div>
+      <!-- Signal pills -->
+      <div class="sig-box sig-wait" id="digitSigBox" style="padding:12px">
+        <div class="sig-dir text-muted" style="font-size:18px" id="digitSigDir">⌛ Waiting</div>
+        <div class="sig-conf" id="digitSigConf">Need 20+ ticks</div>
+        <div class="conf-bar-wrap"><div class="conf-bar" id="digitConfBar" style="width:0%"></div></div>
+      </div>
+      <!-- Stat row -->
+      <div class="form-row-3" style="margin-top:8px">
+        <div class="stat-box" style="text-align:center;padding:8px">
+          <div class="stat-label">Barrier</div>
+          <div class="stat-val mono" id="digitBarrierDisp" style="font-size:14px">—</div>
+        </div>
+        <div class="stat-box" style="text-align:center;padding:8px">
+          <div class="stat-label">Rate (20t)</div>
+          <div class="stat-val mono text-cyan" id="digitRate" style="font-size:14px">—</div>
+        </div>
+        <div class="stat-box" style="text-align:center;padding:8px">
+          <div class="stat-label">Streak</div>
+          <div class="stat-val mono" id="digitStreak" style="font-size:14px">0</div>
+        </div>
+      </div>
+      <!-- Auto-trade for digits -->
+      <div class="divider"></div>
+      <div class="form-row" style="margin-bottom:8px">
+        <div class="form-group">
+          <label class="input-label">Barrier (0-9)</label>
+          <input type="number" id="digitAutoBarrier" value="2" min="0" max="9"/>
+        </div>
+        <div class="form-group">
+          <label class="input-label">Stake ($)</label>
+          <input type="number" id="digitAutoStake" value="1" min="0.35" step="0.01"/>
+        </div>
+      </div>
+      <div class="form-row" style="margin-bottom:10px">
+        <div class="form-group">
+          <label class="input-label">Min Rate %</label>
+          <input type="number" id="digitMinRate" value="65" min="55" max="90"/>
+        </div>
+        <div class="form-group">
+          <label class="input-label">Min Streak</label>
+          <input type="number" id="digitMinStreak" value="3" min="1" max="10"/>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" id="digitAutoBtn" onclick="toggleDigitAuto()">▶ START DIGIT AUTO</button>
     </div>
 
     <!-- Auto-trade settings -->
@@ -697,8 +777,11 @@ td.loss{color:var(--red);font-weight:700}
         <div class="form-group">
           <label class="input-label">Market</label>
           <select id="recoverMarket">
-            <option value="R_100">R_100</option><option value="1HZ100V">1HZ100V</option>
-            <option value="R_50">R_50</option><option value="R_25">R_25</option>
+            <option value="R_100">Volatility 100</option>
+            <option value="R_75">Volatility 75</option>
+            <option value="R_50">Volatility 50</option>
+            <option value="R_25">Volatility 25</option>
+            <option value="R_10">Volatility 10</option>
           </select>
         </div>
       </div>
@@ -728,19 +811,26 @@ td.loss{color:var(--red);font-weight:700}
         <div class="card-title">Contract Shift</div>
         <span class="mono fw-6 t-12" id="shiftStatus">Stopped</span>
       </div>
-      <div class="t-12" style="margin-bottom:10px;color:var(--text3)">Always OVER 2 — martingale on loss</div>
+      <div class="t-12" style="margin-bottom:10px;color:var(--text3)">OVER [barrier] — martingale on loss · 1 tick buy</div>
       <div class="form-row">
         <div class="form-group">
           <label class="input-label">Base Stake</label>
           <input type="number" id="shiftStake" value="1" min="0.35" step="0.01"/>
         </div>
         <div class="form-group">
-          <label class="input-label">Market</label>
-          <select id="shiftMarket">
-            <option value="R_100">R_100</option><option value="1HZ100V">1HZ100V</option>
-            <option value="R_50">R_50</option><option value="R_25">R_25</option>
-          </select>
+          <label class="input-label">Over Barrier</label>
+          <input type="number" id="shiftBarrier" value="2" min="0" max="8"/>
         </div>
+      </div>
+      <div class="form-group">
+        <label class="input-label">Market (choose volatility)</label>
+        <select id="shiftMarket">
+          <option value="R_100">Volatility 100</option>
+          <option value="R_75">Volatility 75</option>
+          <option value="R_50">Volatility 50</option>
+          <option value="R_25">Volatility 25</option>
+          <option value="R_10">Volatility 10</option>
+        </select>
       </div>
       <div class="form-row" style="margin-bottom:8px">
         <div class="form-group">
@@ -847,8 +937,11 @@ td.loss{color:var(--red);font-weight:700}
 
     <div class="row-sb" style="margin-bottom:10px">
       <div class="t-18">History</div>
-      <button class="btn btn-sm btn-ghost" onclick="clearHistory()">Clear</button>
+      <button class="btn btn-sm btn-ghost" onclick="clearHistory()">Clear All</button>
     </div>
+
+    <!-- Running contracts -->
+    <div id="activeContractsBanner"></div>
 
     <!-- Summary -->
     <div class="stats-grid" style="margin-bottom:10px">
@@ -1036,6 +1129,7 @@ const STATE = {
   selectedContract: { contract:'CALL', barrier:'' },
   proposalId: null, proposalData: null,
   tradeHistory: [],
+  activeContracts: {},  // contract_id → {type,symbol,stake,engine} — cleared on settlement
   pendingRequests: {},
   reqId: 0,
   page: 'home',
@@ -1148,6 +1242,7 @@ function onMessage(data){
     if(engine==='recover') { recoverOnBuyFail(); }
     if(engine==='shift') { shiftOnBuyFail(); }
     if(engine==='bot') { botOnBuyFail(); }
+    if(engine==='digit') { DIGIT_SIG.pendingBuy=false; toast('Digit buy error: '+data.error.message,'error',3000); }
     if(rid) delete REQ_ENGINE[rid];
     return;
   }
@@ -1218,6 +1313,7 @@ function onMessage(data){
       else if(engine==='recover'){ recoverOnProposal(p); }
       else if(engine==='shift'){ shiftOnProposal(p); }
       else if(engine==='bot'){ botOnProposal(p); }
+      else if(engine==='digit'){ digitOnProposal(p); }
       else {
         STATE.proposalId = p.id;
         STATE.proposalData = p;
@@ -1232,8 +1328,10 @@ function onMessage(data){
       else if(engine==='recover'){ recoverOnBuy(buy); }
       else if(engine==='shift'){ shiftOnBuy(buy); }
       else if(engine==='bot'){ botOnBuy(buy); }
+      else if(engine==='digit'){ digitOnBuy(buy); }
       else {
         toast('Bought #'+buy.contract_id,'success');
+        STATE.activeContracts[buy.contract_id]={type:'manual',symbol:STATE.currentSymbol,stake:buy.buy_price,engine:'manual'};
         sendWS({proposal_open_contract:1, contract_id:buy.contract_id, subscribe:1});
       }
       if(rid) delete REQ_ENGINE[rid];
@@ -1250,6 +1348,7 @@ function onMessage(data){
         else if(ceng==='recover') recoverOnSettlement(poc);
         else if(ceng==='shift') shiftOnSettlement(poc);
         else if(ceng==='bot') botOnSettlement(poc);
+        else if(ceng==='digit') digitOnSettlement(poc);
         else {
           const prof = parseFloat(poc.profit)||0;
           toast((prof>0?'WIN '+fmtUSD(prof):'LOSS '+fmtUSD(prof)), prof>0?'success':'error');
@@ -1277,6 +1376,7 @@ function onTick(tick){
   updateHeaderPrice();
   if(STATE.page==='home') renderHomeTicks();
   if(STATE.page==='trade') renderHomeTicks();
+  if(STATE.page==='risefall') digitUpdateUI();
   autoTickCheck();
 }
 
@@ -1328,23 +1428,22 @@ function changeCandleGranularity(g){
    CHARTS — lightweight-charts
 ═══════════════════════════════════════════════════════ */
 let rfChartObj = null, rfCandleSeries = null;
-let homeChartObj = null, homeLineSeries = null;
+let homeChartObj = null, homeCandleSeries = null;
 
 function initCharts(){
+  const chartOpts = (bg, scroll) => ({
+    layout: { background:{color:bg}, textColor:'#9ba3b8' },
+    grid: { vertLines:{color:'rgba(255,255,255,.04)'}, horzLines:{color:'rgba(255,255,255,.04)'} },
+    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+    rightPriceScale: { borderColor:'rgba(255,255,255,.08)', textColor:'#9ba3b8' },
+    timeScale: { borderColor:'rgba(255,255,255,.08)', textColor:'#9ba3b8', timeVisible:true, secondsVisible:false },
+    handleScroll: scroll, handleScale: scroll,
+  });
+
   // RF Chart (candlestick)
   const rfEl = $('rfChart');
   if(rfEl && typeof LightweightCharts !== 'undefined'){
-    rfChartObj = LightweightCharts.createChart(rfEl, {
-      width: rfEl.offsetWidth,
-      height: 240,
-      layout: { background:{color:'#111827'}, textColor:'#9ba3b8' },
-      grid: { vertLines:{color:'rgba(255,255,255,.04)'}, horzLines:{color:'rgba(255,255,255,.04)'} },
-      crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-      rightPriceScale: { borderColor:'rgba(255,255,255,.08)', textColor:'#9ba3b8' },
-      timeScale: { borderColor:'rgba(255,255,255,.08)', textColor:'#9ba3b8', timeVisible:true, secondsVisible:false },
-      handleScroll: true,
-      handleScale: true,
-    });
+    rfChartObj = LightweightCharts.createChart(rfEl, { ...chartOpts('#111827', true), width: rfEl.offsetWidth, height: 240 });
     rfCandleSeries = rfChartObj.addCandlestickSeries({
       upColor:'#22c55e', downColor:'#ef4444',
       borderUpColor:'#22c55e', borderDownColor:'#ef4444',
@@ -1352,22 +1451,14 @@ function initCharts(){
     });
   }
 
-  // Home Chart (area/line)
+  // Home Chart (candlestick — same candle data, scrollable)
   const homeEl = $('homeChart');
   if(homeEl && typeof LightweightCharts !== 'undefined'){
-    homeChartObj = LightweightCharts.createChart(homeEl, {
-      width: homeEl.offsetWidth,
-      height: 180,
-      layout: { background:{color:'transparent'}, textColor:'#9ba3b8' },
-      grid: { vertLines:{color:'rgba(255,255,255,.03)'}, horzLines:{color:'rgba(255,255,255,.03)'} },
-      rightPriceScale: { borderColor:'rgba(255,255,255,.05)', textColor:'#9ba3b8' },
-      timeScale: { borderColor:'rgba(255,255,255,.05)', textColor:'#9ba3b8', timeVisible:true, secondsVisible:false },
-      handleScroll: false,
-      handleScale: false,
-    });
-    homeLineSeries = homeChartObj.addAreaSeries({
-      lineColor:'#22d3ee', topColor:'rgba(34,211,238,.2)', bottomColor:'rgba(34,211,238,.01)',
-      lineWidth:2,
+    homeChartObj = LightweightCharts.createChart(homeEl, { ...chartOpts('transparent', true), width: homeEl.offsetWidth, height: 180 });
+    homeCandleSeries = homeChartObj.addCandlestickSeries({
+      upColor:'#22c55e', downColor:'#ef4444',
+      borderUpColor:'#22c55e', borderDownColor:'#ef4444',
+      wickUpColor:'#22c55e', wickDownColor:'#ef4444',
     });
   }
 
@@ -1378,20 +1469,17 @@ function initCharts(){
   });
 }
 
+function homeTfSelect(gran, el){
+  document.querySelectorAll('#homeTfRow .tf-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  changeCandleGranularity(gran);
+}
+
 function updateCharts(){
   const candles = STATE.candles;
   if(!candles.length) return;
-
-  // RF Chart
-  if(rfCandleSeries && candles.length){
-    try{ rfCandleSeries.setData(candles); } catch(e){}
-  }
-
-  // Home Chart (line from close prices)
-  if(homeLineSeries && candles.length){
-    const lineData = candles.map(c=>({time:c.time, value:c.close}));
-    try{ homeLineSeries.setData(lineData); } catch(e){}
-  }
+  if(rfCandleSeries){ try{ rfCandleSeries.setData(candles); }catch(e){} }
+  if(homeCandleSeries){ try{ homeCandleSeries.setData(candles); }catch(e){} }
 }
 
 function updateCandleStatusUI(){
@@ -1831,7 +1919,9 @@ function rfOnProposal(p){
 function rfOnBuy(buy){
   RF.trades++;
   CONTRACT_ENGINE[buy.contract_id]='rf';
+  STATE.activeContracts[buy.contract_id]={type:RF.pendingDir||'CALL',symbol:STATE.currentSymbol,stake:buy.buy_price,engine:'rise/fall'};
   sendWS({proposal_open_contract:1, contract_id:buy.contract_id, subscribe:1});
+  if(STATE.page==='history') renderActiveContracts();
   updateRFUI();
 }
 
@@ -1965,6 +2055,180 @@ function renderRFJournal(){
 function clearRFJournal(){ RF.journal=[]; renderRFJournal(); }
 
 /* ═══════════════════════════════════════════════════════
+   DIGIT SIGNAL ENGINE — Statistical Over/Under Analysis
+   Uses rolling digit frequency + EMA smoothing on rate
+   Signal fires when rate ≥ minRate% and streak ≥ minStreak
+═══════════════════════════════════════════════════════ */
+const DIGIT_SIG = {
+  enabled: false,
+  barrier: 2,
+  minRate: 65,
+  minStreak: 3,
+  stake: 1,
+  streak: 0,
+  overRate: 0,
+  emaRate: 0,           // EMA of overRate — smoothed
+  lastDir: null,        // 'over' or 'under'
+  pendingBuy: false,
+  cooldown: false,
+  wins: 0, losses: 0,
+};
+
+function digitCalcStats(){
+  const ticks = STATE.tickHistory;
+  if(ticks.length < 10) return null;
+
+  const barrier = DIGIT_SIG.barrier;
+  const sample20 = ticks.slice(0, 20);
+  const sample50 = ticks.slice(0, Math.min(50, ticks.length));
+
+  // Count digits > barrier (OVER) in last 20 ticks
+  const overCount20 = sample20.filter(t => t.digit > barrier).length;
+  const overRate20 = overCount20 / sample20.length * 100;
+
+  // EMA smoothing of the rate (k=0.3)
+  const k = 0.3;
+  DIGIT_SIG.emaRate = DIGIT_SIG.emaRate===0
+    ? overRate20
+    : overRate20 * k + DIGIT_SIG.emaRate * (1 - k);
+
+  // Streak: consecutive ticks all > barrier (for over)
+  let overStreak = 0, underStreak = 0;
+  for(const t of ticks.slice(0, 10)){
+    if(t.digit > barrier) overStreak++;
+    else break;
+  }
+  for(const t of ticks.slice(0, 10)){
+    if(t.digit <= barrier) underStreak++;
+    else break;
+  }
+
+  // Digit frequency array (0-9) over last 50
+  const freq = Array(10).fill(0);
+  sample50.forEach(t => { if(t.digit >= 0 && t.digit <= 9) freq[t.digit]++; });
+
+  return {
+    overRate20, emaRate: DIGIT_SIG.emaRate,
+    overStreak, underStreak, freq,
+    barrier, sample: sample20.length
+  };
+}
+
+function digitUpdateUI(){
+  const stats = digitCalcStats();
+  if(!stats){ return; }
+
+  // Draw frequency bars
+  const wrap = $('digitBars');
+  if(wrap){
+    const maxFreq = Math.max(...stats.freq, 1);
+    wrap.innerHTML = stats.freq.map((f, d) => {
+      const h = Math.round(f / maxFreq * 36);
+      const isOver = d > stats.barrier;
+      const isBarrier = d === stats.barrier;
+      const col = isOver ? '#22c55e' : isBarrier ? '#f59e0b' : '#ef4444';
+      return `<div class="digit-bar-item">
+        <div class="digit-bar" style="width:100%;height:${h}px;background:${col}"></div>
+        <div class="digit-bar-lbl" style="color:${isOver?'var(--green)':isBarrier?'var(--amber)':'var(--red)'};">${d}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Stats display
+  const bd = $('digitBarrierDisp'); if(bd) bd.textContent = 'Over '+stats.barrier;
+  const dr = $('digitRate'); if(dr) dr.textContent = Math.round(stats.emaRate)+'%';
+  const ds = $('digitStreak'); if(ds) ds.textContent = stats.overStreak || (-stats.underStreak);
+
+  // Signal logic
+  const isOverSig = stats.emaRate >= DIGIT_SIG.minRate && stats.overStreak >= DIGIT_SIG.minStreak;
+  const isUnderSig = (100 - stats.emaRate) >= DIGIT_SIG.minRate && stats.underStreak >= DIGIT_SIG.minStreak;
+
+  const box=$('digitSigBox'), dir=$('digitSigDir'), conf=$('digitSigConf'), bar=$('digitConfBar');
+  const confPct = Math.round(Math.max(stats.emaRate, 100-stats.emaRate));
+
+  if(bar) bar.style.width = confPct+'%';
+
+  if(isOverSig){
+    if(box){ box.className='sig-box sig-rise'; }
+    if(dir){ dir.textContent='▲ OVER '+stats.barrier; dir.style.color='var(--green)'; }
+    if(conf) conf.textContent = `Rate ${Math.round(stats.emaRate)}% · Streak ${stats.overStreak} · EMA ${Math.round(DIGIT_SIG.emaRate)}%`;
+    if(DIGIT_SIG.enabled && !DIGIT_SIG.pendingBuy && !DIGIT_SIG.cooldown) digitExecute('over');
+  } else if(isUnderSig){
+    if(box){ box.className='sig-box sig-fall'; }
+    if(dir){ dir.textContent='▼ UNDER '+(stats.barrier+1); dir.style.color='var(--red)'; }
+    if(conf) conf.textContent = `Rate ${Math.round(100-stats.emaRate)}% under · Streak ${stats.underStreak} · EMA ${Math.round(DIGIT_SIG.emaRate)}%`;
+    if(DIGIT_SIG.enabled && !DIGIT_SIG.pendingBuy && !DIGIT_SIG.cooldown) digitExecute('under');
+  } else {
+    if(box){ box.className='sig-box sig-wait'; }
+    if(dir){ dir.textContent='⌛ Scanning…'; dir.style.color='var(--text3)'; }
+    if(conf) conf.textContent = `Over rate: ${Math.round(stats.emaRate)}% (need ${DIGIT_SIG.minRate}%) · Streak ${stats.overStreak}/${DIGIT_SIG.minStreak}`;
+  }
+}
+
+function digitExecute(direction){
+  if(!STATE.authorized){ return; }
+  DIGIT_SIG.pendingBuy = true;
+  const stake = DIGIT_SIG.stake;
+  const contractType = direction==='over' ? 'DIGITOVER' : 'DIGITUNDER';
+  const barrier = direction==='over' ? String(DIGIT_SIG.barrier) : String(DIGIT_SIG.barrier+1);
+  const rid = sendWS({
+    proposal: 1, amount: String(stake.toFixed(2)), basis: 'stake',
+    contract_type: contractType, currency: STATE.account.currency||'USD',
+    duration: 1, duration_unit: 't',
+    symbol: STATE.currentSymbol, barrier
+  });
+  if(rid!=null) REQ_ENGINE[rid] = 'digit';
+  toast('Digit '+(direction==='over'?'▲ OVER '+DIGIT_SIG.barrier:'▼ UNDER '+(DIGIT_SIG.barrier+1))+' · $'+stake.toFixed(2), 'info', 1500);
+  setTimeout(()=>{ DIGIT_SIG.pendingBuy=false; }, 4000);
+}
+
+function toggleDigitAuto(){
+  if(!DIGIT_SIG.enabled){
+    if(!STATE.authorized){ toast('Connect Deriv first','error'); openConnect(); return; }
+    DIGIT_SIG.barrier = parseInt($('digitAutoBarrier').value)||2;
+    DIGIT_SIG.stake = parseFloat($('digitAutoStake').value)||1;
+    DIGIT_SIG.minRate = parseFloat($('digitMinRate').value)||65;
+    DIGIT_SIG.minStreak = parseInt($('digitMinStreak').value)||3;
+    DIGIT_SIG.emaRate = 0;
+    DIGIT_SIG.enabled = true;
+    DIGIT_SIG.pendingBuy = false;
+    DIGIT_SIG.cooldown = false;
+    const badge=$('digitSigBadge'); if(badge) badge.style.display='inline-flex';
+    const btn=$('digitAutoBtn'); if(btn){ btn.textContent='⏹ STOP DIGIT AUTO'; btn.className='btn btn-red btn-full'; }
+    toast('Digit Auto ON · barrier '+DIGIT_SIG.barrier+' · need '+DIGIT_SIG.minRate+'%','success');
+  } else {
+    DIGIT_SIG.enabled = false;
+    DIGIT_SIG.pendingBuy = false;
+    const badge=$('digitSigBadge'); if(badge) badge.style.display='none';
+    const btn=$('digitAutoBtn'); if(btn){ btn.textContent='▶ START DIGIT AUTO'; btn.className='btn btn-primary btn-full'; }
+    toast('Digit Auto OFF','info');
+  }
+}
+
+// Handle digit proposal/buy in onMessage
+function digitOnProposal(p){
+  if(!DIGIT_SIG.pendingBuy) return;
+  const rid = sendWS({buy:p.id, price:p.ask_price});
+  if(rid!=null) REQ_ENGINE[rid]='digit';
+}
+
+function digitOnBuy(buy){
+  CONTRACT_ENGINE[buy.contract_id]='digit';
+  STATE.activeContracts[buy.contract_id]={type:'DIGIT',symbol:STATE.currentSymbol,stake:buy.buy_price,engine:'digit'};
+  sendWS({proposal_open_contract:1, contract_id:buy.contract_id, subscribe:1});
+  if(STATE.page==='history') renderActiveContracts();
+}
+
+function digitOnSettlement(poc){
+  const profit = parseFloat(poc.profit)||0;
+  DIGIT_SIG.pendingBuy = false;
+  DIGIT_SIG.cooldown = true;
+  setTimeout(()=>{ DIGIT_SIG.cooldown=false; }, 1500);
+  if(profit>0){ DIGIT_SIG.wins++; toast('Digit WIN +$'+profit.toFixed(2),'success'); }
+  else { DIGIT_SIG.losses++; toast('Digit LOSS -$'+Math.abs(profit).toFixed(2),'error'); }
+}
+
+/* ═══════════════════════════════════════════════════════
    NAVIGATION
 ═══════════════════════════════════════════════════════ */
 const PAGE_MAP = {
@@ -1980,7 +2244,7 @@ function navigate(page){
     const nav = $('nav-'+k);
     if(nav) nav.classList.toggle('active', k===page);
   });
-  if(page==='history') renderHistory();
+  if(page==='history'){ renderHistory(); renderActiveContracts(); }
   if(page==='risefall') updateRFIndicatorUI();
   if(page==='settings') updateSettingsUI();
   location.hash = page;
@@ -2116,18 +2380,41 @@ function logSettledTrade(c){
     ts: Date.now()
   });
   if(STATE.tradeHistory.length>500) STATE.tradeHistory.length=500;
+  // Remove from active contracts
+  delete STATE.activeContracts[c.contract_id];
   saveState();
   if(STATE.page==='history') renderHistory();
   renderHome();
+}
+
+function renderActiveContracts(){
+  const banner=$('activeContractsBanner');
+  if(!banner) return;
+  const entries=Object.entries(STATE.activeContracts||{});
+  if(!entries.length){ banner.innerHTML=''; return; }
+  banner.innerHTML=`<div class="section-title" style="margin-bottom:6px">⏳ Running Now (${entries.length})</div>`+entries.map(([cid,info])=>`
+    <div class="active-contract-card">
+      <div>
+        <div class="active-contract-label">#${cid} · ${info.type||'—'}</div>
+        <div class="active-contract-info">${info.symbol||'—'} · $${parseFloat(info.stake||0).toFixed(2)} · ${info.engine||'manual'}</div>
+      </div>
+      <div class="badge badge-amber">● OPEN</div>
+    </div>`).join('');
 }
 
 function renderHistory(){
   const list=$('histList'), empty=$('histEmpty');
   const total=$('histTotal'), wr=$('histWinRate'), hpl=$('histPL'), todpl=$('histTodayPL');
 
+  renderActiveContracts();
+
   if(!STATE.tradeHistory.length){
     if(empty) empty.style.display='block';
     if(list) list.innerHTML='';
+    if(total) total.textContent='0';
+    if(wr){ wr.textContent='—'; wr.style.color='var(--text3)'; }
+    if(hpl){ hpl.textContent='$0.00'; hpl.style.color='var(--text3)'; }
+    if(todpl){ todpl.textContent='$0.00'; todpl.style.color='var(--text3)'; }
     return;
   }
   if(empty) empty.style.display='none';
@@ -2450,7 +2737,15 @@ function recoverOnProposal(p){
   if(rid!=null) REQ_ENGINE[rid]='recover';
 }
 
-function recoverOnBuy(buy){RECOVER.trades++;recoverLog('Bought #'+buy.contract_id+' @ $'+buy.buy_price,'text-green');updateRecoverUI();}
+function recoverOnBuy(buy){
+  RECOVER.trades++;
+  CONTRACT_ENGINE[buy.contract_id]='recover';
+  STATE.activeContracts[buy.contract_id]={type:'OVER/UNDER',symbol:RECOVER.cfg.symbol,stake:buy.buy_price,engine:'recover'};
+  sendWS({proposal_open_contract:1, contract_id:buy.contract_id, subscribe:1});
+  recoverLog('Bought #'+buy.contract_id+' @ $'+buy.buy_price,'text-green');
+  updateRecoverUI();
+  if(STATE.page==='history') renderActiveContracts();
+}
 function recoverOnBuyFail(){recoverLog('Buy failed — retrying…','text-red');if(RECOVER.running) setTimeout(()=>{if(RECOVER.running) recoverRequestProposal();},2000);}
 
 function recoverOnSettlement(c){
@@ -2494,7 +2789,7 @@ function updateShiftUI(){
   const sns=$('shiftNextStake');if(sns) sns.textContent='$'+(SHIFT.stakeNow||parseFloat($('shiftStake').value)||1).toFixed(2);
   const sw=$('shiftWL');if(sw) sw.textContent=SHIFT.wins+' / '+SHIFT.losses;
   const st2=$('shiftTrades');if(st2) st2.textContent=SHIFT.trades;
-  ['shiftStake','shiftMarket','shiftDuration','shiftMultiplier'].forEach(id=>{const el=$(id);if(el) el.disabled=on;});
+  ['shiftStake','shiftBarrier','shiftMarket','shiftDuration','shiftMultiplier'].forEach(id=>{const el=$(id);if(el) el.disabled=on;});
 }
 
 function startShiftBot(){
@@ -2504,11 +2799,12 @@ function startShiftBot(){
     baseStake:parseFloat($('shiftStake').value)||1,
     symbol:$('shiftMarket').value,
     duration:parseInt($('shiftDuration').value)||1,
-    multiplier:parseFloat($('shiftMultiplier').value)||2
+    multiplier:parseFloat($('shiftMultiplier').value)||2,
+    barrier:$('shiftBarrier').value||'2'
   };
   SHIFT.running=true;SHIFT.stakeNow=SHIFT.cfg.baseStake;SHIFT.trades=0;SHIFT.wins=0;SHIFT.losses=0;
   updateShiftUI();
-  shiftLog('Started — OVER 2 on '+SHIFT.cfg.symbol+' · $'+SHIFT.stakeNow.toFixed(2),'text-green');
+  shiftLog('Started — OVER '+SHIFT.cfg.barrier+' on '+SHIFT.cfg.symbol+' · $'+SHIFT.stakeNow.toFixed(2),'text-green');
   shiftRequestProposal();
 }
 
@@ -2518,7 +2814,7 @@ function shiftRequestProposal(){
   if(!SHIFT.running) return;
   const c=SHIFT.cfg;
   if(STATE.account.balance>0&&SHIFT.stakeNow>STATE.account.balance){shiftLog('Insufficient balance','text-red');stopShiftBot();return;}
-  const rid=sendWS({proposal:1,amount:String(SHIFT.stakeNow.toFixed(2)),basis:'stake',contract_type:'DIGITOVER',currency:STATE.account.currency||'USD',duration:c.duration,duration_unit:'t',symbol:c.symbol,barrier:'2'});
+  const rid=sendWS({proposal:1,amount:String(SHIFT.stakeNow.toFixed(2)),basis:'stake',contract_type:'DIGITOVER',currency:STATE.account.currency||'USD',duration:c.duration,duration_unit:'t',symbol:c.symbol,barrier:String(c.barrier)});
   if(rid!=null) REQ_ENGINE[rid]='shift';
 }
 
@@ -2528,7 +2824,15 @@ function shiftOnProposal(p){
   if(rid!=null) REQ_ENGINE[rid]='shift';
 }
 
-function shiftOnBuy(buy){SHIFT.trades++;shiftLog('Bought #'+buy.contract_id+' @ $'+buy.buy_price,'text-green');updateShiftUI();}
+function shiftOnBuy(buy){
+  SHIFT.trades++;
+  CONTRACT_ENGINE[buy.contract_id]='shift';
+  STATE.activeContracts[buy.contract_id]={type:'OVER '+SHIFT.cfg.barrier,symbol:SHIFT.cfg.symbol,stake:buy.buy_price,engine:'shift'};
+  sendWS({proposal_open_contract:1, contract_id:buy.contract_id, subscribe:1});
+  shiftLog('Bought #'+buy.contract_id+' @ $'+buy.buy_price,'text-green');
+  updateShiftUI();
+  if(STATE.page==='history') renderActiveContracts();
+}
 function shiftOnBuyFail(){shiftLog('Buy failed — retrying…','text-red');if(SHIFT.running) setTimeout(()=>{if(SHIFT.running) shiftRequestProposal();},2000);}
 
 function shiftOnSettlement(c){

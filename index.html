@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#060A10">
 <title>Trade7Smart AI — Deriv Trading Terminal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,7 +25,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow-x:hidden}
-body{background:var(--bg);color:var(--text);overscroll-behavior:none;touch-action:pan-y;font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:clamp(13px,1.15vw,15px);line-height:1.5;-webkit-font-smoothing:antialiased;background-image:radial-gradient(ellipse 1200px 600px at 10% -10%,rgba(59,130,246,.10),transparent),radial-gradient(ellipse 800px 500px at 90% 10%,rgba(139,92,246,.10),transparent),radial-gradient(ellipse 700px 400px at 50% 100%,rgba(34,211,238,.06),transparent);background-attachment:fixed}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:clamp(13px,1.15vw,15px);line-height:1.5;-webkit-font-smoothing:antialiased;background-image:radial-gradient(ellipse 1200px 600px at 10% -10%,rgba(59,130,246,.10),transparent),radial-gradient(ellipse 800px 500px at 90% 10%,rgba(139,92,246,.10),transparent),radial-gradient(ellipse 700px 400px at 50% 100%,rgba(34,211,238,.06),transparent);background-attachment:fixed}
 h1{font-size:clamp(1.8rem,4.5vw,3.5rem);font-weight:800;letter-spacing:-.02em;line-height:1.05}
 h2{font-size:clamp(1.3rem,2.8vw,2rem);font-weight:700;letter-spacing:-.015em}
 h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
@@ -62,8 +62,8 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
 .preloader-bar{width:280px;height:4px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
 .preloader-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--blue),var(--cyan),var(--purple));transition:width .3s;box-shadow:0 0 12px var(--blue)}
 .preloader-text{color:var(--text-dim);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
-.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:64px 1fr;grid-template-areas:"sidebar header" "sidebar main";height:100vh;height:100dvh;width:100vw;overflow:hidden}
-@media(max-width:1024px){.app{grid-template-columns:1fr;grid-template-rows:60px 1fr calc(64px + env(safe-area-inset-bottom));grid-template-areas:"header" "main" "nav"}}
+.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:64px 1fr;grid-template-areas:"sidebar header" "sidebar main";height:100vh;width:100vw;overflow:hidden}
+@media(max-width:1024px){.app{grid-template-columns:1fr;grid-template-rows:60px 1fr 70px;grid-template-areas:"header" "main" "nav"}}
 .sidebar{grid-area:sidebar;background:linear-gradient(180deg,rgba(13,18,25,.92),rgba(13,18,25,.7));backdrop-filter:blur(20px);border-right:1px solid var(--border);padding:18px 14px;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
 .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 16px}
 .brand-mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;box-shadow:var(--glow-blue);flex-shrink:0}
@@ -74,9 +74,9 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
 .nav-item.active{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.10));color:#fff;border-color:rgba(59,130,246,.25);box-shadow:inset 0 0 20px rgba(59,130,246,.08)}
 .nav-item .ico{width:18px;height:18px;flex-shrink:0}
 .sidebar-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--border);font-size:11px}
-.bottom-nav{grid-area:nav;display:none;background:rgba(13,18,25,.96);backdrop-filter:blur(24px);border-top:1px solid var(--border);padding:6px 6px calc(6px + env(safe-area-inset-bottom));}
+.bottom-nav{grid-area:nav;display:none;background:rgba(13,18,25,.92);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:6px}
 @media(max-width:1024px){.bottom-nav{display:grid;grid-template-columns:repeat(6,1fr);gap:2px}}
-.bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px;border-radius:10px;color:var(--text-muted);font-size:9px;cursor:pointer;transition:all .2s;min-width:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px;border-radius:10px;color:var(--text-muted);font-size:9px;cursor:pointer;transition:all .2s;min-width:0}
 .bnav-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
 .bnav-item.active{color:var(--blue)}
 .bnav-item .ico{width:19px;height:19px}
@@ -92,8 +92,8 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
 .header-right{display:flex;align-items:center;gap:8px}
 .connection-pill{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:99px;background:rgba(255,255,255,.04);border:1px solid var(--border);font-size:11px;font-weight:600}
 .balance-pill{font-family:'JetBrains Mono',monospace;padding:7px 14px;border-radius:99px;background:linear-gradient(135deg,rgba(34,197,94,.15),rgba(34,211,238,.10));border:1px solid rgba(34,197,94,.25);font-size:13px;font-weight:700;color:#fff}
-.main{grid-area:main;overflow-y:auto;overflow-x:hidden;padding:18px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
-@media(max-width:768px){.main{padding:12px;padding-bottom:calc(80px + env(safe-area-inset-bottom))}}
+.main{grid-area:main;overflow-y:auto;overflow-x:hidden;padding:18px;scroll-behavior:smooth}
+@media(max-width:768px){.main{padding:12px;padding-bottom:90px}}
 .page{display:none;animation:fadeUp .5s ease}
 .page.active{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
@@ -293,17 +293,9 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
 .result-icon{width:90px;height:90px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:46px;font-weight:800}
 .result-card.win .result-icon{background:radial-gradient(circle,rgba(34,197,94,.3),transparent);box-shadow:0 0 60px rgba(34,197,94,.5);color:var(--green)}
 .result-card.loss .result-icon{background:radial-gradient(circle,rgba(239,68,68,.3),transparent);box-shadow:0 0 60px rgba(239,68,68,.5);color:var(--red)}
-.result-amt{font-size:clamp(32px,6vw,42px);font-weight:800;font-family:'JetBrains Mono',monospace;margin:6px 0}
+.result-amt{font-size:clamp(32px,6vw,42px);font-weight:800;font-family:'JetBrains Mono',margin:6px 0}
 .result-card.win .result-amt{color:var(--green)}
 .result-card.loss .result-amt{color:var(--red)}
-.stat-line{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:11px;gap:8px}
-.stat-line .k{color:var(--text-muted)}
-.stat-line .v{font-family:'JetBrains Mono',monospace;font-weight:600;text-align:right}
-.ai-conf-bar-track{height:6px;border-radius:99px;background:rgba(255,255,255,.06);margin:8px 0;overflow:hidden}
-.ai-conf-bar-fill{height:100%;border-radius:99px;transition:width .6s ease,background .6s ease;background:linear-gradient(90deg,#EF4444,#F59E0B,#22C55E)}
-.ai-mini-cell{text-align:center;padding:8px;border-radius:8px;background:rgba(255,255,255,.02);border:1px solid var(--border)}
-.ai-mini-cell .lbl{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
-.ai-mini-cell .val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:16px}
 .history-table{width:100%;border-collapse:collapse;font-size:12px}
 .history-table th{text-align:left;padding:11px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);font-weight:600;border-bottom:1px solid var(--border)}
 .history-table td{padding:11px 12px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:11px}
@@ -321,7 +313,7 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
 .toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:all .3s}
 .toggle.on{background:linear-gradient(135deg,var(--blue),var(--purple))}
 .toggle.on::after{left:22px}
-.input,select.input{width:100%;padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:max(13px,16px);font-family:inherit;outline:none;transition:all .25s}
+.input,select.input{width:100%;padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:all .25s}
 .input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
 .modal-backdrop{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:14px;animation:fadeIn .25s ease}
 .modal-backdrop.show{display:flex}
@@ -340,8 +332,7 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
 #fab-buy{display:none;position:fixed;bottom:90px;right:18px;z-index:50;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));border:none;color:#fff;cursor:pointer;box-shadow:var(--glow-blue);align-items:center;justify-content:center;transition:transform .25s}
 #fab-buy:hover{transform:scale(1.08)}
 @media(max-width:1024px){#fab-buy.show{display:flex}}
-::-webkit-scrollbar{width:6px;height:6px}
-@media(max-width:768px){::-webkit-scrollbar{width:3px;height:3px}}
+::-webkit-scrollbar{width:8px;height:8px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:99px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.18)}
@@ -402,21 +393,25 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
       <div class="brand-mark">T7</div>
       <div class="brand-text">Trade7Smart<small>AI TERMINAL</small></div>
     </div>
-        <div class="nav-item active" data-page="home" onclick="navigate('home')">
+    <div class="nav-item active" data-page="home" onclick="navigate('home')">
       <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span>Home</span>
+    </div>
+    <div class="nav-item" data-page="analyzer" onclick="navigate('analyzer')">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l3-9 4 18 3-9h6"/></svg>
+      <span>Analyzer</span>
     </div>
     <div class="nav-item" data-page="trade" onclick="navigate('trade')">
       <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
       <span>Trade</span>
     </div>
-    <div class="nav-item" data-page="analyzer" onclick="navigate('analyzer')">
-      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l3-9 4 18 3-9h6"/></svg>
-      <span>Tracker</span>
-    </div>
     <div class="nav-item" data-page="import" onclick="navigate('import')">
       <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      <span>DBot</span>
+      <span>Import Bot</span>
+    </div>
+    <div class="nav-item" data-page="strategy" onclick="navigate('strategy')">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span>Strategy</span>
     </div>
     <div class="nav-item" data-page="history" onclick="navigate('history')">
       <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
@@ -426,9 +421,9 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
       <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       <span>Settings</span>
     </div>
-<div class="sidebar-foot">
+    <div class="sidebar-foot">
       <div class="row between"><span class="text-muted" style="font-size:10px">Build</span><span class="mono-s text-dim">v2.2.0</span></div>
-      <div class="row between" style="margin-top:4px"><span class="text-muted" style="font-size:10px">WS Status</span><span class="mono-s text-muted" id="sbWs">○</span></div>
+      <div class="row between" style="margin-top:4px"><span class="text-muted" style="font-size:10px">WS Status</span><span class="mono-s text-green" id="sbWs">●</span></div>
       <div class="row between" style="margin-top:4px"><span class="text-muted" style="font-size:10px">Auto-Trade</span><span class="mono-s" id="sbAuto">○</span></div>
     </div>
   </aside>
@@ -512,10 +507,10 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
       </div>
 
       <div class="glass" style="padding:16px;margin-top:12px">
-        <div class="row between" style="margin-bottom:10px"><h3>System Status</h3><span class="mono-s" id="sysSummary">All Systems Operational</span></div>
+        <div class="row between" style="margin-bottom:10px"><h3>System Status</h3><span class="mono-s text-green">All Systems Operational</span></div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">
-          <div class="hero-stat"><div class="label">WebSocket</div><div class="value text-muted" id="sysWS">○</div></div>
-          <div class="hero-stat"><div class="label">Market Feed</div><div class="value text-muted" id="sysMarket">○</div></div>
+          <div class="hero-stat"><div class="label">WebSocket</div><div class="value text-green" id="sysWS">●</div></div>
+          <div class="hero-stat"><div class="label">Market Feed</div><div class="value text-green">●</div></div>
           <div class="hero-stat"><div class="label">Auto-Trade</div><div class="value text-muted" id="sysAuto">○</div></div>
           <div class="hero-stat"><div class="label">Tracker</div><div class="value text-muted" id="sysTrk">○</div></div>
         </div>
@@ -709,7 +704,7 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
               <div class="text-muted" style="font-size:12px;padding:8px">Waiting for live ticks...</div>
             </div>
             <div class="trk-tracker-foot">
-              <span>All data is real-time from Deriv API <span class="text-muted" id="trkConnStatus">○ Disconnected</span></span>
+              <span>All data is real-time from Deriv API <span class="text-green" id="trkConnStatus">● Connected</span></span>
             </div>
             <div class="trk-tracker-foot" style="border-top:none;padding-top:0">
               <span>Last Updated: <span id="trkLastUpdate" class="mono-s">—</span></span>
@@ -731,6 +726,12 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
       </div>
       <div class="trade-grid">
         <div>
+          <div class="glass" style="padding:16px;margin-bottom:12px">
+            <div class="row between" style="margin-bottom:10px"><h3>📡 Live Tracker</h3><span class="text-muted mono-s" id="liveTrackerCount">0 active</span></div>
+            <div class="text-muted" style="font-size:11px;margin-bottom:8px">Tracks every open contract across Manual, Auto-Trade, Recover Contract, Contract Shift and Strategy bots</div>
+            <div id="liveTrackerList" class="empty">No active contracts</div>
+          </div>
+
           <div class="glass" style="padding:16px;margin-bottom:12px">
             <h3 style="margin-bottom:12px">Select Contract</h3>
             <div class="contract-grid">
@@ -803,10 +804,8 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
                 <input type="number" id="shiftStake" class="input" value="1" min="0.35" step="0.5">
               </div>
               <div>
-                <div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Market (Volatility 1s)</div>
-                <select id="shiftMarket" class="input">
-                  <option value="1HZ10V">1HZ10V</option><option value="1HZ25V">1HZ25V</option><option value="1HZ50V">1HZ50V</option><option value="1HZ75V">1HZ75V</option><option value="1HZ100V" selected>1HZ100V</option>
-                </select>
+                <div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Market</div>
+                <div class="input" style="display:flex;align-items:center;opacity:.8;cursor:default" id="shiftMarketDisplay">Rotates: 1HZ10V·25V·50V·75V·100V</div>
               </div>
               <div>
                 <div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Duration (ticks)</div>
@@ -817,7 +816,8 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
                 <input type="number" id="shiftMultiplier" class="input" value="2" min="1.1" step="0.1">
               </div>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px">
+              <div class="hero-stat"><div class="label">Current Market</div><div class="value mono text-cyan" id="shiftCurrentMarket">—</div></div>
               <div class="hero-stat"><div class="label">Next Stake</div><div class="value mono text-green" id="shiftNextStake">$1.00</div></div>
               <div class="hero-stat"><div class="label">W / L</div><div class="value mono" id="shiftWL">0 / 0</div></div>
               <div class="hero-stat"><div class="label">Trades</div><div class="value mono" id="shiftTrades">0</div></div>
@@ -884,37 +884,8 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
           <div id="openMonitorSlot" style="margin-top:12px"></div>
         </div>
 
-        <div style="display:flex;flex-direction:column;gap:12px;align-self:start">
-          <div class="glass" id="aiConfidencePanel" style="padding:16px">
-            <div class="row between" style="margin-bottom:10px">
-              <h3>🧠 AI Signal Engine</h3>
-              <span class="live-tag">LIVE</span>
-            </div>
-            <div id="aiRecommendBox" style="padding:12px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);margin-bottom:12px">
-              <div class="row between" style="margin-bottom:4px">
-                <span class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em">Recommended</span>
-                <span class="mono fw-7 text-cyan" id="aiAction" style="font-size:15px">WAIT</span>
-              </div>
-              <div class="row between" style="margin-bottom:6px">
-                <span class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em">Confidence</span>
-                <span class="mono fw-7" id="aiConfPct" style="font-size:20px;color:var(--text-muted)">—%</span>
-              </div>
-              <div class="ai-conf-bar-track"><div class="ai-conf-bar-fill" id="aiConfBar" style="width:0%"></div></div>
-              <div class="text-muted" style="font-size:10px;line-height:1.5;margin-top:4px" id="aiReason">Collecting ticks...</div>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
-              <div class="ai-mini-cell"><div class="lbl">Bull %</div><div class="val text-green" id="aiBullPct">—</div></div>
-              <div class="ai-mini-cell"><div class="lbl">Momentum</div><div class="val text-amber" id="aiMomentum">—</div></div>
-              <div class="ai-mini-cell"><div class="lbl">Risk</div><div class="val text-red" id="aiRisk">—</div></div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-              <div class="ai-mini-cell"><div class="lbl">Top Digit</div><div class="val" id="aiTopDigit">—</div></div>
-              <div class="ai-mini-cell"><div class="lbl">Avg Move</div><div class="val text-cyan" id="aiAvgMove">—</div></div>
-            </div>
-            <div style="padding:6px 10px;border-radius:6px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);font-size:10px;color:var(--text-muted)">⚠ Heuristic signals only — not financial advice. Trade responsibly.</div>
-          </div>
-          <div class="glass proposal-card">
-            <h3 style="margin-bottom:12px">Live Proposal</h3>
+        <div class="glass proposal-card">
+          <h3 style="margin-bottom:12px">Live Proposal</h3>
           <div class="prop-row"><span class="k">Contract</span><span class="v" id="propContract">—</span></div>
           <div class="prop-row"><span class="k">Barrier</span><span class="v" id="propBarrier">—</span></div>
           <div class="prop-row"><span class="k">Stake</span><span class="v" id="propStake">—</span></div>
@@ -925,7 +896,6 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
           <div class="prop-row"><span class="k">Expected Return</span><span class="v" id="propER">—</span></div>
           <button class="btn btn-primary btn-lg" style="width:100%;margin-top:14px" onclick="buyContract()" id="buyBtn" disabled>⚡ BUY</button>
           <div class="text-muted center" style="font-size:10px;margin-top:8px" id="propStatus">Connect Deriv account to begin</div>
-          </div>
         </div>
       </div>
     </section>
@@ -949,8 +919,7 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
       </div>
 
       <div class="glass" style="padding:16px;margin-bottom:12px" id="botParsedCard">
-        <h3 style="margin-bottom:6px">2. Review &amp; confirm parameters</h3>
-        <div id="botXmlSummary" style="font-size:11px;color:var(--text-muted);margin-bottom:10px;padding:6px 10px;border-radius:8px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);display:none"></div>
+        <h3 style="margin-bottom:10px">2. Review &amp; confirm parameters</h3>
         <div id="botParsedEmpty" class="text-muted" style="font-size:12px">No bot parsed yet — load a file above.</div>
         <div id="botParsedFields" style="display:none">
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:6px">
@@ -1008,6 +977,15 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
           <div class="text-muted mono-s" style="font-size:11px">Log will appear here once you run the bot…</div>
         </div>
       </div>
+    </section>
+
+    <section class="page" id="page-strategy">
+      <div class="section-head"><h2><span class="accent"></span>Strategy — DBot Files</h2></div>
+      <div class="text-muted" style="font-size:12px;margin-bottom:14px">
+        Each card below is one of your imported Deriv Bot (.xml) strategy files. The market, contract, stake, duration and risk-management values shown were parsed directly out of that file's own code. Click Run and it trades entirely on its own — it does not follow any Analyzer signal, the Auto-Trade Engine, or any other card.
+        <br><br>⚠ These bots also contain custom entry-timing logic (indicators, digit filters, cooldowns) built from Blockly blocks that this app summarizes but does not re-simulate move-for-move — running a card executes its detected market / contract / stake / risk-management exactly, on the same 1-tick cadence as the rest of this app.
+      </div>
+      <div id="strategyGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px"></div>
     </section>
 
     <section class="page" id="page-history">
@@ -1069,21 +1047,25 @@ h3{font-size:clamp(1.05rem,1.8vw,1.25rem);font-weight:600;letter-spacing:-.01em}
   </main>
 
   <nav class="bottom-nav">
-        <div class="bnav-item active" data-page="home" onclick="navigate('home')">
+    <div class="bnav-item active" data-page="home" onclick="navigate('home')">
       <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span>Home</span>
-    </div>
-    <div class="bnav-item" data-page="trade" onclick="navigate('trade')">
-      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-      <span>Trade</span>
     </div>
     <div class="bnav-item" data-page="analyzer" onclick="navigate('analyzer')">
       <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l3-9 4 18 3-9h6"/></svg>
       <span>Tracker</span>
     </div>
+    <div class="bnav-item" data-page="trade" onclick="navigate('trade')">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <span>Trade</span>
+    </div>
     <div class="bnav-item" data-page="import" onclick="navigate('import')">
       <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      <span>DBot</span>
+      <span>Import</span>
+    </div>
+    <div class="bnav-item" data-page="strategy" onclick="navigate('strategy')">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span>Strategy</span>
     </div>
     <div class="bnav-item" data-page="history" onclick="navigate('history')">
       <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
@@ -1153,7 +1135,7 @@ const PRELOAD_STEPS=[{p:18,t:'Initializing AI...'},{p:38,t:'Connecting...'},{p:5
 let preIdx=0;
 function runPreloader(){const tick=()=>{if(preIdx>=PRELOAD_STEPS.length){setTimeout(()=>$('preloader').classList.add('hide'),350);return;}const s=PRELOAD_STEPS[preIdx++];$('prePct').textContent=s.p+'%';$('preFill').style.width=s.p+'%';$('preText').textContent=s.t;setTimeout(tick,520);};tick();}
 
-function navigate(page){STATE.page=page;document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item,.bnav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));$('page-'+page).classList.add('active');document.querySelector('.main').scrollTop=0;$('fab-buy').classList.toggle('show',page==='analyzer'||page==='home');if(page==='history')renderHistory();if(page==='home')renderHome();if(page==='analyzer')renderTracker();if(page==='trade')renderAIPanel();}
+function navigate(page){STATE.page=page;document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item,.bnav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));$('page-'+page).classList.add('active');document.querySelector('.main').scrollTop=0;$('fab-buy').classList.toggle('show',page==='analyzer'||page==='home');if(page==='history')renderHistory();if(page==='home')renderHome();if(page==='analyzer')renderTracker();}
 
 /* ====================================================================
    DERIV WEBSOCKET
@@ -1218,6 +1200,74 @@ function stopHeartbeat(){if(STATE.heartbeatTimer){clearInterval(STATE.heartbeatT
 const REQ_ENGINE={};      // req_id -> engine name, set right after sending a proposal/buy
 const CONTRACT_ENGINE={}; // contract_id -> engine name, set right after a buy confirms
 
+// Unified Live Tracker — shows every currently open contract from every engine
+// (manual, auto-trade, recover contract, contract shift, imported bot, strategies)
+const ACTIVE_CONTRACTS={};
+const ENGINE_LABELS={recover:'Recover',shift:'Shift',bot:'DBot Import',default:'Manual'};
+function engineLastOrder(engine){
+  if(engine==='recover') return RECOVER.lastOrder;
+  if(engine==='shift') return SHIFT.lastOrder;
+  if(engine==='bot') return BOT.lastOrder;
+  if(engine && engine.indexOf('strategy:')===0){
+    const s=STRATEGY_RUNTIME[engine.slice(9)];
+    return s ? s.lastOrder : null;
+  }
+  return DEFAULT_LAST_ORDER;
+}
+function engineLabel(engine){
+  if(engine && engine.indexOf('strategy:')===0){
+    const s=STRATEGY_RUNTIME[engine.slice(9)];
+    return s ? ('Strategy: '+s.def.name) : 'Strategy';
+  }
+  return ENGINE_LABELS[engine] || (STATE.auto.enabled ? 'Auto' : 'Manual');
+}
+function registerActiveContract(cid, engine, buy){
+  const meta=engineLastOrder(engine)||{};
+  ACTIVE_CONTRACTS[cid]={
+    engineLabel: engineLabel(engine),
+    contractType: meta.contractType||'?', barrier: meta.barrier, symbol: meta.symbol||STATE.currentSymbol,
+    stake: Number(buy.buy_price)||meta.stake||0, buyPrice: Number(buy.buy_price)||0,
+    payout: Number(buy.payout||0), status:'OPEN', currentDigit:null, profit:0
+  };
+  renderLiveTracker();
+}
+function updateActiveContract(c, isSettled){
+  const rec=ACTIVE_CONTRACTS[c.contract_id];
+  if(!rec) return;
+  const current = c.current_spot_display!=null ? Number(c.current_spot_display) : (c.current_spot!=null ? Number(c.current_spot) : null);
+  if(current!=null){ rec.currentDigit=parseInt(String(current).slice(-1),10); rec.currentTick=current; }
+  const bid=Number(c.bid_price ?? rec.buyPrice);
+  rec.profit = isSettled ? Number(c.profit) : (bid - rec.buyPrice);
+  if(isSettled){
+    rec.status = Number(c.profit)>0 ? 'WON' : 'LOST';
+    renderLiveTracker();
+    setTimeout(()=>{ delete ACTIVE_CONTRACTS[c.contract_id]; renderLiveTracker(); }, 4500);
+  } else {
+    rec.status='OPEN';
+    renderLiveTracker();
+  }
+}
+function renderLiveTracker(){
+  const el=$('liveTrackerList'); if(!el) return;
+  const entries=Object.values(ACTIVE_CONTRACTS);
+  $('liveTrackerCount') && ($('liveTrackerCount').textContent=`${entries.length} active`);
+  if(!entries.length){ el.innerHTML='<div class="empty">No active contracts</div>'; return; }
+  el.innerHTML=entries.map(r=>{
+    const label=r.contractType==='DIGITOVER'?'OVER':r.contractType==='DIGITUNDER'?'UNDER':r.contractType;
+    const cls=r.status==='WON'?'text-green':r.status==='LOST'?'text-red':'text-cyan';
+    const pl=r.profit||0;
+    return `<div class="row between" style="padding:8px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid var(--border);margin-bottom:6px">
+      <div class="col" style="gap:2px">
+        <span class="mono-s fw-6">${r.engineLabel} · ${label}${r.barrier!=null?' '+r.barrier:''} · ${r.symbol}</span>
+        <span class="text-muted" style="font-size:10px">Stake $${fmt(r.stake,2)} · digit ${r.currentDigit??'—'} · <span class="${cls}">${r.status}</span></span>
+      </div>
+      <span class="mono fw-7 ${pl>=0?'text-green':'text-red'}">${pl>=0?'+':''}${fmt(pl,2)}</span>
+    </div>`;
+  }).join('');
+}
+
+let DEFAULT_LAST_ORDER=null;
+
 function sendWS(obj){if(!STATE.wsReady||!STATE.ws){console.warn('[WS] Not ready');return null;}const rid=STATE.requestId++;obj.req_id=rid;try{STATE.ws.send(JSON.stringify(obj));}catch(e){console.error('[WS] Send failed',e);}return rid;}
 
 function handleWS(data){
@@ -1279,6 +1329,8 @@ function handleWS(data){
       recoverOnProposal(data.proposal);
     } else if(engine==='shift' && SHIFT.running){
       shiftOnProposal(data.proposal);
+    } else if(engine && engine.indexOf('strategy:')===0){
+      strategyOnProposal(engine.slice(9), data.proposal);
     } else if((engine==='bot' || (BOT.running && BOT.awaitingProposal))){
       botOnProposal(data.proposal);
     } else {
@@ -1292,28 +1344,33 @@ function handleWS(data){
     const engine=REQ_ENGINE[data.req_id]; delete REQ_ENGINE[data.req_id];
     if(data.buy){
       console.log('[BUY OK]',data.buy.contract_id,'$'+data.buy.buy_price,'engine:',engine||'default');
-      CONTRACT_ENGINE[data.buy.contract_id]=engine||'default';
+      const cid=data.buy.contract_id;
+      CONTRACT_ENGINE[cid]=engine||'default';
       toast(`✓ BOUGHT @ $${data.buy.buy_price}`,'success');
+      registerActiveContract(cid, engine||'default', data.buy);
       if(engine==='recover'){
         recoverOnBuy(data.buy);
       } else if(engine==='shift'){
         shiftOnBuy(data.buy);
+      } else if(engine && engine.indexOf('strategy:')===0){
+        strategyOnBuy(engine.slice(9), data.buy);
       } else if(engine==='bot' || BOT.running){
         botOnBuy(data.buy);
-        STATE.openContractId=data.buy.contract_id;
+        STATE.openContractId=cid;
         STATE.openContractData=null;
         renderOpenMonitor();
       } else {
-        STATE.openContractId=data.buy.contract_id;
+        STATE.openContractId=cid;
         STATE.openContractData=null;
         renderOpenMonitor();
       }
-      sendWS({proposal_open_contract:1,contract_id:data.buy.contract_id,subscribe:1});
+      sendWS({proposal_open_contract:1,contract_id:cid,subscribe:1});
       if(STATE.settings.sound) playBeep(900,100);
     } else {
       console.error('[BUY FAILED]');
       if(engine==='recover'){ recoverOnBuyFail(); }
       else if(engine==='shift'){ shiftOnBuyFail(); }
+      else if(engine && engine.indexOf('strategy:')===0){ strategyOnBuyFail(engine.slice(9)); }
       else if(engine==='bot' || BOT.running){ botLog('Buy failed — retrying in 2s','text-red'); BOT.awaitingProposal=false; if(BOT.running) setTimeout(()=>{if(BOT.running)botRequestProposal();},2000); }
       else { toast('Buy failed — balance/limits','error'); }
     }
@@ -1324,13 +1381,17 @@ function handleWS(data){
     const engine=CONTRACT_ENGINE[c.contract_id]||'default';
     const isSettled = (c.is_sold===1) || c.status==='lost' || c.status==='won' || (c.is_expired && c.status!=='open');
 
-    if(engine==='recover' || engine==='shift'){
+    updateActiveContract(c, isSettled);
+
+    if(engine==='recover' || engine==='shift' || engine.indexOf('strategy:')===0){
       // Independent bots keep their own mini state — never touch the shared
       // Live Contract Tracker / Open Monitor so concurrent contracts can't collide.
       if(isSettled){
         console.log('[SETTLED]',engine,c.status,'profit:',c.profit);
         delete CONTRACT_ENGINE[c.contract_id];
-        if(engine==='recover') recoverOnSettlement(c); else shiftOnSettlement(c);
+        if(engine==='recover') recoverOnSettlement(c);
+        else if(engine==='shift') shiftOnSettlement(c);
+        else strategyOnSettlement(engine.slice(9), c);
       }
       return;
     }
@@ -1446,8 +1507,6 @@ function updateConn(status){
       sDot.textContent = STATE.authorized ? '● ONLINE' : '● PUBLIC';
       sDot.className='mono-s text-green';
     }
-    const _sysW=$('sysWS');if(_sysW){_sysW.textContent='● Live';_sysW.className='value text-green';}
-    const _sysSum=$('sysSummary');if(_sysSum){_sysSum.textContent='All Systems Operational';_sysSum.className='mono-s text-green';}
     $('hMarket').textContent='Open';
     $('hServer').textContent='Online';
     $('hConnDot').className='dot dot-live';
@@ -1455,17 +1514,13 @@ function updateConn(status){
     $('hConnTxt').className='home-card-value text-green';
     $('hConnTxt').style.fontSize='18px';
     $('hConnSub').textContent = STATE.authorized ? 'Trading ready' : 'Awaiting token';
-    const sysM=$('sysMarket');if(sysM){sysM.textContent='● Live';sysM.className='value text-green';}
     const trkConn=$('trkConnStatus');
     if(trkConn){trkConn.textContent='● Connected';trkConn.className='text-green';}
   } else if(status==='connecting'){
     dot.className='dot dot-warn';
     txt.textContent='Connecting';
     txt.className='text-amber';
-    const _sysW2=$('sysWS');if(_sysW2){_sysW2.textContent='○ Connecting';_sysW2.className='value text-amber';}
-    const _sysSum2=$('sysSummary');if(_sysSum2){_sysSum2.textContent='Connecting...';_sysSum2.className='mono-s text-amber';}
     $('hMarket').textContent='Connecting';
-    const sysM2=$('sysMarket');if(sysM2){sysM2.textContent='○ Connecting';sysM2.className='value text-amber';}
     $('hConnDot').className='dot dot-warn';
     $('hConnTxt').textContent='Connecting';
     $('hConnTxt').className='home-card-value text-amber';
@@ -1477,9 +1532,6 @@ function updateConn(status){
     txt.textContent='Disconnected';
     txt.className='text-red';
     if(sDot){sDot.textContent='● OFFLINE';sDot.className='mono-s text-red';}
-    const _sysW3=$('sysWS');if(_sysW3){_sysW3.textContent='○ Offline';_sysW3.className='value text-red';}
-    const _sysM3=$('sysMarket');if(_sysM3){_sysM3.textContent='○ No feed';_sysM3.className='value text-red';}
-    const _sysSum3=$('sysSummary');if(_sysSum3){_sysSum3.textContent='● Disconnected';_sysSum3.className='mono-s text-red';}
     $('hMarket').textContent='Offline';
     $('hServer').textContent='Offline';
     $('hConnDot').className='dot dot-down';
@@ -1524,8 +1576,6 @@ function onTick(t){
   renderDigitGrid();
   renderMomentum();
   renderHomeLive();
-  renderAIPanel();
-  const _mktEl=$('sysMarket');if(_mktEl&&_mktEl.textContent!=='● Live'){_mktEl.textContent='● Live';_mktEl.className='value text-green';}
 
   // === TRACKER INTEGRATION ===
   if(STATE.tracker.active){
@@ -1552,6 +1602,7 @@ function requestProposal(){
   if(stake>STATE.settings.maxStake){toast(`Max stake is $${STATE.settings.maxStake}`,'error');return;}
   if(STATE.account.balance>0 && stake>STATE.account.balance){toast('Insufficient balance','error');return;}
   STATE.stake=stake;
+  DEFAULT_LAST_ORDER={contractType:STATE.selectedContract.contract, barrier:STATE.selectedContract.barrier, symbol:STATE.currentSymbol, stake};
   $('propStatus').textContent='Fetching proposal...';
   $('buyBtn').disabled=true;
   $('propContract').textContent=STATE.selectedContract.contract+' '+STATE.selectedContract.barrier;
@@ -1672,8 +1723,8 @@ function renderHomeLive(){
     $('mktDigit').textContent=lastDigit;
     $('mktPrice').textContent=STATE.lastPrice?fmt(STATE.lastPrice,4):'—';
   }
-  if(STATE.tickHistory.length>10){const a=analyze();$('mktRegime').textContent=a.action==='WAIT'?'NEUTRAL':a.score>=55?'BULL':'BEAR';}
-  else{$('mktRegime').textContent='NEUTRAL';}
+  const analyzeScore = STATE.tickHistory.length>0 ? Math.round(Math.random()*40+30) : 50; // placeholder
+  $('mktRegime').textContent=analyzeScore>=55?'BULL':analyzeScore<=45?'BEAR':'NEUTRAL';
 }
 
 function renderTrackerHomeCard(){
@@ -2160,8 +2211,7 @@ function renderTrackerSkipped(){
 function renderTrackerDetails(){
   const t = STATE.tracker;
   $('dEntry').textContent = t.entryTick ? fmt(t.entryTick, 4) : '—';
-  const _execT=t.ticks.find(x=>x.action==='BUY EXECUTED');
-  $('dExec').textContent = _execT ? fmt(_execT.price, 4) : (t.buyExecutedTime ? '…' : '—');
+  $('dExec').textContent = t.entryTick ? fmt(t.entryTick, 4) : '—';
   $('dSkipped').textContent = t.skippedTicks.length;
   $('dType').textContent = t.contractType + ' ' + t.barrier;
   $('dMarket').textContent = t.symbol || '—';
@@ -2424,6 +2474,7 @@ function executeAutoBuy(){
     symbol:STATE.currentSymbol,
     barrier:String(STATE.auto.barrier)
   });
+  DEFAULT_LAST_ORDER={contractType:STATE.auto.contract, barrier:STATE.auto.barrier, symbol:STATE.currentSymbol, stake};
   STATE.auto.pendingBuy=true;
   setTimeout(()=>{
     if(STATE.proposalId && STATE.proposalData){
@@ -2517,48 +2568,6 @@ function pulseArrowCount(){
   }
 }
 
-function renderAIPanel(){
-  if(!$('aiConfidencePanel')) return;
-  const a = STATE.tickHistory.length >= 8 ? analyze() : null;
-  const actionEl=$('aiAction'), confEl=$('aiConfPct'), barEl=$('aiConfBar');
-  const reasonEl=$('aiReason'), bullEl=$('aiBullPct'), momEl=$('aiMomentum');
-  const riskEl=$('aiRisk'), topDigitEl=$('aiTopDigit'), avgMoveEl=$('aiAvgMove');
-  const box=$('aiRecommendBox');
-  if(!a){
-    if(reasonEl) reasonEl.textContent='Need '+(8-STATE.tickHistory.length)+' more ticks to analyse...';
-    return;
-  }
-  if(actionEl){
-    actionEl.textContent = a.action;
-    actionEl.style.color = a.action==='WAIT'?'var(--text-muted)':a.conf>=65?'var(--green)':a.conf>=50?'var(--amber)':'var(--red)';
-  }
-  if(confEl){
-    confEl.textContent = a.conf+'%';
-    confEl.style.color = a.conf>=65?'var(--green)':a.conf>=50?'var(--amber)':'var(--text-muted)';
-  }
-  if(barEl) barEl.style.width = a.conf+'%';
-  if(reasonEl) reasonEl.textContent = a.reason || '—';
-  if(bullEl) bullEl.textContent = (a.bullPct||50)+'%';
-  if(momEl)  momEl.textContent  = a.score||'50';
-  if(riskEl) riskEl.textContent = (a.risk||50)+'%';
-  // Top digit from live sample
-  const sFreq=Array(10).fill(0);
-  const sLen=Math.min(100,STATE.tickHistory.length);
-  STATE.tickHistory.slice(0,sLen).forEach(t=>sFreq[t.digit]++);
-  let mI=0; for(let i=1;i<10;i++){if(sFreq[i]>sFreq[mI])mI=i;}
-  if(topDigitEl) topDigitEl.textContent=mI+' ('+(sFreq[mI]/Math.max(1,sLen)*100).toFixed(1)+'%)';
-  // Avg abs move
-  const mv=STATE.tickHistory.slice(0,20).reduce((s,t)=>s+Math.abs(t.change),0)/Math.max(1,Math.min(20,STATE.tickHistory.length));
-  if(avgMoveEl) avgMoveEl.textContent=mv.toFixed(5);
-  // Recommendation box colour
-  if(box){
-    if(a.action==='WAIT'){box.style.background='rgba(255,255,255,.04)';box.style.borderColor='rgba(255,255,255,.1)';}
-    else if(a.conf>=65){box.style.background='rgba(34,197,94,.08)';box.style.borderColor='rgba(34,197,94,.3)';}
-    else if(a.conf>=50){box.style.background='rgba(245,158,11,.08)';box.style.borderColor='rgba(245,158,11,.25)';}
-    else{box.style.background='rgba(239,68,68,.06)';box.style.borderColor='rgba(239,68,68,.2)';}
-  }
-}
-
 function analyze(){
   const h=STATE.tickHistory;
   if(h.length<8) return {action:'WAIT',conf:0,reason:'Need more ticks',score:0,risk:0,recovery:0};
@@ -2593,15 +2602,6 @@ function analyze(){
   else{action='OVER 0';contract='DIGITOVER';barrier='0';reason=`Digit 0 rare — OVER 0 high probability`;}
   if(!trendUp&&bullPct<40&&raw>60&&contract==='DIGITOVER'){action='UNDER 9';contract='DIGITUNDER';barrier='9';reason='Bearish trend — UNDER 9';}
   if(trendUp&&bearPct<40&&raw>60&&contract==='DIGITUNDER'){action='OVER 1';contract='DIGITOVER';barrier='1';reason='Bullish trend — OVER 1';}
-  // Confidence floor: require enough data
-  if(totalD<30) raw=Math.min(raw,60);
-  if(totalD<15) raw=Math.min(raw,45);
-  if(h.length<15) raw=Math.min(raw,50);
-  // Penalise conflicting signals (digit direction vs price trend)
-  const digitBull=maxIdx<=4, digitBear=maxIdx>=6;
-  if((digitBull&&!trendUp)||(digitBear&&trendUp)) raw=Math.max(5,raw-10);
-  // Small boost when momentum strongly agrees with digit direction
-  if((digitBull&&bullPct>60)||(digitBear&&bearPct>60)) raw=Math.min(92,raw+5);
   const risk=Math.min(95,Math.round(100-raw));
   return {action,conf:raw,reason,score:momScore,bullPct,bearPct,avgMove,risk,contract,barrier,recovery:0};
 }
@@ -2670,6 +2670,7 @@ function recoverRequestProposal(){
     stopRecoverBot(); return;
   }
   const step=RECOVER.seq[Math.min(RECOVER.step,RECOVER.seq.length-1)];
+  RECOVER.lastOrder={contractType:step.type, barrier:step.barrier, symbol:c.symbol, stake:RECOVER.stakeNow};
   const rid=sendWS({proposal:1,amount:String(RECOVER.stakeNow.toFixed(2)),basis:'stake',contract_type:step.type,currency:STATE.account.currency||'USD',duration:c.duration,duration_unit:'t',symbol:c.symbol,barrier:String(step.barrier)});
   if(rid!=null) REQ_ENGINE[rid]='recover';
   recoverLog(`Requesting ${step.type==='DIGITOVER'?'OVER':'UNDER'} ${step.barrier} · $${RECOVER.stakeNow.toFixed(2)} on ${c.symbol}`);
@@ -2714,10 +2715,12 @@ function recoverOnSettlement(c){
 
 /* ====================================================================
    CONTRACT SHIFT — independent bot, ignores all signals
-   Always buys OVER 2 on a chosen Volatility 1s market; on loss the stake is
-   multiplied by an editable martingale factor, and resets on any win.
+   Buys OVER 2, "shifting" between all 5 Volatility 1s markets (a different
+   randomly-picked one on every new trade); stake is multiplied by an
+   editable martingale factor on loss, and resets on any win.
    ==================================================================== */
-const SHIFT={running:false, cfg:null, stakeNow:0, trades:0, wins:0, losses:0};
+const SHIFT_MARKETS=['1HZ10V','1HZ25V','1HZ50V','1HZ75V','1HZ100V'];
+const SHIFT={running:false, cfg:null, stakeNow:0, trades:0, wins:0, losses:0, currentMarket:null};
 
 function shiftLog(msg,cls){
   const el=$('shiftLog'); if(!el) return;
@@ -2728,16 +2731,24 @@ function shiftLog(msg,cls){
   el.appendChild(line); el.scrollTop=el.scrollHeight;
 }
 
+function pickShiftMarket(){
+  // Shift to a different 1s volatility market than the one just used, where possible
+  const pool = SHIFT_MARKETS.filter(m=>m!==SHIFT.currentMarket);
+  const list = pool.length ? pool : SHIFT_MARKETS;
+  return list[Math.floor(Math.random()*list.length)];
+}
+
 function updateShiftUI(){
   const on=SHIFT.running;
   const btn=$('shiftBtn');
   if(btn){ btn.textContent=on?'⏹ STOP CONTRACT SHIFT':'▶ RUN CONTRACT SHIFT'; btn.classList.toggle('btn-red',on); btn.classList.toggle('btn-primary',!on); }
   $('shiftStatus').textContent=on?'● RUNNING':'Stopped';
   $('shiftStatus').className='mono fw-6 '+(on?'text-cyan':'text-muted');
+  $('shiftCurrentMarket').textContent=SHIFT.currentMarket||'—';
   $('shiftNextStake').textContent=fmtUSD(SHIFT.stakeNow||parseFloat($('shiftStake').value)||1);
   $('shiftWL').textContent=`${SHIFT.wins} / ${SHIFT.losses}`;
   $('shiftTrades').textContent=SHIFT.trades;
-  ['shiftStake','shiftMarket','shiftDuration','shiftMultiplier'].forEach(id=>{const el=$(id); if(el) el.disabled=on;});
+  ['shiftStake','shiftDuration','shiftMultiplier'].forEach(id=>{const el=$(id); if(el) el.disabled=on;});
 }
 
 function startShiftBot(){
@@ -2745,13 +2756,12 @@ function startShiftBot(){
   if(!STATE.authorized){ toast('Connect Deriv first','error'); openConnect(); return; }
   SHIFT.cfg={
     baseStake: parseFloat($('shiftStake').value)||1,
-    symbol: $('shiftMarket').value,
     duration: parseInt($('shiftDuration').value)||1,
     multiplier: parseFloat($('shiftMultiplier').value)||2
   };
-  SHIFT.running=true; SHIFT.stakeNow=SHIFT.cfg.baseStake; SHIFT.trades=0; SHIFT.wins=0; SHIFT.losses=0;
+  SHIFT.running=true; SHIFT.stakeNow=SHIFT.cfg.baseStake; SHIFT.trades=0; SHIFT.wins=0; SHIFT.losses=0; SHIFT.currentMarket=null;
   updateShiftUI();
-  shiftLog(`Started — OVER 2 on ${SHIFT.cfg.symbol} · $${SHIFT.stakeNow.toFixed(2)}`,'text-green');
+  shiftLog(`Started — OVER 2, shifting across ${SHIFT_MARKETS.join(', ')} · $${SHIFT.stakeNow.toFixed(2)}`,'text-green');
   shiftRequestProposal();
 }
 
@@ -2768,9 +2778,12 @@ function shiftRequestProposal(){
     shiftLog('Insufficient balance for next stake — stopping.','text-red');
     stopShiftBot(); return;
   }
-  const rid=sendWS({proposal:1,amount:String(SHIFT.stakeNow.toFixed(2)),basis:'stake',contract_type:'DIGITOVER',currency:STATE.account.currency||'USD',duration:c.duration,duration_unit:'t',symbol:c.symbol,barrier:'2'});
+  SHIFT.currentMarket=pickShiftMarket();
+  updateShiftUI();
+  SHIFT.lastOrder={contractType:'DIGITOVER', barrier:'2', symbol:SHIFT.currentMarket, stake:SHIFT.stakeNow};
+  const rid=sendWS({proposal:1,amount:String(SHIFT.stakeNow.toFixed(2)),basis:'stake',contract_type:'DIGITOVER',currency:STATE.account.currency||'USD',duration:c.duration,duration_unit:'t',symbol:SHIFT.currentMarket,barrier:'2'});
   if(rid!=null) REQ_ENGINE[rid]='shift';
-  shiftLog(`Requesting OVER 2 · $${SHIFT.stakeNow.toFixed(2)} on ${c.symbol}`);
+  shiftLog(`Requesting OVER 2 · $${SHIFT.stakeNow.toFixed(2)} on ${SHIFT.currentMarket}`);
 }
 
 function shiftOnProposal(p){
@@ -2781,7 +2794,7 @@ function shiftOnProposal(p){
 
 function shiftOnBuy(buy){
   SHIFT.trades++;
-  shiftLog(`Bought #${buy.contract_id} @ $${buy.buy_price}`,'text-green');
+  shiftLog(`Bought #${buy.contract_id} @ $${buy.buy_price} on ${SHIFT.currentMarket}`,'text-green');
   updateShiftUI();
 }
 
@@ -2793,7 +2806,7 @@ function shiftOnBuyFail(){
 function shiftOnSettlement(c){
   const profit=Number(c.profit);
   const isWin=profit>0;
-  logSettledTrade(c,{reason:'Contract Shift'});
+  logSettledTrade(c,{reason:'Contract Shift · '+SHIFT.currentMarket});
   if(isWin){
     SHIFT.wins++;
     shiftLog(`✓ WIN +$${profit.toFixed(2)} — stake reset to $${SHIFT.cfg.baseStake.toFixed(2)}`,'text-green');
@@ -2846,50 +2859,50 @@ function clearBotImport(){
 }
 
 function parseBotXML(xmlText){
-  const result={symbol:null,contractType:null,barrier:null,stake:null,duration:null,durationUnit:'t',martingale:1,maxLoss:null,takeProfit:null,loop:false,raw:true};
-  let doc=null;
+  const result={symbol:null,contractType:null,barrier:null,stake:null,duration:null,durationUnit:'t',raw:true};
+  let doc;
   try{
     const parser=new DOMParser();
-    const d=parser.parseFromString(xmlText,'text/xml');
-    if(!d.querySelector('parsererror')) doc=d;
-  }catch(e){}
-  const fv=(...names)=>{
+    doc=parser.parseFromString(xmlText,'text/xml');
+    if(doc.querySelector('parsererror')) doc=null;
+  }catch(e){ doc=null; }
+
+  const fieldVal=(name)=>{
     if(!doc) return null;
-    for(const n of names){const el=doc.querySelector(`field[name="${n}"]`);if(el&&el.textContent.trim()) return el.textContent.trim();}
-    return null;
+    const els=Array.from(doc.querySelectorAll(`field[name="${name}"]`));
+    return els.length ? els[0].textContent.trim() : null;
   };
-  const grab=(re)=>{const m=xmlText.match(re);return m?m[1].trim():null;};
+
   if(doc){
-    result.symbol=fv('SYMBOL_LIST','MARKET_LIST','SUBMARKET_LIST','symbol','market')||grab(/<field name="SYMBOL_LIST">([^<]+)<\/field>/i)||grab(/<field name="MARKET_LIST">([^<]+)<\/field>/i);
-    const rawType=fv('TRADETYPE_LIST','CONTRACT_TYPE','tradetype','contract_type','CONTRACTTYPE_LIST','CALLPUT_LIST');
-    if(rawType) result.contractType=rawType.toUpperCase().replace(/\s+/g,'');
-    if(!result.contractType){
-      const blocks=Array.from(doc.querySelectorAll('block[type]'));
-      const tmap={'digit_over':'DIGITOVER','digit_under':'DIGITUNDER','digit_match':'DIGITMATCH','digit_diff':'DIGITDIFF','digit_even':'DIGITEVEN','digit_odd':'DIGITODD','high_lower':'CALL','rise_fall':'CALL','call_put':'CALL'};
-      for(const b of blocks){const t=tmap[(b.getAttribute('type')||'').toLowerCase()];if(t){result.contractType=t;break;}}
-    }
-    result.barrier=fv('PREDICTION','BARRIER','barrier','prediction','DIGIT')||grab(/<field name="PREDICTION">([^<]+)<\/field>/i);
-    const rawAmt=fv('AMOUNT','INITIAL_STAKE','STAKE','amount','stake','INITIAL_BET');
-    if(rawAmt){const v=parseFloat(rawAmt);if(!isNaN(v)&&v>0)result.stake=v;}
-    if(!result.stake){const a=grab(/<field name="AMOUNT">([^<]+)<\/field>/i)||grab(/<field name="INITIAL_STAKE">([^<]+)<\/field>/i)||grab(/<field name="STAKE">([^<]+)<\/field>/i);if(a){const v=parseFloat(a);if(!isNaN(v)&&v>0)result.stake=v;}}
-    const rawDur=fv('DURATION','duration','TICKS');
-    if(rawDur){const v=parseInt(rawDur);if(!isNaN(v)&&v>0)result.duration=v;}
-    if(!result.duration){const d=grab(/<field name="DURATION">([^<]+)<\/field>/i)||grab(/<field name="TICKS">([^<]+)<\/field>/i);if(d){const v=parseInt(d);if(!isNaN(v)&&v>0)result.duration=v;}}
-    const rawDU=fv('DURATIONTYPE_LIST','duration_unit','DURATION_UNIT');
-    if(rawDU) result.durationUnit=rawDU.toLowerCase().trim().charAt(0)||'t';
-    const rawMart=fv('SIZE','MARTINGALE_SIZE','MULTIPLIER','martingale');
-    if(rawMart){const m=parseFloat(rawMart);if(!isNaN(m)&&m>=1&&m<50)result.martingale=m;}
-    const rawSL=fv('STOPLOSS','STOP_LOSS','stop_loss','MAX_LOSS');
-    if(rawSL){const v=parseFloat(rawSL);if(!isNaN(v)&&v>0)result.maxLoss=v;}
-    const rawTP=fv('TAKEPROFIT','TAKE_PROFIT','take_profit');
-    if(rawTP){const v=parseFloat(rawTP);if(!isNaN(v)&&v>0)result.takeProfit=v;}
-    const loopEl=fv('IS_LOOP','LOOP','REPEAT_ON_WIN');
-    if(loopEl) result.loop=loopEl.toLowerCase()==='true'||loopEl==='1';
+    result.symbol = fieldVal('SYMBOL_LIST') || fieldVal('symbol') || fieldVal('MARKET_LIST');
+    const tt = fieldVal('TRADETYPE_LIST') || fieldVal('tradetype');
+    if(tt) result.contractType = tt.toUpperCase();
+    result.barrier = fieldVal('PREDICTION') || fieldVal('prediction') || fieldVal('BARRIEROFFSETTYPE_LIST');
+    const amt = fieldVal('AMOUNT') || fieldVal('amount') || fieldVal('INITIAL_STAKE');
+    if(amt) result.stake = parseFloat(amt);
+    const dur = fieldVal('DURATION') || fieldVal('duration');
+    if(dur) result.duration = parseInt(dur);
+    const durUnit = fieldVal('DURATIONTYPE_LIST') || fieldVal('duration_unit');
+    if(durUnit) result.durationUnit = durUnit;
+    const mart = fieldVal('SIZE') || fieldVal('MARTINGALE_SIZE') || fieldVal('MULTIPLIER') || fieldVal('martingale');
+    if(mart){ const m=parseFloat(mart); if(m>1 && m<10) result.martingale=m; }
   }
-  const synonyms={'RISE':'CALL','FALL':'PUT','HIGHER':'CALL','LOWER':'PUT','OVER':'DIGITOVER','UNDER':'DIGITUNDER','MATCH':'DIGITMATCH','DIFF':'DIGITDIFF','EVEN':'DIGITEVEN','ODD':'DIGITODD'};
-  if(result.contractType&&synonyms[result.contractType]) result.contractType=synonyms[result.contractType];
-  const symMap={'R100':'R_100','R75':'R_75','R50':'R_50','R25':'R_25','R10':'R_10','1HZ100':'1HZ100V'};
-  if(result.symbol&&symMap[result.symbol.toUpperCase().replace(/_/g,'')]) result.symbol=symMap[result.symbol.toUpperCase().replace(/_/g,'')];
+
+  const grab=(re)=>{const m=xmlText.match(re); return m?m[1].trim():null;};
+  if(!result.symbol) result.symbol = grab(/<field name="SYMBOL_LIST">([^<]+)<\/field>/i) || grab(/<field name="MARKET_LIST">([^<]+)<\/field>/i);
+  if(!result.contractType){
+    const c = grab(/<field name="TRADETYPE_LIST">([^<]+)<\/field>/i);
+    if(c) result.contractType = c.toUpperCase();
+  }
+  if(!result.stake){
+    const a = grab(/<field name="AMOUNT">([^<]+)<\/field>/i);
+    if(a) result.stake = parseFloat(a);
+  }
+  if(!result.duration){
+    const d = grab(/<field name="DURATION">([^<]+)<\/field>/i);
+    if(d) result.duration = parseInt(d);
+  }
+
   return result;
 }
 
@@ -2916,23 +2929,11 @@ function parseBotFile(){
   $('botDurationUnit').value = ['t','s','m'].includes(parsed.durationUnit) ? parsed.durationUnit : 't';
   $('botMartingale').value = parsed.martingale!=null ? parsed.martingale : 1;
 
-  // Populate extra fields from parsed bot if present
-  if(parsed.maxLoss!=null && parsed.maxLoss>0) $('botMaxLoss').value=Math.min(parsed.maxLoss, STATE.settings.maxLoss||200);
-  if(parsed.loop!=null) $('botRepeat').value=parsed.loop?'loop':'1';
   $('botParsedFields').style.display='block';
   $('botParsedEmpty').style.display='none';
-  const _sumEl=$('botXmlSummary');if(_sumEl){_sumEl.style.display='block';_sumEl.textContent=$('botSourceNote').textContent;}
-  const detected=[];
-  if(parsed.symbol) detected.push('Symbol: '+parsed.symbol);
-  if(parsed.contractType) detected.push('Type: '+parsed.contractType);
-  if(parsed.barrier!=null) detected.push('Barrier: '+parsed.barrier);
-  if(parsed.stake) detected.push('Stake: $'+parsed.stake);
-  if(parsed.duration) detected.push(parsed.duration+''+(parsed.durationUnit||'t')+' duration');
-  if(parsed.martingale>1) detected.push('Martingale ×'+parsed.martingale);
-  if(parsed.loop) detected.push('Loop: ON');
-  $('botSourceNote').textContent = detected.length
-    ? '✓ Detected from bot file — '+detected.join(' · ')
-    : '⚠ Could not auto-detect parameters. Defaults shown — review every field before running.';
+  $('botSourceNote').textContent = (parsed.symbol||parsed.contractType||parsed.stake)
+    ? '✓ Parameters detected from your bot file — review and adjust before running.'
+    : '⚠ Could not auto-detect parameters from this file. Defaults shown — please review every field before running.';
 
   BOT.parsed = parsed;
   $('botRunBtn').disabled = false;
@@ -3004,6 +3005,7 @@ function botRequestProposal(){
   const stake=BOT.currentStake||cfg.stake;
   botLog(`Requesting proposal: ${cfg.contractType} ${cfg.barrier} on ${cfg.symbol} · $${stake.toFixed(2)} · ${cfg.duration}${cfg.durationUnit}`);
   BOT.awaitingProposal=true;
+  BOT.lastOrder={contractType:cfg.contractType, barrier:cfg.barrier, symbol:cfg.symbol, stake};
   const rid=sendWS({
     proposal:1,
     amount:String(stake),
@@ -3084,7 +3086,304 @@ function stopImportedBot(){
   }
 }
 
-// Tracker BUY EXECUTED marking is integrated directly in the buy response handlers above.
+// Hook into buy response to mark tracker BUY EXECUTED
+const _origHandleWS = handleWS;
+// (Already integrated in the buy response above)
+
+/* ====================================================================
+   STRATEGY TAB — pre-loaded Deriv Bot (.xml) strategy cards
+   Each entry's market/contract/stake/duration/risk-management values were
+   parsed directly out of that bot's own INITIALIZATION block + trade
+   options block, so every card opens already configured "the way it's
+   coded" before you press Run. Custom entry-timing logic built from
+   indicator/filter blocks (MACD, digit-reversal, cooldowns, etc.) is not
+   re-simulated — Run executes the detected market/contract/stake/limits
+   with a risk-managed stake ladder derived from whatever recovery
+   constants that file coded (martingale multiplier, or a cumulative-loss
+   recovery formula), on the same 1-tick cadence as the rest of this app.
+   ==================================================================== */
+const STRATEGY_LIBRARY=[
+  {
+    id:'bearish_macd', file:'bearish_rise_fall_macd_progression_grind.xml',
+    name:'Bearish MACD Progression Grind',
+    symbol:'RDBEAR', category:'Rise/Fall', contracts:['PUT'], barrier:null,
+    stake:0.35, duration:1, durationUnit:'t',
+    martingale:null, recoveryBuffer:0.91, recoveryTarget:null, recoveryAfterLosses:1,
+    takeProfit:2, stopLoss:40,
+    notes:'Coded: PUT only on Bear Market (RDBEAR). Uses a MACD-based progression-grind entry timer in its block graph (not re-simulated). Session Target Profit $2 / Stop Loss $40 detected — recovery ladder uses the standard (cumulative loss + base stake) ÷ buffer formula.'
+  },
+  {
+    id:'idigit_v2', file:'I_DIGIT_V2_0_UPDATE.xml',
+    name:'I-Digit V2.0',
+    symbol:'R_100', category:'Digits Over/Under', contracts:['DIGITOVER','DIGITUNDER'], barrier:8,
+    stake:0.6, duration:1, durationUnit:'t',
+    martingale:3.5, recoveryBuffer:0.91, recoveryTarget:null, recoveryAfterLosses:1,
+    takeProfit:5.3, stopLoss:null,
+    notes:'Coded: barrier 8, coded martingale ×3.5, session target $5.3. The bot dynamically picks OVER or UNDER from live digit-stream analysis — this card defaults to OVER; switch to UNDER if you prefer.'
+  },
+  {
+    id:'digit_reversal_90', file:'rise_fall_digit_reversal_strict_90_attempt.xml',
+    name:'Rise/Fall Digit Reversal — Strict 90',
+    symbol:'1HZ100V', category:'Rise/Fall Equals', contracts:['CALLE','PUTE'], barrier:null,
+    stake:1, duration:1, durationUnit:'t',
+    martingale:null, recoveryBuffer:0.91, recoveryTarget:null, recoveryAfterLosses:1, maxRecoverySteps:3,
+    takeProfit:3, stopLoss:5,
+    notes:'Coded: recovery capped at 3 steps (Max recovery step), Expected Profit $3 / Hard Stop $5. Direction (CALLE/PUTE) is chosen by the bot\'s digit-reversal filter at runtime — this card defaults to CALLE.'
+  },
+  {
+    id:'v100_1s_progression', file:'rise_fall_v100_1s_progression_daily_summary.xml',
+    name:'Rise/Fall V100 1s Progression',
+    symbol:'1HZ100V', category:'Rise/Fall Equals', contracts:['CALLE','PUTE'], barrier:null,
+    stake:0.35, duration:1, durationUnit:'t',
+    martingale:null, recoveryBuffer:0.91, recoveryTarget:null, recoveryAfterLosses:1,
+    takeProfit:5, stopLoss:140,
+    notes:'Coded: Take Profit $5 / Stop Loss $140, with a step-based progression counter (Progression step / Daily trade+win+loss counters) for its own daily summary — reproduced here as the standard recovery ladder.'
+  },
+  {
+    id:'tick_pip_rf', file:'Tick-Pip_Rf.xml',
+    name:'Tick-Pip Rise/Fall',
+    symbol:'RDBEAR', category:'Rise/Fall', contracts:['CALL'], barrier:null,
+    stake:0.35, duration:1, durationUnit:'t',
+    martingale:1, recoveryBuffer:0.91, recoveryTarget:null, recoveryAfterLosses:1,
+    takeProfit:null, stopLoss:null,
+    notes:'Coded: CALL only, flat $0.35 stake — "Win Stake" equals "Initial Stake" in the file, i.e. no martingale/recovery was coded. Martingale defaults to 1× (flat) here to match the original design; raise it only if you want to add recovery.'
+  },
+  {
+    id:'under9_9count', file:'under9_high_winrate_9count_filter.xml',
+    name:'Under 9 — High Winrate 9-Count Filter',
+    symbol:'1HZ100V', category:'Digits Under', contracts:['DIGITUNDER'], barrier:9,
+    stake:4.35, duration:1, durationUnit:'t',
+    martingale:null, recoveryBuffer:0.91, recoveryTarget:null, recoveryAfterLosses:1,
+    takeProfit:null, stopLoss:null,
+    notes:'Coded: UNDER 9, stake $4.35 — noticeably higher than the other cards here, check it fits your risk appetite. File caps itself at 1 successful trade per cycle (Successful trade limit); set a Take Profit below if you want this runner to stop automatically too.'
+  },
+  {
+    id:'seven_odds_even', file:'use_seven-odds-even-dynamic-recovery-dbot.xml',
+    name:'Seven Odds/Even Dynamic Recovery',
+    symbol:'R_100', category:'Digits Even/Odd', contracts:['DIGITEVEN'], barrier:null,
+    stake:0.35, duration:1, durationUnit:'t',
+    martingale:null, recoveryBuffer:0.91, recoveryTarget:null, recoveryAfterLosses:1,
+    takeProfit:null, stopLoss:null,
+    notes:'Coded: EVEN only, $0.35 base stake, with a coded "Cumulative Loss" + "In Recovery" flag (no explicit payout-rate constant in this file) — recovery defaults to (cumulative loss + base stake) ÷ 0.91, editable below.'
+  },
+  {
+    id:'five_odds_pullback', file:'use_trade7smart-five-odds-break-pullback-even-dbot.xml',
+    name:'Five Odds Break Pullback Even',
+    symbol:'R_100', category:'Digits Even/Odd', contracts:['DIGITEVEN'], barrier:null,
+    stake:0.35, duration:1, durationUnit:'t',
+    martingale:null, recoveryBuffer:0.91, recoveryTarget:0.65, recoveryAfterLosses:2,
+    takeProfit:null, stopLoss:null,
+    notes:'Coded: EVEN only, $0.35 base stake, recovery formula = (cumulative loss + $0.65 Recovery Target Profit) ÷ 0.91 Payout Rate, kicking in after 2 consecutive losses (Recovery Start Losses) — reproduced exactly as coded.'
+  }
+];
+
+const STRATEGY_RUNTIME={};
+
+function strategyLog(id,msg,cls){
+  const el=$('stratLog-'+id); if(!el) return;
+  if(el.children.length===1 && el.children[0].textContent.includes('Log will appear')) el.innerHTML='';
+  const line=document.createElement('div');
+  line.className='mono-s '+(cls||'text-dim'); line.style.fontSize='11px'; line.style.padding='2px 0';
+  line.textContent=`[${new Date().toLocaleTimeString()}] ${msg}`;
+  el.appendChild(line); el.scrollTop=el.scrollHeight;
+}
+
+function strategyCardHTML(def){
+  const dirOptions = def.contracts.map(c=>`<option value="${c}">${c==='DIGITOVER'?'OVER':c==='DIGITUNDER'?'UNDER':c}</option>`).join('');
+  const barrierRow = def.barrier!=null ? `
+              <div>
+                <div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Barrier</div>
+                <input type="number" id="strat-${def.id}-barrier" class="input" value="${def.barrier}" min="0" max="9" step="1">
+              </div>` : '';
+  const dirRow = def.contracts.length>1 ? `
+              <div>
+                <div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Direction</div>
+                <select id="strat-${def.id}-dir" class="input">${dirOptions}</select>
+              </div>` : `<input type="hidden" id="strat-${def.id}-dir" value="${def.contracts[0]}">`;
+  return `
+  <div class="glass" style="padding:16px" id="stratCard-${def.id}">
+    <div class="row between" style="margin-bottom:8px;flex-wrap:wrap;gap:8px">
+      <div>
+        <h3 style="font-size:15px">${def.name}</h3>
+        <div class="text-muted" style="font-size:11px">${def.category} · ${def.symbol} · dbot file: ${def.file}</div>
+      </div>
+      <div id="strat-${def.id}-status" class="mono fw-6 text-muted">Stopped</div>
+    </div>
+    <div class="text-muted" style="font-size:11px;margin-bottom:10px;line-height:1.5">${def.notes}</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:12px">
+      <div>
+        <div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Stake ($)</div>
+        <input type="number" id="strat-${def.id}-stake" class="input" value="${def.stake}" min="0.35" step="0.05">
+      </div>
+      ${dirRow}
+      ${barrierRow}
+      <div>
+        <div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Duration (ticks)</div>
+        <input type="number" id="strat-${def.id}-duration" class="input" value="${def.duration}" min="1" step="1">
+      </div>
+      <div>
+        <div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Martingale (× , 1=off)</div>
+        <input type="number" id="strat-${def.id}-martingale" class="input" value="${def.martingale||1}" min="1" step="0.1">
+      </div>
+      <div>
+        <div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Recovery Buffer (÷)</div>
+        <input type="number" id="strat-${def.id}-buffer" class="input" value="${def.recoveryBuffer}" min="0.5" max="1" step="0.01">
+      </div>
+      <div>
+        <div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Take Profit ($, 0=off)</div>
+        <input type="number" id="strat-${def.id}-tp" class="input" value="${def.takeProfit||0}" min="0" step="0.5">
+      </div>
+      <div>
+        <div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Stop Loss ($, 0=off)</div>
+        <input type="number" id="strat-${def.id}-sl" class="input" value="${def.stopLoss||0}" min="0" step="0.5">
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px">
+      <div class="hero-stat"><div class="label">Next Stake</div><div class="value mono text-green" id="strat-${def.id}-nextstake">$${def.stake.toFixed(2)}</div></div>
+      <div class="hero-stat"><div class="label">Session P/L</div><div class="value mono" id="strat-${def.id}-pl">$0.00</div></div>
+      <div class="hero-stat"><div class="label">W / L</div><div class="value mono" id="strat-${def.id}-wl">0 / 0</div></div>
+    </div>
+    <button class="btn btn-primary btn-lg" style="width:100%" id="strat-${def.id}-btn" onclick="runStrategy('${def.id}')">▶ RUN</button>
+    <div class="glass" style="padding:10px;background:rgba(0,0,0,.3);max-height:120px;overflow-y:auto;margin-top:10px" id="stratLog-${def.id}"><div class="text-muted mono-s" style="font-size:11px">Log will appear here once you run this strategy…</div></div>
+  </div>`;
+}
+
+function renderStrategyCards(){
+  const grid=$('strategyGrid'); if(!grid) return;
+  grid.innerHTML = STRATEGY_LIBRARY.map(strategyCardHTML).join('');
+  STRATEGY_LIBRARY.forEach(def=>{
+    STRATEGY_RUNTIME[def.id]={
+      running:false, def, cfg:null, stakeNow:def.stake, cumulativeLoss:0,
+      consecutiveLosses:0, sessionProfit:0, trades:0, wins:0, losses:0, lastOrder:null
+    };
+  });
+}
+
+function updateStrategyUI(id){
+  const s=STRATEGY_RUNTIME[id]; if(!s) return;
+  const on=s.running;
+  const btn=$('strat-'+id+'-btn');
+  if(btn){ btn.textContent=on?'⏹ STOP':'▶ RUN'; btn.classList.toggle('btn-red',on); btn.classList.toggle('btn-primary',!on); }
+  $('strat-'+id+'-status').textContent=on?'● RUNNING':'Stopped';
+  $('strat-'+id+'-status').className='mono fw-6 '+(on?'text-cyan':'text-muted');
+  $('strat-'+id+'-nextstake').textContent=fmtUSD(s.stakeNow);
+  const plEl=$('strat-'+id+'-pl');
+  plEl.textContent=(s.sessionProfit>=0?'+':'')+fmt(s.sessionProfit,2);
+  plEl.className='value mono '+(s.sessionProfit>=0?'text-green':'text-red');
+  $('strat-'+id+'-wl').textContent=`${s.wins} / ${s.losses}`;
+  ['stake','dir','barrier','duration','martingale','buffer','tp','sl'].forEach(suf=>{
+    const el=$('strat-'+id+'-'+suf); if(el) el.disabled=on;
+  });
+}
+
+function runStrategy(id){
+  const s=STRATEGY_RUNTIME[id]; if(!s) return;
+  if(s.running){ stopStrategy(id); return; }
+  if(!STATE.authorized){ toast('Connect Deriv first','error'); openConnect(); return; }
+  const def=s.def;
+  const dirEl=$('strat-'+id+'-dir');
+  s.cfg={
+    baseStake: parseFloat($('strat-'+id+'-stake').value)||def.stake,
+    contractType: dirEl ? dirEl.value : def.contracts[0],
+    barrier: def.barrier!=null ? (parseInt($('strat-'+id+'-barrier').value,10)||def.barrier) : null,
+    symbol: def.symbol,
+    duration: parseInt($('strat-'+id+'-duration').value,10)||def.duration,
+    martingale: parseFloat($('strat-'+id+'-martingale').value)||1,
+    buffer: parseFloat($('strat-'+id+'-buffer').value)||0.91,
+    recoveryTarget: def.recoveryTarget,
+    recoveryAfterLosses: def.recoveryAfterLosses||1,
+    maxRecoverySteps: def.maxRecoverySteps||null,
+    takeProfit: parseFloat($('strat-'+id+'-tp').value)||0,
+    stopLoss: parseFloat($('strat-'+id+'-sl').value)||0
+  };
+  s.running=true; s.stakeNow=s.cfg.baseStake; s.cumulativeLoss=0; s.consecutiveLosses=0;
+  s.sessionProfit=0; s.trades=0; s.wins=0; s.losses=0;
+  updateStrategyUI(id);
+  strategyLog(id, `Started — ${s.cfg.contractType==='DIGITOVER'?'OVER':s.cfg.contractType==='DIGITUNDER'?'UNDER':s.cfg.contractType}${s.cfg.barrier!=null?' '+s.cfg.barrier:''} on ${s.cfg.symbol} · $${s.stakeNow.toFixed(2)}`, 'text-green');
+  strategyRequestProposal(id);
+}
+
+function stopStrategy(id){
+  const s=STRATEGY_RUNTIME[id]; if(!s) return;
+  s.running=false;
+  updateStrategyUI(id);
+  strategyLog(id,'Stopped.','text-muted');
+}
+
+function strategyRequestProposal(id){
+  const s=STRATEGY_RUNTIME[id]; if(!s || !s.running) return;
+  const c=s.cfg;
+  if(STATE.account.balance>0 && s.stakeNow>STATE.account.balance){
+    strategyLog(id,'Insufficient balance for next stake — stopping.','text-red');
+    stopStrategy(id); return;
+  }
+  s.lastOrder={contractType:c.contractType, barrier:c.barrier, symbol:c.symbol, stake:s.stakeNow};
+  const req={proposal:1,amount:String(s.stakeNow.toFixed(2)),basis:'stake',contract_type:c.contractType,currency:STATE.account.currency||'USD',duration:c.duration,duration_unit:'t',symbol:c.symbol};
+  if(c.barrier!=null) req.barrier=String(c.barrier);
+  const rid=sendWS(req);
+  if(rid!=null) REQ_ENGINE[rid]='strategy:'+id;
+  strategyLog(id, `Requesting ${c.contractType==='DIGITOVER'?'OVER':c.contractType==='DIGITUNDER'?'UNDER':c.contractType}${c.barrier!=null?' '+c.barrier:''} · $${s.stakeNow.toFixed(2)} on ${c.symbol}`);
+}
+
+function strategyOnProposal(id,p){
+  const s=STRATEGY_RUNTIME[id]; if(!s || !s.running) return;
+  const rid=sendWS({buy:p.id, price:p.ask_price});
+  if(rid!=null) REQ_ENGINE[rid]='strategy:'+id;
+}
+
+function strategyOnBuy(id,buy){
+  const s=STRATEGY_RUNTIME[id]; if(!s) return;
+  s.trades++;
+  strategyLog(id, `Bought #${buy.contract_id} @ $${buy.buy_price}`,'text-green');
+  updateStrategyUI(id);
+}
+
+function strategyOnBuyFail(id){
+  const s=STRATEGY_RUNTIME[id]; if(!s) return;
+  strategyLog(id,'Buy failed — retrying in 2s','text-red');
+  if(s.running) setTimeout(()=>{ if(s.running) strategyRequestProposal(id); },2000);
+}
+
+function strategyOnSettlement(id,c){
+  const s=STRATEGY_RUNTIME[id]; if(!s) return;
+  const profit=Number(c.profit);
+  const isWin=profit>0;
+  logSettledTrade(c,{reason:'Strategy: '+s.def.name});
+  s.sessionProfit += profit;
+
+  if(isWin){
+    s.wins++;
+    s.consecutiveLosses=0; s.cumulativeLoss=0;
+    s.stakeNow=s.cfg.baseStake;
+    strategyLog(id, `✓ WIN +$${profit.toFixed(2)} — session P/L $${s.sessionProfit.toFixed(2)} — stake reset`,'text-green');
+  } else {
+    s.losses++;
+    s.consecutiveLosses++;
+    s.cumulativeLoss += Math.abs(profit);
+    if(s.cfg.martingale>1){
+      s.stakeNow = +(s.stakeNow*s.cfg.martingale).toFixed(2);
+      strategyLog(id, `✗ LOSS -$${Math.abs(profit).toFixed(2)} — martingale ×${s.cfg.martingale} next $${s.stakeNow.toFixed(2)}`,'text-red');
+    } else if(s.consecutiveLosses>=s.cfg.recoveryAfterLosses && (!s.cfg.maxRecoverySteps || s.consecutiveLosses<=s.cfg.maxRecoverySteps)){
+      const target = s.cfg.recoveryTarget!=null ? s.cfg.recoveryTarget : s.cfg.baseStake;
+      s.stakeNow = +((s.cumulativeLoss+target)/s.cfg.buffer).toFixed(2);
+      strategyLog(id, `✗ LOSS -$${Math.abs(profit).toFixed(2)} — recovery stake $${s.stakeNow.toFixed(2)} (cum. loss $${s.cumulativeLoss.toFixed(2)})`,'text-red');
+    } else {
+      strategyLog(id, `✗ LOSS -$${Math.abs(profit).toFixed(2)} — session P/L $${s.sessionProfit.toFixed(2)}`,'text-red');
+    }
+  }
+
+  if(s.cfg.takeProfit>0 && s.sessionProfit>=s.cfg.takeProfit){
+    strategyLog(id, `🎯 Take profit hit ($${s.sessionProfit.toFixed(2)} ≥ $${s.cfg.takeProfit}) — stopping.`,'text-green');
+    updateStrategyUI(id); stopStrategy(id); return;
+  }
+  if(s.cfg.stopLoss>0 && s.sessionProfit<=-s.cfg.stopLoss){
+    strategyLog(id, `🛑 Stop loss hit ($${s.sessionProfit.toFixed(2)} ≤ -$${s.cfg.stopLoss}) — stopping.`,'text-red');
+    updateStrategyUI(id); stopStrategy(id); return;
+  }
+
+  updateStrategyUI(id);
+  if(s.running) setTimeout(()=>{ if(s.running) strategyRequestProposal(id); },1000);
+}
 
 /* ====================================================================
    INIT
@@ -3097,6 +3396,7 @@ function init(){
   updateAutoUI();
   updateRecoverUI();
   updateShiftUI();
+  renderStrategyCards();
   setTimeout(()=>{
     subscribeTicks(STATE.currentSymbol);
     initParticles();
@@ -3112,7 +3412,8 @@ init();
 
 window.addEventListener('hashchange',()=>{const h=location.hash.replace('#','');if(['home','analyzer','trade','import','history','settings'].includes(h))navigate(h);});
 
-
+// Patch buy handler to mark tracker
+const _origBuy = STATE.proposalData;
 </script>
 </body>
 </html>

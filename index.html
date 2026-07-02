@@ -153,8 +153,11 @@ select option{background:var(--bg2)}
 .badge-amber{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
 
 /* ── Chart container ──────────────────────────────── */
-#rfChart{height:240px;border-radius:12px;overflow:hidden;margin-bottom:10px;background:var(--bg2)}
-#homeChart{height:180px;border-radius:12px;overflow:hidden;margin-bottom:10px;background:var(--bg2)}
+#rfChart{height:240px;border-radius:12px;overflow:hidden;margin-bottom:10px;background:#111827;position:relative}
+#homeChart{height:210px;border-radius:12px;overflow:hidden;margin-bottom:10px;background:#111827;position:relative}
+.chart-zoom-btns{position:absolute;top:8px;right:8px;z-index:10;display:flex;flex-direction:column;gap:4px}
+.czb{width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:rgba(17,24,39,.85);color:#9ba3b8;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}
+.czb:active{background:rgba(34,211,238,.2);color:#22d3ee}
 
 /* ── Timeframe chips ─────────────────────────────── */
 .tf-row{display:flex;gap:5px;margin-bottom:8px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -354,7 +357,13 @@ td.loss{color:var(--red);font-weight:700}
         <div class="tf-chip" data-gran="86400" onclick="homeTfSelect(86400,this)">1D</div>
       </div>
       <!-- candlestick chart -->
-      <div id="homeChart"></div>
+      <div id="homeChart" style="position:relative">
+        <div class="chart-zoom-btns">
+          <div class="czb" onclick="chartZoom('home','in')" title="Zoom in">+</div>
+          <div class="czb" onclick="chartZoom('home','fit')" title="Fit all">⊡</div>
+          <div class="czb" onclick="chartZoom('home','out')" title="Zoom out">−</div>
+        </div>
+      </div>
       <div class="row" style="gap:12px;flex-wrap:wrap">
         <div><div class="t-12">Balance</div><div class="mono fw-7 t-14" id="homeBalance">—</div></div>
         <div><div class="t-12">Today P/L</div><div class="mono fw-7 t-14" id="homePL" style="color:var(--text2)">—</div></div>
@@ -426,7 +435,13 @@ td.loss{color:var(--red);font-weight:700}
     </div>
 
     <!-- Real chart -->
-    <div id="rfChart"></div>
+    <div id="rfChart" style="position:relative">
+      <div class="chart-zoom-btns">
+        <div class="czb" onclick="chartZoom('rf','in')" title="Zoom in">+</div>
+        <div class="czb" onclick="chartZoom('rf','fit')" title="Fit all">⊡</div>
+        <div class="czb" onclick="chartZoom('rf','out')" title="Zoom out">−</div>
+      </div>
+    </div>
 
     <!-- Indicator cards -->
     <div class="ind-grid">
@@ -1430,43 +1445,69 @@ function changeCandleGranularity(g){
 let rfChartObj = null, rfCandleSeries = null;
 let homeChartObj = null, homeCandleSeries = null;
 
-function initCharts(){
-  const chartOpts = (bg, scroll) => ({
+function chartBaseOpts(bg){
+  return {
     layout: { background:{color:bg}, textColor:'#9ba3b8' },
     grid: { vertLines:{color:'rgba(255,255,255,.04)'}, horzLines:{color:'rgba(255,255,255,.04)'} },
     crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
     rightPriceScale: { borderColor:'rgba(255,255,255,.08)', textColor:'#9ba3b8' },
     timeScale: { borderColor:'rgba(255,255,255,.08)', textColor:'#9ba3b8', timeVisible:true, secondsVisible:false },
-    handleScroll: scroll, handleScale: scroll,
-  });
+    handleScroll: true, handleScale: true,
+  };
+}
 
-  // RF Chart (candlestick)
-  const rfEl = $('rfChart');
-  if(rfEl && typeof LightweightCharts !== 'undefined'){
-    rfChartObj = LightweightCharts.createChart(rfEl, { ...chartOpts('#111827', true), width: rfEl.offsetWidth, height: 240 });
-    rfCandleSeries = rfChartObj.addCandlestickSeries({
-      upColor:'#22c55e', downColor:'#ef4444',
-      borderUpColor:'#22c55e', borderDownColor:'#ef4444',
-      wickUpColor:'#22c55e', wickDownColor:'#ef4444',
-    });
-  }
+function candleSeriesOpts(){
+  return { upColor:'#22c55e', downColor:'#ef4444', borderUpColor:'#22c55e', borderDownColor:'#ef4444', wickUpColor:'#22c55e', wickDownColor:'#ef4444' };
+}
 
-  // Home Chart (candlestick — same candle data, scrollable)
-  const homeEl = $('homeChart');
-  if(homeEl && typeof LightweightCharts !== 'undefined'){
-    homeChartObj = LightweightCharts.createChart(homeEl, { ...chartOpts('transparent', true), width: homeEl.offsetWidth, height: 180 });
-    homeCandleSeries = homeChartObj.addCandlestickSeries({
-      upColor:'#22c55e', downColor:'#ef4444',
-      borderUpColor:'#22c55e', borderDownColor:'#ef4444',
-      wickUpColor:'#22c55e', wickDownColor:'#ef4444',
-    });
-  }
+// Lazy init — only called once the tab is visible so offsetWidth is real
+function initRfChart(){
+  if(rfChartObj) return; // already done
+  const el = $('rfChart');
+  if(!el || typeof LightweightCharts === 'undefined') return;
+  const w = el.offsetWidth || window.innerWidth - 32;
+  rfChartObj = LightweightCharts.createChart(el, { ...chartBaseOpts('#111827'), width: w, height: 240 });
+  rfCandleSeries = rfChartObj.addCandlestickSeries(candleSeriesOpts());
+  if(STATE.candles.length){ rfCandleSeries.setData(STATE.candles); rfChartObj.timeScale().fitContent(); }
+}
 
-  // Resize handler
+function initHomeChart(){
+  if(homeChartObj) return; // already done
+  const el = $('homeChart');
+  if(!el || typeof LightweightCharts === 'undefined') return;
+  const w = el.offsetWidth || window.innerWidth - 32;
+  homeChartObj = LightweightCharts.createChart(el, { ...chartBaseOpts('#111827'), width: w, height: 210 });
+  homeCandleSeries = homeChartObj.addCandlestickSeries(candleSeriesOpts());
+  if(STATE.candles.length){ homeCandleSeries.setData(STATE.candles); homeChartObj.timeScale().fitContent(); }
+}
+
+function initCharts(){
+  // Only init the currently visible tab's chart; the other is deferred to navigate()
+  if(STATE.page === 'home') initHomeChart();
+  if(STATE.page === 'risefall') initRfChart();
   window.addEventListener('resize', ()=>{
-    if(rfChartObj && rfEl) rfChartObj.applyOptions({width: rfEl.offsetWidth});
-    if(homeChartObj && homeEl) homeChartObj.applyOptions({width: homeEl.offsetWidth});
+    const rfEl = $('rfChart'), homeEl = $('homeChart');
+    const w = window.innerWidth - 32;
+    if(rfChartObj && rfEl) rfChartObj.applyOptions({width: rfEl.offsetWidth || w});
+    if(homeChartObj && homeEl) homeChartObj.applyOptions({width: homeEl.offsetWidth || w});
   });
+}
+
+function chartZoom(which, dir){
+  const chart = which === 'home' ? homeChartObj : rfChartObj;
+  if(!chart) return;
+  const ts = chart.timeScale();
+  if(dir === 'fit'){ ts.fitContent(); return; }
+  const range = ts.getVisibleRange();
+  if(!range) { ts.fitContent(); return; }
+  const span = range.to - range.from;
+  if(dir === 'in'){
+    const mid = (range.from + range.to) / 2;
+    ts.setVisibleRange({ from: mid - span*0.3, to: mid + span*0.3 });
+  } else {
+    const mid = (range.from + range.to) / 2;
+    ts.setVisibleRange({ from: mid - span*0.85, to: mid + span*0.85 });
+  }
 }
 
 function homeTfSelect(gran, el){
@@ -1478,8 +1519,8 @@ function homeTfSelect(gran, el){
 function updateCharts(){
   const candles = STATE.candles;
   if(!candles.length) return;
-  if(rfCandleSeries){ try{ rfCandleSeries.setData(candles); }catch(e){} }
-  if(homeCandleSeries){ try{ homeCandleSeries.setData(candles); }catch(e){} }
+  if(rfCandleSeries){ try{ rfCandleSeries.setData(candles); rfChartObj.timeScale().fitContent(); }catch(e){} }
+  if(homeCandleSeries){ try{ homeCandleSeries.setData(candles); homeChartObj.timeScale().fitContent(); }catch(e){} }
 }
 
 function updateCandleStatusUI(){
@@ -2244,8 +2285,23 @@ function navigate(page){
     const nav = $('nav-'+k);
     if(nav) nav.classList.toggle('active', k===page);
   });
+  // Lazy-init charts now that the tab is visible (offsetWidth is real)
+  if(page==='home'){
+    requestAnimationFrame(()=>{
+      initHomeChart();
+      if(homeChartObj) homeChartObj.applyOptions({width: $('homeChart').offsetWidth || window.innerWidth-32});
+      updateCharts();
+    });
+  }
+  if(page==='risefall'){
+    requestAnimationFrame(()=>{
+      initRfChart();
+      if(rfChartObj) rfChartObj.applyOptions({width: $('rfChart').offsetWidth || window.innerWidth-32});
+      updateCharts();
+      updateRFIndicatorUI();
+    });
+  }
   if(page==='history'){ renderHistory(); renderActiveContracts(); }
-  if(page==='risefall') updateRFIndicatorUI();
   if(page==='settings') updateSettingsUI();
   location.hash = page;
 }

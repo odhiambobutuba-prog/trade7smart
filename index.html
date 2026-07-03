@@ -250,11 +250,29 @@ td.loss{color:var(--red);font-weight:700}
 .modal-title{font-size:16px;font-weight:700;margin-bottom:16px;text-align:center}
 
 /* ── Preloader ────────────────────────────────────── */
-#preloader{position:fixed;inset:0;z-index:9000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
-.preloader-logo{font-size:28px;font-weight:800;color:var(--cyan);letter-spacing:-1px}
-.preloader-sub{font-size:12px;color:var(--text3);font-weight:600}
-.preloader-bar-wrap{width:180px;height:3px;background:var(--bg3);border-radius:20px;overflow:hidden}
-.preloader-bar{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));border-radius:20px;width:0%;transition:width .3s}
+#preloader{position:fixed;inset:0;z-index:9000;background:#080c17;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;overflow:hidden}
+#preloader::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(34,211,238,.07) 0%,transparent 70%);animation:pl-pulse-bg 3s ease infinite}
+@keyframes pl-pulse-bg{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.15);opacity:1}}
+.pl-ring-wrap{position:relative;width:130px;height:130px;flex-shrink:0}
+.pl-ring{position:absolute;inset:0;border-radius:50%;border:3px solid transparent;border-top-color:#22d3ee;animation:pl-spin 1s linear infinite}
+.pl-ring-2{position:absolute;inset:12px;border-radius:50%;border:3px solid transparent;border-top-color:#818cf8;animation:pl-spin 1.6s linear infinite reverse}
+.pl-ring-3{position:absolute;inset:24px;border-radius:50%;border:3px solid transparent;border-top-color:#34d399;animation:pl-spin 2.2s linear infinite}
+.pl-ring-glow{position:absolute;inset:0;border-radius:50%;box-shadow:0 0 30px rgba(34,211,238,.25),inset 0 0 30px rgba(34,211,238,.06)}
+.pl-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.pl-center-logo{font-size:13px;font-weight:900;color:#22d3ee;letter-spacing:-.5px;text-shadow:0 0 12px rgba(34,211,238,.6)}
+.pl-center-sub{font-size:7px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.3);text-transform:uppercase}
+@keyframes pl-spin{to{transform:rotate(360deg)}}
+.pl-brand{font-size:26px;font-weight:900;color:#fff;letter-spacing:-1px;text-shadow:0 0 24px rgba(34,211,238,.4)}
+.pl-brand span{color:#22d3ee}
+.pl-tagline{font-size:11px;font-weight:600;color:rgba(255,255,255,.35);letter-spacing:2px;text-transform:uppercase}
+.pl-bar-wrap{width:220px;height:2px;background:rgba(255,255,255,.07);border-radius:20px;overflow:hidden}
+.pl-bar{height:100%;width:0%;border-radius:20px;background:linear-gradient(90deg,#22d3ee,#818cf8,#34d399);transition:width .35s cubic-bezier(.4,0,.2,1)}
+.pl-dots{display:flex;gap:8px;align-items:center}
+.pl-dot{width:7px;height:7px;border-radius:50%;background:#22d3ee;animation:pl-bounce 1.3s ease infinite}
+.pl-dot:nth-child(2){background:#818cf8;animation-delay:.2s}
+.pl-dot:nth-child(3){background:#34d399;animation-delay:.4s}
+@keyframes pl-bounce{0%,80%,100%{transform:scale(.5);opacity:.3}40%{transform:scale(1.1);opacity:1}}
+.pl-status-text{font-size:11px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.5px;min-height:16px;text-align:center}
 
 /* ── Tick stream ──────────────────────────────────── */
 .tick-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px}
@@ -328,9 +346,23 @@ td.loss{color:var(--red);font-weight:700}
      PRELOADER
 ══════════════════════════════════════════════════ -->
 <div id="preloader">
-  <div class="preloader-logo">Trade7Smart</div>
-  <div class="preloader-bar-wrap"><div class="preloader-bar" id="plBar"></div></div>
-  <div class="preloader-sub" id="plText">Connecting to Deriv…</div>
+  <div class="pl-ring-wrap">
+    <div class="pl-ring-glow"></div>
+    <div class="pl-ring"></div>
+    <div class="pl-ring-2"></div>
+    <div class="pl-ring-3"></div>
+    <div class="pl-center">
+      <div class="pl-center-logo">T7S</div>
+      <div class="pl-center-sub">PRO</div>
+    </div>
+  </div>
+  <div class="pl-brand">Trade<span>7</span>Smart</div>
+  <div class="pl-tagline">Professional Trading Terminal</div>
+  <div class="pl-bar-wrap"><div class="pl-bar" id="plBar"></div></div>
+  <div class="pl-dots">
+    <div class="pl-dot"></div><div class="pl-dot"></div><div class="pl-dot"></div>
+  </div>
+  <div class="pl-status-text" id="plText">Initialising…</div>
 </div>
 
 <!-- ═══════════════════════════════════════════════
@@ -817,25 +849,22 @@ td.loss{color:var(--red);font-weight:700}
         <div class="card-title">Auto-Trade (Digit)</div>
         <div class="badge badge-cyan" id="sbAuto" style="display:none">● ON</div>
       </div>
+      <div class="t-12 text-muted" style="margin-bottom:8px">🔵🔵 2 blue = OVER 0 · 🔵🔵🔵 3 blue = OVER 2 · 🔴🔴 2 red = UNDER 9 · 🔴🔴🔴 3 red = UNDER 8</div>
       <div class="form-row" style="margin-bottom:8px">
         <div class="form-group">
-          <label class="input-label">Base Stake</label>
+          <label class="input-label">Base Stake ($)</label>
           <input type="number" id="stakeInput" value="1" min="0.35" step="0.01"/>
         </div>
         <div class="form-group">
-          <label class="input-label">Arrows Needed</label>
-          <input type="number" id="autoArrows" value="3" min="1" max="10"/>
+          <label class="input-label">Martingale ×</label>
+          <input type="number" id="autoMartingale" value="2" min="1" max="5" step="0.1"/>
         </div>
       </div>
-      <div class="form-group" style="margin-bottom:10px">
-        <label class="input-label">Profit Buffer</label>
-        <input type="number" id="autoBuffer" value="0.91" min="0.5" max="0.99" step="0.01"/>
-      </div>
       <div class="card-sm" style="margin-bottom:8px">
-        <div class="row-sb" style="margin-bottom:4px"><span class="t-12">Status</span><span class="mono fw-6 text-muted" id="autoStatus">Stopped</span></div>
-        <div class="row-sb" style="margin-bottom:4px"><span class="t-12">Arrows</span><span class="mono fw-6" id="autoArrowsNow">0/3</span></div>
-        <div class="row-sb" style="margin-bottom:4px"><span class="t-12">Level</span><span class="mono fw-6" id="autoLevel">1</span></div>
-        <div class="row-sb"><span class="t-12">Stake</span><span class="mono fw-7" id="autoStake">$1.00</span></div>
+        <div class="row-sb" style="margin-bottom:4px"><span class="t-12">Status</span><span class="mono fw-6 text-muted t-11" id="autoStatus">Stopped</span></div>
+        <div class="row-sb" style="margin-bottom:4px"><span class="t-12">Arrows</span><span class="mono fw-6" id="autoArrowsNow">🔵0 🔴0</span></div>
+        <div class="row-sb" style="margin-bottom:4px"><span class="t-12">Mart Level</span><span class="mono fw-6" id="autoLevel">1</span></div>
+        <div class="row-sb"><span class="t-12">Next Stake</span><span class="mono fw-7" id="autoStake">$1.00</span></div>
       </div>
       <div id="autoLadderView" style="margin-bottom:8px"></div>
       <button class="btn btn-primary btn-full" id="autoBtn" onclick="startAutoTrade()">▶ SCAN &amp; AUTO-TRADE</button>
@@ -1062,32 +1091,40 @@ td.loss{color:var(--red);font-weight:700}
         <div class="card-title">Import Bot (.xml)</div>
         <span class="mono fw-6 t-12" id="botRunStatus">Ready</span>
       </div>
-      <div class="form-group">
-        <label class="input-label">Bot XML File</label>
+
+      <!-- Step 1: Choose file -->
+      <div class="form-group" style="margin-bottom:6px">
+        <label class="input-label">Step 1 — Choose Bot XML File</label>
         <input type="file" id="botFileInput" accept=".xml,.txt" style="min-height:auto;padding:8px;font-size:12px" onchange="onBotFileSelected(event)"/>
-        <div class="t-12" id="botFileName" style="margin-top:4px">No file selected</div>
+        <div class="t-12 text-muted" id="botFileName" style="margin-top:4px">Or paste below and tap Parse</div>
       </div>
       <div class="form-group">
-        <label class="input-label">Or Paste XML</label>
-        <textarea id="botXmlInput" rows="3" style="min-height:72px;font-size:11px;font-family:monospace" placeholder="Paste Deriv Bot XML here…"></textarea>
+        <textarea id="botXmlInput" rows="2" style="min-height:56px;font-size:11px;font-family:monospace" placeholder="Paste Deriv Bot XML here… then tap Parse"></textarea>
       </div>
-      <button class="btn btn-ghost btn-full" style="margin-bottom:8px" onclick="parseBotFile()">🔍 Parse Bot File</button>
-      <div id="botParsedEmpty" class="empty-state" style="padding:12px">Parse a file to see parameters</div>
+      <button class="btn btn-ghost btn-full" style="margin-bottom:10px" onclick="parseBotFile()">🔍 Parse Bot XML</button>
+
+      <!-- Step 2: Detected params (read-only summary + editable overrides) -->
+      <div id="botParsedEmpty" class="empty-state" style="padding:10px;font-size:12px">Import or paste a bot XML to get started</div>
       <div id="botParsedFields" style="display:none">
-        <div class="t-12 text-amber" id="botSourceNote" style="margin-bottom:8px"></div>
+        <div class="card-sm" id="botSourceNote" style="margin-bottom:8px;font-size:12px;color:var(--amber)"></div>
+
+        <!-- Compact detected row -->
         <div class="form-row">
           <div class="form-group">
             <label class="input-label">Symbol</label>
             <select id="botSymbol">
-              <option value="R_100">R_100</option><option value="R_75">R_75</option><option value="R_50">R_50</option><option value="R_25">R_25</option><option value="1HZ100V">1HZ100V</option>
+              <option value="R_100">R_100</option><option value="R_75">R_75</option>
+              <option value="R_50">R_50</option><option value="R_25">R_25</option>
+              <option value="R_10">R_10</option><option value="1HZ100V">1HZ100V</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="input-label">Contract Type</label>
+            <label class="input-label">Contract</label>
             <select id="botContractType">
               <option value="DIGITOVER">OVER</option><option value="DIGITUNDER">UNDER</option>
-              <option value="CALL">CALL</option><option value="PUT">PUT</option>
+              <option value="CALL">RISE</option><option value="PUT">FALL</option>
               <option value="DIGITEVEN">EVEN</option><option value="DIGITODD">ODD</option>
+              <option value="DIGITMATCH">MATCH</option><option value="DIGITDIFF">DIFF</option>
             </select>
           </div>
         </div>
@@ -1103,16 +1140,6 @@ td.loss{color:var(--red);font-weight:700}
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="input-label">Duration</label>
-            <input type="number" id="botDuration" value="1" min="1"/>
-          </div>
-          <div class="form-group">
-            <label class="input-label">Unit</label>
-            <select id="botDurationUnit"><option value="t">Ticks</option><option value="s">Seconds</option><option value="m">Minutes</option></select>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
             <label class="input-label">Martingale ×</label>
             <input type="number" id="botMartingale" value="1" min="1" max="10" step="0.1"/>
           </div>
@@ -1121,16 +1148,27 @@ td.loss{color:var(--red);font-weight:700}
             <input type="number" id="botMaxLoss" value="50" min="1"/>
           </div>
         </div>
-        <div class="form-group">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="input-label">Duration</label>
+            <input type="number" id="botDuration" value="1" min="1"/>
+          </div>
+          <div class="form-group">
+            <label class="input-label">Unit</label>
+            <select id="botDurationUnit"><option value="t">Ticks</option><option value="s">Seconds</option><option value="m">Minutes</option></select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:10px">
           <label class="input-label">Repeat</label>
-          <select id="botRepeat"><option value="1">Once</option><option value="loop">Loop until max loss</option></select>
+          <select id="botRepeat"><option value="loop">Loop (martingale until max loss)</option><option value="1">Run Once</option></select>
         </div>
-        <div class="btn-row">
-          <button class="btn btn-primary btn-half" id="botRunBtn" onclick="runImportedBot()" disabled>▶ RUN BOT</button>
-          <button class="btn btn-red btn-half" id="botStopBtn" style="display:none" onclick="stopImportedBot()">⏹ STOP</button>
-        </div>
+
+        <!-- Single RUN button -->
+        <button class="btn btn-primary btn-full" id="botRunBtn" onclick="runImportedBot()" style="margin-bottom:6px">▶ RUN BOT</button>
+        <button class="btn btn-red btn-full" id="botStopBtn" style="display:none;margin-bottom:6px" onclick="stopImportedBot()">⏹ STOP BOT</button>
       </div>
-      <div class="log-box" id="botLog" style="margin-top:8px"><div class="text-dim">Log will appear here…</div></div>
+
+      <div class="log-box" id="botLog" style="margin-top:8px"><div class="text-dim t-11">Bot log will appear here…</div></div>
     </div>
 
   </div>
@@ -1753,7 +1791,12 @@ function homeTfSelect(gran, el){
 
 function updateCharts(){
   const candles = STATE.candles;
-  if(!candles.length) return;
+  if(!candles.length){
+    // Clear series so chart shows empty but not black
+    try{ if(rfCandleSeries) rfCandleSeries.setData([]); }catch(e){}
+    try{ if(homeCandleSeries) homeCandleSeries.setData([]); }catch(e){}
+    return;
+  }
   if(rfCandleSeries){ try{ rfCandleSeries.setData(candles); rfChartObj.timeScale().fitContent(); }catch(e){} }
   if(homeCandleSeries){ try{ homeCandleSeries.setData(candles); homeChartObj.timeScale().fitContent(); }catch(e){} }
 }
@@ -2415,9 +2458,10 @@ function digitUpdateUI(){
   const dr = $('digitRate'); if(dr) dr.textContent = Math.round(stats.emaRate)+'%';
   const ds = $('digitStreak'); if(ds) ds.textContent = stats.overStreak || (-stats.underStreak);
 
-  // Signal logic
+  // Signal logic — UNDER only allowed when barrier >= 7 (so trades UNDER 7,8,9 only)
   const isOverSig = stats.emaRate >= DIGIT_SIG.minRate && stats.overStreak >= DIGIT_SIG.minStreak;
-  const isUnderSig = (100 - stats.emaRate) >= DIGIT_SIG.minRate && stats.underStreak >= DIGIT_SIG.minStreak;
+  const canUnder  = stats.barrier >= 7; // barrier 7,8,9 → UNDER 7,8,9 are safe bets
+  const isUnderSig = canUnder && (100 - stats.emaRate) >= DIGIT_SIG.minRate && stats.underStreak >= DIGIT_SIG.minStreak;
 
   const box=$('digitSigBox'), dir=$('digitSigDir'), conf=$('digitSigConf'), bar=$('digitConfBar');
   const confPct = Math.round(Math.max(stats.emaRate, 100-stats.emaRate));
@@ -2431,13 +2475,14 @@ function digitUpdateUI(){
     if(DIGIT_SIG.enabled && !DIGIT_SIG.pendingBuy && !DIGIT_SIG.cooldown) digitExecute('over');
   } else if(isUnderSig){
     if(box){ box.className='sig-box sig-fall'; }
-    if(dir){ dir.textContent='▼ UNDER '+(stats.barrier+1); dir.style.color='var(--red)'; }
-    if(conf) conf.textContent = `Rate ${Math.round(100-stats.emaRate)}% under · Streak ${stats.underStreak} · EMA ${Math.round(DIGIT_SIG.emaRate)}%`;
+    if(dir){ dir.textContent='▼ UNDER '+stats.barrier; dir.style.color='var(--red)'; }
+    if(conf) conf.textContent = `Rate ${Math.round(100-stats.emaRate)}% under · Streak ${stats.underStreak} · barrier ${stats.barrier}`;
     if(DIGIT_SIG.enabled && !DIGIT_SIG.pendingBuy && !DIGIT_SIG.cooldown) digitExecute('under');
   } else {
     if(box){ box.className='sig-box sig-wait'; }
     if(dir){ dir.textContent='⌛ Scanning…'; dir.style.color='var(--text3)'; }
-    if(conf) conf.textContent = `Over rate: ${Math.round(stats.emaRate)}% (need ${DIGIT_SIG.minRate}%) · Streak ${stats.overStreak}/${DIGIT_SIG.minStreak}`;
+    const underNote = !canUnder ? ` (UNDER disabled — barrier ${stats.barrier} < 7)` : '';
+    if(conf) conf.textContent = `Over ${Math.round(stats.emaRate)}% · Under ${Math.round(100-stats.emaRate)}% · need ${DIGIT_SIG.minRate}%${underNote}`;
   }
 }
 
@@ -2446,7 +2491,8 @@ function digitExecute(direction){
   DIGIT_SIG.pendingBuy = true;
   const stake = DIGIT_SIG.stake;
   const contractType = direction==='over' ? 'DIGITOVER' : 'DIGITUNDER';
-  const barrier = direction==='over' ? String(DIGIT_SIG.barrier) : String(DIGIT_SIG.barrier+1);
+  // For UNDER, use the barrier directly (barrier 7 → UNDER 7, 8→UNDER 8, 9→UNDER 9)
+  const barrier = String(DIGIT_SIG.barrier);
   const rid = sendWS({
     proposal: 1, amount: String(stake.toFixed(2)), basis: 'stake',
     contract_type: contractType, currency: STATE.account.currency||'USD',
@@ -2454,7 +2500,7 @@ function digitExecute(direction){
     symbol: STATE.currentSymbol, barrier
   });
   if(rid!=null) REQ_ENGINE[rid] = 'digit';
-  toast('Digit '+(direction==='over'?'▲ OVER '+DIGIT_SIG.barrier:'▼ UNDER '+(DIGIT_SIG.barrier+1))+' · $'+stake.toFixed(2), 'info', 1500);
+  toast('Digit '+(direction==='over'?'▲ OVER '+DIGIT_SIG.barrier:'▼ UNDER '+DIGIT_SIG.barrier)+' · $'+stake.toFixed(2), 'info', 1500);
   setTimeout(()=>{ DIGIT_SIG.pendingBuy=false; }, 4000);
 }
 
@@ -2543,16 +2589,36 @@ function sendNotif(title, body, tag='trade'){
   }
 }
 
+/* In-app alert banner — always works regardless of browser push permission */
+function showInAppAlert(msg, type='info', dur=4000){
+  let bar=$('inAppAlertBar');
+  if(!bar){
+    bar=document.createElement('div');
+    bar.id='inAppAlertBar';
+    bar.style.cssText='position:fixed;top:0;left:0;right:0;z-index:8999;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;font-size:13px;font-weight:700;letter-spacing:.2px;transform:translateY(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:0 4px 20px rgba(0,0,0,.5)';
+    document.body.appendChild(bar);
+  }
+  const colors={win:'linear-gradient(90deg,#14532d,#166534)',loss:'linear-gradient(90deg,#7f1d1d,#991b1b)',signal:'linear-gradient(90deg,#1e3a5f,#1d4ed8)',info:'linear-gradient(90deg,#0c1a2e,#1e3a5f)'};
+  bar.style.background=colors[type]||colors.info;
+  bar.innerHTML=`<span>${msg}</span><span style="cursor:pointer;opacity:.6;font-size:16px" onclick="this.parentNode.style.transform='translateY(-100%)'">✕</span>`;
+  bar.style.transform='translateY(0)';
+  clearTimeout(bar._t);
+  bar._t=setTimeout(()=>{ bar.style.transform='translateY(-100%)'; }, dur);
+}
+
 function notifyWin(amount, engine){
   playWinSound();
+  showInAppAlert('✅ WIN +$'+amount.toFixed(2)+' · '+(engine||'Trade'), 'win', 5000);
   sendNotif('✅ WIN +$'+amount.toFixed(2), (engine||'Trade')+' — Trade won +$'+amount.toFixed(2), 'win');
 }
 function notifyLoss(amount, engine){
   playLossSound();
+  showInAppAlert('❌ LOSS −$'+amount.toFixed(2)+' · '+(engine||'Trade'), 'loss', 5000);
   sendNotif('❌ LOSS −$'+amount.toFixed(2), (engine||'Trade')+' — Trade lost −$'+amount.toFixed(2), 'loss');
 }
 function notifySignal(dir, engine){
   playSignalSound();
+  showInAppAlert('🔔 Signal: '+dir+' · '+(engine||''), 'signal', 4000);
   sendNotif('🔔 Signal: '+dir, (engine||'Signal')+' — '+dir+' signal detected', 'signal');
 }
 
@@ -2928,35 +2994,56 @@ function eoOnTick(tick){
   if(!EO.enabled) return;
   const sym = tick.symbol;
   if(!TRIPLE_MKTS.includes(sym)) return;
-  const digit = parseInt(String(Math.round(parseFloat(tick.quote)*1e6)).slice(-1));
+  const raw = parseFloat(tick.quote);
+  const digit = parseInt(String(Math.round(raw*1e6)).slice(-1));
   if(!EO.tickBufs[sym]) EO.tickBufs[sym]=[];
   EO.tickBufs[sym].unshift(digit);
-  if(EO.tickBufs[sym].length>10) EO.tickBufs[sym].length=10;
+  if(EO.tickBufs[sym].length>20) EO.tickBufs[sym].length=20;
 
   const buf = EO.tickBufs[sym];
   const dEl=$('eo_'+sym), sEl=$('es_'+sym);
-  if(dEl) dEl.textContent = buf.slice(0,3).join(' ');
+  if(dEl) dEl.textContent = buf.slice(0,5).join(' ');
 
   if(EO.pendingBuy) return;
 
-  // 9,9 → Under 9 (special trigger)
+  // Count consecutive even and odd streaks from most recent
+  let oddStreak=0, evenStreak=0;
+  for(const d of buf){ if(d%2!==0) oddStreak++; else break; }
+  for(const d of buf){ if(d%2===0) evenStreak++; else break; }
+
+  if(sEl) sEl.textContent = oddStreak>0 ? oddStreak+'odd' : evenStreak+'even';
+
+  // Special: two consecutive 0s → DIGITOVER 0 (last digits 0,0)
+  if(buf.length>=2 && buf[0]===0 && buf[1]===0){
+    const stake = eoCalcNextStake();
+    eoLog('🔵 '+sym+' → 0,0 → Over 0 @ $'+stake.toFixed(3),'text-cyan');
+    eoExecute(sym,'DIGITOVER','0',stake);
+    return;
+  }
+
+  // Special: two consecutive 9s → DIGITUNDER 9
   if(buf.length>=2 && buf[0]===9 && buf[1]===9){
-    if(sEl) sEl.textContent='9,9→U9';
     const stake = eoCalcNextStake();
     eoLog('🔴 '+sym+' → 9,9 → Under 9 @ $'+stake.toFixed(3),'text-red');
     eoExecute(sym,'DIGITUNDER','9',stake);
     return;
   }
 
-  // Count consecutive odds
-  let streak=0;
-  for(const d of buf){ if(d%2!==0) streak++; else break; }
-  if(sEl) sEl.textContent=streak+'odd';
-  if(streak >= EO.oddStreak){
+  // N consecutive ODD digits → bet EVEN (digit will eventually be even)
+  if(oddStreak >= EO.oddStreak){
     const stake = eoCalcNextStake();
-    eoLog('🟡 '+sym+' → '+streak+' odds → Even @ $'+stake.toFixed(3),'text-amber');
-    notifySignal(streak+' consecutive odds → EVEN','Even/Odds Bot ('+sym+')');
+    eoLog('🟡 '+sym+' → '+oddStreak+' odds → EVEN @ $'+stake.toFixed(3),'text-amber');
+    notifySignal(oddStreak+' consecutive odds → EVEN','Even/Odds Bot ('+sym+')');
     eoExecute(sym,'DIGITEVEN','',stake);
+    return;
+  }
+
+  // N consecutive EVEN digits → bet ODD
+  if(evenStreak >= EO.oddStreak){
+    const stake = eoCalcNextStake();
+    eoLog('🟣 '+sym+' → '+evenStreak+' evens → ODD @ $'+stake.toFixed(3),'text-amber');
+    notifySignal(evenStreak+' consecutive evens → ODD','Even/Odds Bot ('+sym+')');
+    eoExecute(sym,'DIGITODD','',stake);
   }
 }
 
@@ -3344,18 +3431,20 @@ function executeTrade(){
    AUTO-TRADE (DIGIT)
 ═══════════════════════════════════════════════════════ */
 const AUTO = {
-  enabled:false, baseStake:1, arrowsNeeded:3, profitBuffer:0.91,
-  ladder:[1], level:0, arrowCount:0, contract:'DIGITOVER', barrier:'1',
-  requiredDir:1, pendingBuy:false, cooldown:false, scanning:false
+  enabled:false, baseStake:1, martingale:2, profitBuffer:0.91,
+  ladder:[1], level:0,
+  blueCount:0, redCount:0,   // consecutive arrow counts
+  contract:'DIGITOVER', barrier:'0',
+  pendingBuy:false, cooldown:false, scanning:false,
+  wins:0, losses:0, totalProfit:0
 };
 
 function buildLadder(){
-  const ladder=[AUTO.baseStake];
-  let sum=AUTO.baseStake;
-  for(let i=1;i<8;i++){
-    const next=+(sum*2.15/AUTO.profitBuffer).toFixed(2);
-    ladder.push(next); sum+=next;
-  }
+  const base=AUTO.baseStake;
+  const m=AUTO.martingale||2;
+  const ladder=[base];
+  let stake=base;
+  for(let i=1;i<8;i++){ stake=+(stake*m).toFixed(2); ladder.push(stake); }
   return ladder;
 }
 
@@ -3364,127 +3453,116 @@ function startAutoTrade(){
   if(AUTO.enabled){stopAutoTrade();return;}
   AUTO.enabled=true;
   AUTO.baseStake=parseFloat($('stakeInput').value)||1;
-  AUTO.arrowsNeeded=parseInt($('autoArrows').value)||3;
+  AUTO.martingale=parseFloat($('autoMartingale')?$('autoMartingale').value:2)||2;
   AUTO.profitBuffer=parseFloat($('autoBuffer').value)||0.91;
   AUTO.ladder=buildLadder();
-  AUTO.arrowCount=0; AUTO.level=0; AUTO.scanning=true;
-  selectAutoContract();
+  AUTO.blueCount=0; AUTO.redCount=0; AUTO.level=0; AUTO.scanning=true;
+  AUTO.wins=0; AUTO.losses=0; AUTO.totalProfit=0;
   updateAutoUI();
-  requestAutoProposal();
-  toast('Auto-trade ON · scanning','success');
+  toast('Auto-trade ON · waiting for arrows','success');
 }
 
 function stopAutoTrade(){
   AUTO.enabled=false; AUTO.scanning=false; AUTO.cooldown=false;
+  AUTO.blueCount=0; AUTO.redCount=0;
   updateAutoUI();
   toast('Auto-trade OFF','info');
 }
 
-function selectAutoContract(){
-  // Simple heuristic based on recent digits
-  const h=STATE.tickHistory;
-  const freq=Array(10).fill(0);
-  h.slice(0,100).forEach(t=>freq[t.digit]++);
-  let maxI=0,minI=0;
-  freq.forEach((f,i)=>{if(f>freq[maxI])maxI=i;if(f<freq[minI])minI=i;});
-  if(maxI>=7){AUTO.contract='DIGITUNDER';AUTO.barrier='8';AUTO.requiredDir=-1;}
-  else if(maxI<=3){AUTO.contract='DIGITOVER';AUTO.barrier='1';AUTO.requiredDir=1;}
-  else{AUTO.contract='DIGITOVER';AUTO.barrier='0';AUTO.requiredDir=1;}
-}
-
+/* Arrow rules:
+   2 blue  → DIGITOVER 0  (very likely to win)
+   3+ blue → DIGITOVER 2
+   2 red   → DIGITUNDER 9
+   3+ red  → DIGITUNDER 8  */
 function autoTickCheck(){
   if(!AUTO.enabled||AUTO.cooldown||AUTO.pendingBuy) return;
   if(STATE.tickHistory.length<2) return;
   const last=STATE.tickHistory[0];
-  const dirMatches=AUTO.requiredDir===1?last.change>0:last.change<0;
-  if(dirMatches){
-    AUTO.arrowCount++;
-    updateAutoUI();
-    if(AUTO.arrowCount>=AUTO.arrowsNeeded){
-      AUTO.arrowCount=0;
-      executeAutoBuy();
-    }
+  const isBlue = last.change>0;
+  const isRed  = last.change<0;
+
+  if(isBlue){
+    AUTO.blueCount++; AUTO.redCount=0;
+  } else if(isRed){
+    AUTO.redCount++; AUTO.blueCount=0;
   } else {
-    AUTO.arrowCount=0;
-    updateAutoUI();
+    // flat tick — decay both
+    AUTO.blueCount=Math.max(0,AUTO.blueCount-1);
+    AUTO.redCount=Math.max(0,AUTO.redCount-1);
   }
+
+  updateAutoUI();
+
+  const bc=AUTO.blueCount, rc=AUTO.redCount;
+
+  if(bc>=3){ AUTO.contract='DIGITOVER'; AUTO.barrier='2'; autoFire(bc); }
+  else if(bc===2){ AUTO.contract='DIGITOVER'; AUTO.barrier='0'; autoFire(bc); }
+  else if(rc>=3){ AUTO.contract='DIGITUNDER'; AUTO.barrier='8'; autoFire(rc); }
+  else if(rc===2){ AUTO.contract='DIGITUNDER'; AUTO.barrier='9'; autoFire(rc); }
 }
 
-function requestAutoProposal(){
-  if(!AUTO.enabled||!STATE.authorized) return;
-  const stake=AUTO.ladder[Math.min(AUTO.level, AUTO.ladder.length-1)];
-  const rid=sendWS({
-    proposal:1,
-    amount:String(stake),
-    basis:'stake',
-    contract_type:AUTO.contract,
-    currency:STATE.account.currency||'USD',
-    duration:1, duration_unit:'t',
-    symbol:STATE.currentSymbol,
-    barrier:String(AUTO.barrier)
-  });
-}
-
-function executeAutoBuy(){
+function autoFire(arrowCount){
   if(AUTO.pendingBuy) return;
+  AUTO.blueCount=0; AUTO.redCount=0;
+  executeAutoBuy(arrowCount);
+}
+
+function executeAutoBuy(arrowCount){
+  if(AUTO.pendingBuy||!AUTO.enabled) return;
   AUTO.pendingBuy=true;
   const stake=AUTO.ladder[Math.min(AUTO.level, AUTO.ladder.length-1)];
   const rid=sendWS({
-    proposal:1,
-    amount:String(stake),
-    basis:'stake',
-    contract_type:AUTO.contract,
-    currency:STATE.account.currency||'USD',
+    proposal:1, amount:String(stake.toFixed(2)), basis:'stake',
+    contract_type:AUTO.contract, currency:STATE.account.currency||'USD',
     duration:1, duration_unit:'t',
-    symbol:STATE.currentSymbol,
-    barrier:String(AUTO.barrier)
+    symbol:STATE.currentSymbol, barrier:String(AUTO.barrier)
   });
   if(rid!=null) REQ_ENGINE[rid]='auto';
-  toast('Auto BUY L'+(AUTO.level+1)+' · $'+stake,'info',1500);
-  setTimeout(()=>{ AUTO.pendingBuy=false; },3000);
+  const label=AUTO.contract==='DIGITOVER'?'▲ OVER '+AUTO.barrier:'▼ UNDER '+AUTO.barrier;
+  toast('Auto '+label+' ('+arrowCount+' arrows) · $'+stake.toFixed(2),'info',2000);
+  notifySignal(arrowCount+' arrows → '+label,'Auto-Trade Digit');
+  setTimeout(()=>{ AUTO.pendingBuy=false; },4000);
 }
 
 function onAutoSettlement(profit){
   if(!AUTO.enabled) return;
   AUTO.cooldown=true;
-  setTimeout(()=>{ AUTO.cooldown=false; }, 2000);
+  AUTO.totalProfit+=profit;
+  setTimeout(()=>{ AUTO.cooldown=false; },1500);
   if(profit>0){
-    toast('✓ Auto WIN +$'+profit.toFixed(2),'success');
-    AUTO.level=0; AUTO.arrowCount=0; AUTO.ladder=buildLadder();
-    AUTO.pendingBuy=false; AUTO.scanning=true;
-    selectAutoContract();
-    updateAutoUI();
-    setTimeout(requestAutoProposal, 500);
+    AUTO.wins++; AUTO.level=0; AUTO.ladder=buildLadder();
+    AUTO.pendingBuy=false;
+    notifyWin(profit,'Auto-Trade Digit');
+    toast('✓ Auto WIN +$'+profit.toFixed(2)+' · level reset','success');
   } else {
-    AUTO.level++;
-    if(AUTO.level>=AUTO.ladder.length){
-      toast('Auto: max ladder reached','error');
-      stopAutoTrade(); return;
-    }
-    toast('✗ Auto LOSS — recovery L'+(AUTO.level+1),'error',2000);
-    recoverySwitch();
+    AUTO.losses++; AUTO.level++;
+    if(AUTO.level>=AUTO.ladder.length){ toast('Auto: max recovery reached — stopping','error'); stopAutoTrade(); return; }
+    notifyLoss(Math.abs(profit),'Auto-Trade Digit');
+    toast('✗ Auto LOSS · martingale L'+(AUTO.level+1)+' ($'+AUTO.ladder[AUTO.level].toFixed(2)+')','error',2500);
+    AUTO.pendingBuy=false;
   }
   updateAutoUI();
 }
 
-function recoverySwitch(){
-  if(AUTO.contract==='DIGITOVER'){
-    AUTO.contract='DIGITUNDER'; AUTO.barrier='7'; AUTO.requiredDir=-1;
-  } else {
-    AUTO.contract='DIGITOVER'; AUTO.barrier='2'; AUTO.requiredDir=1;
-  }
-  AUTO.arrowCount=0;
-  requestAutoProposal();
-  updateAutoUI();
-}
+function recoverySwitch(){}
 
 function updateAutoUI(){
   const on=AUTO.enabled;
   const btn=$('autoBtn');
   if(btn){ btn.textContent=on?'⏹ STOP AUTO-TRADE':'▶ SCAN & AUTO-TRADE'; btn.className='btn btn-full '+(on?'btn-red':'btn-primary'); }
   const st=$('autoStatus');
-  if(st) st.textContent=on?(AUTO.cooldown?'⏳ Cooldown…':AUTO.scanning?'🔍 Scanning '+AUTO.contract+' '+AUTO.barrier:'⏸ Idle'):'Stopped';
-  const an=$('autoArrowsNow'); if(an) an.textContent=AUTO.arrowCount+'/'+AUTO.arrowsNeeded;
+  let statusTxt='Stopped';
+  if(on){
+    if(AUTO.cooldown) statusTxt='⏳ Cooldown…';
+    else {
+      const bc=AUTO.blueCount, rc=AUTO.redCount;
+      const arrowTxt = bc>0?'🔵'.repeat(Math.min(bc,3))+' '+bc+' blue': rc>0?'🔴'.repeat(Math.min(rc,3))+' '+rc+' red':'⌛ Watching…';
+      statusTxt='🔍 '+arrowTxt+' · '+AUTO.contract+' '+AUTO.barrier;
+    }
+  }
+  if(st) st.textContent=statusTxt;
+  const an=$('autoArrowsNow');
+  if(an) an.textContent='🔵'+AUTO.blueCount+' 🔴'+AUTO.redCount;
   const al=$('autoLevel'); if(al) al.textContent=AUTO.level+1;
   const as=$('autoStake'); if(as) as.textContent='$'+AUTO.ladder[Math.min(AUTO.level,AUTO.ladder.length-1)].toFixed(2);
   const alv=$('autoLadderView');
@@ -3743,8 +3821,9 @@ function parseBotFile(){
   if(parsed.stake) detected.push('Stake: $'+parsed.stake);
   $('botSourceNote').textContent=detected.length?'✓ Detected — '+detected.join(' · '):'⚠ Could not auto-detect all params — review before running.';
   BOT.parsed=parsed;
-  $('botRunBtn').disabled=false;
-  toast('Bot parsed — review parameters','success');
+  // botRunBtn is never disabled — always clickable once fields are shown
+  toast('✅ Bot parsed — review & tap RUN BOT','success',3000);
+  showInAppAlert('Bot loaded: '+($('botContractType').value||'')+'  '+($('botBarrier').value||'')+'  · tap RUN BOT','signal',4000);
 }
 
 function runImportedBot(){
@@ -3867,22 +3946,34 @@ function disconnectDeriv(){
 ═══════════════════════════════════════════════════════ */
 function runPreloader(){
   const bar=$('plBar'), text=$('plText'), pl=$('preloader');
+  if(!bar||!text||!pl) return;
   let p=0;
-  const msgs=['Connecting to Deriv…','Loading markets…','Initialising indicators…','Ready'];
+  const steps=[
+    {pct:15, msg:'Loading modules…'},
+    {pct:30, msg:'Connecting to Deriv API…'},
+    {pct:55, msg:'Initialising charts…'},
+    {pct:75, msg:'Loading indicators…'},
+    {pct:90, msg:'Preparing engines…'},
+    {pct:100,msg:'Ready! ✓'}
+  ];
+  let si=0;
   const iv=setInterval(()=>{
-    p+=Math.random()*20+8;
-    if(p>100) p=100;
+    const step=steps[si]||steps[steps.length-1];
+    const target=step.pct;
+    p+=Math.min(target-p, Math.random()*8+4);
+    if(p>target) p=target;
     bar.style.width=p+'%';
-    text.textContent=msgs[Math.floor(p/33)]||'Ready';
-    if(p>=100){
+    text.textContent=step.msg;
+    if(p>=target){ si++; }
+    if(si>=steps.length){
       clearInterval(iv);
       setTimeout(()=>{
         pl.style.opacity='0';
-        pl.style.transition='opacity .4s';
-        setTimeout(()=>pl.style.display='none', 400);
-      }, 400);
+        pl.style.transition='opacity .5s ease';
+        setTimeout(()=>{ pl.style.display='none'; pl.style.opacity=''; }, 520);
+      }, 500);
     }
-  }, 120);
+  }, 90);
 }
 
 /* ═══════════════════════════════════════════════════════

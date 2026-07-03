@@ -1,32 +1,22 @@
-const CACHE_NAME = 't7s-v3-' + Date.now();
-const urlsToCache = ['./', './index.html', './manifest.webmanifest'];
-
-self.addEventListener('install', e => {
-  self.skipWaiting();
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache).catch(()=>{}))
-  );
+const CACHE_NAME = 'trade7smart-v1';
+self.addEventListener('install', e => { self.skipWaiting(); });
+self.addEventListener('activate', e => { e.waitUntil(self.clients.claim()); });
+self.addEventListener('fetch', e => {});
+self.addEventListener('push', e => {
+  const data = e.data ? e.data.json() : { title:'Trade7Smart', body:'Notification' };
+  e.waitUntil(self.registration.showNotification(data.title, {
+    body: data.body,
+    icon: '/favicon.ico',
+    badge: '/favicon.ico',
+    tag: data.tag || 'trade',
+    renotify: true,
+    vibrate: [200, 100, 200],
+  }));
 });
-
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-    )).then(() => self.clients.claim())
-  );
-});
-
-self.addEventListener('fetch', e => {
-  if(e.request.method !== 'GET') return;
-  e.respondWith(
-    fetch(e.request)
-      .then(res => {
-        if(res && res.status === 200){
-          const clone = res.clone();
-          caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
-        }
-        return res;
-      })
-      .catch(() => caches.match(e.request).then(c => c || caches.match('./index.html')))
-  );
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(clients.matchAll({ type:'window', includeUncontrolled:true }).then(cs => {
+    if(cs.length > 0) return cs[0].focus();
+    return clients.openWindow('/');
+  }));
 });

@@ -4,6 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
 <meta name="theme-color" content="#0a0e1a"/>
+<link rel="manifest" href="./manifest.json"/>
+<link rel="icon" href="./icon-192.png"/>
+<link rel="apple-touch-icon" href="./icon-192.png"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <title>Trade7Smart</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
@@ -1452,7 +1457,7 @@ td.loss{color:var(--red);font-weight:700}
         <div class="notif-icon">🔔</div>
         <div class="notif-info">
           <div class="notif-title" id="notifTitle">Push Notifications</div>
-          <div class="notif-sub" id="notifSub">Enable to get win/loss/signal alerts even when screen is off</div>
+          <div class="notif-sub" id="notifSub">Enable to get win/loss/signal alerts on this device (works while the app is open or running in the background — keep the browser/app running, not fully closed)</div>
         </div>
         <button class="btn btn-sm btn-primary" id="notifBtn" onclick="requestNotifPermission()">Enable</button>
       </div>
@@ -2780,9 +2785,29 @@ function playSignalSound(){
   playBeep(880, 0.08); setTimeout(()=>playBeep(880, 0.08),150);
 }
 
+let SW_REG = null;
+
 function sendNotif(title, body, tag='trade'){
-  if(NOTIF.enabled && 'Notification' in window && Notification.permission === 'granted'){
-    try{ new Notification(title, { body, tag, renotify:true, icon:'/favicon.ico', badge:'/favicon.ico' }); }catch(e){}
+  if(!NOTIF.enabled || !('Notification' in window) || Notification.permission !== 'granted') return;
+  const opts = {
+    body, tag, renotify:true,
+    icon:'./icon-192.png', badge:'./icon-96.png',
+    vibrate:[120,60,120], requireInteraction:false
+  };
+  // Mobile browsers (Android Chrome etc.) generally REQUIRE a service worker
+  // to actually surface a system notification — the plain `new Notification()`
+  // constructor is desktop-only on many mobile browsers. Try the SW route first,
+  // and fall back to the direct constructor for desktop browsers that support it.
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.ready.then(reg=>{
+      reg.showNotification(title, opts).catch(()=>{
+        try{ new Notification(title, opts); }catch(e){}
+      });
+    }).catch(()=>{
+      try{ new Notification(title, opts); }catch(e){}
+    });
+  } else {
+    try{ new Notification(title, opts); }catch(e){}
   }
 }
 
@@ -2820,19 +2845,29 @@ function notifySignal(dir, engine){
 }
 
 async function requestNotifPermission(){
-  if(!('Notification' in window)){ toast('Notifications not supported on this browser','error'); return; }
+  if(!('Notification' in window)){
+    toast('Notifications not supported on this browser','error');
+    return;
+  }
+  // Make sure the service worker is registered BEFORE we ask for permission —
+  // on Android/Chrome the SW must exist for showNotification() to work later.
+  if('serviceWorker' in navigator && !SW_REG){
+    try{ SW_REG = await navigator.serviceWorker.register('./sw.js'); }catch(e){}
+  }
   const perm = await Notification.requestPermission();
   NOTIF.enabled = perm === 'granted';
   const btn=$('notifBtn'), title=$('notifTitle'), sub=$('notifSub');
   if(perm === 'granted'){
     if(btn){ btn.textContent='✓ Enabled'; btn.className='btn btn-sm btn-ghost'; }
     if(title) title.textContent='✅ Notifications Active';
-    if(sub) sub.textContent='You will get alerts for wins, losses, and signals';
+    if(sub) sub.textContent='You will get alerts for wins, losses, and signals while this page/app is open (foreground or backgrounded, not fully closed)';
     toast('Notifications enabled — you will be alerted on win/loss/signal','success',3000);
+    // fire a confirmation notification so the user immediately sees one land
+    sendNotif('🔔 Notifications enabled', 'Trade7Smart will alert you on wins, losses, and signals.', 'setup');
   } else {
     if(btn){ btn.textContent='Blocked'; btn.className='btn btn-sm btn-ghost'; }
     if(title) title.textContent='⚠ Permission Denied';
-    if(sub) sub.textContent='Allow notifications in your browser settings';
+    if(sub) sub.textContent='Allow notifications in your browser settings, then tap Enable again';
     toast('Notification permission denied — check browser settings','error');
   }
 }
@@ -2844,15 +2879,17 @@ function testNotif(type){
 
 function initNotifications(){
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('/sw.js').then(reg=>{
-      console.log('SW registered');
-    }).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js').then(reg=>{
+      SW_REG = reg;
+      console.log('SW registered', reg.scope);
+    }).catch(e=>{ console.log('SW registration failed', e); });
   }
   if('Notification' in window && Notification.permission === 'granted'){
     NOTIF.enabled = true;
-    const btn=$('notifBtn'), title=$('notifTitle');
+    const btn=$('notifBtn'), title=$('notifTitle'), sub=$('notifSub');
     if(btn){ btn.textContent='✓ Enabled'; btn.className='btn btn-sm btn-ghost'; }
     if(title) title.textContent='✅ Notifications Active';
+    if(sub) sub.textContent='You will get alerts for wins, losses, and signals while this page/app is open (foreground or backgrounded, not fully closed)';
   }
 }
 
@@ -3336,7 +3373,8 @@ const EXEC1 = {
   enabled:false, market:'R_100', stake:1, maxDailyLoss:20,
   pendingBuy:false, tradeOpen:false, lastFiredMinute:null,
   trades:0, wins:0, losses:0, totalProfit:0,
-  status:'Idle', subscribed:null
+  status:'Idle', subscribed:null,
+  lastEpoch:null, lastEpochAt:null, timer:null
 };
 
 function exec1Log(msg,cls){
@@ -3366,7 +3404,13 @@ function toggleExec1(){
     EXEC1.maxDailyLoss=parseFloat($('exec1MaxLoss').value)||20;
     EXEC1.enabled=true; EXEC1.pendingBuy=false; EXEC1.tradeOpen=false;
     EXEC1.lastFiredMinute=null; EXEC1.trades=0; EXEC1.wins=0; EXEC1.losses=0; EXEC1.totalProfit=0;
+    EXEC1.lastEpoch=null; EXEC1.lastEpochAt=null;
     if(EXEC1.subscribed!==EXEC1.market){ sendWS({ticks:EXEC1.market,subscribe:1}); EXEC1.subscribed=EXEC1.market; }
+    if(EXEC1.timer) clearInterval(EXEC1.timer);
+    // Fires independently of tick cadence (ticks don't land every second and can
+    // skip straight over :59) — this timer re-checks the estimated server time
+    // every 200ms so the trigger can never be skipped.
+    EXEC1.timer=setInterval(exec1CheckFire,200);
     const btn=$('exec1Btn');
     if(btn){ btn.textContent='⏹ STOP EXECUTION OVER 1'; btn.className='btn btn-red btn-full'; }
     exec1SetStatus('Waiting For 59s Mark');
@@ -3375,6 +3419,7 @@ function toggleExec1(){
     toast('Execution Over 1 started','success');
   } else {
     EXEC1.enabled=false; EXEC1.pendingBuy=false;
+    if(EXEC1.timer){ clearInterval(EXEC1.timer); EXEC1.timer=null; }
     const btn=$('exec1Btn');
     if(btn){ btn.textContent='▶ START EXECUTION OVER 1'; btn.className='btn btn-primary btn-full'; }
     exec1SetStatus('Stopped');
@@ -3383,17 +3428,28 @@ function toggleExec1(){
   }
 }
 
-// Called from onMessage on every incoming tick — uses Deriv server epoch,
-// not the local clock, so the 59s trigger cannot drift.
+// Called from onMessage on every incoming tick — records the latest known
+// Deriv server epoch (not the local clock) so exec1CheckFire() can estimate
+// current server time continuously, even between ticks.
 function exec1OnTick(tick){
   if(!EXEC1.enabled) return;
   if(tick.symbol!==EXEC1.market) return;
-  const epoch=Math.floor(tick.epoch);
-  const secs=epoch%60;
-  const minuteId=Math.floor(epoch/60);
+  EXEC1.lastEpoch=Math.floor(tick.epoch);
+  EXEC1.lastEpochAt=Date.now();
+  exec1CheckFire();
+}
+
+// Runs on a 200ms timer (and on every tick) so the :59 trigger is never
+// skipped, even if ticks happen to jump from e.g. :57 straight to :01 of
+// the next minute without ever landing exactly on :59.
+function exec1CheckFire(){
+  if(!EXEC1.enabled || EXEC1.lastEpoch==null) return;
+  const estEpoch=EXEC1.lastEpoch + (Date.now()-EXEC1.lastEpochAt)/1000;
+  const secs=estEpoch%60;
+  const minuteId=Math.floor(estEpoch/60);
   const secsLeft=60-secs;
   if(!EXEC1.pendingBuy&&!EXEC1.tradeOpen){
-    exec1SetStatus(secsLeft<=5?('Firing in '+secsLeft+'s'):('Waiting · next candle in '+secsLeft+'s'));
+    exec1SetStatus(secsLeft<=5?('Firing in '+Math.ceil(secsLeft)+'s'):('Waiting · next candle in '+Math.ceil(secsLeft)+'s'));
   }
   if(secs>=59&&EXEC1.lastFiredMinute!==minuteId){
     EXEC1.lastFiredMinute=minuteId;
@@ -3445,6 +3501,7 @@ function exec1OnSettlement(c){
   EXEC1.totalProfit+=profit;
   if(profit>0) EXEC1.wins++; else EXEC1.losses++;
   logSettledTrade(c);
+  if(profit>0) notifyWin(profit,'Execution Over 1'); else notifyLoss(Math.abs(profit),'Execution Over 1');
   exec1Log((profit>0?'✓ Trade Won +':'✕ Trade Lost ')+'$'+Math.abs(profit).toFixed(2)+' · total '+fmtUSD(EXEC1.totalProfit),profit>0?'text-green':'text-red');
   exec1UpdateStats();
   exec1SetStatus(EXEC1.enabled?'Waiting For Next Candle':'Stopped');
@@ -3600,6 +3657,7 @@ function xmlOnSettlement(c){
   const profit=parseFloat(c.profit)||0;
   XMLRT.totalProfit+=profit;
   logSettledTrade(c);
+  if(profit>0) notifyWin(profit,'XML: '+(XML_BOT_LIBRARY.find(b=>b.id===XMLRT.activeId)||{}).name); else notifyLoss(Math.abs(profit),'XML: '+(XML_BOT_LIBRARY.find(b=>b.id===XMLRT.activeId)||{}).name);
   xmlLog((profit>0?'✓ WIN +':'✕ LOSS ')+'$'+Math.abs(profit).toFixed(2)+' · total '+fmtUSD(XMLRT.totalProfit),profit>0?'text-green':'text-red');
   xmlUpdateStats();
   if(XMLRT.config.martingale>1){
@@ -4307,26 +4365,76 @@ function parseBotXML(xmlText){
   const result={symbol:null,contractType:null,barrier:null,stake:null,duration:null,durationUnit:'t',martingale:1,maxLoss:null,loop:false};
   let doc=null;
   try{const p=new DOMParser();const d=p.parseFromString(xmlText,'text/xml');if(!d.querySelector('parsererror')) doc=d;}catch(e){}
-  const fv=(...names)=>{if(!doc) return null;for(const n of names){const el=doc.querySelector('field[name="'+n+'"]');if(el&&el.textContent.trim()) return el.textContent.trim();}return null;};
-  const grab=(re)=>{const m=xmlText.match(re);return m?m[1].trim():null;};
-  if(doc){
-    result.symbol=fv('SYMBOL_LIST','MARKET_LIST','symbol','market')||grab(/<field name="SYMBOL_LIST">([^<]+)<\/field>/i);
-    const rawType=fv('TRADETYPE_LIST','CONTRACT_TYPE','tradetype','CONTRACTTYPE_LIST');
-    if(rawType) result.contractType=rawType.toUpperCase().replace(/\s+/g,'');
-    result.barrier=fv('PREDICTION','BARRIER','barrier','DIGIT')||grab(/<field name="PREDICTION">([^<]+)<\/field>/i);
-    const rawAmt=fv('AMOUNT','INITIAL_STAKE','STAKE','stake');
-    if(rawAmt){const v=parseFloat(rawAmt);if(!isNaN(v)&&v>0)result.stake=v;}
-    const rawDur=fv('DURATION','TICKS');
-    if(rawDur){const v=parseInt(rawDur);if(!isNaN(v)&&v>0)result.duration=v;}
-    const rawDU=fv('DURATIONTYPE_LIST','duration_unit');
-    if(rawDU) result.durationUnit=rawDU.toLowerCase().trim().charAt(0)||'t';
-    const rawMart=fv('SIZE','MARTINGALE_SIZE','MULTIPLIER','martingale');
-    if(rawMart){const m=parseFloat(rawMart);if(!isNaN(m)&&m>=1) result.martingale=m;}
-    const rawSL=fv('STOPLOSS','STOP_LOSS','stop_loss','MAX_LOSS');
-    if(rawSL){const v=parseFloat(rawSL);if(!isNaN(v)&&v>0) result.maxLoss=v;}
-    const loopEl=fv('IS_LOOP','LOOP');
-    if(loopEl) result.loop=loopEl.toLowerCase()==='true'||loopEl==='1';
+  if(!doc) return result;
+
+  const fieldText=(name)=>{const el=doc.querySelector('field[name="'+name+'"]');return el?el.textContent.trim():null;};
+  const firstNumberIn=(valueEl)=>{
+    if(!valueEl) return null;
+    const realBlock=valueEl.querySelector(':scope > block field[name="NUM"]');
+    if(realBlock) return parseFloat(realBlock.textContent);
+    const shadowBlock=valueEl.querySelector(':scope > shadow field[name="NUM"]');
+    if(shadowBlock) return parseFloat(shadowBlock.textContent);
+    return null;
+  };
+  // Search every variables_set block for one whose variable NAME matches
+  // a pattern (e.g. "stake", "martingale", "stop loss") and pull the literal
+  // number it's initialized to. This is how real Deriv Bot XML actually
+  // stores these values — NOT as a field literally named STAKE/AMOUNT/etc,
+  // which is why the old parser kept missing them and silently used defaults.
+  const varSets=Array.from(doc.querySelectorAll('block[type="variables_set"]'));
+  const findVarNumber=(nameRe)=>{
+    for(const b of varSets){
+      const varField=b.querySelector(':scope > field[name="VAR"]');
+      if(varField && nameRe.test(varField.textContent)){
+        const valueEl=b.querySelector(':scope > value[name="VALUE"]');
+        const n=firstNumberIn(valueEl);
+        if(n!=null) return n;
+      }
+    }
+    return null;
+  };
+
+  // Symbol / market
+  result.symbol=fieldText('SYMBOL_LIST');
+
+  // Contract type — prefer the actual "purchase" block used at trade time
+  // (this is what really gets bought), fall back to the trade definition.
+  const purchaseField=doc.querySelector('block[type="purchase"] field[name="PURCHASE_LIST"]');
+  if(purchaseField) result.contractType=purchaseField.textContent.trim().toUpperCase();
+  if(!result.contractType){
+    const tt=fieldText('TYPE_LIST')||fieldText('TRADETYPE_LIST');
+    if(tt) result.contractType=tt.toUpperCase();
   }
+
+  // Prediction / barrier (digit bots) — read the literal number feeding it
+  const predNum=firstNumberIn(doc.querySelector('value[name="PREDICTION"]'));
+  if(predNum!=null) result.barrier=predNum;
+  else { const b=fieldText('BARRIER'); if(b) result.barrier=b; }
+
+  // Stake — check variables named like "stake" first, then the raw AMOUNT value
+  let stake=findVarNumber(/initial\s*stake/i);
+  if(stake==null) stake=findVarNumber(/\bstake\b/i);
+  if(stake==null) stake=firstNumberIn(doc.querySelector('value[name="AMOUNT"]'));
+  if(stake!=null && stake>0) result.stake=stake;
+
+  // Duration
+  const durNum=firstNumberIn(doc.querySelector('value[name="DURATION"]'));
+  if(durNum!=null) result.duration=durNum;
+  const du=fieldText('DURATIONTYPE_LIST');
+  if(du) result.durationUnit=du.toLowerCase().trim().charAt(0)||'t';
+
+  // Martingale multiplier / progression step
+  const mart=findVarNumber(/martingale|multiplier/i);
+  if(mart!=null && mart>=1) result.martingale=mart;
+
+  // Stop loss (used as max daily loss)
+  const stop=findVarNumber(/stop\s*loss/i);
+  if(stop!=null) result.maxLoss=Math.abs(stop);
+
+  // Looping — real bots loop via a trade_again block; detect it directly
+  // instead of relying on a field that's almost never present.
+  result.loop=!!doc.querySelector('block[type="trade_again"]');
+
   const synonyms={'RISE':'CALL','FALL':'PUT','OVER':'DIGITOVER','UNDER':'DIGITUNDER','MATCH':'DIGITMATCH','DIFF':'DIGITDIFF','EVEN':'DIGITEVEN','ODD':'DIGITODD'};
   if(result.contractType&&synonyms[result.contractType]) result.contractType=synonyms[result.contractType];
   const symMap={'R100':'R_100','R75':'R_75','R50':'R_50','R25':'R_25','R10':'R_10'};

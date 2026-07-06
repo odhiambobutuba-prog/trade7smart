@@ -4,15 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
 <meta name="theme-color" content="#0a0e1a"/>
-<link rel="manifest" href="./manifest.json"/>
-<link rel="icon" href="./icon-192.png"/>
-<link rel="apple-touch-icon" href="./icon-192.png"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <title>Trade7Smart</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
 <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+<script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
 :root{
   --bg:#050816;
@@ -406,11 +402,25 @@ td.loss{color:var(--red);font-weight:700}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:20px}
 
 /* ── History entry ────────────────────────────────── */
-.hist-entry{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card2);border-radius:12px;margin-bottom:6px;border:1px solid var(--border)}
+.hist-entry{display:flex;align-items:center;gap:10px;padding:12px 14px;background:linear-gradient(135deg,var(--card2),rgba(255,255,255,.02));border-radius:14px;margin-bottom:8px;border:1px solid var(--border);transition:transform .15s,box-shadow .15s}
+.hist-entry:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.hist-icon{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0}
+.hist-icon-win{background:rgba(34,197,94,.15);color:var(--green);box-shadow:0 0 10px rgba(34,197,94,.25)}
+.hist-icon-loss{background:rgba(239,68,68,.15);color:var(--red);box-shadow:0 0 10px rgba(239,68,68,.25)}
+.hist-candle{font-size:10px;color:var(--cyan);margin-top:2px;opacity:.85}
 .hist-type{font-size:11px;font-weight:700;min-width:60px}
 .hist-info{flex:1;min-width:0}
 .hist-sym{font-size:11px;color:var(--text3)}
 .hist-pl{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;text-align:right;flex-shrink:0}
+.exec1-ring-wrap{position:relative;width:132px;height:132px;margin:6px auto 14px}
+.exec1-ring{width:100%;height:100%;transform:rotate(-90deg)}
+.exec1-ring-bg{fill:none;stroke:var(--border2);stroke-width:8}
+.exec1-ring-fg{fill:none;stroke:var(--cyan);stroke-width:8;stroke-linecap:round;stroke-dasharray:326.7256;stroke-dashoffset:326.7256;transition:stroke-dashoffset .3s linear,stroke .3s}
+.exec1-ring-fg.exec1-ring-hot{stroke:var(--amber);filter:drop-shadow(0 0 8px var(--amber))}
+.exec1-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.exec1-ring-secs{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:800;color:var(--cyan);line-height:1}
+.exec1-ring-label{font-size:10px;font-weight:700;letter-spacing:1.2px;color:var(--text3);margin-top:4px;animation:exec1Pulse 1.6s ease-in-out infinite}
+@keyframes exec1Pulse{0%,100%{opacity:.55}50%{opacity:1}}
 
 /* ── Settings toggle ──────────────────────────────── */
 .toggle-wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
@@ -1004,6 +1014,11 @@ td.loss{color:var(--red);font-weight:700}
         <div class="form-group">
           <label class="input-label">Market</label>
           <select id="recoverMarket">
+            <option value="1HZ100V">Volatility 100 (1s)</option>
+            <option value="1HZ75V">Volatility 75 (1s)</option>
+            <option value="1HZ50V">Volatility 50 (1s)</option>
+            <option value="1HZ25V">Volatility 25 (1s)</option>
+            <option value="1HZ10V">Volatility 10 (1s)</option>
             <option value="R_100">Volatility 100</option>
             <option value="R_75">Volatility 75</option>
             <option value="R_50">Volatility 50</option>
@@ -1052,6 +1067,11 @@ td.loss{color:var(--red);font-weight:700}
       <div class="form-group">
         <label class="input-label">Market (choose volatility)</label>
         <select id="shiftMarket">
+          <option value="1HZ100V">Volatility 100 (1s)</option>
+          <option value="1HZ75V">Volatility 75 (1s)</option>
+          <option value="1HZ50V">Volatility 50 (1s)</option>
+          <option value="1HZ25V">Volatility 25 (1s)</option>
+          <option value="1HZ10V">Volatility 10 (1s)</option>
           <option value="R_100">Volatility 100</option>
           <option value="R_75">Volatility 75</option>
           <option value="R_50">Volatility 50</option>
@@ -1223,9 +1243,12 @@ td.loss{color:var(--red);font-weight:700}
           <div class="form-group">
             <label class="input-label">Symbol</label>
             <select id="botSymbol">
+              <option value="1HZ100V">Volatility 100 (1s)</option><option value="1HZ75V">Volatility 75 (1s)</option>
+              <option value="1HZ50V">Volatility 50 (1s)</option><option value="1HZ25V">Volatility 25 (1s)</option>
+              <option value="1HZ10V">Volatility 10 (1s)</option>
               <option value="R_100">R_100</option><option value="R_75">R_75</option>
               <option value="R_50">R_50</option><option value="R_25">R_25</option>
-              <option value="R_10">R_10</option><option value="1HZ100V">1HZ100V</option>
+              <option value="R_10">R_10</option>
             </select>
           </div>
           <div class="form-group">
@@ -1281,17 +1304,50 @@ td.loss{color:var(--red);font-weight:700}
       <div class="log-box" id="botLog" style="margin-top:8px"><div class="text-dim t-11">Bot log will appear here…</div></div>
     </div>
 
-    <!-- Execution Over 1 -->
+    <!-- Execution Over 1 / Even-Odd — 58s Precision Engine -->
     <div class="card">
       <div class="card-header">
-        <div class="card-title">Execution Over 1</div>
+        <div class="card-title" id="exec1Title">Execution Over 1</div>
         <span class="mono fw-6 t-12" id="exec1Status">Idle</span>
       </div>
-      <div class="t-12" style="margin-bottom:10px;color:var(--text3)">Buys DIGITOVER 1 (1 tick) precisely at the :59s mark of every 1-minute candle — timed off live Deriv server ticks, not the local clock.</div>
+      <div class="t-12" style="margin-bottom:10px;color:var(--text3)" id="exec1Desc">Buys DIGITOVER 1 (1 tick) precisely at the :58s mark of every 1-minute candle — timed off live Deriv server ticks, not the local clock.</div>
+
+      <div class="exec1-ring-wrap">
+        <svg class="exec1-ring" viewBox="0 0 120 120">
+          <circle class="exec1-ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="exec1-ring-fg" id="exec1RingFg" cx="60" cy="60" r="52"/>
+        </svg>
+        <div class="exec1-ring-center">
+          <div class="exec1-ring-secs" id="exec1RingSecs">--</div>
+          <div class="exec1-ring-label" id="exec1RingLabel">IDLE</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="input-label">Contract Mode</label>
+          <select id="exec1Mode" onchange="exec1ModeChange()">
+            <option value="over1">Execution Over 1</option>
+            <option value="evenodd">Even / Odd</option>
+          </select>
+        </div>
+        <div class="form-group" id="exec1EvenOddWrap" style="display:none">
+          <label class="input-label">Even or Odd</label>
+          <select id="exec1EvenOdd">
+            <option value="DIGITEVEN"># Even</option>
+            <option value="DIGITODD">Ω Odd</option>
+          </select>
+        </div>
+      </div>
       <div class="form-row">
         <div class="form-group">
           <label class="input-label">Market</label>
           <select id="exec1Market">
+            <option value="1HZ100V">Volatility 100 (1s)</option>
+            <option value="1HZ75V">Volatility 75 (1s)</option>
+            <option value="1HZ50V">Volatility 50 (1s)</option>
+            <option value="1HZ25V">Volatility 25 (1s)</option>
+            <option value="1HZ10V">Volatility 10 (1s)</option>
             <option value="R_100">Volatility 100</option>
             <option value="R_75">Volatility 75</option>
             <option value="R_50">Volatility 50</option>
@@ -1304,15 +1360,22 @@ td.loss{color:var(--red);font-weight:700}
           <input type="number" id="exec1Stake" value="1" min="0.35" step="0.01"/>
         </div>
       </div>
-      <div class="form-group" style="margin-bottom:10px">
-        <label class="input-label">Max Daily Loss ($)</label>
-        <input type="number" id="exec1MaxLoss" value="20" min="1"/>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="input-label">Martingale ×</label>
+          <input type="number" id="exec1Martingale" value="1" min="1" max="10" step="0.1"/>
+        </div>
+        <div class="form-group">
+          <label class="input-label">Max Daily Loss ($)</label>
+          <input type="number" id="exec1MaxLoss" value="20" min="1"/>
+        </div>
       </div>
       <div class="card-sm" style="margin-bottom:8px">
         <div class="row-sb"><span class="t-12">Trades</span><span class="mono fw-6" id="exec1Stats">0 trades · 0W/0L · $0.00</span></div>
+        <div class="row-sb" style="margin-top:4px"><span class="t-12">Next Stake</span><span class="mono fw-6 text-cyan" id="exec1NextStake">$1.00</span></div>
       </div>
       <div class="log-box" id="exec1Log"><div class="text-dim">Log will appear here…</div></div>
-      <button class="btn btn-primary btn-full" id="exec1Btn" style="margin-top:8px" onclick="toggleExec1()">▶ START EXECUTION OVER 1</button>
+      <button class="btn btn-primary btn-full" id="exec1Btn" style="margin-top:8px" onclick="toggleExec1()">▶ START ENGINE</button>
     </div>
 
   </div>
@@ -1344,34 +1407,39 @@ td.loss{color:var(--red);font-weight:700}
 
     <div class="row-sb" style="margin-bottom:10px">
       <div class="t-18">History</div>
-      <button class="btn btn-sm btn-ghost" onclick="clearHistory()">Clear All</button>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-sm btn-ghost" onclick="exportHistoryImage()">📸 Export</button>
+        <button class="btn btn-sm btn-ghost" onclick="clearHistory()">Clear All</button>
+      </div>
     </div>
 
     <!-- Running contracts -->
     <div id="activeContractsBanner"></div>
 
-    <!-- Summary -->
-    <div class="stats-grid" style="margin-bottom:10px">
-      <div class="stat-box">
-        <div class="stat-label">Total Trades</div>
-        <div class="stat-val mono" id="histTotal">0</div>
+    <div id="histCapture">
+      <!-- Summary -->
+      <div class="stats-grid" style="margin-bottom:10px">
+        <div class="stat-box">
+          <div class="stat-label">Total Trades</div>
+          <div class="stat-val mono" id="histTotal">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Win Rate</div>
+          <div class="stat-val mono text-green" id="histWinRate">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Total P/L</div>
+          <div class="stat-val mono" id="histPL">$0.00</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Today P/L</div>
+          <div class="stat-val mono" id="histTodayPL">$0.00</div>
+        </div>
       </div>
-      <div class="stat-box">
-        <div class="stat-label">Win Rate</div>
-        <div class="stat-val mono text-green" id="histWinRate">—</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">Total P/L</div>
-        <div class="stat-val mono" id="histPL">$0.00</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">Today P/L</div>
-        <div class="stat-val mono" id="histTodayPL">$0.00</div>
-      </div>
-    </div>
 
-    <div id="histEmpty" class="empty-state">No trades recorded yet</div>
-    <div id="histList"></div>
+      <div id="histEmpty" class="empty-state">No trades recorded yet</div>
+      <div id="histList"></div>
+    </div>
 
   </div>
   </div>
@@ -1410,7 +1478,11 @@ td.loss{color:var(--red);font-weight:700}
           <option value="R_75">Volatility 75</option>
           <option value="R_50">Volatility 50</option>
           <option value="R_25">Volatility 25</option>
+          <option value="R_10">Volatility 10</option>
           <option value="1HZ100V">Volatility 100 (1s)</option>
+          <option value="1HZ75V">Volatility 75 (1s)</option>
+          <option value="1HZ50V">Volatility 50 (1s)</option>
+          <option value="1HZ25V">Volatility 25 (1s)</option>
           <option value="1HZ10V">Volatility 10 (1s)</option>
         </select>
       </div>
@@ -1457,7 +1529,7 @@ td.loss{color:var(--red);font-weight:700}
         <div class="notif-icon">🔔</div>
         <div class="notif-info">
           <div class="notif-title" id="notifTitle">Push Notifications</div>
-          <div class="notif-sub" id="notifSub">Enable to get win/loss/signal alerts on this device (works while the app is open or running in the background — keep the browser/app running, not fully closed)</div>
+          <div class="notif-sub" id="notifSub">Enable to get win/loss/signal alerts even when screen is off</div>
         </div>
         <button class="btn btn-sm btn-primary" id="notifBtn" onclick="requestNotifPermission()">Enable</button>
       </div>
@@ -2785,29 +2857,9 @@ function playSignalSound(){
   playBeep(880, 0.08); setTimeout(()=>playBeep(880, 0.08),150);
 }
 
-let SW_REG = null;
-
 function sendNotif(title, body, tag='trade'){
-  if(!NOTIF.enabled || !('Notification' in window) || Notification.permission !== 'granted') return;
-  const opts = {
-    body, tag, renotify:true,
-    icon:'./icon-192.png', badge:'./icon-96.png',
-    vibrate:[120,60,120], requireInteraction:false
-  };
-  // Mobile browsers (Android Chrome etc.) generally REQUIRE a service worker
-  // to actually surface a system notification — the plain `new Notification()`
-  // constructor is desktop-only on many mobile browsers. Try the SW route first,
-  // and fall back to the direct constructor for desktop browsers that support it.
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.ready.then(reg=>{
-      reg.showNotification(title, opts).catch(()=>{
-        try{ new Notification(title, opts); }catch(e){}
-      });
-    }).catch(()=>{
-      try{ new Notification(title, opts); }catch(e){}
-    });
-  } else {
-    try{ new Notification(title, opts); }catch(e){}
+  if(NOTIF.enabled && 'Notification' in window && Notification.permission === 'granted'){
+    try{ new Notification(title, { body, tag, renotify:true, icon:'/favicon.ico', badge:'/favicon.ico' }); }catch(e){}
   }
 }
 
@@ -2845,29 +2897,19 @@ function notifySignal(dir, engine){
 }
 
 async function requestNotifPermission(){
-  if(!('Notification' in window)){
-    toast('Notifications not supported on this browser','error');
-    return;
-  }
-  // Make sure the service worker is registered BEFORE we ask for permission —
-  // on Android/Chrome the SW must exist for showNotification() to work later.
-  if('serviceWorker' in navigator && !SW_REG){
-    try{ SW_REG = await navigator.serviceWorker.register('./sw.js'); }catch(e){}
-  }
+  if(!('Notification' in window)){ toast('Notifications not supported on this browser','error'); return; }
   const perm = await Notification.requestPermission();
   NOTIF.enabled = perm === 'granted';
   const btn=$('notifBtn'), title=$('notifTitle'), sub=$('notifSub');
   if(perm === 'granted'){
     if(btn){ btn.textContent='✓ Enabled'; btn.className='btn btn-sm btn-ghost'; }
     if(title) title.textContent='✅ Notifications Active';
-    if(sub) sub.textContent='You will get alerts for wins, losses, and signals while this page/app is open (foreground or backgrounded, not fully closed)';
+    if(sub) sub.textContent='You will get alerts for wins, losses, and signals';
     toast('Notifications enabled — you will be alerted on win/loss/signal','success',3000);
-    // fire a confirmation notification so the user immediately sees one land
-    sendNotif('🔔 Notifications enabled', 'Trade7Smart will alert you on wins, losses, and signals.', 'setup');
   } else {
     if(btn){ btn.textContent='Blocked'; btn.className='btn btn-sm btn-ghost'; }
     if(title) title.textContent='⚠ Permission Denied';
-    if(sub) sub.textContent='Allow notifications in your browser settings, then tap Enable again';
+    if(sub) sub.textContent='Allow notifications in your browser settings';
     toast('Notification permission denied — check browser settings','error');
   }
 }
@@ -2879,17 +2921,15 @@ function testNotif(type){
 
 function initNotifications(){
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('./sw.js').then(reg=>{
-      SW_REG = reg;
-      console.log('SW registered', reg.scope);
-    }).catch(e=>{ console.log('SW registration failed', e); });
+    navigator.serviceWorker.register('/sw.js').then(reg=>{
+      console.log('SW registered');
+    }).catch(()=>{});
   }
   if('Notification' in window && Notification.permission === 'granted'){
     NOTIF.enabled = true;
-    const btn=$('notifBtn'), title=$('notifTitle'), sub=$('notifSub');
+    const btn=$('notifBtn'), title=$('notifTitle');
     if(btn){ btn.textContent='✓ Enabled'; btn.className='btn btn-sm btn-ghost'; }
     if(title) title.textContent='✅ Notifications Active';
-    if(sub) sub.textContent='You will get alerts for wins, losses, and signals while this page/app is open (foreground or backgrounded, not fully closed)';
   }
 }
 
@@ -3370,12 +3410,14 @@ function scannerOnTick(tick){
    (server time) instead of the local clock.
 ═══════════════════════════════════════════════════════ */
 const EXEC1 = {
-  enabled:false, market:'R_100', stake:1, maxDailyLoss:20,
+  enabled:false, mode:'over1', evenOdd:'DIGITEVEN', market:'1HZ100V',
+  baseStake:1, currentStake:1, martingale:1, maxDailyLoss:20,
   pendingBuy:false, tradeOpen:false, lastFiredMinute:null,
   trades:0, wins:0, losses:0, totalProfit:0,
-  status:'Idle', subscribed:null,
-  lastEpoch:null, lastEpochAt:null, timer:null
+  status:'Idle', subscribed:null, lastContractId:null, candleOpenMap:{}
 };
+
+const EXEC1_RING_CIRC = 2*Math.PI*52;
 
 function exec1Log(msg,cls){
   const el=$('exec1Log');if(!el) return;
@@ -3394,64 +3436,99 @@ function exec1SetStatus(s){
 function exec1UpdateStats(){
   const el=$('exec1Stats');
   if(el) el.textContent=EXEC1.trades+' trades · '+EXEC1.wins+'W/'+EXEC1.losses+'L · '+fmtUSD(EXEC1.totalProfit);
+  const ns=$('exec1NextStake');
+  if(ns) ns.textContent='$'+EXEC1.currentStake.toFixed(2);
+}
+
+// AI-style countdown ring — secsLeft null resets to idle state.
+function exec1SetRing(secsLeft){
+  const fg=$('exec1RingFg'), secsEl=$('exec1RingSecs'), labelEl=$('exec1RingLabel');
+  if(!fg) return;
+  if(secsLeft==null){
+    fg.style.strokeDashoffset=String(EXEC1_RING_CIRC);
+    fg.classList.remove('exec1-ring-hot');
+    if(secsEl) secsEl.textContent='--';
+    if(labelEl) labelEl.textContent='IDLE';
+    return;
+  }
+  const pct=Math.max(0,Math.min(1,secsLeft/60));
+  fg.style.strokeDashoffset=String(EXEC1_RING_CIRC*(1-pct));
+  if(secsEl) secsEl.textContent=String(secsLeft);
+  if(secsLeft<=5){
+    fg.classList.add('exec1-ring-hot');
+    if(labelEl) labelEl.textContent=secsLeft<=2?'FIRING':'LOCKING ON';
+  } else {
+    fg.classList.remove('exec1-ring-hot');
+    if(labelEl) labelEl.textContent='SCANNING';
+  }
+}
+
+function exec1ModeChange(){
+  const mode=$('exec1Mode')?$('exec1Mode').value:'over1';
+  const wrap=$('exec1EvenOddWrap');
+  const title=$('exec1Title'), desc=$('exec1Desc');
+  if(wrap) wrap.style.display=mode==='evenodd'?'':'none';
+  if(mode==='evenodd'){
+    if(title) title.textContent='Even / Odd — 58s Precision';
+    if(desc) desc.textContent='Buys DIGITEVEN/DIGITODD (1 tick) precisely at the :58s mark of every 1-minute candle — timed off live Deriv server ticks, not the local clock.';
+  } else {
+    if(title) title.textContent='Execution Over 1';
+    if(desc) desc.textContent='Buys DIGITOVER 1 (1 tick) precisely at the :58s mark of every 1-minute candle — timed off live Deriv server ticks, not the local clock.';
+  }
 }
 
 function toggleExec1(){
   if(!EXEC1.enabled){
     if(!STATE.authorized){toast('Connect Deriv first','error');openConnect();return;}
+    EXEC1.mode=$('exec1Mode').value;
+    EXEC1.evenOdd=$('exec1EvenOdd').value;
     EXEC1.market=$('exec1Market').value;
-    EXEC1.stake=Math.min(parseFloat($('exec1Stake').value)||1,STATE.settings.maxStake||200);
+    EXEC1.baseStake=Math.min(parseFloat($('exec1Stake').value)||1,STATE.settings.maxStake||200);
+    EXEC1.currentStake=EXEC1.baseStake;
+    EXEC1.martingale=Math.max(1,parseFloat($('exec1Martingale').value)||1);
     EXEC1.maxDailyLoss=parseFloat($('exec1MaxLoss').value)||20;
     EXEC1.enabled=true; EXEC1.pendingBuy=false; EXEC1.tradeOpen=false;
     EXEC1.lastFiredMinute=null; EXEC1.trades=0; EXEC1.wins=0; EXEC1.losses=0; EXEC1.totalProfit=0;
-    EXEC1.lastEpoch=null; EXEC1.lastEpochAt=null;
+    EXEC1.lastContractId=null; EXEC1.candleOpenMap={};
     if(EXEC1.subscribed!==EXEC1.market){ sendWS({ticks:EXEC1.market,subscribe:1}); EXEC1.subscribed=EXEC1.market; }
-    if(EXEC1.timer) clearInterval(EXEC1.timer);
-    // Fires independently of tick cadence (ticks don't land every second and can
-    // skip straight over :59) — this timer re-checks the estimated server time
-    // every 200ms so the trigger can never be skipped.
-    EXEC1.timer=setInterval(exec1CheckFire,200);
     const btn=$('exec1Btn');
-    if(btn){ btn.textContent='⏹ STOP EXECUTION OVER 1'; btn.className='btn btn-red btn-full'; }
-    exec1SetStatus('Waiting For 59s Mark');
+    if(btn){ btn.textContent='⏹ STOP ENGINE'; btn.className='btn btn-red btn-full'; }
+    exec1SetStatus('Waiting For 58s Mark');
     exec1UpdateStats();
-    exec1Log('Started on '+EXEC1.market+' · stake $'+EXEC1.stake+' · fires at :59 of every candle','text-cyan');
-    toast('Execution Over 1 started','success');
+    const label=EXEC1.mode==='evenodd'?(EXEC1.evenOdd==='DIGITEVEN'?'Even':'Odd'):'Over 1';
+    exec1Log('Started '+label+' on '+EXEC1.market+' · stake $'+EXEC1.baseStake+' · mart ×'+EXEC1.martingale+' · fires at :58 of every candle','text-cyan');
+    toast('Precision engine started','success');
   } else {
     EXEC1.enabled=false; EXEC1.pendingBuy=false;
-    if(EXEC1.timer){ clearInterval(EXEC1.timer); EXEC1.timer=null; }
     const btn=$('exec1Btn');
-    if(btn){ btn.textContent='▶ START EXECUTION OVER 1'; btn.className='btn btn-primary btn-full'; }
+    if(btn){ btn.textContent='▶ START ENGINE'; btn.className='btn btn-primary btn-full'; }
     exec1SetStatus('Stopped');
+    exec1SetRing(null);
     exec1Log('Stopped by user','text-amber');
-    toast('Execution Over 1 stopped','info');
+    toast('Engine stopped','info');
   }
 }
 
-// Called from onMessage on every incoming tick — records the latest known
-// Deriv server epoch (not the local clock) so exec1CheckFire() can estimate
-// current server time continuously, even between ticks.
+// Called from onMessage on every incoming tick — uses Deriv server epoch,
+// not the local clock, so the 58s trigger cannot drift. Firing at :58 (not
+// :59) leaves headroom for the proposal+buy round-trip so the contract is
+// actually live before the new 1-minute candle opens at :00.
 function exec1OnTick(tick){
   if(!EXEC1.enabled) return;
   if(tick.symbol!==EXEC1.market) return;
-  EXEC1.lastEpoch=Math.floor(tick.epoch);
-  EXEC1.lastEpochAt=Date.now();
-  exec1CheckFire();
-}
-
-// Runs on a 200ms timer (and on every tick) so the :59 trigger is never
-// skipped, even if ticks happen to jump from e.g. :57 straight to :01 of
-// the next minute without ever landing exactly on :59.
-function exec1CheckFire(){
-  if(!EXEC1.enabled || EXEC1.lastEpoch==null) return;
-  const estEpoch=EXEC1.lastEpoch + (Date.now()-EXEC1.lastEpochAt)/1000;
-  const secs=estEpoch%60;
-  const minuteId=Math.floor(estEpoch/60);
+  const epoch=Math.floor(tick.epoch);
+  const secs=epoch%60;
+  const minuteId=Math.floor(epoch/60);
   const secsLeft=60-secs;
   if(!EXEC1.pendingBuy&&!EXEC1.tradeOpen){
-    exec1SetStatus(secsLeft<=5?('Firing in '+Math.ceil(secsLeft)+'s'):('Waiting · next candle in '+Math.ceil(secsLeft)+'s'));
+    exec1SetStatus(secsLeft<=6?('Firing in '+secsLeft+'s'):('Waiting · next candle in '+secsLeft+'s'));
+    exec1SetRing(secsLeft);
   }
-  if(secs>=59&&EXEC1.lastFiredMinute!==minuteId){
+  // Track the opening price of the new candle for whichever contract is live.
+  if(secs===0&&EXEC1.tradeOpen&&EXEC1.lastContractId!=null&&EXEC1.candleOpenMap[EXEC1.lastContractId]==null){
+    EXEC1.candleOpenMap[EXEC1.lastContractId]=tick.quote;
+  }
+  if(secs>=58&&EXEC1.lastFiredMinute!==minuteId){
     EXEC1.lastFiredMinute=minuteId;
     if(EXEC1.pendingBuy||EXEC1.tradeOpen){
       exec1Log('Skipped this candle — previous trade still open (safety)','text-amber');
@@ -3473,10 +3550,13 @@ function exec1Execute(){
   }
   EXEC1.pendingBuy=true;
   exec1SetStatus('Executing Trade…');
-  const params={proposal:1,amount:String(EXEC1.stake),basis:'stake',contract_type:'DIGITOVER',currency:STATE.account.currency||'USD',duration:1,duration_unit:'t',symbol:EXEC1.market,barrier:'1'};
+  exec1SetRing(0);
+  const contractType=EXEC1.mode==='evenodd'?EXEC1.evenOdd:'DIGITOVER';
+  const params={proposal:1,amount:String(EXEC1.currentStake),basis:'stake',contract_type:contractType,currency:STATE.account.currency||'USD',duration:1,duration_unit:'t',symbol:EXEC1.market};
+  if(contractType==='DIGITOVER') params.barrier='1';
   const rid=sendWS(params);
   if(rid!=null) REQ_ENGINE[rid]='exec1';
-  exec1Log('Firing at :59 — requesting DIGITOVER 1 proposal on '+EXEC1.market,'text-cyan');
+  exec1Log('Firing at :58 — requesting '+contractType+(contractType==='DIGITOVER'?' 1':'')+' proposal on '+EXEC1.market,'text-cyan');
 }
 
 function exec1OnProposal(p){
@@ -3487,6 +3567,7 @@ function exec1OnProposal(p){
 
 function exec1OnBuy(buy){
   EXEC1.pendingBuy=false; EXEC1.tradeOpen=true; EXEC1.trades++;
+  EXEC1.lastContractId=buy.contract_id;
   exec1SetStatus('Trade Running');
   exec1Log('✓ Bought #'+buy.contract_id+' @ $'+buy.buy_price,'text-green');
   exec1UpdateStats();
@@ -3499,10 +3580,12 @@ function exec1OnSettlement(c){
   EXEC1.tradeOpen=false;
   const profit=parseFloat(c.profit)||0;
   EXEC1.totalProfit+=profit;
-  if(profit>0) EXEC1.wins++; else EXEC1.losses++;
-  logSettledTrade(c);
-  if(profit>0) notifyWin(profit,'Execution Over 1'); else notifyLoss(Math.abs(profit),'Execution Over 1');
-  exec1Log((profit>0?'✓ Trade Won +':'✕ Trade Lost ')+'$'+Math.abs(profit).toFixed(2)+' · total '+fmtUSD(EXEC1.totalProfit),profit>0?'text-green':'text-red');
+  if(profit>0){ EXEC1.wins++; EXEC1.currentStake=EXEC1.baseStake; }
+  else { EXEC1.losses++; EXEC1.currentStake=Math.min(+(EXEC1.currentStake*EXEC1.martingale).toFixed(2),STATE.settings.maxStake||200); }
+  const candleOpen=EXEC1.candleOpenMap[c.contract_id];
+  delete EXEC1.candleOpenMap[c.contract_id];
+  logSettledTrade(c, candleOpen!=null?{candleOpen}:null);
+  exec1Log((profit>0?'✓ Trade Won +':'✕ Trade Lost ')+'$'+Math.abs(profit).toFixed(2)+(candleOpen!=null?' · candle opened @ '+candleOpen:'')+' · total '+fmtUSD(EXEC1.totalProfit),profit>0?'text-green':'text-red');
   exec1UpdateStats();
   exec1SetStatus(EXEC1.enabled?'Waiting For Next Candle':'Stopped');
   if(EXEC1.totalProfit<=-Math.abs(EXEC1.maxDailyLoss)&&EXEC1.enabled){
@@ -3593,7 +3676,7 @@ function xmlRunBot(id){
   if(!entry) return;
   let parsed;
   try{parsed=parseBotXML(entry.xml);}catch(e){toast('Could not parse this bot\'s XML','error');return;}
-  const knownC=['DIGITOVER','DIGITUNDER','DIGITMATCH','DIGITDIFF','DIGITEVEN','DIGITODD','CALL','PUT'];
+  const knownC=['DIGITOVER','DIGITUNDER','DIGITMATCH','DIGITDIFF','DIGITEVEN','DIGITODD','CALL','PUT','CALLE','PUTE'];
   const knownS=['R_100','R_75','R_50','R_25','R_10','1HZ100V','1HZ75V','1HZ50V','1HZ25V','1HZ10V'];
   const cfg={
     symbol: knownS.includes(parsed.symbol)?parsed.symbol:'R_100',
@@ -3657,7 +3740,6 @@ function xmlOnSettlement(c){
   const profit=parseFloat(c.profit)||0;
   XMLRT.totalProfit+=profit;
   logSettledTrade(c);
-  if(profit>0) notifyWin(profit,'XML: '+(XML_BOT_LIBRARY.find(b=>b.id===XMLRT.activeId)||{}).name); else notifyLoss(Math.abs(profit),'XML: '+(XML_BOT_LIBRARY.find(b=>b.id===XMLRT.activeId)||{}).name);
   xmlLog((profit>0?'✓ WIN +':'✕ LOSS ')+'$'+Math.abs(profit).toFixed(2)+' · total '+fmtUSD(XMLRT.totalProfit),profit>0?'text-green':'text-red');
   xmlUpdateStats();
   if(XMLRT.config.martingale>1){
@@ -3849,16 +3931,18 @@ function renderHomeTicks(){
 /* ═══════════════════════════════════════════════════════
    HISTORY
 ═══════════════════════════════════════════════════════ */
-function logSettledTrade(c){
+function logSettledTrade(c, meta){
   const profit = parseFloat(c.profit)||0;
-  STATE.tradeHistory.unshift({
+  const entry={
     id: c.contract_id,
     type: c.contract_type||'—',
     symbol: c.underlying_symbol||STATE.currentSymbol,
     profit,
     stake: parseFloat(c.buy_price)||0,
     ts: Date.now()
-  });
+  };
+  if(meta&&meta.candleOpen!=null) entry.candleOpen=meta.candleOpen;
+  STATE.tradeHistory.unshift(entry);
   if(STATE.tradeHistory.length>500) STATE.tradeHistory.length=500;
   // Remove from active contracts
   delete STATE.activeContracts[c.contract_id];
@@ -3915,12 +3999,11 @@ function renderHistory(){
   if(list) list.innerHTML=STATE.tradeHistory.slice(0,100).map(t=>{
     const win=(t.profit||0)>0;
     return `<div class="hist-entry">
-      <div>
-        <div class="${win?'text-green':'text-red'} fw-7" style="font-size:16px">${win?'✓':'✗'}</div>
-      </div>
+      <div class="hist-icon ${win?'hist-icon-win':'hist-icon-loss'}">${win?'✓':'✗'}</div>
       <div class="hist-info">
         <div class="hist-type ${win?'text-green':'text-red'}">${t.type||'—'}</div>
         <div class="hist-sym">${t.symbol} · ${new Date(t.ts).toLocaleTimeString()}</div>
+        ${t.candleOpen!=null?`<div class="hist-candle">Candle opened @ ${t.candleOpen}</div>`:''}
       </div>
       <div class="hist-pl ${win?'text-green':'text-red'}">${win?'+':''}$${Math.abs(t.profit||0).toFixed(2)}</div>
     </div>`;
@@ -3933,6 +4016,22 @@ function clearHistory(){
   renderHistory();
   renderHome();
   toast('History cleared','info');
+}
+
+function exportHistoryImage(){
+  const el=$('histCapture');
+  if(!el){toast('Nothing to export','error');return;}
+  if(typeof html2canvas==='undefined'){toast('Export library still loading — try again in a moment','error');return;}
+  toast('Generating image…','info');
+  html2canvas(el,{backgroundColor:'#050816',scale:2}).then(function(canvas){
+    const link=document.createElement('a');
+    link.download='trade-history-'+new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')+'.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    toast('History exported as image','success');
+  }).catch(function(e){
+    toast('Export failed: '+(e&&e.message?e.message:'unknown error'),'error');
+  });
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -4367,76 +4466,89 @@ function parseBotXML(xmlText){
   try{const p=new DOMParser();const d=p.parseFromString(xmlText,'text/xml');if(!d.querySelector('parsererror')) doc=d;}catch(e){}
   if(!doc) return result;
 
-  const fieldText=(name)=>{const el=doc.querySelector('field[name="'+name+'"]');return el?el.textContent.trim():null;};
-  const firstNumberIn=(valueEl)=>{
-    if(!valueEl) return null;
-    const realBlock=valueEl.querySelector(':scope > block field[name="NUM"]');
-    if(realBlock) return parseFloat(realBlock.textContent);
-    const shadowBlock=valueEl.querySelector(':scope > shadow field[name="NUM"]');
-    if(shadowBlock) return parseFloat(shadowBlock.textContent);
-    return null;
-  };
-  // Search every variables_set block for one whose variable NAME matches
-  // a pattern (e.g. "stake", "martingale", "stop loss") and pull the literal
-  // number it's initialized to. This is how real Deriv Bot XML actually
-  // stores these values — NOT as a field literally named STAKE/AMOUNT/etc,
-  // which is why the old parser kept missing them and silently used defaults.
-  const varSets=Array.from(doc.querySelectorAll('block[type="variables_set"]'));
-  const findVarNumber=(nameRe)=>{
-    for(const b of varSets){
-      const varField=b.querySelector(':scope > field[name="VAR"]');
-      if(varField && nameRe.test(varField.textContent)){
-        const valueEl=b.querySelector(':scope > value[name="VALUE"]');
-        const n=firstNumberIn(valueEl);
-        if(n!=null) return n;
-      }
+  const fv=(...names)=>{for(const n of names){const el=doc.querySelector('field[name="'+n+'"]');if(el&&el.textContent.trim()) return el.textContent.trim();}return null;};
+
+  // Resolve a variables_set NUM value (follows variables_get chains, guards cycles)
+  function resolveVarNumById(varId, seen){
+    seen=seen||{};
+    if(!varId||seen[varId]) return null;
+    seen[varId]=true;
+    const setEls=Array.prototype.slice.call(doc.querySelectorAll('block[type="variables_set"]'));
+    for(const setEl of setEls){
+      const varField=setEl.querySelector(':scope > field[name="VAR"]');
+      if(!varField) continue;
+      const id=varField.getAttribute('id');
+      if(id!==varId) continue;
+      const valueEl=setEl.querySelector(':scope > value[name="VALUE"]');
+      if(!valueEl) continue;
+      const n=resolveNumFromValueEl(valueEl, seen);
+      if(n!=null) return n;
     }
     return null;
-  };
-
-  // Symbol / market
-  result.symbol=fieldText('SYMBOL_LIST');
-
-  // Contract type — prefer the actual "purchase" block used at trade time
-  // (this is what really gets bought), fall back to the trade definition.
-  const purchaseField=doc.querySelector('block[type="purchase"] field[name="PURCHASE_LIST"]');
-  if(purchaseField) result.contractType=purchaseField.textContent.trim().toUpperCase();
-  if(!result.contractType){
-    const tt=fieldText('TYPE_LIST')||fieldText('TRADETYPE_LIST');
-    if(tt) result.contractType=tt.toUpperCase();
   }
 
-  // Prediction / barrier (digit bots) — read the literal number feeding it
-  const predNum=firstNumberIn(doc.querySelector('value[name="PREDICTION"]'));
-  if(predNum!=null) result.barrier=predNum;
-  else { const b=fieldText('BARRIER'); if(b) result.barrier=b; }
+  // Resolve a numeric value from a <value name="X"> wrapper, skipping <shadow> defaults
+  // when a real <block> sibling is present; follows variables_get chains.
+  function resolveNumFromValueEl(valueEl, seen){
+    if(!valueEl) return null;
+    const block=valueEl.querySelector(':scope > block');
+    const shadow=valueEl.querySelector(':scope > shadow');
+    const target=block||shadow;
+    if(!target) return null;
+    const type=target.getAttribute('type');
+    if(type==='math_number'||type==='math_number_positive'){
+      const numField=target.querySelector(':scope > field[name="NUM"]');
+      if(numField){const v=parseFloat(numField.textContent);if(!isNaN(v)) return v;}
+    }
+    if(type==='variables_get'){
+      const varField=target.querySelector(':scope > field[name="VAR"]');
+      if(varField) return resolveVarNumById(varField.getAttribute('id'), seen);
+    }
+    // last resort: any NUM field nested inside
+    const anyNum=target.querySelector('field[name="NUM"]');
+    if(anyNum){const v=parseFloat(anyNum.textContent);if(!isNaN(v)) return v;}
+    return null;
+  }
 
-  // Stake — check variables named like "stake" first, then the raw AMOUNT value
-  let stake=findVarNumber(/initial\s*stake/i);
-  if(stake==null) stake=findVarNumber(/\bstake\b/i);
-  if(stake==null) stake=firstNumberIn(doc.querySelector('value[name="AMOUNT"]'));
-  if(stake!=null && stake>0) result.stake=stake;
+  // Symbol/market
+  result.symbol=fv('SYMBOL_LIST','MARKET_LIST','symbol','market');
 
-  // Duration
-  const durNum=firstNumberIn(doc.querySelector('value[name="DURATION"]'));
-  if(durNum!=null) result.duration=durNum;
-  const du=fieldText('DURATIONTYPE_LIST');
-  if(du) result.durationUnit=du.toLowerCase().trim().charAt(0)||'t';
+  // Real trade direction lives in a <block type="purchase"><field name="PURCHASE_LIST">
+  const purchaseBlock=doc.querySelector('block[type="purchase"]');
+  if(purchaseBlock){
+    const pf=purchaseBlock.querySelector('field[name="PURCHASE_LIST"]');
+    if(pf&&pf.textContent.trim()) result.contractType=pf.textContent.trim().toUpperCase().replace(/\s+/g,'');
+  }
 
-  // Martingale multiplier / progression step
-  const mart=findVarNumber(/martingale|multiplier/i);
-  if(mart!=null && mart>=1) result.martingale=mart;
+  // Trade options block holds duration/durationtype/amount/prediction
+  const tradeOptsBlock=doc.querySelector('block[type="trade_definition_tradeoptions"]')||doc.querySelector('block[type="tradeOptions"]');
+  if(tradeOptsBlock){
+    const du=tradeOptsBlock.querySelector(':scope > field[name="DURATIONTYPE_LIST"]');
+    if(du&&du.textContent.trim()) result.durationUnit=du.textContent.trim().toLowerCase().charAt(0)||'t';
 
-  // Stop loss (used as max daily loss)
-  const stop=findVarNumber(/stop\s*loss/i);
-  if(stop!=null) result.maxLoss=Math.abs(stop);
+    const durVal=tradeOptsBlock.querySelector(':scope > value[name="DURATION"]');
+    const durNum=resolveNumFromValueEl(durVal, {});
+    if(durNum!=null&&durNum>0) result.duration=Math.round(durNum);
 
-  // Looping — real bots loop via a trade_again block; detect it directly
-  // instead of relying on a field that's almost never present.
-  result.loop=!!doc.querySelector('block[type="trade_again"]');
+    const amtVal=tradeOptsBlock.querySelector(':scope > value[name="AMOUNT"]');
+    const amtNum=resolveNumFromValueEl(amtVal, {});
+    if(amtNum!=null&&amtNum>0) result.stake=amtNum;
 
-  const synonyms={'RISE':'CALL','FALL':'PUT','OVER':'DIGITOVER','UNDER':'DIGITUNDER','MATCH':'DIGITMATCH','DIFF':'DIGITDIFF','EVEN':'DIGITEVEN','ODD':'DIGITODD'};
-  if(result.contractType&&synonyms[result.contractType]) result.contractType=synonyms[result.contractType];
+    const predVal=tradeOptsBlock.querySelector(':scope > value[name="PREDICTION"]');
+    if(predVal){
+      const predNum=resolveNumFromValueEl(predVal, {});
+      if(predNum!=null) result.barrier=predNum;
+    }
+  }
+
+  // Best-effort extras (rarely present in real botbuilder exports, but harmless to check)
+  const rawMart=fv('SIZE','MARTINGALE_SIZE','MULTIPLIER','martingale');
+  if(rawMart){const m=parseFloat(rawMart);if(!isNaN(m)&&m>=1) result.martingale=m;}
+  const rawSL=fv('STOPLOSS','STOP_LOSS','stop_loss','MAX_LOSS');
+  if(rawSL){const v=parseFloat(rawSL);if(!isNaN(v)&&v>0) result.maxLoss=v;}
+  const loopEl=fv('IS_LOOP','LOOP');
+  if(loopEl) result.loop=loopEl.toLowerCase()==='true'||loopEl==='1';
+
   const symMap={'R100':'R_100','R75':'R_75','R50':'R_50','R25':'R_25','R10':'R_10'};
   if(result.symbol){const k=result.symbol.toUpperCase().replace(/_/g,'');if(symMap[k]) result.symbol=symMap[k];}
   return result;
@@ -4447,9 +4559,9 @@ function parseBotFile(){
   if(!xml){toast('Paste or choose a bot .xml file first','error');return;}
   let parsed;
   try{parsed=parseBotXML(xml);}catch(e){toast('Could not parse this file','error');return;}
-  const knownC=['DIGITOVER','DIGITUNDER','DIGITMATCH','DIGITDIFF','DIGITEVEN','DIGITODD','CALL','PUT'];
-  const knownS=['R_100','R_75','R_50','R_25','R_10','1HZ100V'];
-  $('botSymbol').value=knownS.includes(parsed.symbol)?parsed.symbol:'R_100';
+  const knownC=['DIGITOVER','DIGITUNDER','DIGITMATCH','DIGITDIFF','DIGITEVEN','DIGITODD','CALL','PUT','CALLE','PUTE'];
+  const knownS=['R_100','R_75','R_50','R_25','R_10','1HZ100V','1HZ75V','1HZ50V','1HZ25V','1HZ10V'];
+  $('botSymbol').value=knownS.includes(parsed.symbol)?parsed.symbol:'1HZ100V';
   $('botContractType').value=knownC.includes(parsed.contractType)?parsed.contractType:'DIGITOVER';
   $('botBarrier').value=parsed.barrier!=null?parsed.barrier:'0';
   $('botStake').value=parsed.stake!=null&&parsed.stake>0?Math.min(parsed.stake,STATE.settings.maxStake||200):1;

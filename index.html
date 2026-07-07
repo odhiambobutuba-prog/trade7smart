@@ -3346,6 +3346,7 @@ function eoOnTick(tick){
     notifySignal(evenStreak+' consecutive evens -> ODD (reversion)','Even/Odds Bot ('+sym+')');
     eoExecute(sym,'DIGITODD','',stake);
   }
+}
 
 function eoExecute(sym, contractType, barrier, stake){
   if(!STATE.authorized){ toast('Connect Deriv first','error'); return; }

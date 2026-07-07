@@ -1768,7 +1768,10 @@ function onMessage(data){
     if(engine==='eo') { EO.pendingBuy=false; releaseTradeLock('eo'); eoLog('Error: '+data.error.message,'text-red'); }
     if(engine==='auto') { AUTO.pendingBuy=false; releaseTradeLock('auto'); toast('Auto-trade buy error: '+data.error.message,'error',3000); }
     if(engine==='exec1') { exec1OnBuyFail(data.error.message); }
+    if(engine==='exec1pre') { EXEC1.cachedProposal=null; exec1Log('Pre-fetch failed: '+(data.error.message||'?')+' — will request at :58s','text-amber'); }
     if(engine==='xmlbot') { xmlOnBuyFail(data.error.message); }
+    if(engine==='manual') { toast('Buy failed: '+(data.error.message||'unknown error'),'error',4000); }
+    if(engine==='manual-proposal') { toast('Could not get price quote — retrying','error',2500); setTimeout(requestProposal,1500); }
     if(rid) delete REQ_ENGINE[rid];
     return;
   }
@@ -1847,7 +1850,18 @@ function onMessage(data){
       else if(engine==='eo'){ eoOnProposal(p); }
       else if(engine==='auto'){ autoOnProposal(p); }
       else if(engine==='exec1'){ exec1OnProposal(p); }
+      else if(engine==='exec1pre'){ exec1OnPreProposal(p); }
       else if(engine==='xmlbot'){ xmlOnProposal(p); }
+      else if(engine==='manual-proposal'){
+        // FIX #8: Only accept this response if it matches the latest generation;
+        // discard stale in-flight proposals from a previous symbol or contract type.
+        if(_proposalGen === STATE._pendingProposalGen){
+          STATE.proposalId = p.id;
+          STATE.proposalData = p;
+          STATE._proposalFetchedAt = Date.now();
+          updateProposalUI(p);
+        }
+      }
       else {
         STATE.proposalId = p.id;
         STATE.proposalData = p;
@@ -2312,9 +2326,9 @@ function rfCheckSignal(){
 
   RF.confidence = conf;
 
-  // RISE signal: Chandelier Bull + ADX at max strength (>=100) — MACD crossover NOT required
-  const adxMax = RF.adxVal >= 100;
-  if(RF.chandDir==='bull' && adxMax){
+  // RISE signal: Chandelier Bull + MACD Bull crossover + ADX strength — symmetric with FALL
+  // FIX: was RF.adxVal >= 100 (effectively never true, ADX capped at 100) → use minAdx like FALL
+  if(RF.chandDir==='bull' && RF.macdBull && adxOK){
     if(RF.lastSignalDir==='red'){ RF.redCount=0; }
     RF.blueCount = Math.min(RF.blueCount+1, 10);
     RF.lastSignalDir = 'blue';
@@ -2404,10 +2418,10 @@ function updateRFSignalBox(){
   if(pct) pct.textContent = RF.confidence+'%';
   if(bar) bar.style.width = RF.confidence+'%';
 
-  if(RF.chandDir==='bull' && RF.adxVal>=100){
+  if(RF.chandDir==='bull' && RF.macdBull && RF.adxVal>=RF.cfg.minAdx){
     if(box){ box.className='sig-box sig-rise'; }
     if(dir){ dir.textContent='🔵 RISE'; dir.style.color='var(--green)'; }
-    if(conf) conf.textContent = 'Conf '+RF.confidence+'% · Chandelier Bullish + ADX '+RF.adxVal+' (max strength)';
+    if(conf) conf.textContent = 'Conf '+RF.confidence+'% · Chandelier Bullish + MACD Up + ADX '+RF.adxVal;
   } else if(RF.chandDir==='bear' && RF.macdBear && RF.adxVal>=RF.cfg.minAdx){
     if(box){ box.className='sig-box sig-fall'; }
     if(dir){ dir.textContent='🔴 FALL'; dir.style.color='var(--red)'; }
@@ -2418,7 +2432,8 @@ function updateRFSignalBox(){
     const reasons=[];
     if(RF.chandDir===null) reasons.push('Chandelier: Neutral');
     else reasons.push('Chandelier: '+(RF.chandDir==='bull'?'▲':'▼'));
-    if(RF.chandDir==='bull' && RF.adxVal<100) reasons.push('ADX '+RF.adxVal+' < 100 (need max strength for RISE)');
+    if(RF.chandDir==='bull' && !RF.macdBull) reasons.push('MACD: No bullish crossover');
+    if(RF.chandDir==='bull' && RF.adxVal<RF.cfg.minAdx) reasons.push('ADX '+RF.adxVal+' < '+RF.cfg.minAdx+' (weak trend)');
     if(RF.chandDir==='bear' && !RF.macdBear) reasons.push('MACD: No bearish crossover');
     if(RF.chandDir==='bear' && RF.adxVal < RF.cfg.minAdx) reasons.push('ADX '+RF.adxVal+' < '+RF.cfg.minAdx+' (weak trend)');
     if(conf) conf.textContent = reasons.join(' · ');
@@ -2774,7 +2789,7 @@ function digitExecute(direction){
   });
   if(rid!=null) REQ_ENGINE[rid] = 'digit';
   toast('Digit '+(direction==='over'?'▲ OVER '+DIGIT_SIG.barrier:'▼ UNDER '+DIGIT_SIG.barrier)+' · $'+stake.toFixed(2), 'info', 1500);
-  setTimeout(()=>{ DIGIT_SIG.pendingBuy=false; }, 4000);
+  setTimeout(()=>{ if(DIGIT_SIG.pendingBuy){ DIGIT_SIG.pendingBuy=false; releaseTradeLock('digit'); } }, 4000);
 }
 
 function toggleDigitAuto(){
@@ -3007,7 +3022,7 @@ function dmomExecute(direction){
     contract_type:contractType, currency:STATE.account.currency||'USD',
     duration:1, duration_unit:'t', symbol:STATE.currentSymbol, barrier });
   if(rid!=null) REQ_ENGINE[rid]='dmom';
-  setTimeout(()=>{ DMOM.pendingBuy=false; }, 4000);
+  setTimeout(()=>{ if(DMOM.pendingBuy){ DMOM.pendingBuy=false; releaseTradeLock('dmom'); } }, 4000);
 }
 
 function toggleDmomAuto(){
@@ -3088,9 +3103,15 @@ function tripleSubscribeAll(){
 }
 
 function tripleUnsubscribeAll(){
-  TRIPLE_MKTS.forEach(sym=>{
-    sendWS({forget_all:'ticks'});
-  });
+  // FIX: was sending forget_all:'ticks' 5× in a loop which (a) was redundant
+  // and (b) killed ALL tick subscriptions globally including the EO bot's feeds.
+  // Now forget each Triple subscription individually using its tracked req_id.
+  const ids = Object.values(TRIPLE.subReqIds);
+  if(ids.length){
+    ids.forEach(subId=>{ sendWS({forget:subId}); });
+  } else {
+    sendWS({forget_all:'ticks'}); // fallback if IDs weren't tracked
+  }
   TRIPLE.subReqIds = {};
 }
 
@@ -3159,7 +3180,7 @@ function tripleExecute(sym, contractType, barrier){
     duration:1, duration_unit:'t', symbol:sym, barrier });
   if(rid!=null) REQ_ENGINE[rid]='triple';
   notifySignal(contractType==='DIGITOVER'?'▲ OVER '+barrier:'▼ UNDER '+barrier, 'Pattern Scanner ('+sym+')');
-  setTimeout(()=>{ TRIPLE.pendingBuy=false; },5000);
+  setTimeout(()=>{ if(TRIPLE.pendingBuy){ TRIPLE.pendingBuy=false; releaseTradeLock('triple'); } },5000);
 }
 
 function tripleOnProposal(p){ if(!TRIPLE.pendingBuy) return; const r=sendWS({buy:p.id,price:p.ask_price}); if(r!=null) REQ_ENGINE[r]='triple'; }
@@ -3308,23 +3329,23 @@ function eoOnTick(tick){
     return;
   }
 
-  // N consecutive ODD digits → bet ODD (continuation, matches what the streak is actually showing)
+  // N consecutive ODD digits → bet EVEN (mean reversion: long odd streak favours the opposite)
+  // FIX #3: was DIGITODD (continuation) which contradicted the bot's own stated strategy
   if(oddStreak >= EO.oddStreak){
     const stake = eoCalcNextStake();
-    eoLog('🟡 '+sym+' → '+oddStreak+' odds → ODD @ $'+stake.toFixed(3),'text-amber');
-    notifySignal(oddStreak+' consecutive odds → ODD','Even/Odds Bot ('+sym+')');
-    eoExecute(sym,'DIGITODD','',stake);
+    eoLog(sym+' -> '+oddStreak+' odds -> EVEN (reversion) @ $'+stake.toFixed(3),'text-amber');
+    notifySignal(oddStreak+' consecutive odds -> EVEN (reversion)','Even/Odds Bot ('+sym+')');
+    eoExecute(sym,'DIGITEVEN','',stake);
     return;
   }
 
-  // N consecutive EVEN digits → bet EVEN (continuation)
+  // N consecutive EVEN digits → bet ODD (mean reversion)
   if(evenStreak >= EO.oddStreak){
     const stake = eoCalcNextStake();
-    eoLog('🟣 '+sym+' → '+evenStreak+' evens → EVEN @ $'+stake.toFixed(3),'text-amber');
-    notifySignal(evenStreak+' consecutive evens → EVEN','Even/Odds Bot ('+sym+')');
-    eoExecute(sym,'DIGITEVEN','',stake);
+    eoLog(sym+' -> '+evenStreak+' evens -> ODD (reversion) @ $'+stake.toFixed(3),'text-amber');
+    notifySignal(evenStreak+' consecutive evens -> ODD (reversion)','Even/Odds Bot ('+sym+')');
+    eoExecute(sym,'DIGITODD','',stake);
   }
-}
 
 function eoExecute(sym, contractType, barrier, stake){
   if(!STATE.authorized){ toast('Connect Deriv first','error'); return; }
@@ -3336,7 +3357,7 @@ function eoExecute(sym, contractType, barrier, stake){
   if(barrier) params.barrier=barrier;
   const rid=sendWS(params);
   if(rid!=null) REQ_ENGINE[rid]='eo';
-  setTimeout(()=>{ EO.pendingBuy=false; },5000);
+  setTimeout(()=>{ if(EO.pendingBuy){ EO.pendingBuy=false; releaseTradeLock('eo'); } },5000);
 }
 
 function eoOnProposal(p){ if(!EO.pendingBuy) return; const r=sendWS({buy:p.id,price:p.ask_price}); if(r!=null) REQ_ENGINE[r]='eo'; }
@@ -3414,7 +3435,10 @@ const EXEC1 = {
   baseStake:1, currentStake:1, martingale:1, maxDailyLoss:20,
   pendingBuy:false, tradeOpen:false, lastFiredMinute:null,
   trades:0, wins:0, losses:0, totalProfit:0,
-  status:'Idle', subscribed:null, lastContractId:null, candleOpenMap:{}
+  status:'Idle', subscribed:null, lastContractId:null, candleOpenMap:{},
+  // Pre-fetch: proposal requested at :55s so the buy fires instantly at :58s
+  // with no extra WebSocket round-trip on the critical path.
+  preFetchMinute:null, cachedProposal:null
 };
 
 const EXEC1_RING_CIRC = 2*Math.PI*52;
@@ -3488,7 +3512,8 @@ function toggleExec1(){
     EXEC1.martingale=Math.max(1,parseFloat($('exec1Martingale').value)||1);
     EXEC1.maxDailyLoss=parseFloat($('exec1MaxLoss').value)||20;
     EXEC1.enabled=true; EXEC1.pendingBuy=false; EXEC1.tradeOpen=false;
-    EXEC1.lastFiredMinute=null; EXEC1.trades=0; EXEC1.wins=0; EXEC1.losses=0; EXEC1.totalProfit=0;
+    EXEC1.lastFiredMinute=null; EXEC1.preFetchMinute=null; EXEC1.cachedProposal=null;
+    EXEC1.trades=0; EXEC1.wins=0; EXEC1.losses=0; EXEC1.totalProfit=0;
     EXEC1.lastContractId=null; EXEC1.candleOpenMap={};
     if(EXEC1.subscribed!==EXEC1.market){ sendWS({ticks:EXEC1.market,subscribe:1}); EXEC1.subscribed=EXEC1.market; }
     const btn=$('exec1Btn');
@@ -3528,6 +3553,21 @@ function exec1OnTick(tick){
   if(secs===0&&EXEC1.tradeOpen&&EXEC1.lastContractId!=null&&EXEC1.candleOpenMap[EXEC1.lastContractId]==null){
     EXEC1.candleOpenMap[EXEC1.lastContractId]=tick.quote;
   }
+  // DELAY FIX: pre-fetch proposal at :55s so exec1Execute() can buy instantly
+  // at :58s without waiting for one WebSocket round-trip (~200-500ms saved).
+  if(secs===55&&EXEC1.preFetchMinute!==minuteId&&!EXEC1.pendingBuy&&!EXEC1.tradeOpen){
+    EXEC1.preFetchMinute=minuteId;
+    EXEC1.cachedProposal=null;
+    const contractType=EXEC1.mode==='evenodd'?EXEC1.evenOdd:'DIGITOVER';
+    const preParms={proposal:1,amount:String(EXEC1.currentStake),basis:'stake',
+      contract_type:contractType,currency:STATE.account.currency||'USD',
+      duration:1,duration_unit:'t',symbol:EXEC1.market};
+    if(contractType==='DIGITOVER') preParms.barrier='1';
+    const prRid=sendWS(preParms);
+    if(prRid!=null) REQ_ENGINE[prRid]='exec1pre';
+    exec1Log('⚙ Pre-fetching proposal at :55s for instant buy at :58s…','text-dim');
+  }
+
   if(secs>=58&&EXEC1.lastFiredMinute!==minuteId){
     EXEC1.lastFiredMinute=minuteId;
     if(EXEC1.pendingBuy||EXEC1.tradeOpen){
@@ -3552,11 +3592,29 @@ function exec1Execute(){
   exec1SetStatus('Executing Trade…');
   exec1SetRing(0);
   const contractType=EXEC1.mode==='evenodd'?EXEC1.evenOdd:'DIGITOVER';
+
+  // DELAY FIX: fast path — use pre-fetched proposal, buy fires with zero extra RTT.
+  const cached=EXEC1.cachedProposal;
+  if(cached&&(Date.now()-cached.fetchedAt)<4000){
+    EXEC1.cachedProposal=null;
+    const rid=sendWS({buy:cached.id,price:cached.ask_price});
+    if(rid!=null) REQ_ENGINE[rid]='exec1';
+    exec1Log('⚡ Instant buy at :58s using pre-fetched proposal — '+contractType+(contractType==='DIGITOVER'?' OVER 1':'')+' on '+EXEC1.market,'text-cyan');
+    return;
+  }
+
+  // Fallback: pre-fetch missed or expired, request now (adds one RTT).
   const params={proposal:1,amount:String(EXEC1.currentStake),basis:'stake',contract_type:contractType,currency:STATE.account.currency||'USD',duration:1,duration_unit:'t',symbol:EXEC1.market};
   if(contractType==='DIGITOVER') params.barrier='1';
   const rid=sendWS(params);
   if(rid!=null) REQ_ENGINE[rid]='exec1';
-  exec1Log('Firing at :58 — requesting '+contractType+(contractType==='DIGITOVER'?' 1':'')+' proposal on '+EXEC1.market,'text-cyan');
+  exec1Log('Firing at :58s — requesting '+contractType+(contractType==='DIGITOVER'?' OVER 1':'')+' proposal on '+EXEC1.market+' (pre-fetch missed)','text-cyan');
+}
+
+function exec1OnPreProposal(p){
+  // Cache the pre-fetched proposal for instant use at :58s.
+  EXEC1.cachedProposal={id:p.id,ask_price:p.ask_price,fetchedAt:Date.now()};
+  exec1Log('✓ Pre-fetch ready — instant fire locked in for :58s','text-dim');
 }
 
 function exec1OnProposal(p){
@@ -3739,7 +3797,7 @@ function xmlOnSettlement(c){
   if(!XMLRT.running) return;
   const profit=parseFloat(c.profit)||0;
   XMLRT.totalProfit+=profit;
-  logSettledTrade(c);
+  // FIX #2: removed duplicate logSettledTrade — onMessage already logs all trades centrally.
   xmlLog((profit>0?'✓ WIN +':'✕ LOSS ')+'$'+Math.abs(profit).toFixed(2)+' · total '+fmtUSD(XMLRT.totalProfit),profit>0?'text-green':'text-red');
   xmlUpdateStats();
   if(XMLRT.config.martingale>1){
@@ -4065,13 +4123,20 @@ function quickSymbol(sym, el){
   $('hSymbol').textContent=sym;
 }
 
+// FIX #1/#8: generation counter prevents stale in-flight proposals from
+// overwriting STATE.proposalId when the user switches symbol quickly.
+let _proposalGen = 0;
+
 function requestProposal(){
   if(!STATE.authorized) return;
   const sym=$('tradeSymbol');
   const dur=$('tradeDuration');
   const duru=$('tradeDurationUnit');
   const stake=$('tradeStake');
-  sendWS({
+  _proposalGen++;
+  STATE._pendingProposalGen = _proposalGen;
+  STATE._proposalFetchedAt = Date.now();
+  const rid = sendWS({
     proposal:1,
     amount: String(parseFloat(stake?.value||1).toFixed(2)),
     basis:'stake',
@@ -4082,6 +4147,7 @@ function requestProposal(){
     symbol: STATE.currentSymbol,
     ...(_selectedBarrier?{barrier:_selectedBarrier}:{})
   });
+  if(rid!=null) REQ_ENGINE[rid]='manual-proposal';
 }
 
 function updateProposalUI(p){
@@ -4092,9 +4158,18 @@ function updateProposalUI(p){
 
 function executeTrade(){
   if(!STATE.authorized){toast('Connect Deriv first','error');openConnect();return;}
-  if(!STATE.proposalId){toast('Getting proposal…','info');requestProposal();return;}
-  sendWS({buy:STATE.proposalId, price:STATE.proposalData.ask_price});
-  STATE.proposalId=null; STATE.proposalData=null;
+  // FIX #1/#7: reject stale proposals (Deriv expires them in ~5s).
+  const PROPOSAL_MAX_AGE_MS = 5000;
+  const age = Date.now() - (STATE._proposalFetchedAt||0);
+  if(!STATE.proposalId || age > PROPOSAL_MAX_AGE_MS){
+    toast('Refreshing price — tap BUY again in a moment','info',2000);
+    requestProposal();
+    return;
+  }
+  // FIX #1: track buy rid as 'manual' so server errors are shown to the user.
+  const rid = sendWS({buy:STATE.proposalId, price:STATE.proposalData.ask_price});
+  if(rid!=null) REQ_ENGINE[rid]='manual';
+  STATE.proposalId=null; STATE.proposalData=null; STATE._proposalFetchedAt=0;
   toast('Order sent','info',1500);
   setTimeout(requestProposal, 1000);
 }
@@ -4194,7 +4269,7 @@ function executeAutoBuy(arrowCount){
   const label=AUTO.contract==='DIGITOVER'?'▲ OVER '+AUTO.barrier:'▼ UNDER '+AUTO.barrier;
   toast('Auto '+label+' ('+arrowCount+' arrows) · $'+stake.toFixed(2),'info',2000);
   notifySignal(arrowCount+' arrows → '+label,'Auto-Trade Digit');
-  setTimeout(()=>{ AUTO.pendingBuy=false; },4000);
+  setTimeout(()=>{ if(AUTO.pendingBuy){ AUTO.pendingBuy=false; releaseTradeLock('auto'); } },4000);
 }
 
 // Fired when the proposal for the Digit Scan & Auto-Trade engine comes back.
@@ -4341,7 +4416,7 @@ function recoverOnBuyFail(){recoverLog('Buy failed — retrying…','text-red');
 function recoverOnSettlement(c){
   const profit=parseFloat(c.profit)||0;
   releaseTradeLock('recover');
-  logSettledTrade(c);
+  // FIX #2: removed duplicate logSettledTrade — onMessage already logs all trades centrally.
   if(profit>0){
     RECOVER.wins++;
     recoverLog('✓ WIN +$'+profit.toFixed(2)+' — reset to OVER 1','text-green');

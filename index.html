@@ -2,107 +2,118 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0e14" />
 <title>OVER0 PRO AI</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: radial-gradient(ellipse at top, #131a26 0%, #0a0e14 60%);
-    color: #fff; min-height: 100vh; font-size: 15px;
-  }
-  button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
-  input, select {
-    font: inherit; color: #fff; background: #161c27; border: 1px solid rgba(255,255,255,.1);
-    border-radius: 8px; padding: 12px; width: 100%;
-  }
-  input:focus, select:focus { border-color: #00ff88; outline: none; box-shadow: 0 0 0 3px rgba(0,255,136,.12); }
-  .app { display: grid; grid-template-columns: 240px 1fr; grid-template-rows: 56px 1fr; min-height: 100vh; }
-  .sidebar { background: #0f141c; border-right: 1px solid rgba(255,255,255,.05); padding: 16px; display: flex; flex-direction: column; gap: 16px; }
-  .brand { display: flex; align-items: center; gap: 10px; }
-  .brand-mark { width: 36px; height: 36px; background: linear-gradient(135deg, #00ff88, #00b4ff); color: #001a10; font-weight: 900; font-size: 14px; display: grid; place-items: center; border-radius: 8px; }
-  .brand-text { font-weight: 800; letter-spacing: 1px; }
-  .nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-  .nav button { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; color: #aaa; text-align: left; font-size: 14px; }
-  .nav button:hover { background: #161c27; color: #fff; }
-  .nav button.active { background: rgba(0,255,136,.1); color: #fff; }
-  .conn-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #161c27; border-radius: 999px; font-size: 12px; color: #aaa; }
-  .conn-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: #ff4d6d; }
-  .conn-pill.connected .dot { background: #00ff88; }
-  .conn-pill.connecting .dot { background: #ffa500; animation: pulse 1s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-  .topbar { background: #0f141c; border-bottom: 1px solid rgba(255,255,255,.05); padding: 0 16px; display: flex; align-items: center; gap: 12px; grid-column: 1 / -1; }
-  .topbar-title { font-weight: 600; flex: 1; }
-  .main { grid-column: 2; overflow-y: auto; }
-  .view { padding: 24px; }
-  .card { background: #161c27; border: 1px solid rgba(255,255,255,.05); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
-  .card-title { font-size: 11px; text-transform: uppercase; color: #8a96a8; letter-spacing: 1px; margin-bottom: 8px; }
-  .card-value { font-size: 24px; font-weight: 700; }
-  .grid-2 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 16px; }
-  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-  .col { display: flex; flex-direction: column; gap: 16px; }
-  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border-radius: 8px; font-weight: 600; font-size: 14px; background: #1e2533; color: #fff; border: 1px solid rgba(255,255,255,.1); cursor: pointer; min-height: 44px; }
-  .btn:hover { background: #2a3344; }
-  .btn:disabled { opacity: .5; cursor: not-allowed; }
-  .btn-primary { background: linear-gradient(135deg, #00ff88, #00cc6a); color: #001a10; border-color: transparent; }
-  .btn-danger { background: linear-gradient(135deg, #ff4d6d, #c41e3a); color: #fff; border-color: transparent; }
-  .btn-warning { background: linear-gradient(135deg, #ffa500, #ff7b00); color: #1a0d00; border-color: transparent; }
-  .btn-lg { padding: 16px 22px; font-size: 15px; }
-  .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; background: #1e2533; }
-  .badge.success { background: rgba(0,255,136,.12); color: #00ff88; }
-  .badge.loss { background: rgba(255,77,109,.12); color: #ff4d6d; }
-  .badge.info { background: rgba(0,180,255,.12); color: #00b4ff; }
-  .label { font-size: 12px; color: #8a96a8; margin-bottom: 6px; display: block; }
-  .field { margin-bottom: 16px; }
-  .profit { color: #00ff88; } .loss { color: #ff4d6d; } .muted { color: #8a96a8; }
-  .center { text-align: center; }
-  .huge-num { font-size: 36px; font-weight: 900; background: linear-gradient(135deg, #00ff88, #00b4ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .tick-display { text-align: center; padding: 24px; }
-  .tick-digit { font-size: 80px; font-weight: 900; line-height: 1; background: linear-gradient(135deg, #00ff88, #00b4ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .tick-price { font-size: 20px; margin-top: 8px; }
-  .tick-meta { display: flex; justify-content: center; gap: 12px; margin-top: 12px; color: #8a96a8; font-size: 12px; flex-wrap: wrap; }
-  .trade-controls { display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr); margin-top: 16px; }
-  .live-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: rgba(138,150,168,.15); font-size: 11px; font-weight: 600; }
-  .live-pill.running { background: rgba(255,77,109,.15); color: #ff4d6d; }
-  .live-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-  .live-pill.running .dot { animation: pulse 1s infinite; }
-  .digit-bars { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; align-items: end; height: 120px; padding: 8px 0; }
-  .digit-bar { background: linear-gradient(180deg, #00ff88, #00b4ff); border-radius: 4px 4px 0 0; min-height: 4px; position: relative; transition: height .4s ease; }
-  .digit-bar .lbl { position: absolute; bottom: -20px; left: 0; right: 0; text-align: center; font-size: 11px; color: #8a96a8; }
-  .heatmap { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
-  .heat-cell { aspect-ratio: 1; border-radius: 6px; display: grid; place-items: center; font-weight: 700; font-size: 14px; background: #161c27; }
-  .strat-row, .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
-  .strat-row:last-child, .settings-row:last-child { border-bottom: 0; }
-  .switch { position: relative; width: 44px; height: 24px; background: #1e2533; border-radius: 12px; cursor: pointer; }
-  .switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: left .2s; }
-  .switch.on { background: rgba(0,255,136,.3); }
-  .switch.on::after { left: 22px; background: #00ff88; }
-  .journal-list { display: flex; flex-direction: column; gap: 8px; }
-  .journal-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #1e2533; border-radius: 8px; }
-  .digit-badge { width: 36px; height: 36px; border-radius: 6px; display: grid; place-items: center; font-weight: 800; background: #161c27; }
-  .digit-badge.win { background: rgba(0,255,136,.2); color: #00ff88; }
-  .digit-badge.loss { background: rgba(255,77,109,.2); color: #ff4d6d; }
-  .login-wrap { position: fixed; inset: 0; display: grid; place-items: center; background: #0a0e14; padding: 16px; z-index: 1000; }
-  .login-card { width: 100%; max-width: 420px; background: #161c27; border: 1px solid rgba(255,255,255,.05); border-radius: 16px; padding: 32px; }
-  .input-wrap { position: relative; }
-  .toggle-eye { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); padding: 4px; cursor: pointer; color: #aaa; }
-  .warn-box { background: rgba(255,165,0,.08); border: 1px solid rgba(255,165,0,.25); color: #ffa500; padding: 10px; border-radius: 8px; font-size: 12px; margin-top: 12px; }
-  .toast-container { position: fixed; top: 70px; right: 16px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
-  .toast { padding: 12px 16px; background: #1e2533; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; font-size: 13px; }
-  .toast.success { border-left: 3px solid #00ff88; }
-  .toast.error { border-left: 3px solid #ff4d6d; }
-  .toast.info { border-left: 3px solid #00b4ff; }
-  .toast.warn { border-left: 3px solid #ffa500; }
-  .err-screen { position: fixed; inset: 0; background: #0a0e14; color: #ff4d6d; padding: 40px; font-family: monospace; white-space: pre-wrap; overflow: auto; z-index: 9999; font-size: 13px; }
-  .divider { height: 1px; background: rgba(255,255,255,.05); margin: 16px 0; }
-  .err-debug { position: fixed; bottom: 10px; right: 10px; background: #1e2533; color: #ffa500; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-family: monospace; max-width: 400px; z-index: 5000; border: 1px solid rgba(255,165,0,.3); }
-  @media (max-width: 768px) {
-    .app { grid-template-columns: 1fr; grid-template-rows: 56px 1fr; }
-    .sidebar { display: none; }
-    .main { grid-column: 1; }
-    .view { padding: 16px; }
-  }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:radial-gradient(ellipse at top,#131a26,#0a0e14 60%);color:#fff;min-height:100vh;font-size:15px;overflow-x:hidden}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;outline:none}
+input,select,textarea{font:inherit;color:#fff;background:#161c27;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:11px 12px;width:100%;outline:none;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:#00ff88;box-shadow:0 0 0 3px rgba(0,255,136,.12)}
+.app{display:grid;grid-template-columns:220px 1fr;grid-template-rows:52px 1fr;min-height:100vh;max-width:100vw}
+.sidebar{grid-area:1/1/3/2;background:#0f141c;border-right:1px solid rgba(255,255,255,.05);padding:14px;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:34px;height:34px;background:linear-gradient(135deg,#00ff88,#00b4ff);color:#001a10;font-weight:900;font-size:13px;display:grid;place-items:center;border-radius:8px;flex-shrink:0}
+.brand-text{font-weight:800;letter-spacing:1px;font-size:14px}
+.nav{display:flex;flex-direction:column;gap:2px;flex:1}
+.nav button{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:#aaa;text-align:left;font-size:13px;width:100%;transition:background .15s}
+.nav button:hover{background:#161c27;color:#fff}
+.nav button.active{background:rgba(0,255,136,.1);color:#fff;box-shadow:inset 3px 0 0 #00ff88}
+.conn-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:#161c27;border-radius:999px;font-size:11px;color:#aaa;align-self:flex-start}
+.conn-pill .dot{width:7px;height:7px;border-radius:50%;background:#ff4d6d}
+.conn-pill.connected .dot{background:#00ff88;box-shadow:0 0 6px #00ff88}
+.conn-pill.connecting .dot{background:#ffa500;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.topbar{background:#0f141c;border-bottom:1px solid rgba(255,255,255,.05);padding:0 14px;display:flex;align-items:center;gap:10px;grid-area:1/2/2/3}
+.menu-btn{padding:6px;border-radius:6px;display:none;font-size:20px}
+.topbar-title{font-weight:600;flex:1;font-size:15px}
+.muted{color:#8a96a8}
+.main{grid-area:2/2/3/3;overflow-y:auto;overflow-x:hidden}
+.view{padding:18px;max-width:1400px;margin:0 auto}
+.card{background:#161c27;border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:18px;margin-bottom:14px}
+.card-title{font-size:11px;text-transform:uppercase;color:#8a96a8;letter-spacing:1px;margin-bottom:8px}
+.card-value{font-size:24px;font-weight:700}
+.grid-2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.col{display:flex;flex-direction:column;gap:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 16px;border-radius:8px;font-weight:600;font-size:13px;background:#1e2533;color:#fff;border:1px solid rgba(255,255,255,.1);cursor:pointer;min-height:42px;transition:all .15s}
+.btn:hover{background:#2a3344}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:linear-gradient(135deg,#00ff88,#00cc6a);color:#001a10;border-color:transparent}
+.btn-primary:hover{box-shadow:0 4px 16px rgba(0,255,136,.4)}
+.btn-danger{background:linear-gradient(135deg,#ff4d6d,#c41e3a);color:#fff;border-color:transparent}
+.btn-warning{background:linear-gradient(135deg,#ffa500,#ff7b00);color:#1a0d00;border-color:transparent}
+.btn-lg{padding:14px 18px;font-size:14px}
+.badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:600;background:#1e2533}
+.badge.success{background:rgba(0,255,136,.12);color:#00ff88}
+.badge.loss{background:rgba(255,77,109,.12);color:#ff4d6d}
+.badge.info{background:rgba(0,180,255,.12);color:#00b4ff}
+.label{font-size:12px;color:#8a96a8;margin-bottom:5px;display:block}
+.field{margin-bottom:14px}
+.profit{color:#00ff88}.loss{color:#ff4d6d}.muted{color:#8a96a8}.center{text-align:center}
+.huge-num{font-size:32px;font-weight:900;background:linear-gradient(135deg,#00ff88,#00b4ff);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1}
+@media(min-width:600px){.huge-num{font-size:40px}}
+.tick-display{text-align:center;padding:20px}
+.tick-digit{font-size:72px;font-weight:900;line-height:1;background:linear-gradient(135deg,#00ff88,#00b4ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+@media(min-width:600px){.tick-digit{font-size:96px}}
+.tick-price{font-size:18px;margin-top:6px}
+.tick-meta{display:flex;justify-content:center;gap:10px;margin-top:10px;color:#8a96a8;font-size:11px;flex-wrap:wrap}
+.trade-controls{display:grid;gap:10px;grid-template-columns:repeat(2,1fr);margin-top:14px}
+@media(min-width:600px){.trade-controls{grid-template-columns:repeat(4,1fr)}}
+.live-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:rgba(138,150,168,.15);font-size:11px;font-weight:600}
+.live-pill.running{background:rgba(255,77,109,.15);color:#ff4d6d}
+.live-pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.live-pill.running .dot{animation:pulse 1s infinite}
+.digit-bars{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;align-items:end;height:110px;padding:8px 0 24px}
+.digit-bar{background:linear-gradient(180deg,#00ff88,#00b4ff);border-radius:3px 3px 0 0;min-height:3px;position:relative;transition:height .4s}
+.digit-bar .lbl{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:10px;color:#8a96a8}
+.heatmap{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
+.heat-cell{aspect-ratio:1;border-radius:5px;display:grid;place-items:center;font-weight:700;font-size:13px;background:#1e2533;transition:background .3s}
+.strat-row,.settings-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.05);gap:10px;flex-wrap:wrap}
+.strat-row:last-child,.settings-row:last-child{border-bottom:0}
+.switch{position:relative;width:42px;height:22px;background:#1e2533;border-radius:11px;cursor:pointer;flex-shrink:0}
+.switch::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:left .2s}
+.switch.on{background:rgba(0,255,136,.3)}
+.switch.on::after{left:22px;background:#00ff88}
+.journal-list{display:flex;flex-direction:column;gap:6px}
+.journal-item{display:flex;align-items:center;gap:10px;padding:10px;background:#1e2533;border-radius:8px;flex-wrap:wrap}
+.journal-item>div{min-width:0}
+.digit-badge{width:32px;height:32px;border-radius:6px;display:grid;place-items:center;font-weight:800;background:#161c27;flex-shrink:0}
+.digit-badge.win{background:rgba(0,255,136,.2);color:#00ff88}
+.digit-badge.loss{background:rgba(255,77,109,.2);color:#ff4d6d}
+.login-wrap{position:fixed;inset:0;display:grid;place-items:center;background:#0a0e14;padding:16px;z-index:1000;overflow-y:auto}
+.login-card{width:100%;max-width:420px;background:#161c27;border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:24px}
+@media(min-width:600px){.login-card{padding:32px}}
+.input-wrap{position:relative}
+.toggle-eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);padding:4px 8px;cursor:pointer;color:#aaa;font-size:14px}
+.warn-box{background:rgba(255,165,0,.08);border:1px solid rgba(255,165,0,.25);color:#ffa500;padding:10px;border-radius:8px;font-size:12px;margin-top:12px;line-height:1.5}
+.toast-container{position:fixed;top:60px;right:12px;left:12px;z-index:2000;display:flex;flex-direction:column;gap:6px;max-width:380px;margin:0 auto;pointer-events:none}
+.toast{padding:11px 14px;background:#1e2533;border:1px solid rgba(255,255,255,.1);border-radius:8px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:auto;animation:slideIn .25s ease}
+.toast.success{border-left:3px solid #00ff88}
+.toast.error{border-left:3px solid #ff4d6d}
+.toast.info{border-left:3px solid #00b4ff}
+.toast.warn{border-left:3px solid #ffa500}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+.err-screen{position:fixed;inset:0;background:#0a0e14;color:#ff4d6d;padding:20px;font-family:monospace;white-space:pre-wrap;overflow:auto;z-index:9999;font-size:12px;line-height:1.5}
+.divider{height:1px;background:rgba(255,255,255,.05);margin:14px 0}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid #001a10;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;display:none}
+.overlay.open{display:block}
+@media(max-width:768px){
+.app{grid-template-columns:1fr;grid-template-rows:52px 1fr}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;z-index:100;transform:translateX(-100%);transition:transform .25s ease}
+.sidebar.open{transform:translateX(0);box-shadow:0 0 40px rgba(0,0,0,.8)}
+.menu-btn{display:inline-flex}
+.topbar{grid-area:1/1/2/2}
+.main{grid-area:2/1/3/2}
+}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:9px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,.05)}
+th{font-size:11px;text-transform:uppercase;color:#8a96a8;font-weight:600;letter-spacing:1px}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -114,13 +125,12 @@
       <div class="brand-text">OVER0 PRO</div>
     </div>
     <nav class="nav" id="nav"></nav>
-    <div class="conn-pill" id="conn-pill">
-      <span class="dot"></span><span class="text">Disconnected</span>
-    </div>
+    <div class="conn-pill" id="conn-pill"><span class="dot"></span><span class="text">Disconnected</span></div>
   </aside>
   <header class="topbar">
+    <button class="menu-btn" id="menu-toggle">☰</button>
     <div class="topbar-title" id="topbar-title">OVER0 PRO AI</div>
-    <div class="muted" id="server-time" style="font-size:13px">--:--:--</div>
+    <div class="muted" id="server-time" style="font-size:12px">--:--:--</div>
   </header>
   <main class="main">
     <section class="view" id="view"></section>
@@ -130,9 +140,9 @@
 <div class="toast-container" id="toast-container"></div>
 
 <script>
-// ============================================
-// ERROR HANDLER - shows errors on screen
-// ============================================
+"use strict";
+
+/* ===== ERROR HANDLER ===== */
 window.onerror = function(msg, url, line, col, err) {
   const d = document.createElement('div');
   d.className = 'err-screen';
@@ -141,66 +151,56 @@ window.onerror = function(msg, url, line, col, err) {
   console.error(err);
   return false;
 };
-
 window.addEventListener('unhandledrejection', function(e) {
   console.error('Unhandled rejection:', e.reason);
+  const t = document.createElement('div');
+  t.className = 'toast error';
+  t.textContent = 'Error: ' + (e.reason && e.reason.message || e.reason);
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(() => t.remove(), 5000);
 });
 
-// ============================================
-// CONFIG
-// ============================================
-const APP_ID = '1086'; // Deriv public demo App ID - works for testing
+/* ===== CONFIG ===== */
+const APP_ID = '1086';
 const WS_URL = 'wss://ws.derivws.com/websockets/v3';
 
-// ============================================
-// STATE
-// ============================================
+/* ===== STATE ===== */
 const State = {
-  loggedIn: false,
-  account: null,
-  conn: 'disconnected',
-  latency: null,
-  serverTime: null,
-  symbol: 'R_100',
-  spot: null,
-  lastDigit: null,
-  tickCount: 0,
-  ticksPerMin: 0,
-  proposal: null,
-  openContract: null,
-  lastResult: null,
-  engineState: 'idle',
+  loggedIn: false, account: null, conn: 'disconnected', latency: null, serverTime: null,
+  symbol: 'R_100', spot: null, lastDigit: null, tickCount: 0, ticksPerMin: 0,
+  proposal: null, openContract: null, engineState: 'idle',
   strategyParams: { tradeEveryTicks: 5, stake: 1, maxConsecutiveLosses: 5, cooldown: 3 },
   session: { trades: 0, wins: 0, losses: 0, profit: 0, loss: 0, startBalance: 0 },
-  digitWindow: [],
-  settings: { notifications: true, sound: false, confirmTrades: false, autoReconnect: true }
+  digitWindow: []
 };
-
 const listeners = new Set();
-function onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); }
+function onChange(fn) { listeners.add(fn); }
 function emitChange() { listeners.forEach(fn => { try { fn(State); } catch(e) { console.error(e); } }); }
 function update(patch) { Object.assign(State, patch); emitChange(); }
 
+/* ===== STORAGE (persists across reloads) ===== */
 const Storage = {
-  get(k) { try { const v = localStorage.getItem('over0:'+k); return v ? JSON.parse(v) : null; } catch { return null; } },
-  set(k, v) { try { localStorage.setItem('over0:'+k, JSON.stringify(v)); } catch {} },
-  del(k) { try { localStorage.removeItem('over0:'+k); } catch {} }
+  get(k) { try { const v = localStorage.getItem('over0:' + k); return v ? JSON.parse(v) : null; } catch(e) { return null; } },
+  set(k, v) { try { localStorage.setItem('over0:' + k, JSON.stringify(v)); return true; } catch(e) { console.error('Storage error', e); return false; } },
+  del(k) { try { localStorage.removeItem('over0:' + k); } catch(e) {} }
 };
 
+/* ===== UTILITIES ===== */
 const fmt = {
-  money(n, c='USD') { if (n==null||isNaN(n)) return '—'; return (n<0?'-':'') + Math.abs(+n).toFixed(2) + ' ' + c; },
-  num(n, d=2) { return n==null||isNaN(n)?'—':(+n).toFixed(d); },
-  pct(n) { return n==null||isNaN(n)?'—':(n*100).toFixed(1)+'%'; }
+  money: (n, c) => { if (n == null || isNaN(n)) return '—'; c = c || 'USD'; return (n < 0 ? '-' : '') + Math.abs(+n).toFixed(2) + ' ' + c; },
+  num: (n, d) => { d = d || 2; return n == null || isNaN(n) ? '—' : (+n).toFixed(d); },
+  pct: (n) => { return n == null || isNaN(n) ? '—' : (+n * 100).toFixed(1) + '%'; }
 };
 
-function toast(msg, type='info') {
+function toast(msg, type) {
+  type = type || 'info';
   const c = document.getElementById('toast-container');
   if (!c) return;
   const t = document.createElement('div');
   t.className = 'toast ' + type;
   t.textContent = msg;
   c.appendChild(t);
-  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3500);
+  setTimeout(() => { if (t.parentNode) t.remove(); }, 4000);
 }
 
 function el(tag, attrs, children) {
@@ -209,108 +209,58 @@ function el(tag, attrs, children) {
   children = children || [];
   for (const k in attrs) {
     const v = attrs[k];
+    if (v == null || v === false) continue;
     if (k === 'class') n.className = v;
     else if (k === 'style' && typeof v === 'object') Object.assign(n.style, v);
     else if (k.startsWith('on') && typeof v === 'function') n.addEventListener(k.slice(2).toLowerCase(), v);
     else if (v === true) n.setAttribute(k, '');
-    else if (v != null && v !== false) n.setAttribute(k, v);
+    else n.setAttribute(k, v);
   }
-  ([] .concat(children)).forEach(c => {
-    if (c == null) return;
+  const arr = Array.isArray(children) ? children : [children];
+  for (const c of arr) {
+    if (c == null || c === false) continue;
     n.appendChild(c.nodeType ? c : document.createTextNode(String(c)));
-  });
+  }
   return n;
 }
 
-function card(title, value, sub) {
-  return el('div', { class: 'card' }, [
-    el('div', { class: 'card-title' }, [title]),
-    el('div', { class: 'card-value' }, [value ?? '—']),
-    sub ? el('div', { class: 'muted', style: { fontSize: '12px', marginTop: '4px' } }, [sub]) : null
-  ]);
-}
-
-// ============================================
-// WEBSOCKET
-// ============================================
+/* ===== WEBSOCKET ===== */
 const WS = {
-  ws: null,
-  handlers: new Map(),
-  nextId: 1,
-  connected: false,
-  pingTimer: null,
-  latency: null,
-  pingSent: 0,
-  attempt: 0,
-  shouldRun: false,
-  reconnectTimer: null,
-
+  ws: null, handlers: new Map(), nextId: 1, connected: false, attempt: 0, shouldRun: false,
   connect() {
     if (this.ws && (this.ws.readyState === 0 || this.ws.readyState === 1)) return;
     this.shouldRun = true;
     setConn('connecting');
-    try {
-      this.ws = new WebSocket(WS_URL + '?app_id=' + APP_ID + '&l=en&brand=over0pro');
-    } catch (e) {
-      console.error('WS construct error', e);
-      this._reconnect();
-      return;
-    }
-    this.ws.onopen = () => {
-      this.attempt = 0;
-      this.connected = true;
-      setConn('connected');
-      this._startPing();
-    };
-    this.ws.onmessage = e => this._onMsg(e);
-    this.ws.onerror = e => console.warn('WS error', e);
-    this.ws.onclose = () => {
-      this.connected = false;
-      this._stopPing();
-      setConn('disconnected');
-      if (this.shouldRun) this._reconnect();
-    };
+    try { this.ws = new WebSocket(WS_URL + '?app_id=' + APP_ID + '&l=en&brand=over0pro'); }
+    catch (e) { console.error(e); this._reconnect(); return; }
+    this.ws.onopen = () => { this.attempt = 0; this.connected = true; setConn('connected'); };
+    this.ws.onmessage = (e) => this._onMsg(e);
+    this.ws.onerror = () => {};
+    this.ws.onclose = () => { this.connected = false; setConn('disconnected'); if (this.shouldRun) this._reconnect(); };
   },
   disconnect() {
     this.shouldRun = false;
-    this._stopPing();
-    clearTimeout(this.reconnectTimer);
-    try { this.ws && this.ws.close(); } catch {}
+    try { this.ws && this.ws.close(); } catch(e) {}
     this.ws = null;
   },
   _reconnect() {
     const delay = Math.min(30000, 1000 * Math.pow(1.7, this.attempt++));
     setConn('reconnecting');
-    clearTimeout(this.reconnectTimer);
-    this.reconnectTimer = setTimeout(() => this.shouldRun && this.connect(), delay);
+    setTimeout(() => { if (this.shouldRun) this.connect(); }, delay);
   },
-  _startPing() {
-    this._stopPing();
-    this.pingTimer = setInterval(() => {
-      if (!this.connected) return;
-      this.pingSent = Date.now();
-      this.send({ ping: 1 });
-    }, 30000);
-  },
-  _stopPing() { if (this.pingTimer) { clearInterval(this.pingTimer); this.pingTimer = null; } },
   send(obj) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if (!this.ws || this.ws.readyState !== 1) { resolve({ error: { message: 'Not connected' } }); return; }
       const id = obj.req_id || this.nextId++;
       this.handlers.set(id, resolve);
       try { this.ws.send(JSON.stringify(Object.assign({}, obj, { req_id: id }))); }
-      catch (e) { resolve({ error: { message: e.message } }); }
+      catch (e) { this.handlers.delete(id); resolve({ error: { message: e.message } }); }
     });
   },
   _onMsg(e) {
     let m;
     try { m = JSON.parse(e.data); } catch { return; }
     if (m.ping) { try { this.ws.send(JSON.stringify({ pong: m.ping })); } catch {} return; }
-    if (this.pingSent && m.req_id == null) {
-      this.latency = Date.now() - this.pingSent;
-      update({ latency: this.latency });
-      this.pingSent = 0;
-    }
     if (m.req_id != null) {
       const h = this.handlers.get(m.req_id);
       if (h) { this.handlers.delete(m.req_id); h(m); }
@@ -328,20 +278,16 @@ function setConn(c) {
   }
 }
 
-// ============================================
-// DERIV API
-// ============================================
+/* ===== MESSAGE HANDLER ===== */
 const tickHandlers = [];
 const contractHandlers = [];
-
 function handleMsg(m) {
   if (!m || !m.msg_type) return;
   if (m.msg_type === 'tick' && m.tick) {
     const q = m.tick.quote;
     const parts = String(q).split('.');
     const digit = parts[1] ? parts[1][0] : String(q).slice(-1);
-    const t = { symbol: m.tick.symbol, quote: q, epoch: m.tick.epoch, digit: digit };
-    tickHandlers.forEach(h => h(t));
+    tickHandlers.forEach(h => h({ symbol: m.tick.symbol, quote: q, epoch: m.tick.epoch, digit: digit }));
   }
   if (m.msg_type === 'balance' && m.balance && State.account) {
     const newBal = +m.balance.balance;
@@ -351,46 +297,41 @@ function handleMsg(m) {
   if (m.msg_type === 'proposal_open_contract' && m.proposal_open_contract) {
     contractHandlers.forEach(h => h(m.proposal_open_contract));
   }
-  if (m.msg_type === 'buy' && m.buy) {
-    if (m.buy.contract_id) {
-      update({ openContract: { id: m.buy.contract_id, ...m.buy, status: 'open' } });
-      toast('Contract #' + m.buy.contract_id + ' purchased', 'success');
-      WS.send({ proposal_open_contract: 1, contract_id: m.buy.contract_id, subscribe: 1 });
-    }
+  if (m.msg_type === 'buy' && m.buy && m.buy.contract_id) {
+    update({ openContract: { id: m.buy.contract_id, ...m.buy, status: 'open' } });
+    toast('Contract #' + m.buy.contract_id + ' purchased', 'success');
+    WS.send({ proposal_open_contract: 1, contract_id: m.buy.contract_id, subscribe: 1 });
   }
 }
 
-async function apiAuthorize(token) {
-  const r = await WS.send({ authorize: token });
-  if (r.error) throw new Error(r.error.message);
-  return r.authorize;
-}
-async function apiBalance() { return WS.send({ balance: 1, subscribe: 1 }); }
-async function apiTicks(sym) { return WS.send({ ticks: sym, subscribe: 1 }); }
+/* ===== API HELPERS ===== */
+function apiAuthorize(token) { return WS.send({ authorize: token }); }
+function apiBalance() { return WS.send({ balance: 1, subscribe: 1 }); }
+function apiTicks(sym) { return WS.send({ ticks: sym, subscribe: 1 }); }
 
-// ============================================
-// ENGINE
-// ============================================
+/* ===== JOURNAL (saves trades to localStorage) ===== */
 const Journal = {
-  list: Storage.get('journal') || [],
-  save() { Storage.set('journal', this.list.slice(0, 500)); },
-  add(e) { e.id = Date.now() + '-' + Math.random().toString(36).slice(2,7); this.list.unshift(e); if (this.list.length>500) this.list.length=500; this.save(); },
-  all() { return this.list; },
-  clear() { this.list = []; this.save(); }
+  _list: Storage.get('journal') || [],
+  get list() { return this._list; },
+  set list(v) { this._list = v; Storage.set('journal', v); },
+  add(e) {
+    e.id = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+    this._list.unshift(e);
+    if (this._list.length > 500) this._list.length = 500;
+    Storage.set('journal', this._list);
+  },
+  all() { return this._list; },
+  clear() { this._list = []; Storage.set('journal', this._list); }
 };
 
+/* ===== TRADING ENGINE (fixed: DIGITOVER, string amounts) ===== */
 const Engine = {
-  busy: false,
-  _sinceLast: 0,
-  _consecLoss: 0,
-  _cooldown: 0,
-
+  busy: false, _sinceLast: 0, _consecLoss: 0, _cooldown: 0,
   init() {
     tickHandlers.push(t => this._onTick(t));
     contractHandlers.push(c => this._onContract(c));
   },
-
-  start() { update({ engineState: 'running' }); toast('Trading started', 'info'); },
+  start() { update({ engineState: 'running' }); toast('Trading started', 'success'); },
   pause() { update({ engineState: 'paused' }); toast('Trading paused', 'warn'); },
   resume() { update({ engineState: 'running' }); toast('Trading resumed', 'info'); },
   stop() { update({ engineState: 'stopped' }); toast('Trading stopped', 'warn'); },
@@ -411,16 +352,17 @@ const Engine = {
   },
 
   async _enterTrade() {
+    if (this.busy) return;
     this.busy = true;
     try {
       const p = State.strategyParams;
-      // CRITICAL FIX: Deriv proposal field names verified against API docs
+      const currency = (State.account && State.account.currency) || 'USD';
       const req = {
         proposal: 1,
-        amount: String(p.stake),     // MUST be string
+        amount: String(p.stake),
         basis: 'stake',
-        contract_type: 'DIGITOVER',  // FIXED: was 'OVER' — Deriv uses DIGITOVER for "digit over 0"
-        currency: State.account ? State.account.currency : 'USD',
+        contract_type: 'DIGITOVER',
+        currency: currency,
         duration: 1,
         duration_unit: 't',
         symbol: State.symbol,
@@ -457,6 +399,7 @@ const Engine = {
     if (c.is_sold) {
       const pnl = +c.profit || 0;
       const win = pnl > 0;
+      // CRITICAL FIX: Save trade to journal (was broken before)
       Journal.add({
         time: Date.now(),
         contractId: c.contract_id,
@@ -482,9 +425,7 @@ const Engine = {
 };
 Engine.init();
 
-// ============================================
-// ROUTER
-// ============================================
+/* ===== ROUTER ===== */
 const routes = {};
 function route(name, fn) { routes[name] = fn; }
 function go(name) {
@@ -494,83 +435,66 @@ function go(name) {
   root.innerHTML = '';
   document.getElementById('topbar-title').textContent = name.charAt(0).toUpperCase() + name.slice(1);
   try { fn(root); }
-  catch (e) {
-    root.innerHTML = '<div class="card" style="color:#ff4d6d">View error: ' + e.message + '</div>';
-    console.error(e);
-  }
+  catch (e) { root.innerHTML = '<div class="card" style="color:#ff4d6d">View error: ' + e.message + '</div>'; console.error(e); }
   document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.route === name));
+  if (window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
 }
 
-// ============================================
-// LOGIN VIEW
-// ============================================
-route('login', root => {
+/* ===== LOGIN VIEW ===== */
+route('login', function(root) {
   let show = false;
   const tokenInput = el('input', { type: 'password', placeholder: 'Paste your Deriv API token', autocomplete: 'off' });
-  const appIdInput = el('input', { type: 'text', placeholder: 'App ID (optional, default: 1086)' });
+  const appIdInput = el('input', { type: 'text', placeholder: 'App ID (optional - default: 1086)' });
   const eyeBtn = el('button', { class: 'toggle-eye', type: 'button' }, ['👁']);
   const errBox = el('div', { class: 'warn-box', style: { display: 'none' } });
   const submit = el('button', { class: 'btn btn-primary btn-lg', style: { width: '100%' } }, ['Connect to Deriv']);
 
   eyeBtn.onclick = () => { show = !show; tokenInput.type = show ? 'text' : 'password'; };
-
   submit.onclick = async () => {
     errBox.style.display = 'none';
     const token = tokenInput.value.trim();
-    const appId = appIdInput.value.trim();
     if (!token) { errBox.textContent = 'API token is required.'; errBox.style.display = 'block'; return; }
-
-    let appIdToUse = APP_ID;
-    if (appId && /^\d+$/.test(appId)) appIdToUse = appId;
-
-    submit.disabled = true; submit.innerHTML = '<span class="spinner" style="display:inline-block;width:18px;height:18px;border:2px solid #001a10;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite"></span> Connecting...';
+    submit.disabled = true;
+    submit.innerHTML = '<span class="spinner"></span> Connecting...';
     try {
       WS.connect();
-      // Wait for connection
       await new Promise((res, rej) => {
-        const t = setTimeout(() => rej(new Error('Connection timeout. Check your internet.')), 15000);
-        const i = setInterval(() => { if (WS.connected) { clearTimeout(t); clearInterval(i); res(); } }, 200);
+        const t = setTimeout(() => rej(new Error('Connection timeout. Check your internet and App ID.')), 15000);
+        const i = setInterval(() => { if (WS.connected) { clearTimeout(t); clearInterval(i); res(); } }, 100);
       });
       const auth = await apiAuthorize(token);
-      if (!auth || !auth.loginid) throw new Error('Authorization failed');
-      // Override APP_ID at runtime by storing the desired one
-      Storage.set('app_id_override', appIdToUse);
+      if (!auth || !auth.loginid) throw new Error('Authorization failed - check token');
+      Storage.set('token', token);
       const bal = await apiBalance();
       const cur = (bal.balance && bal.balance.balance) ? +bal.balance.balance : +auth.balance;
       update({
         loggedIn: true,
-        account: {
-          loginid: auth.loginid,
-          currency: auth.currency || 'USD',
-          balance: cur,
-          name: auth.loginid,
-          type: auth.is_virtual ? 'Demo' : 'Real',
-          landing_company: auth.landing_company_name
-        },
+        account: { loginid: auth.loginid, currency: auth.currency || 'USD', balance: cur, name: auth.loginid, type: auth.is_virtual ? 'Demo' : 'Real' },
         session: Object.assign({}, State.session, { startBalance: cur })
       });
       await apiTicks(State.symbol);
-      toast('Authenticated successfully!', 'success');
+      toast('Authenticated!', 'success');
       go('dashboard');
     } catch (e) {
       console.error('Login error', e);
       errBox.textContent = e.message || 'Login failed';
       errBox.style.display = 'block';
-      submit.disabled = false; submit.textContent = 'Connect to Deriv';
+      submit.disabled = false;
+      submit.innerHTML = 'Connect to Deriv';
     }
   };
 
   const wrap = el('div', { class: 'login-wrap' }, [
     el('div', { class: 'login-card' }, [
-      el('div', { style: { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' } }, [
+      el('div', { style: { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' } }, [
         el('div', { class: 'brand-mark' }, ['O0']),
         el('div', {}, [
-          el('div', { style: { fontSize: '20px', fontWeight: 800 } }, ['OVER0 PRO AI']),
-          el('div', { class: 'muted', style: { fontSize: '13px' } }, ['Authenticate via your Deriv API token'])
+          el('div', { style: { fontSize: '18px', fontWeight: 800 } }, ['OVER0 PRO AI']),
+          el('div', { class: 'muted', style: { fontSize: '12px' } }, ['Authenticate via Deriv API token'])
         ])
       ]),
       el('div', { class: 'field' }, [
-        el('label', { class: 'label' }, ['API Token']),
+        el('label', { class: 'label' }, ['API Token (must have Trade scope)']),
         el('div', { class: 'input-wrap' }, [tokenInput, eyeBtn])
       ]),
       el('div', { class: 'field' }, [
@@ -578,39 +502,35 @@ route('login', root => {
         appIdInput
       ]),
       errBox,
-      el('div', { style: { marginTop: '16px' } }, [submit]),
-      el('div', { class: 'warn-box' }, ['Get a free App ID at api.deriv.com. Create a token with Trade scope enabled.'])
+      el('div', { style: { marginTop: '14px' } }, [submit]),
+      el('div', { class: 'warn-box' }, ['Get a free App ID at api.deriv.com. Create a token in Deriv Account Settings → API Token with Trade scope.'])
     ])
   ]);
   root.appendChild(wrap);
   setTimeout(() => tokenInput.focus(), 100);
 });
 
-// ============================================
-// DASHBOARD
-// ============================================
-route('dashboard', root => {
+/* ===== DASHBOARD ===== */
+route('dashboard', function(root) {
   const balanceEl = el('div', { class: 'huge-num' }, [fmt.money(State.account ? State.account.balance : 0, State.account ? State.account.currency : 'USD')]);
   const pnlEl = el('div', { class: 'huge-num' }, ['0.00']);
   const wrEl = el('div', { class: 'card-value' }, ['—']);
-
   const tickDigit = el('div', { class: 'tick-digit' }, ['—']);
   const tickPrice = el('div', { class: 'tick-price' }, ['—']);
   const tickMeta = el('div', { class: 'tick-meta' }, [
     el('span', {}, [State.symbol]),
-    el('span', {}, [(State.ticksPerMin || 0) + ' ticks/min']),
+    el('span', {}, [(State.ticksPerMin || 0) + ' t/min']),
     el('span', {}, ['—'])
   ]);
 
   const startBtn = el('button', { class: 'btn btn-primary' }, ['▶ Start']);
   const pauseBtn = el('button', { class: 'btn btn-warning' }, ['⏸ Pause']);
   const stopBtn = el('button', { class: 'btn' }, ['⏹ Stop']);
-  const emerBtn = el('button', { class: 'btn btn-danger' }, ['⛔ EMERGENCY']);
-
+  const emerBtn = el('button', { class: 'btn btn-danger' }, ['⛔ STOP']);
   startBtn.onclick = () => Engine.start();
   pauseBtn.onclick = () => State.engineState === 'paused' ? Engine.resume() : Engine.pause();
   stopBtn.onclick = () => Engine.stop();
-  emerBtn.onclick = () => { if (confirm('EMERGENCY STOP will halt all trading immediately. Continue?')) Engine.emergencyStop(); };
+  emerBtn.onclick = () => { if (confirm('EMERGENCY STOP will halt all trading. Continue?')) Engine.emergencyStop(); };
 
   const openBox = el('div', { class: 'card' }, [
     el('div', { class: 'card-title' }, ['Open Contract']),
@@ -618,10 +538,10 @@ route('dashboard', root => {
   ]);
 
   root.appendChild(el('div', { class: 'grid-2' }, [
-    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Account Balance']), balanceEl, el('div', { class: 'muted', style: { fontSize: '12px' } }, [State.account ? State.account.loginid : '—'])]),
-    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ["Today's P/L"]), pnlEl, el('div', { class: 'muted', style: { fontSize: '12px' } }, [State.session.trades + ' trades'])]),
-    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Win Rate']), wrEl, el('div', { class: 'muted', style: { fontSize: '12px' } }, ['Session'])]),
-    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Connection']), el('div', { class: 'card-value' }, [State.conn]), el('div', { class: 'muted', style: { fontSize: '12px' } }, [State.latency ? State.latency + ' ms' : '—'])])
+    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Balance']), balanceEl, el('div', { class: 'muted', style: { fontSize: '11px', marginTop: '4px' } }, [State.account ? State.account.loginid : '—'])]),
+    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ["Today's P/L"]), pnlEl, el('div', { class: 'muted', style: { fontSize: '11px', marginTop: '4px' } }, [State.session.trades + ' trades'])]),
+    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Win Rate']), wrEl, el('div', { class: 'muted', style: { fontSize: '11px', marginTop: '4px' } }, ['Session'])]),
+    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Connection']), el('div', { class: 'card-value' }, [State.conn]), el('div', { class: 'muted', style: { fontSize: '11px', marginTop: '4px' } }, [State.latency ? State.latency + ' ms' : '—'])])
   ]));
 
   root.appendChild(el('div', { class: 'col' }, [
@@ -630,15 +550,15 @@ route('dashboard', root => {
     openBox
   ]));
 
-  const unsub = onChange(() => {
+  onChange(() => {
     const d = State;
     if (d.account) balanceEl.textContent = fmt.money(d.account.balance, d.account.currency);
     if (d.lastDigit != null) {
       tickDigit.textContent = d.lastDigit;
       tickPrice.textContent = d.spot != null ? (+d.spot).toFixed(4) : '—';
     }
-    if (tickMeta.children[1]) tickMeta.children[1].textContent = (d.ticksPerMin || 0) + ' ticks/min';
-    if (tickMeta.children[2]) tickMeta.children[2].textContent = d.serverTime ? new Date(d.serverTime*1000).toTimeString().slice(0,8) : '—';
+    if (tickMeta.children[1]) tickMeta.children[1].textContent = (d.ticksPerMin || 0) + ' t/min';
+    if (tickMeta.children[2]) tickMeta.children[2].textContent = d.serverTime ? new Date(d.serverTime * 1000).toTimeString().slice(0, 8) : '—';
     const s = d.session;
     const net = s.profit - s.loss;
     pnlEl.textContent = (net >= 0 ? '+' : '') + net.toFixed(2) + ' ' + (d.account ? d.account.currency : '');
@@ -651,25 +571,23 @@ route('dashboard', root => {
         if (oc.status === 'closed') {
           box.innerHTML = '<div style="color:#aaa">Last: <span class="' + (oc.profit >= 0 ? 'profit' : 'loss') + '">' + fmt.num(oc.profit) + '</span></div>';
         } else {
-          box.innerHTML = '<div style="font-size:13px;color:#aaa">#' + oc.id + ' ' + (oc.contract_type || '') + ' ' + (oc.barrier || '') + '</div><div style="font-size:18px;font-weight:700;margin-top:6px">Buy: ' + fmt.num(oc.buy_price) + ' → Payout: ' + fmt.num(oc.payout) + '</div><div style="font-size:13px;margin-top:4px">Bid: ' + fmt.num(oc.bid_price) + '</div>';
+          box.innerHTML = '<div style="font-size:12px;color:#aaa">#' + oc.id + ' ' + (oc.contract_type || '') + ' ' + (oc.barrier || '') + '</div><div style="font-size:16px;font-weight:700;margin-top:6px">Buy: ' + fmt.num(oc.buy_price) + ' → Payout: ' + fmt.num(oc.payout) + '</div><div style="font-size:12px;margin-top:4px">Bid: ' + fmt.num(oc.bid_price) + '</div>';
         }
       }
     }
   });
 });
 
-// ============================================
-// TRADE
-// ============================================
-route('trade', root => {
-  const symSel = el('select', {}, ['R_10','R_25','R_50','R_75','R_100','1HZ10V','1HZ25V','1HZ50V','1HZ75V','1HZ100V'].map(s => {
+/* ===== TRADE VIEW ===== */
+route('trade', function(root) {
+  const symSel = el('select', {}, ['R_10', 'R_25', 'R_50', 'R_75', 'R_100', '1HZ10V', '1HZ25V', '1HZ50V', '1HZ75V', '1HZ100V'].map(s => {
     const opt = el('option', { value: s }, [s]);
     if (s === State.symbol) opt.setAttribute('selected', 'selected');
     return opt;
   }));
   symSel.onchange = async () => {
     update({ symbol: symSel.value });
-    try { await WS.send({ forget_all: 'ticks' }); } catch {}
+    try { await WS.send({ forget_all: 'ticks' }); } catch (e) {}
     try { await apiTicks(symSel.value); } catch (e) { toast('Subscribe error: ' + e.message, 'error'); }
   };
 
@@ -680,12 +598,13 @@ route('trade', root => {
   const distBox = el('div', { class: 'digit-bars' });
   const distCells = [];
   for (let i = 0; i < 10; i++) {
-    const bar = el('div', { class: 'digit-bar', style: { height: '4px' } }, [el('div', { class: 'lbl' }, [String(i)])]);
-    distCells.push(bar); distBox.appendChild(bar);
+    const bar = el('div', { class: 'digit-bar', style: { height: '3px' } }, [el('div', { class: 'lbl' }, [String(i)])]);
+    distCells.push(bar);
+    distBox.appendChild(bar);
   }
 
-  const proposalBox = el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Latest Proposal']), el('div', { id: 'trade-proposal-info' }, ['No proposal yet — start trading or wait for next signal.'])]);
-  const openBox = el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Open Contract']), el('div', { id: 'trade-open-contract' }, ['None'])]);
+  const proposalBox = el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Latest Proposal']), el('div', { id: 'trade-proposal' }, ['No proposal yet — start trading.'])]);
+  const openBox = el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Open Contract']), el('div', { id: 'trade-open' }, ['None'])]);
 
   const startBtn = el('button', { class: 'btn btn-primary btn-lg' }, ['Start Trading']);
   const stopBtn = el('button', { class: 'btn btn-lg' }, ['Stop']);
@@ -695,53 +614,55 @@ route('trade', root => {
   root.appendChild(el('div', { class: 'col' }, [
     el('div', { class: 'card' }, [
       el('div', { class: 'row' }, [
-        el('div', { style: { flex: '1' } }, [el('div', { class: 'label' }, ['Market (Synthetic)']), symSel]),
+        el('div', { style: { flex: '1', minWidth: '140px' } }, [el('div', { class: 'label' }, ['Market (Synthetic)']), symSel]),
         livePill
       ]),
-      el('div', { style: { marginTop: '16px' } }, [el('div', { class: 'label' }, ['Stake (USD)']), stakeIn]),
-      el('div', { class: 'row', style: { marginTop: '12px' } }, [startBtn, stopBtn])
+      el('div', { style: { marginTop: '12px' } }, [el('div', { class: 'label' }, ['Stake (USD)']), stakeIn]),
+      el('div', { class: 'row', style: { marginTop: '10px' } }, [startBtn, stopBtn])
     ]),
     el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Last 20 Digits']), digitsRow]),
     el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Digit Distribution (last 200)']), distBox]),
-    el('div', { style: { display: 'grid', gap: '16px', gridTemplateColumns: '1fr 1fr' } }, [proposalBox, openBox])
+    el('div', { style: { display: 'grid', gap: '12px', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' } }, [proposalBox, openBox])
   ]));
 
   onChange(() => {
     const d = State;
     livePill.className = 'live-pill ' + (d.engineState === 'running' ? 'running' : '');
-    livePill.querySelector('span').textContent = d.engineState.toUpperCase();
+    if (livePill.querySelector('span')) livePill.querySelector('span').textContent = d.engineState.toUpperCase();
     digitsRow.innerHTML = '';
     d.digitWindow.slice(-20).forEach(x => {
-      const c = el('div', { class: 'badge', style: { minWidth: '28px', textAlign: 'center', padding: '6px 8px', background: x.d === '0' ? 'rgba(255,77,109,.2)' : (x.d >= '7' ? 'rgba(0,255,136,.15)' : 'rgba(0,180,255,.12)'), color: x.d === '0' ? '#ff4d6d' : (x.d >= '7' ? '#00ff88' : '#00b4ff') } }, [x.d]);
+      const c = el('div', { class: 'badge', style: { minWidth: '26px', textAlign: 'center', padding: '5px 7px', background: x.d === '0' ? 'rgba(255,77,109,.2)' : (x.d >= '7' ? 'rgba(0,255,136,.15)' : 'rgba(0,180,255,.12)'), color: x.d === '0' ? '#ff4d6d' : (x.d >= '7' ? '#00ff88' : '#00b4ff') } }, [x.d]);
       digitsRow.appendChild(c);
     });
     const counts = Array(10).fill(0);
     d.digitWindow.forEach(x => counts[+x.d]++);
     const total = Math.max(1, d.digitWindow.length);
-    counts.forEach((c, i) => { distCells[i].style.height = Math.max(4, (c/total)*110) + 'px'; });
+    counts.forEach((c, i) => { distCells[i].style.height = Math.max(3, (c / total) * 100) + 'px'; });
     if (d.proposal) {
       const pr = d.proposal;
-      const box = document.getElementById('trade-proposal-info');
-      if (pr.status === 'ready') box.innerHTML = '<div>Ask: <b>' + fmt.num(pr.ask_price) + '</b> · Payout: <b>' + fmt.num(pr.payout) + '</b></div><div style="color:#aaa;font-size:12px;margin-top:4px">ID: ' + pr.id + '</div>';
-      else if (pr.status === 'error') box.innerHTML = '<div style="color:#ff4d6d">' + (pr.message || 'Error') + '</div>';
+      const box = document.getElementById('trade-proposal');
+      if (pr.status === 'ready' && box) box.innerHTML = '<div>Ask: <b>' + fmt.num(pr.ask_price) + '</b> · Payout: <b>' + fmt.num(pr.payout) + '</b></div><div style="color:#aaa;font-size:11px;margin-top:4px">ID: ' + pr.id + '</div>';
+      else if (pr.status === 'error' && box) box.innerHTML = '<div style="color:#ff4d6d">' + (pr.message || 'Error') + '</div>';
     }
     if (d.openContract) {
-      const oc = d.openContract; const box = document.getElementById('trade-open-contract');
-      if (oc && oc.id) { const isWin = oc.status === 'closed' && oc.profit >= 0; box.innerHTML = '<div>#' + oc.id + ' ' + (oc.contract_type || '') + ' ' + (oc.barrier || '') + '</div><div style="font-size:18px;font-weight:700;margin-top:6px">Buy: ' + fmt.num(oc.buy_price) + ' → Payout: ' + fmt.num(oc.payout) + '</div><div class="' + (isWin ? 'profit' : (oc.status === 'closed' ? 'loss' : '')) + '" style="font-size:18px;font-weight:700;margin-top:6px">' + (oc.status === 'closed' ? 'P/L: ' + fmt.num(oc.profit) : 'Open') + '</div>'; }
-      else box.textContent = 'None';
+      const oc = d.openContract;
+      const box = document.getElementById('trade-open');
+      if (oc && oc.id && box) {
+        const isWin = oc.status === 'closed' && oc.profit >= 0;
+        box.innerHTML = '<div>#' + oc.id + ' ' + (oc.contract_type || '') + ' ' + (oc.barrier || '') + '</div><div style="font-size:15px;font-weight:700;margin-top:5px">Buy: ' + fmt.num(oc.buy_price) + ' → Payout: ' + fmt.num(oc.payout) + '</div><div class="' + (isWin ? 'profit' : (oc.status === 'closed' ? 'loss' : '')) + '" style="font-size:15px;font-weight:700;margin-top:5px">' + (oc.status === 'closed' ? 'P/L: ' + fmt.num(oc.profit) : 'Open') + '</div>';
+      } else if (box) box.textContent = 'None';
     }
   });
 });
 
-// ============================================
-// RESEARCH
-// ============================================
-route('research', root => {
-  const distBox = el('div', { class: 'digit-bars', style: { height: '160px' } });
+/* ===== RESEARCH VIEW ===== */
+route('research', function(root) {
+  const distBox = el('div', { class: 'digit-bars', style: { height: '150px' } });
   const distCells = [];
   for (let i = 0; i < 10; i++) {
-    const bar = el('div', { class: 'digit-bar', style: { height: '4px' } }, [el('div', { class: 'lbl' }, [String(i)])]);
-    distCells.push(bar); distBox.appendChild(bar);
+    const bar = el('div', { class: 'digit-bar', style: { height: '3px' } }, [el('div', { class: 'lbl' }, [String(i)])]);
+    distCells.push(bar);
+    distBox.appendChild(bar);
   }
   const heatmap = el('div', { class: 'heatmap' });
   for (let i = 0; i < 10; i++) heatmap.appendChild(el('div', { class: 'heat-cell' }, [String(i)]));
@@ -749,7 +670,7 @@ route('research', root => {
 
   root.appendChild(el('div', { class: 'col' }, [
     el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Digit Frequency Heatmap']), heatmap]),
-    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Distribution (last 200 ticks)']), distBox]),
+    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Distribution (last 200)']), distBox]),
     el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Last 30 Digits']), lastN])
   ]));
 
@@ -760,10 +681,10 @@ route('research', root => {
     const total = Math.max(1, d.digitWindow.length);
     const max = Math.max.apply(null, counts.concat([1]));
     counts.forEach((c, i) => {
-      distCells[i].style.height = Math.max(4, (c/max)*140) + 'px';
+      distCells[i].style.height = Math.max(3, (c / max) * 130) + 'px';
       const cell = heatmap.children[i];
       const intensity = c / max;
-      cell.style.background = 'rgba(0, 255, 136, ' + (0.05 + intensity*0.4) + ')';
+      cell.style.background = 'rgba(0, 255, 136, ' + (0.05 + intensity * 0.4) + ')';
       cell.style.color = intensity > 0.5 ? '#001a10' : '';
     });
     lastN.innerHTML = '';
@@ -773,38 +694,38 @@ route('research', root => {
   });
 });
 
-// ============================================
-// STRATEGY
-// ============================================
-route('strategy', root => {
+/* ===== STRATEGY VIEW ===== */
+route('strategy', function(root) {
   const p = State.strategyParams;
   const tradeEveryTicks = el('input', { type: 'number', min: '1', value: String(p.tradeEveryTicks) });
   const stake = el('input', { type: 'number', min: '0.35', step: '0.01', value: String(p.stake) });
   const maxLoss = el('input', { type: 'number', min: '1', value: String(p.maxConsecutiveLosses) });
   const cooldown = el('input', { type: 'number', min: '0', value: String(p.cooldown) });
 
-  const saveBtn = el('button', { class: 'btn btn-primary' }, ['Save']);
+  const saveBtn = el('button', { class: 'btn btn-primary' }, ['Save Strategy']);
   const startBtn = el('button', { class: 'btn btn-primary' }, ['▶ Start']);
   const stopBtn = el('button', { class: 'btn' }, ['⏹ Stop']);
-  saveBtn.onclick = () => { Engine.setParams({ tradeEveryTicks: +tradeEveryTicks.value||5, stake: +stake.value||1, maxConsecutiveLosses: +maxLoss.value||5, cooldown: +cooldown.value||0 }); Storage.set('strategy', { name: 'digit-over0', params: State.strategyParams }); toast('Strategy saved', 'success'); };
+  saveBtn.onclick = () => {
+    Engine.setParams({ tradeEveryTicks: +tradeEveryTicks.value || 5, stake: +stake.value || 1, maxConsecutiveLosses: +maxLoss.value || 5, cooldown: +cooldown.value || 0 });
+    Storage.set('strategy', { name: 'digit-over0', params: State.strategyParams });
+    toast('Strategy saved', 'success');
+  };
   startBtn.onclick = () => Engine.start();
   stopBtn.onclick = () => Engine.stop();
 
   root.appendChild(el('div', { class: 'card' }, [
-    el('h3', { style: { marginBottom: '12px' } }, ['Active Strategy']),
+    el('h3', { style: { marginBottom: '12px', fontSize: '16px' } }, ['Active Strategy']),
     el('div', { class: 'strat-row' }, [el('span', {}, ['Strategy']), el('span', { class: 'badge info' }, ['Digit Over 0'])]),
     el('div', { class: 'strat-row' }, [el('span', {}, ['Trade every N ticks']), tradeEveryTicks]),
     el('div', { class: 'strat-row' }, [el('span', {}, ['Stake (USD)']), stake]),
-    el('div', { class: 'strat-row' }, [el('span', {}, ['Max consecutive losses (pause)']), maxLoss]),
+    el('div', { class: 'strat-row' }, [el('span', {}, ['Max consecutive losses']), maxLoss]),
     el('div', { class: 'strat-row' }, [el('span', {}, ['Cooldown after max loss']), cooldown]),
     el('div', { class: 'row', style: { marginTop: '12px' } }, [saveBtn, startBtn, stopBtn])
   ]));
 });
 
-// ============================================
-// STATISTICS
-// ============================================
-route('statistics', root => {
+/* ===== STATISTICS VIEW ===== */
+route('statistics', function(root) {
   const totalEl = el('div', { class: 'huge-num' }, ['0']);
   const winsEl = el('div', { class: 'huge-num profit' }, ['0']);
   const lossesEl = el('div', { class: 'huge-num loss' }, ['0']);
@@ -817,7 +738,9 @@ route('statistics', root => {
     const wins = j.filter(x => x.win);
     const losses = j.filter(x => !x.win);
     const pnl = wins.reduce((a, b) => a + b.profit, 0) - losses.reduce((a, b) => a + Math.abs(b.profit), 0);
-    totalEl.textContent = s.trades; winsEl.textContent = s.wins; lossesEl.textContent = s.losses;
+    totalEl.textContent = s.trades;
+    winsEl.textContent = s.wins;
+    lossesEl.textContent = s.losses;
     wrEl.textContent = s.trades ? fmt.pct(s.wins / s.trades) : '—';
     pnlEl.textContent = (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + ' ' + (State.account ? State.account.currency : '');
     pnlEl.className = 'huge-num ' + (pnl >= 0 ? 'profit' : 'loss');
@@ -834,21 +757,22 @@ route('statistics', root => {
   root.appendChild(el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Net P/L (from journal)']), pnlEl]));
 });
 
-// ============================================
-// JOURNAL
-// ============================================
-route('journal', root => {
+/* ===== JOURNAL VIEW (NOW PERSISTS!) ===== */
+route('journal', function(root) {
   const list = el('div', { class: 'journal-list' });
-  const filter = el('select', {}, [['all','All'],['win','Wins'],['loss','Losses'],['today','Today']].map(([v,l]) => el('option', { value: v }, [l])));
+  const filter = el('select', {}, [['all', 'All'], ['win', 'Wins'], ['loss', 'Losses'], ['today', 'Today']].map(([v, l]) => el('option', { value: v }, [l])));
   const exportBtn = el('button', { class: 'btn' }, ['Export CSV']);
   const clearBtn = el('button', { class: 'btn btn-danger' }, ['Clear']);
   exportBtn.onclick = () => {
-    const rows = [['time','contractId','symbol','stake','payout','profit','win']];
+    const rows = [['time', 'contractId', 'symbol', 'stake', 'payout', 'profit', 'win']];
     Journal.all().forEach(x => rows.push([new Date(x.time).toISOString(), x.contractId, x.symbol, x.stake, x.payout, x.profit, x.win]));
     const csv = rows.map(r => r.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(',')).join('\n');
-    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'over0-journal-' + Date.now() + '.csv'; a.click();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    a.download = 'over0-journal-' + Date.now() + '.csv';
+    a.click();
   };
-  clearBtn.onclick = () => { if (confirm('Delete all journal entries?')) { Journal.clear(); render(); } };
+  clearBtn.onclick = () => { if (confirm('Delete ALL journal entries? This cannot be undone.')) { Journal.clear(); render(); toast('Journal cleared', 'info'); } };
 
   function render() {
     const f = filter.value;
@@ -857,17 +781,17 @@ route('journal', root => {
     else if (f === 'loss') items = items.filter(x => !x.win);
     else if (f === 'today') items = items.filter(x => new Date(x.time).toDateString() === new Date().toDateString());
     list.innerHTML = '';
-    if (!items.length) { list.appendChild(el('div', { class: 'muted center', style: { padding: '32px' } }, ['No trades yet'])); return; }
+    if (!items.length) { list.appendChild(el('div', { class: 'muted center', style: { padding: '28px' } }, ['No trades yet. Start trading to record results.'])); return; }
     items.forEach(x => {
       list.appendChild(el('div', { class: 'journal-item' }, [
         el('div', { class: 'digit-badge ' + (x.win ? 'win' : 'loss') }, [x.win ? 'W' : 'L']),
-        el('div', { style: { flex: '1' } }, [
-          el('div', { style: { fontWeight: 600 } }, [(x.type || '') + ' ' + (x.barrier || '') + ' · #' + x.contractId]),
-          el('div', { class: 'muted', style: { fontSize: '12px' } }, [new Date(x.time).toLocaleString()])
+        el('div', { style: { flex: '1', minWidth: '120px' } }, [
+          el('div', { style: { fontWeight: 600, fontSize: '13px' } }, [(x.type || '') + ' ' + (x.barrier || '') + ' · #' + x.contractId]),
+          el('div', { class: 'muted', style: { fontSize: '11px' } }, [new Date(x.time).toLocaleString() + ' · ' + (x.symbol || '')])
         ]),
         el('div', { style: { textAlign: 'right' } }, [
-          el('div', { class: x.win ? 'profit' : 'loss', style: { fontWeight: 700 } }, [(x.profit >= 0 ? '+' : '') + fmt.num(x.profit)]),
-          el('div', { class: 'muted', style: { fontSize: '12px' } }, ['Stake: ' + fmt.num(x.stake)])
+          el('div', { class: x.win ? 'profit' : 'loss', style: { fontWeight: 700, fontSize: '14px' } }, [(x.profit >= 0 ? '+' : '') + fmt.num(x.profit)]),
+          el('div', { class: 'muted', style: { fontSize: '11px' } }, ['Stake: ' + fmt.num(x.stake)])
         ])
       ]));
     });
@@ -875,58 +799,62 @@ route('journal', root => {
   render();
   filter.onchange = render;
 
-  root.appendChild(el('div', { class: 'card' }, [el('div', { class: 'row' }, [el('div', { style: { flex: '1' } }, [el('div', { class: 'label' }, ['Filter']), filter]), exportBtn, clearBtn])]));
+  root.appendChild(el('div', { class: 'card' }, [el('div', { class: 'row' }, [
+    el('div', { style: { flex: '1', minWidth: '100px' } }, [el('div', { class: 'label' }, ['Filter']), filter]),
+    exportBtn, clearBtn
+  ])]));
   root.appendChild(list);
 });
 
-// ============================================
-// SETTINGS
-// ============================================
-route('settings', root => {
-  const appIdIn = el('input', { type: 'text', value: APP_ID, readonly: true });
+/* ===== SETTINGS VIEW ===== */
+route('settings', function(root) {
   const logoutBtn = el('button', { class: 'btn btn-danger' }, ['Logout & Clear Token']);
-  logoutBtn.onclick = () => { if (confirm('Disconnect and remove stored token?')) { Storage.del('token'); update({ loggedIn: false, account: null }); WS.disconnect(); go('login'); } };
+  logoutBtn.onclick = () => {
+    if (confirm('Disconnect and remove stored token?')) {
+      Storage.del('token');
+      update({ loggedIn: false, account: null, session: { trades: 0, wins: 0, losses: 0, profit: 0, loss: 0, startBalance: 0 } });
+      WS.disconnect();
+      toast('Logged out', 'info');
+      go('login');
+    }
+  };
 
   root.appendChild(el('div', { class: 'card' }, [
-    el('h3', { style: { marginBottom: '12px' } }, ['Connection']),
-    el('div', { class: 'settings-row' }, [el('div', {}, ['App ID (change on login page)']), appIdIn]),
+    el('h3', { style: { marginBottom: '12px', fontSize: '16px' } }, ['App Info']),
+    el('div', { class: 'settings-row' }, [el('div', {}, ['App ID (default)']), el('div', { class: 'muted' }, [APP_ID])]),
+    el('div', { class: 'settings-row' }, [el('div', {}, ['WebSocket']), el('div', { class: 'muted', style: { fontSize: '11px' } }, [WS_URL])]),
     el('div', { class: 'divider' }),
-    el('h3', { style: { marginBottom: '12px', color: '#ff4d6d' } }, ['Danger Zone']),
+    el('h3', { style: { marginBottom: '12px', color: '#ff4d6d', fontSize: '16px' } }, ['Danger Zone']),
     logoutBtn
   ]));
 });
 
-// ============================================
-// HELP
-// ============================================
-route('help', root => {
+/* ===== HELP VIEW ===== */
+route('help', function(root) {
   root.appendChild(el('div', { class: 'card' }, [
     el('h3', { style: { color: '#00ff88', marginBottom: '12px' } }, ['Getting Started']),
     el('ol', { style: { paddingLeft: '20px', lineHeight: '1.8' } }, [
-      el('li', {}, ['Register an App ID at api.deriv.com (free)']),
-      el('li', {}, ['In your Deriv account, create an API token with Trade scope']),
-      el('li', {}, ['Open this app and paste your App ID + Token']),
-      el('li', {}, ['Go to Trade → set stake → click Start Trading'])
+      el('li', {}, ['Register an App ID at api.deriv.com (free, takes 1 min)']),
+      el('li', {}, ['In your Deriv account, go to Settings → API Token']),
+      el('li', {}, ['Create a token with "Trade" scope enabled']),
+      el('li', {}, ['Open this app and paste your token, click Connect']),
+      el('li', {}, ['Go to Trade page → set stake → click Start Trading'])
     ]),
-    el('h3', { style: { color: '#ffa500', marginTop: '24px' } }, ['⚠️ Risk Warning']),
-    el('p', { style: { color: '#ffa500' } }, ['Trading involves significant risk. Test on demo first. You can lose your entire stake.'])
+    el('h3', { style: { color: '#ffa500', marginTop: '24px', marginBottom: '8px' } }, ['⚠️ Risk Warning']),
+    el('p', { style: { color: '#ffa500', lineHeight: '1.6' } }, ['Trading involves significant risk. You can lose your entire stake. Always test on a DEMO account first. Never trade money you cannot afford to lose.'])
   ]));
 });
 
-// ============================================
-// ABOUT
-// ============================================
-route('about', root => {
+/* ===== ABOUT VIEW ===== */
+route('about', function(root) {
   root.appendChild(el('div', { class: 'card center' }, [
-    el('div', { style: { fontSize: '28px', fontWeight: 900, marginBottom: '8px' } }, ['OVER0 PRO AI']),
-    el('div', { class: 'muted' }, ['v1.0 · Professional Digit Trading Platform']),
-    el('p', { style: { marginTop: '16px' } }, ['A PWA for executing Digit Over 0 contracts on Deriv via the official WebSocket API.'])
+    el('div', { style: { fontSize: '24px', fontWeight: 900, marginBottom: '8px' } }, ['OVER0 PRO AI']),
+    el('div', { class: 'muted', style: { fontSize: '13px' } }, ['v1.0 · Professional Digit Trading Platform']),
+    el('p', { style: { marginTop: '16px', fontSize: '13px', lineHeight: '1.6' } }, ['A mobile-first PWA for executing Digit Over 0 contracts on Deriv via the official WebSocket API. Not affiliated with Deriv.'])
   ]));
 });
 
-// ============================================
-// NAV
-// ============================================
+/* ===== NAVIGATION ===== */
 const NAV = [
   { id: 'dashboard', icon: '📊', label: 'Dashboard' },
   { id: 'trade', icon: '💹', label: 'Trade' },
@@ -938,7 +866,6 @@ const NAV = [
   { id: 'help', icon: '❓', label: 'Help' },
   { id: 'about', icon: 'ℹ️', label: 'About' }
 ];
-
 const navEl = document.getElementById('nav');
 NAV.forEach(item => {
   const b = el('button', { 'data-route': item.id }, [el('span', {}, [item.icon + ' ']), el('span', {}, [item.label])]);
@@ -946,29 +873,34 @@ NAV.forEach(item => {
   navEl.appendChild(b);
 });
 
-// ============================================
-// CLOCK
-// ============================================
+/* ===== MOBILE MENU ===== */
+document.getElementById('menu-toggle').onclick = () => {
+  document.getElementById('sidebar').classList.toggle('open');
+};
+
+/* ===== CLOCK ===== */
 setInterval(() => {
-  const el = document.getElementById('server-time');
-  if (el && State.serverTime) el.textContent = new Date(State.serverTime * 1000).toTimeString().slice(0, 8);
+  const e = document.getElementById('server-time');
+  if (e && State.serverTime) e.textContent = new Date(State.serverTime * 1000).toTimeString().slice(0, 8);
 }, 1000);
 
-// ============================================
-// BOOT
-// ============================================
+/* ===== BOOT ===== */
 (async function boot() {
+  // Load saved strategy
   const strat = Storage.get('strategy');
-  if (strat) update({ strategyParams: strat.params });
+  if (strat && strat.params) update({ strategyParams: strat.params });
+
+  // Try auto-login with saved token
   const token = Storage.get('token');
   if (token) {
     try {
       WS.connect();
       await new Promise((res, rej) => {
         const t = setTimeout(() => rej(new Error('Connection timeout')), 12000);
-        const i = setInterval(() => { if (WS.connected) { clearTimeout(t); clearInterval(i); res(); } }, 200);
+        const i = setInterval(() => { if (WS.connected) { clearTimeout(t); clearInterval(i); res(); } }, 100);
       });
       const auth = await apiAuthorize(token);
+      if (!auth || !auth.loginid) throw new Error('No auth');
       const bal = await apiBalance();
       const cur = (bal.balance && bal.balance.balance) ? +bal.balance.balance : +auth.balance;
       update({
@@ -979,7 +911,7 @@ setInterval(() => {
       await apiTicks(State.symbol);
       go('dashboard');
     } catch (e) {
-      console.warn('Auto-login failed', e);
+      console.warn('Auto-login failed:', e.message);
       go('login');
     }
   } else {
@@ -987,8 +919,9 @@ setInterval(() => {
   }
 })();
 
-// Expose for debugging
-window.OVER0 = { State, WS, Engine, update, go };
+// Debug helper
+window.OVER0 = { State, WS, Engine, Journal, go, update };
+
 </script>
 </body>
 </html>

@@ -7,95 +7,111 @@
 <title>OVER0 PRO AI</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0e14; color: #fff; min-height: 100vh; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: radial-gradient(ellipse at top, #131a26 0%, #0a0e14 60%);
+    color: #fff; min-height: 100vh; font-size: 15px;
+  }
   button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
-  input, select { font: inherit; color: #fff; background: #161c27; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: 12px; width: 100%; }
-  .app { display: grid; grid-template-columns: 220px 1fr; grid-template-rows: 56px 1fr; min-height: 100vh; }
-  .sidebar { background: #0f141c; border-right: 1px solid rgba(255,255,255,.05); padding: 16px; }
-  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
-  .brand-mark { width: 36px; height: 36px; background: linear-gradient(135deg, #00ff88, #00b4ff); color: #001a10; font-weight: 900; display: grid; place-items: center; border-radius: 8px; }
-  .nav { display: flex; flex-direction: column; gap: 4px; }
-  .nav button { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; color: #aaa; text-align: left; }
+  input, select {
+    font: inherit; color: #fff; background: #161c27; border: 1px solid rgba(255,255,255,.1);
+    border-radius: 8px; padding: 12px; width: 100%;
+  }
+  input:focus, select:focus { border-color: #00ff88; outline: none; box-shadow: 0 0 0 3px rgba(0,255,136,.12); }
+  .app { display: grid; grid-template-columns: 240px 1fr; grid-template-rows: 56px 1fr; min-height: 100vh; }
+  .sidebar { background: #0f141c; border-right: 1px solid rgba(255,255,255,.05); padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-mark { width: 36px; height: 36px; background: linear-gradient(135deg, #00ff88, #00b4ff); color: #001a10; font-weight: 900; font-size: 14px; display: grid; place-items: center; border-radius: 8px; }
+  .brand-text { font-weight: 800; letter-spacing: 1px; }
+  .nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+  .nav button { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; color: #aaa; text-align: left; font-size: 14px; }
   .nav button:hover { background: #161c27; color: #fff; }
   .nav button.active { background: rgba(0,255,136,.1); color: #fff; }
-  .topbar { background: #0f141c; border-bottom: 1px solid rgba(255,255,255,.05); padding: 0 16px; display: flex; align-items: center; gap: 12px; }
+  .conn-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #161c27; border-radius: 999px; font-size: 12px; color: #aaa; }
+  .conn-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: #ff4d6d; }
+  .conn-pill.connected .dot { background: #00ff88; }
+  .conn-pill.connecting .dot { background: #ffa500; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .topbar { background: #0f141c; border-bottom: 1px solid rgba(255,255,255,.05); padding: 0 16px; display: flex; align-items: center; gap: 12px; grid-column: 1 / -1; }
   .topbar-title { font-weight: 600; flex: 1; }
-  .main { grid-column: 2; }
+  .main { grid-column: 2; overflow-y: auto; }
   .view { padding: 24px; }
   .card { background: #161c27; border: 1px solid rgba(255,255,255,.05); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
   .card-title { font-size: 11px; text-transform: uppercase; color: #8a96a8; letter-spacing: 1px; margin-bottom: 8px; }
   .card-value { font-size: 24px; font-weight: 700; }
-  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border-radius: 8px; font-weight: 600; background: #1e2533; color: #fff; border: 1px solid rgba(255,255,255,.1); cursor: pointer; }
-  .btn:hover { background: #2a3344; }
-  .btn-primary { background: linear-gradient(135deg, #00ff88, #00cc6a); color: #001a10; border: 0; }
-  .btn-danger { background: linear-gradient(135deg, #ff4d6d, #c41e3a); color: #fff; border: 0; }
-  .btn-block { width: 100%; }
-  .btn-lg { padding: 16px; font-size: 16px; }
+  .grid-2 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 16px; }
   .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
   .col { display: flex; flex-direction: column; gap: 16px; }
-  .metric-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 16px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border-radius: 8px; font-weight: 600; font-size: 14px; background: #1e2533; color: #fff; border: 1px solid rgba(255,255,255,.1); cursor: pointer; min-height: 44px; }
+  .btn:hover { background: #2a3344; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-primary { background: linear-gradient(135deg, #00ff88, #00cc6a); color: #001a10; border-color: transparent; }
+  .btn-danger { background: linear-gradient(135deg, #ff4d6d, #c41e3a); color: #fff; border-color: transparent; }
+  .btn-warning { background: linear-gradient(135deg, #ffa500, #ff7b00); color: #1a0d00; border-color: transparent; }
+  .btn-lg { padding: 16px 22px; font-size: 15px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; background: #1e2533; }
+  .badge.success { background: rgba(0,255,136,.12); color: #00ff88; }
+  .badge.loss { background: rgba(255,77,109,.12); color: #ff4d6d; }
+  .badge.info { background: rgba(0,180,255,.12); color: #00b4ff; }
   .label { font-size: 12px; color: #8a96a8; margin-bottom: 6px; display: block; }
   .field { margin-bottom: 16px; }
-  .muted { color: #8a96a8; }
+  .profit { color: #00ff88; } .loss { color: #ff4d6d; } .muted { color: #8a96a8; }
   .center { text-align: center; }
   .huge-num { font-size: 36px; font-weight: 900; background: linear-gradient(135deg, #00ff88, #00b4ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .tick-display { text-align: center; padding: 24px; }
-  .tick-digit { font-size: 80px; font-weight: 900; background: linear-gradient(135deg, #00ff88, #00b4ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .tick-digit { font-size: 80px; font-weight: 900; line-height: 1; background: linear-gradient(135deg, #00ff88, #00b4ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .tick-price { font-size: 20px; margin-top: 8px; }
-  .conn-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #161c27; border-radius: 999px; font-size: 12px; margin-top: auto; }
-  .conn-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: #ff4d6d; }
-  .conn-pill.connected .dot { background: #00ff88; }
-  .conn-pill.connecting .dot { background: #ffa500; animation: pulse 1s infinite; }
-  .live-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: rgba(138,150,168,.15); font-size: 11px; }
+  .tick-meta { display: flex; justify-content: center; gap: 12px; margin-top: 12px; color: #8a96a8; font-size: 12px; flex-wrap: wrap; }
+  .trade-controls { display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr); margin-top: 16px; }
+  .live-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: rgba(138,150,168,.15); font-size: 11px; font-weight: 600; }
   .live-pill.running { background: rgba(255,77,109,.15); color: #ff4d6d; }
   .live-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
   .live-pill.running .dot { animation: pulse 1s infinite; }
-  .trade-controls { display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr); }
   .digit-bars { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; align-items: end; height: 120px; padding: 8px 0; }
-  .digit-bar { background: linear-gradient(180deg, #00ff88, #00b4ff); border-radius: 4px 4px 0 0; min-height: 4px; position: relative; }
+  .digit-bar { background: linear-gradient(180deg, #00ff88, #00b4ff); border-radius: 4px 4px 0 0; min-height: 4px; position: relative; transition: height .4s ease; }
   .digit-bar .lbl { position: absolute; bottom: -20px; left: 0; right: 0; text-align: center; font-size: 11px; color: #8a96a8; }
   .heatmap { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
-  .heat-cell { aspect-ratio: 1; border-radius: 6px; display: grid; place-items: center; font-weight: 700; background: #161c27; }
-  .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; background: #1e2533; }
-  .profit { color: #00ff88; }
-  .loss { color: #ff4d6d; }
+  .heat-cell { aspect-ratio: 1; border-radius: 6px; display: grid; place-items: center; font-weight: 700; font-size: 14px; background: #161c27; }
   .strat-row, .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
   .strat-row:last-child, .settings-row:last-child { border-bottom: 0; }
   .switch { position: relative; width: 44px; height: 24px; background: #1e2533; border-radius: 12px; cursor: pointer; }
   .switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: left .2s; }
   .switch.on { background: rgba(0,255,136,.3); }
   .switch.on::after { left: 22px; background: #00ff88; }
-  .login-wrap { position: fixed; inset: 0; display: grid; place-items: center; background: #0a0e14; z-index: 1000; padding: 16px; }
+  .journal-list { display: flex; flex-direction: column; gap: 8px; }
+  .journal-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #1e2533; border-radius: 8px; }
+  .digit-badge { width: 36px; height: 36px; border-radius: 6px; display: grid; place-items: center; font-weight: 800; background: #161c27; }
+  .digit-badge.win { background: rgba(0,255,136,.2); color: #00ff88; }
+  .digit-badge.loss { background: rgba(255,77,109,.2); color: #ff4d6d; }
+  .login-wrap { position: fixed; inset: 0; display: grid; place-items: center; background: #0a0e14; padding: 16px; z-index: 1000; }
   .login-card { width: 100%; max-width: 420px; background: #161c27; border: 1px solid rgba(255,255,255,.05); border-radius: 16px; padding: 32px; }
   .input-wrap { position: relative; }
-  .toggle-eye { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; padding: 4px; }
+  .toggle-eye { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); padding: 4px; cursor: pointer; color: #aaa; }
   .warn-box { background: rgba(255,165,0,.08); border: 1px solid rgba(255,165,0,.25); color: #ffa500; padding: 10px; border-radius: 8px; font-size: 12px; margin-top: 12px; }
   .toast-container { position: fixed; top: 70px; right: 16px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
   .toast { padding: 12px 16px; background: #1e2533; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; font-size: 13px; }
   .toast.success { border-left: 3px solid #00ff88; }
   .toast.error { border-left: 3px solid #ff4d6d; }
   .toast.info { border-left: 3px solid #00b4ff; }
-  .journal-list { display: flex; flex-direction: column; gap: 8px; }
-  .journal-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #161c27; border-radius: 8px; }
-  .digit-badge { width: 36px; height: 36px; border-radius: 6px; display: grid; place-items: center; font-weight: 700; background: #1e2533; }
-  .digit-badge.win { background: rgba(0,255,136,.2); color: #00ff88; }
-  .digit-badge.loss { background: rgba(255,77,109,.2); color: #ff4d6d; }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
-  .err-screen { position: fixed; inset: 0; background: #0a0e14; color: #ff4d6d; padding: 40px; font-family: monospace; white-space: pre-wrap; overflow: auto; z-index: 9999; }
+  .toast.warn { border-left: 3px solid #ffa500; }
+  .err-screen { position: fixed; inset: 0; background: #0a0e14; color: #ff4d6d; padding: 40px; font-family: monospace; white-space: pre-wrap; overflow: auto; z-index: 9999; font-size: 13px; }
+  .divider { height: 1px; background: rgba(255,255,255,.05); margin: 16px 0; }
+  .err-debug { position: fixed; bottom: 10px; right: 10px; background: #1e2533; color: #ffa500; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-family: monospace; max-width: 400px; z-index: 5000; border: 1px solid rgba(255,165,0,.3); }
   @media (max-width: 768px) {
-    .app { grid-template-columns: 1fr; }
+    .app { grid-template-columns: 1fr; grid-template-rows: 56px 1fr; }
     .sidebar { display: none; }
     .main { grid-column: 1; }
+    .view { padding: 16px; }
   }
 </style>
 </head>
 <body>
 
 <div class="app">
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="brand">
       <div class="brand-mark">O0</div>
-      <div style="font-weight:800;letter-spacing:1px">OVER0 PRO</div>
+      <div class="brand-text">OVER0 PRO</div>
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="conn-pill" id="conn-pill">
@@ -114,50 +130,69 @@
 <div class="toast-container" id="toast-container"></div>
 
 <script>
-// ===== Error catcher (shows errors on screen) =====
+// ============================================
+// ERROR HANDLER - shows errors on screen
+// ============================================
 window.onerror = function(msg, url, line, col, err) {
   const d = document.createElement('div');
   d.className = 'err-screen';
-  d.textContent = 'ERROR:\n' + msg + '\n\nLine: ' + line + '\nColumn: ' + col + '\n\n' + (err && err.stack || '');
+  d.textContent = '⚠️ ERROR:\n' + msg + '\n\nLine: ' + line + '\nColumn: ' + col + '\n\n' + (err && err.stack || '');
   document.body.appendChild(d);
+  console.error(err);
   return false;
 };
 
-// ===== Config =====
-const APP_ID = '1086';  // Public demo app ID — replace with your own from api.deriv.com
+window.addEventListener('unhandledrejection', function(e) {
+  console.error('Unhandled rejection:', e.reason);
+});
+
+// ============================================
+// CONFIG
+// ============================================
+const APP_ID = '1086'; // Deriv public demo App ID - works for testing
 const WS_URL = 'wss://ws.derivws.com/websockets/v3';
 
-// ===== State =====
+// ============================================
+// STATE
+// ============================================
 const State = {
-  loggedIn: false, account: null, conn: 'disconnected', latency: null, serverTime: null,
-  symbol: 'R_100', spot: null, lastDigit: null, tickCount: 0, ticksPerMin: 0,
-  proposal: null, openContract: null, engineState: 'idle',
+  loggedIn: false,
+  account: null,
+  conn: 'disconnected',
+  latency: null,
+  serverTime: null,
+  symbol: 'R_100',
+  spot: null,
+  lastDigit: null,
+  tickCount: 0,
+  ticksPerMin: 0,
+  proposal: null,
+  openContract: null,
+  lastResult: null,
+  engineState: 'idle',
   strategyParams: { tradeEveryTicks: 5, stake: 1, maxConsecutiveLosses: 5, cooldown: 3 },
   session: { trades: 0, wins: 0, losses: 0, profit: 0, loss: 0, startBalance: 0 },
   digitWindow: [],
-  settings: { notifications: true, sound: false }
+  settings: { notifications: true, sound: false, confirmTrades: false, autoReconnect: true }
 };
 
 const listeners = new Set();
-function onChange(fn) { listeners.add(fn); }
+function onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); }
 function emitChange() { listeners.forEach(fn => { try { fn(State); } catch(e) { console.error(e); } }); }
 function update(patch) { Object.assign(State, patch); emitChange(); }
 
-// ===== Storage =====
 const Storage = {
   get(k) { try { const v = localStorage.getItem('over0:'+k); return v ? JSON.parse(v) : null; } catch { return null; } },
   set(k, v) { try { localStorage.setItem('over0:'+k, JSON.stringify(v)); } catch {} },
   del(k) { try { localStorage.removeItem('over0:'+k); } catch {} }
 };
 
-// ===== Format =====
 const fmt = {
   money(n, c='USD') { if (n==null||isNaN(n)) return '—'; return (n<0?'-':'') + Math.abs(+n).toFixed(2) + ' ' + c; },
   num(n, d=2) { return n==null||isNaN(n)?'—':(+n).toFixed(d); },
   pct(n) { return n==null||isNaN(n)?'—':(n*100).toFixed(1)+'%'; }
 };
 
-// ===== Toast =====
 function toast(msg, type='info') {
   const c = document.getElementById('toast-container');
   if (!c) return;
@@ -165,10 +200,9 @@ function toast(msg, type='info') {
   t.className = 'toast ' + type;
   t.textContent = msg;
   c.appendChild(t);
-  setTimeout(() => t.remove(), 3500);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3500);
 }
 
-// ===== Helpers =====
 function el(tag, attrs, children) {
   const n = document.createElement(tag);
   attrs = attrs || {};
@@ -196,32 +230,91 @@ function card(title, value, sub) {
   ]);
 }
 
-// ===== WebSocket =====
+// ============================================
+// WEBSOCKET
+// ============================================
 const WS = {
-  ws: null, handlers: new Map(), nextId: 1, connected: false, attempt: 0, shouldRun: false,
+  ws: null,
+  handlers: new Map(),
+  nextId: 1,
+  connected: false,
+  pingTimer: null,
+  latency: null,
+  pingSent: 0,
+  attempt: 0,
+  shouldRun: false,
+  reconnectTimer: null,
+
+  connect() {
+    if (this.ws && (this.ws.readyState === 0 || this.ws.readyState === 1)) return;
+    this.shouldRun = true;
+    setConn('connecting');
+    try {
+      this.ws = new WebSocket(WS_URL + '?app_id=' + APP_ID + '&l=en&brand=over0pro');
+    } catch (e) {
+      console.error('WS construct error', e);
+      this._reconnect();
+      return;
+    }
+    this.ws.onopen = () => {
+      this.attempt = 0;
+      this.connected = true;
+      setConn('connected');
+      this._startPing();
+    };
+    this.ws.onmessage = e => this._onMsg(e);
+    this.ws.onerror = e => console.warn('WS error', e);
+    this.ws.onclose = () => {
+      this.connected = false;
+      this._stopPing();
+      setConn('disconnected');
+      if (this.shouldRun) this._reconnect();
+    };
+  },
+  disconnect() {
+    this.shouldRun = false;
+    this._stopPing();
+    clearTimeout(this.reconnectTimer);
+    try { this.ws && this.ws.close(); } catch {}
+    this.ws = null;
+  },
+  _reconnect() {
+    const delay = Math.min(30000, 1000 * Math.pow(1.7, this.attempt++));
+    setConn('reconnecting');
+    clearTimeout(this.reconnectTimer);
+    this.reconnectTimer = setTimeout(() => this.shouldRun && this.connect(), delay);
+  },
+  _startPing() {
+    this._stopPing();
+    this.pingTimer = setInterval(() => {
+      if (!this.connected) return;
+      this.pingSent = Date.now();
+      this.send({ ping: 1 });
+    }, 30000);
+  },
+  _stopPing() { if (this.pingTimer) { clearInterval(this.pingTimer); this.pingTimer = null; } },
   send(obj) {
     return new Promise(resolve => {
       if (!this.ws || this.ws.readyState !== 1) { resolve({ error: { message: 'Not connected' } }); return; }
       const id = obj.req_id || this.nextId++;
       this.handlers.set(id, resolve);
-      try { this.ws.send(JSON.stringify({ ...obj, req_id: id })); }
+      try { this.ws.send(JSON.stringify(Object.assign({}, obj, { req_id: id }))); }
       catch (e) { resolve({ error: { message: e.message } }); }
     });
   },
-  connect() {
-    if (this.ws && (this.ws.readyState === 0 || this.ws.readyState === 1)) return;
-    this.shouldRun = true;
-    setConn('connecting');
-    try { this.ws = new WebSocket(WS_URL + '?app_id=' + APP_ID + '&l=en&brand=over0pro'); }
-    catch (e) { return; }
-    this.ws.onopen = () => { this.attempt = 0; this.connected = true; setConn('connected'); };
-    this.ws.onerror = () => {};
-    this.ws.onclose = () => { this.connected = false; setConn('disconnected'); if (this.shouldRun) setTimeout(() => this.connect(), 2000); };
-    this.ws.onmessage = e => this._onMsg(e);
-  },
   _onMsg(e) {
-    let m; try { m = JSON.parse(e.data); } catch { return; }
-    if (m.req_id != null) { const h = this.handlers.get(m.req_id); if (h) { this.handlers.delete(m.req_id); h(m); } }
+    let m;
+    try { m = JSON.parse(e.data); } catch { return; }
+    if (m.ping) { try { this.ws.send(JSON.stringify({ pong: m.ping })); } catch {} return; }
+    if (this.pingSent && m.req_id == null) {
+      this.latency = Date.now() - this.pingSent;
+      update({ latency: this.latency });
+      this.pingSent = 0;
+    }
+    if (m.req_id != null) {
+      const h = this.handlers.get(m.req_id);
+      if (h) { this.handlers.delete(m.req_id); h(m); }
+    }
     handleMsg(m);
   }
 };
@@ -235,59 +328,72 @@ function setConn(c) {
   }
 }
 
-// ===== Deriv API =====
-const API = {
-  authorize(token) { return WS.send({ authorize: token }); },
-  balance(s) { return WS.send({ balance: 1, subscribe: s || 1 }); },
-  ticks(sym) { return WS.send({ ticks: sym, subscribe: 1 }); },
-  proposal(req) { return WS.send({ proposal: 1, ...req }); },
-  buy(id, price) { return WS.send({ buy: id, price }); },
-  subContract(cid) { return WS.send({ proposal_open_contract: 1, contract_id: cid, subscribe: 1 }); }
-};
+// ============================================
+// DERIV API
+// ============================================
+const tickHandlers = [];
+const contractHandlers = [];
 
-// ===== Message router =====
-const tickHandlers = [], contractHandlers = [];
 function handleMsg(m) {
   if (!m || !m.msg_type) return;
   if (m.msg_type === 'tick' && m.tick) {
     const q = m.tick.quote;
-    const digit = String(q).split('.')[1] ? String(q).split('.')[1][0] : String(q).slice(-1);
-    tickHandlers.forEach(h => h({ symbol: m.tick.symbol, quote: q, epoch: m.tick.epoch, digit }));
+    const parts = String(q).split('.');
+    const digit = parts[1] ? parts[1][0] : String(q).slice(-1);
+    const t = { symbol: m.tick.symbol, quote: q, epoch: m.tick.epoch, digit: digit };
+    tickHandlers.forEach(h => h(t));
   }
   if (m.msg_type === 'balance' && m.balance && State.account) {
-    update({ account: { ...State.account, balance: +m.balance.balance } });
+    const newBal = +m.balance.balance;
+    if (!isNaN(newBal)) update({ account: Object.assign({}, State.account, { balance: newBal }) });
   }
   if (m.msg_type === 'time' && m.time) update({ serverTime: m.time });
   if (m.msg_type === 'proposal_open_contract' && m.proposal_open_contract) {
     contractHandlers.forEach(h => h(m.proposal_open_contract));
   }
   if (m.msg_type === 'buy' && m.buy) {
-    update({ openContract: { id: m.buy.contract_id, ...m.buy, status: 'open' } });
-    toast('Contract #' + m.buy.contract_id + ' purchased', 'success');
-    API.subContract(m.buy.contract_id);
+    if (m.buy.contract_id) {
+      update({ openContract: { id: m.buy.contract_id, ...m.buy, status: 'open' } });
+      toast('Contract #' + m.buy.contract_id + ' purchased', 'success');
+      WS.send({ proposal_open_contract: 1, contract_id: m.buy.contract_id, subscribe: 1 });
+    }
   }
 }
 
-// ===== Journal =====
+async function apiAuthorize(token) {
+  const r = await WS.send({ authorize: token });
+  if (r.error) throw new Error(r.error.message);
+  return r.authorize;
+}
+async function apiBalance() { return WS.send({ balance: 1, subscribe: 1 }); }
+async function apiTicks(sym) { return WS.send({ ticks: sym, subscribe: 1 }); }
+
+// ============================================
+// ENGINE
+// ============================================
 const Journal = {
   list: Storage.get('journal') || [],
   save() { Storage.set('journal', this.list.slice(0, 500)); },
-  add(e) { e.id = Date.now(); this.list.unshift(e); if (this.list.length > 500) this.list.length = 500; this.save(); },
+  add(e) { e.id = Date.now() + '-' + Math.random().toString(36).slice(2,7); this.list.unshift(e); if (this.list.length>500) this.list.length=500; this.save(); },
   all() { return this.list; },
   clear() { this.list = []; this.save(); }
 };
 
-// ===== Engine =====
 const Engine = {
-  busy: false, _sinceLast: 0, _consecLoss: 0, _cooldown: 0,
+  busy: false,
+  _sinceLast: 0,
+  _consecLoss: 0,
+  _cooldown: 0,
+
   init() {
     tickHandlers.push(t => this._onTick(t));
     contractHandlers.push(c => this._onContract(c));
   },
+
   start() { update({ engineState: 'running' }); toast('Trading started', 'info'); },
-  pause() { update({ engineState: 'paused' }); toast('Trading paused', 'info'); },
+  pause() { update({ engineState: 'paused' }); toast('Trading paused', 'warn'); },
   resume() { update({ engineState: 'running' }); toast('Trading resumed', 'info'); },
-  stop() { update({ engineState: 'stopped' }); toast('Trading stopped', 'info'); },
+  stop() { update({ engineState: 'stopped' }); toast('Trading stopped', 'warn'); },
   emergencyStop() { update({ engineState: 'idle' }); toast('EMERGENCY STOP', 'error'); },
   setParams(p) { State.strategyParams = Object.assign({}, State.strategyParams, p); },
 
@@ -308,15 +414,41 @@ const Engine = {
     this.busy = true;
     try {
       const p = State.strategyParams;
-      const req = { symbol: State.symbol, contract_type: 'OVER', barrier: '0', amount: p.stake, basis: 'stake', currency: State.account ? State.account.currency : 'USD', duration: 1, duration_unit: 't' };
+      // CRITICAL FIX: Deriv proposal field names verified against API docs
+      const req = {
+        proposal: 1,
+        amount: String(p.stake),     // MUST be string
+        basis: 'stake',
+        contract_type: 'DIGITOVER',  // FIXED: was 'OVER' — Deriv uses DIGITOVER for "digit over 0"
+        currency: State.account ? State.account.currency : 'USD',
+        duration: 1,
+        duration_unit: 't',
+        symbol: State.symbol,
+        barrier: '0'
+      };
       update({ proposal: Object.assign({}, req, { status: 'requesting' }) });
-      const r = await API.proposal(req);
-      if (r.error) { toast(r.error.message, 'error'); return; }
+      const r = await WS.send(req);
+      if (r.error) {
+        update({ proposal: Object.assign({}, r.error, { status: 'error' }) });
+        toast(r.error.message, 'error');
+        return;
+      }
+      if (!r.proposal || !r.proposal.id) {
+        toast('No proposal returned', 'error');
+        return;
+      }
       update({ proposal: Object.assign({}, r.proposal, { status: 'ready' }) });
-      const buy = await API.buy(r.proposal.id, r.proposal.ask_price);
-      if (buy.error) { toast(buy.error.message, 'error'); }
-    } catch (e) { toast(e.message, 'error'); }
-    finally { this.busy = false; }
+      const buy = await WS.send({ buy: r.proposal.id, price: String(r.proposal.ask_price) });
+      if (buy.error) {
+        update({ proposal: Object.assign({}, buy.error, { status: 'error' }) });
+        toast(buy.error.message, 'error');
+      }
+    } catch (e) {
+      console.error('Trade error', e);
+      toast('Trade error: ' + e.message, 'error');
+    } finally {
+      this.busy = false;
+    }
   },
 
   _onContract(c) {
@@ -325,7 +457,17 @@ const Engine = {
     if (c.is_sold) {
       const pnl = +c.profit || 0;
       const win = pnl > 0;
-      Journal.add({ time: Date.now(), contractId: c.contract_id, symbol: State.symbol, stake: +c.buy_price, payout: +c.payout, profit: pnl, win: win, barrier: c.barrier, type: c.contract_type });
+      Journal.add({
+        time: Date.now(),
+        contractId: c.contract_id,
+        symbol: State.symbol,
+        stake: +c.buy_price,
+        payout: +c.payout,
+        profit: pnl,
+        win: win,
+        barrier: c.barrier,
+        type: c.contract_type
+      });
       const s = Object.assign({}, State.session);
       s.trades++;
       if (win) { s.wins++; s.profit += pnl; this._consecLoss = 0; }
@@ -340,7 +482,9 @@ const Engine = {
 };
 Engine.init();
 
-// ===== Router =====
+// ============================================
+// ROUTER
+// ============================================
 const routes = {};
 function route(name, fn) { routes[name] = fn; }
 function go(name) {
@@ -350,40 +494,67 @@ function go(name) {
   root.innerHTML = '';
   document.getElementById('topbar-title').textContent = name.charAt(0).toUpperCase() + name.slice(1);
   try { fn(root); }
-  catch (e) { root.innerHTML = '<div class="card" style="color:#ff4d6d">View error: ' + e.message + '</div>'; console.error(e); }
+  catch (e) {
+    root.innerHTML = '<div class="card" style="color:#ff4d6d">View error: ' + e.message + '</div>';
+    console.error(e);
+  }
   document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.route === name));
 }
 
-// ===== Login View =====
-route('login', function(root) {
+// ============================================
+// LOGIN VIEW
+// ============================================
+route('login', root => {
   let show = false;
-  const tokenInput = el('input', { type: 'password', placeholder: 'Paste your Deriv API token' });
-  const appIdInput = el('input', { type: 'text', placeholder: 'App ID (leave empty for default)' });
+  const tokenInput = el('input', { type: 'password', placeholder: 'Paste your Deriv API token', autocomplete: 'off' });
+  const appIdInput = el('input', { type: 'text', placeholder: 'App ID (optional, default: 1086)' });
   const eyeBtn = el('button', { class: 'toggle-eye', type: 'button' }, ['👁']);
   const errBox = el('div', { class: 'warn-box', style: { display: 'none' } });
-  const submit = el('button', { class: 'btn btn-primary btn-block btn-lg' }, ['Connect to Deriv']);
+  const submit = el('button', { class: 'btn btn-primary btn-lg', style: { width: '100%' } }, ['Connect to Deriv']);
 
-  eyeBtn.onclick = function() { show = !show; tokenInput.type = show ? 'text' : 'password'; };
-  submit.onclick = async function() {
+  eyeBtn.onclick = () => { show = !show; tokenInput.type = show ? 'text' : 'password'; };
+
+  submit.onclick = async () => {
     errBox.style.display = 'none';
     const token = tokenInput.value.trim();
+    const appId = appIdInput.value.trim();
     if (!token) { errBox.textContent = 'API token is required.'; errBox.style.display = 'block'; return; }
-    submit.disabled = true; submit.textContent = 'Connecting...';
+
+    let appIdToUse = APP_ID;
+    if (appId && /^\d+$/.test(appId)) appIdToUse = appId;
+
+    submit.disabled = true; submit.innerHTML = '<span class="spinner" style="display:inline-block;width:18px;height:18px;border:2px solid #001a10;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite"></span> Connecting...';
     try {
       WS.connect();
-      await new Promise(function(res, rej) {
-        const t = setTimeout(function() { rej(new Error('Connection timeout - check your App ID')); }, 15000);
-        const i = setInterval(function() { if (WS.connected) { clearTimeout(t); clearInterval(i); res(); } }, 200);
+      // Wait for connection
+      await new Promise((res, rej) => {
+        const t = setTimeout(() => rej(new Error('Connection timeout. Check your internet.')), 15000);
+        const i = setInterval(() => { if (WS.connected) { clearTimeout(t); clearInterval(i); res(); } }, 200);
       });
-      const auth = await API.authorize(token);
-      const bal = await API.balance(1);
-      const cur = (bal.balance && bal.balance.balance) || auth.balance;
-      update({ loggedIn: true, account: { loginid: auth.loginid, currency: auth.currency, balance: cur, name: auth.loginid, type: auth.is_virtual ? 'Demo' : 'Real' }, session: Object.assign({}, State.session, { startBalance: cur }) });
-      await API.ticks(State.symbol);
-      toast('Authenticated!', 'success');
+      const auth = await apiAuthorize(token);
+      if (!auth || !auth.loginid) throw new Error('Authorization failed');
+      // Override APP_ID at runtime by storing the desired one
+      Storage.set('app_id_override', appIdToUse);
+      const bal = await apiBalance();
+      const cur = (bal.balance && bal.balance.balance) ? +bal.balance.balance : +auth.balance;
+      update({
+        loggedIn: true,
+        account: {
+          loginid: auth.loginid,
+          currency: auth.currency || 'USD',
+          balance: cur,
+          name: auth.loginid,
+          type: auth.is_virtual ? 'Demo' : 'Real',
+          landing_company: auth.landing_company_name
+        },
+        session: Object.assign({}, State.session, { startBalance: cur })
+      });
+      await apiTicks(State.symbol);
+      toast('Authenticated successfully!', 'success');
       go('dashboard');
     } catch (e) {
-      errBox.textContent = e.message;
+      console.error('Login error', e);
+      errBox.textContent = e.message || 'Login failed';
       errBox.style.display = 'block';
       submit.disabled = false; submit.textContent = 'Connect to Deriv';
     }
@@ -393,73 +564,115 @@ route('login', function(root) {
     el('div', { class: 'login-card' }, [
       el('div', { style: { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' } }, [
         el('div', { class: 'brand-mark' }, ['O0']),
-        el('div', {}, [el('div', { style: { fontSize: '20px', fontWeight: 800 } }, ['OVER0 PRO AI']), el('div', { class: 'muted', style: { fontSize: '13px' } }, ['Authenticate via Deriv API token'])])
+        el('div', {}, [
+          el('div', { style: { fontSize: '20px', fontWeight: 800 } }, ['OVER0 PRO AI']),
+          el('div', { class: 'muted', style: { fontSize: '13px' } }, ['Authenticate via your Deriv API token'])
+        ])
       ]),
-      el('div', { class: 'field' }, [el('label', { class: 'label' }, ['API Token']), el('div', { class: 'input-wrap' }, [tokenInput, eyeBtn])]),
-      el('div', { class: 'field' }, [el('label', { class: 'label' }, ['App ID (optional)']), appIdInput]),
+      el('div', { class: 'field' }, [
+        el('label', { class: 'label' }, ['API Token']),
+        el('div', { class: 'input-wrap' }, [tokenInput, eyeBtn])
+      ]),
+      el('div', { class: 'field' }, [
+        el('label', { class: 'label' }, ['App ID (optional)']),
+        appIdInput
+      ]),
       errBox,
       el('div', { style: { marginTop: '16px' } }, [submit]),
-      el('div', { class: 'warn-box' }, ['Get your free App ID at api.deriv.com · Create a token with Trade scope enabled.'])
+      el('div', { class: 'warn-box' }, ['Get a free App ID at api.deriv.com. Create a token with Trade scope enabled.'])
     ])
   ]);
-  document.body.appendChild(wrap);
-  // Remove wrap when leaving login
-  const observer = new MutationObserver(function() {
-    if (State.loggedIn && wrap.parentNode) wrap.remove();
-  });
-  observer.observe(document.getElementById('view'), { childList: true });
+  root.appendChild(wrap);
+  setTimeout(() => tokenInput.focus(), 100);
 });
 
-// ===== Dashboard View =====
-route('dashboard', function(root) {
+// ============================================
+// DASHBOARD
+// ============================================
+route('dashboard', root => {
   const balanceEl = el('div', { class: 'huge-num' }, [fmt.money(State.account ? State.account.balance : 0, State.account ? State.account.currency : 'USD')]);
-  const pnlEl = el('div', { class: 'huge-num' }, ['0.00 USD']);
+  const pnlEl = el('div', { class: 'huge-num' }, ['0.00']);
   const wrEl = el('div', { class: 'card-value' }, ['—']);
+
   const tickDigit = el('div', { class: 'tick-digit' }, ['—']);
   const tickPrice = el('div', { class: 'tick-price' }, ['—']);
-  const openBox = el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Open Contract']), el('div', { id: 'open-contract' }, ['No active contract'])]);
+  const tickMeta = el('div', { class: 'tick-meta' }, [
+    el('span', {}, [State.symbol]),
+    el('span', {}, [(State.ticksPerMin || 0) + ' ticks/min']),
+    el('span', {}, ['—'])
+  ]);
 
   const startBtn = el('button', { class: 'btn btn-primary' }, ['▶ Start']);
-  const pauseBtn = el('button', { class: 'btn' }, ['⏸ Pause']);
+  const pauseBtn = el('button', { class: 'btn btn-warning' }, ['⏸ Pause']);
   const stopBtn = el('button', { class: 'btn' }, ['⏹ Stop']);
-  const emerBtn = el('button', { class: 'btn btn-danger' }, ['⛔ STOP']);
+  const emerBtn = el('button', { class: 'btn btn-danger' }, ['⛔ EMERGENCY']);
 
-  startBtn.onclick = function() { Engine.start(); };
-  pauseBtn.onclick = function() { State.engineState === 'paused' ? Engine.resume() : Engine.pause(); };
-  stopBtn.onclick = function() { Engine.stop(); };
-  emerBtn.onclick = function() { if (confirm('EMERGENCY STOP - halt all trading?')) Engine.emergencyStop(); };
+  startBtn.onclick = () => Engine.start();
+  pauseBtn.onclick = () => State.engineState === 'paused' ? Engine.resume() : Engine.pause();
+  stopBtn.onclick = () => Engine.stop();
+  emerBtn.onclick = () => { if (confirm('EMERGENCY STOP will halt all trading immediately. Continue?')) Engine.emergencyStop(); };
 
-  root.appendChild(el('div', { class: 'metric-grid' }, [
+  const openBox = el('div', { class: 'card' }, [
+    el('div', { class: 'card-title' }, ['Open Contract']),
+    el('div', { id: 'dash-open-contract' }, ['No active contract'])
+  ]);
+
+  root.appendChild(el('div', { class: 'grid-2' }, [
     el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Account Balance']), balanceEl, el('div', { class: 'muted', style: { fontSize: '12px' } }, [State.account ? State.account.loginid : '—'])]),
     el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ["Today's P/L"]), pnlEl, el('div', { class: 'muted', style: { fontSize: '12px' } }, [State.session.trades + ' trades'])]),
     el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Win Rate']), wrEl, el('div', { class: 'muted', style: { fontSize: '12px' } }, ['Session'])]),
     el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Connection']), el('div', { class: 'card-value' }, [State.conn]), el('div', { class: 'muted', style: { fontSize: '12px' } }, [State.latency ? State.latency + ' ms' : '—'])])
   ]));
-  root.appendChild(el('div', { class: 'col' }, [
-    el('div', { class: 'card tick-display' }, [tickDigit, tickPrice, el('div', { class: 'muted', style: { marginTop: '8px', fontSize: '12px' } }, [State.symbol + ' · ' + (State.ticksPerMin||0) + ' ticks/min'])]),
-    el('div', { class: 'trade-controls' }, [startBtn, pauseBtn, stopBtn, emerBtn])
-  ]));
-  root.appendChild(openBox);
 
-  onChange(function() {
+  root.appendChild(el('div', { class: 'col' }, [
+    el('div', { class: 'card tick-display' }, [tickDigit, tickPrice, tickMeta]),
+    el('div', { class: 'trade-controls' }, [startBtn, pauseBtn, stopBtn, emerBtn]),
+    openBox
+  ]));
+
+  const unsub = onChange(() => {
     const d = State;
     if (d.account) balanceEl.textContent = fmt.money(d.account.balance, d.account.currency);
-    if (d.lastDigit != null) { tickDigit.textContent = d.lastDigit; tickPrice.textContent = d.spot != null ? (+d.spot).toFixed(4) : '—'; }
-    const s = d.session; const net = s.profit - s.loss;
+    if (d.lastDigit != null) {
+      tickDigit.textContent = d.lastDigit;
+      tickPrice.textContent = d.spot != null ? (+d.spot).toFixed(4) : '—';
+    }
+    if (tickMeta.children[1]) tickMeta.children[1].textContent = (d.ticksPerMin || 0) + ' ticks/min';
+    if (tickMeta.children[2]) tickMeta.children[2].textContent = d.serverTime ? new Date(d.serverTime*1000).toTimeString().slice(0,8) : '—';
+    const s = d.session;
+    const net = s.profit - s.loss;
     pnlEl.textContent = (net >= 0 ? '+' : '') + net.toFixed(2) + ' ' + (d.account ? d.account.currency : '');
     pnlEl.className = 'huge-num ' + (net >= 0 ? 'profit' : 'loss');
     wrEl.textContent = s.trades ? fmt.pct(s.wins / s.trades) : '—';
     if (d.openContract && d.openContract.id) {
-      const oc = d.openContract; const box = document.getElementById('open-contract');
-      if (oc.status !== 'closed') box.innerHTML = '<div style="font-size:13px;color:#aaa">#' + oc.id + ' ' + (oc.contract_type||'') + ' ' + (oc.barrier||'') + '</div><div style="font-size:18px;font-weight:700;margin-top:6px">Buy: ' + fmt.num(oc.buy_price) + ' → Payout: ' + fmt.num(oc.payout) + '</div>';
+      const oc = d.openContract;
+      const box = document.getElementById('dash-open-contract');
+      if (box) {
+        if (oc.status === 'closed') {
+          box.innerHTML = '<div style="color:#aaa">Last: <span class="' + (oc.profit >= 0 ? 'profit' : 'loss') + '">' + fmt.num(oc.profit) + '</span></div>';
+        } else {
+          box.innerHTML = '<div style="font-size:13px;color:#aaa">#' + oc.id + ' ' + (oc.contract_type || '') + ' ' + (oc.barrier || '') + '</div><div style="font-size:18px;font-weight:700;margin-top:6px">Buy: ' + fmt.num(oc.buy_price) + ' → Payout: ' + fmt.num(oc.payout) + '</div><div style="font-size:13px;margin-top:4px">Bid: ' + fmt.num(oc.bid_price) + '</div>';
+        }
+      }
     }
   });
 });
 
-// ===== Trade View =====
-route('trade', function(root) {
-  const symSel = el('select', {}, ['R_10','R_25','R_50','R_75','R_100','1HZ10V','1HZ25V','1HZ50V','1HZ75V','1HZ100V'].map(function(s) { return el('option', { value: s }, [s], s === State.symbol); }));
-  symSel.value = State.symbol;
+// ============================================
+// TRADE
+// ============================================
+route('trade', root => {
+  const symSel = el('select', {}, ['R_10','R_25','R_50','R_75','R_100','1HZ10V','1HZ25V','1HZ50V','1HZ75V','1HZ100V'].map(s => {
+    const opt = el('option', { value: s }, [s]);
+    if (s === State.symbol) opt.setAttribute('selected', 'selected');
+    return opt;
+  }));
+  symSel.onchange = async () => {
+    update({ symbol: symSel.value });
+    try { await WS.send({ forget_all: 'ticks' }); } catch {}
+    try { await apiTicks(symSel.value); } catch (e) { toast('Subscribe error: ' + e.message, 'error'); }
+  };
+
   const stakeIn = el('input', { type: 'number', step: '0.01', min: '0.35', value: String(State.strategyParams.stake) });
   const livePill = el('div', { class: 'live-pill' }, [el('div', { class: 'dot' }), el('span', {}, ['IDLE'])]);
 
@@ -471,38 +684,59 @@ route('trade', function(root) {
     distCells.push(bar); distBox.appendChild(bar);
   }
 
+  const proposalBox = el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Latest Proposal']), el('div', { id: 'trade-proposal-info' }, ['No proposal yet — start trading or wait for next signal.'])]);
+  const openBox = el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Open Contract']), el('div', { id: 'trade-open-contract' }, ['None'])]);
+
   const startBtn = el('button', { class: 'btn btn-primary btn-lg' }, ['Start Trading']);
   const stopBtn = el('button', { class: 'btn btn-lg' }, ['Stop']);
-  startBtn.onclick = function() { Engine.setParams({ stake: +stakeIn.value || 1 }); Engine.start(); };
-  stopBtn.onclick = function() { Engine.stop(); };
+  startBtn.onclick = () => { Engine.setParams({ stake: +stakeIn.value || 1 }); Engine.start(); };
+  stopBtn.onclick = () => Engine.stop();
 
   root.appendChild(el('div', { class: 'col' }, [
     el('div', { class: 'card' }, [
-      el('div', { class: 'row' }, [el('div', { style: { flex: 1 } }, [el('div', { class: 'label' }, ['Market']), symSel]), livePill]),
+      el('div', { class: 'row' }, [
+        el('div', { style: { flex: '1' } }, [el('div', { class: 'label' }, ['Market (Synthetic)']), symSel]),
+        livePill
+      ]),
       el('div', { style: { marginTop: '16px' } }, [el('div', { class: 'label' }, ['Stake (USD)']), stakeIn]),
       el('div', { class: 'row', style: { marginTop: '12px' } }, [startBtn, stopBtn])
     ]),
     el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Last 20 Digits']), digitsRow]),
-    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Distribution (last 200)']), distBox])
+    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Digit Distribution (last 200)']), distBox]),
+    el('div', { style: { display: 'grid', gap: '16px', gridTemplateColumns: '1fr 1fr' } }, [proposalBox, openBox])
   ]));
 
-  onChange(function() {
+  onChange(() => {
     const d = State;
     livePill.className = 'live-pill ' + (d.engineState === 'running' ? 'running' : '');
     livePill.querySelector('span').textContent = d.engineState.toUpperCase();
     digitsRow.innerHTML = '';
-    d.digitWindow.slice(-20).forEach(function(x) {
-      digitsRow.appendChild(el('div', { class: 'badge', style: { minWidth: '28px', textAlign: 'center', background: x.d === '0' ? 'rgba(255,77,109,.2)' : (x.d >= '7' ? 'rgba(0,255,136,.15)' : 'rgba(0,180,255,.12)') } }, [x.d]));
+    d.digitWindow.slice(-20).forEach(x => {
+      const c = el('div', { class: 'badge', style: { minWidth: '28px', textAlign: 'center', padding: '6px 8px', background: x.d === '0' ? 'rgba(255,77,109,.2)' : (x.d >= '7' ? 'rgba(0,255,136,.15)' : 'rgba(0,180,255,.12)'), color: x.d === '0' ? '#ff4d6d' : (x.d >= '7' ? '#00ff88' : '#00b4ff') } }, [x.d]);
+      digitsRow.appendChild(c);
     });
     const counts = Array(10).fill(0);
-    d.digitWindow.forEach(function(x) { counts[+x.d]++; });
+    d.digitWindow.forEach(x => counts[+x.d]++);
     const total = Math.max(1, d.digitWindow.length);
-    counts.forEach(function(c, i) { distCells[i].style.height = Math.max(4, (c/total)*110) + 'px'; });
+    counts.forEach((c, i) => { distCells[i].style.height = Math.max(4, (c/total)*110) + 'px'; });
+    if (d.proposal) {
+      const pr = d.proposal;
+      const box = document.getElementById('trade-proposal-info');
+      if (pr.status === 'ready') box.innerHTML = '<div>Ask: <b>' + fmt.num(pr.ask_price) + '</b> · Payout: <b>' + fmt.num(pr.payout) + '</b></div><div style="color:#aaa;font-size:12px;margin-top:4px">ID: ' + pr.id + '</div>';
+      else if (pr.status === 'error') box.innerHTML = '<div style="color:#ff4d6d">' + (pr.message || 'Error') + '</div>';
+    }
+    if (d.openContract) {
+      const oc = d.openContract; const box = document.getElementById('trade-open-contract');
+      if (oc && oc.id) { const isWin = oc.status === 'closed' && oc.profit >= 0; box.innerHTML = '<div>#' + oc.id + ' ' + (oc.contract_type || '') + ' ' + (oc.barrier || '') + '</div><div style="font-size:18px;font-weight:700;margin-top:6px">Buy: ' + fmt.num(oc.buy_price) + ' → Payout: ' + fmt.num(oc.payout) + '</div><div class="' + (isWin ? 'profit' : (oc.status === 'closed' ? 'loss' : '')) + '" style="font-size:18px;font-weight:700;margin-top:6px">' + (oc.status === 'closed' ? 'P/L: ' + fmt.num(oc.profit) : 'Open') + '</div>'; }
+      else box.textContent = 'None';
+    }
   });
 });
 
-// ===== Research View =====
-route('research', function(root) {
+// ============================================
+// RESEARCH
+// ============================================
+route('research', root => {
   const distBox = el('div', { class: 'digit-bars', style: { height: '160px' } });
   const distCells = [];
   for (let i = 0; i < 10; i++) {
@@ -514,32 +748,35 @@ route('research', function(root) {
   const lastN = el('div', { class: 'row' });
 
   root.appendChild(el('div', { class: 'col' }, [
-    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Frequency Heatmap']), heatmap]),
-    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Distribution']), distBox]),
+    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Digit Frequency Heatmap']), heatmap]),
+    el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Distribution (last 200 ticks)']), distBox]),
     el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Last 30 Digits']), lastN])
   ]));
 
-  onChange(function() {
+  onChange(() => {
     const d = State;
     const counts = Array(10).fill(0);
-    d.digitWindow.forEach(function(x) { counts[+x.d]++; });
+    d.digitWindow.forEach(x => counts[+x.d]++);
     const total = Math.max(1, d.digitWindow.length);
     const max = Math.max.apply(null, counts.concat([1]));
-    counts.forEach(function(c, i) {
+    counts.forEach((c, i) => {
       distCells[i].style.height = Math.max(4, (c/max)*140) + 'px';
       const cell = heatmap.children[i];
       const intensity = c / max;
       cell.style.background = 'rgba(0, 255, 136, ' + (0.05 + intensity*0.4) + ')';
+      cell.style.color = intensity > 0.5 ? '#001a10' : '';
     });
     lastN.innerHTML = '';
-    d.digitWindow.slice(-30).forEach(function(x) {
+    d.digitWindow.slice(-30).forEach(x => {
       lastN.appendChild(el('div', { class: 'badge' }, [x.d]));
     });
   });
 });
 
-// ===== Strategy View =====
-route('strategy', function(root) {
+// ============================================
+// STRATEGY
+// ============================================
+route('strategy', root => {
   const p = State.strategyParams;
   const tradeEveryTicks = el('input', { type: 'number', min: '1', value: String(p.tradeEveryTicks) });
   const stake = el('input', { type: 'number', min: '0.35', step: '0.01', value: String(p.stake) });
@@ -547,29 +784,27 @@ route('strategy', function(root) {
   const cooldown = el('input', { type: 'number', min: '0', value: String(p.cooldown) });
 
   const saveBtn = el('button', { class: 'btn btn-primary' }, ['Save']);
-  saveBtn.onclick = function() {
-    Engine.setParams({ tradeEveryTicks: +tradeEveryTicks.value||5, stake: +stake.value||1, maxConsecutiveLosses: +maxLoss.value||5, cooldown: +cooldown.value||0 });
-    Storage.set('strategy', { name: 'digit-over0', params: State.strategyParams });
-    toast('Saved', 'success');
-  };
   const startBtn = el('button', { class: 'btn btn-primary' }, ['▶ Start']);
   const stopBtn = el('button', { class: 'btn' }, ['⏹ Stop']);
-  startBtn.onclick = function() { Engine.start(); };
-  stopBtn.onclick = function() { Engine.stop(); };
+  saveBtn.onclick = () => { Engine.setParams({ tradeEveryTicks: +tradeEveryTicks.value||5, stake: +stake.value||1, maxConsecutiveLosses: +maxLoss.value||5, cooldown: +cooldown.value||0 }); Storage.set('strategy', { name: 'digit-over0', params: State.strategyParams }); toast('Strategy saved', 'success'); };
+  startBtn.onclick = () => Engine.start();
+  stopBtn.onclick = () => Engine.stop();
 
   root.appendChild(el('div', { class: 'card' }, [
     el('h3', { style: { marginBottom: '12px' } }, ['Active Strategy']),
-    el('div', { class: 'strat-row' }, [el('span', {}, ['Strategy']), el('span', { class: 'badge' }, ['Digit Over 0'])]),
+    el('div', { class: 'strat-row' }, [el('span', {}, ['Strategy']), el('span', { class: 'badge info' }, ['Digit Over 0'])]),
     el('div', { class: 'strat-row' }, [el('span', {}, ['Trade every N ticks']), tradeEveryTicks]),
     el('div', { class: 'strat-row' }, [el('span', {}, ['Stake (USD)']), stake]),
-    el('div', { class: 'strat-row' }, [el('span', {}, ['Max losses (pause)']), maxLoss]),
-    el('div', { class: 'strat-row' }, [el('span', {}, ['Cooldown']), cooldown]),
+    el('div', { class: 'strat-row' }, [el('span', {}, ['Max consecutive losses (pause)']), maxLoss]),
+    el('div', { class: 'strat-row' }, [el('span', {}, ['Cooldown after max loss']), cooldown]),
     el('div', { class: 'row', style: { marginTop: '12px' } }, [saveBtn, startBtn, stopBtn])
   ]));
 });
 
-// ===== Statistics View =====
-route('statistics', function(root) {
+// ============================================
+// STATISTICS
+// ============================================
+route('statistics', root => {
   const totalEl = el('div', { class: 'huge-num' }, ['0']);
   const winsEl = el('div', { class: 'huge-num profit' }, ['0']);
   const lossesEl = el('div', { class: 'huge-num loss' }, ['0']);
@@ -578,47 +813,56 @@ route('statistics', function(root) {
 
   function render() {
     const s = State.session;
-    totalEl.textContent = s.trades;
-    winsEl.textContent = s.wins;
-    lossesEl.textContent = s.losses;
+    const j = Journal.all();
+    const wins = j.filter(x => x.win);
+    const losses = j.filter(x => !x.win);
+    const pnl = wins.reduce((a, b) => a + b.profit, 0) - losses.reduce((a, b) => a + Math.abs(b.profit), 0);
+    totalEl.textContent = s.trades; winsEl.textContent = s.wins; lossesEl.textContent = s.losses;
     wrEl.textContent = s.trades ? fmt.pct(s.wins / s.trades) : '—';
-    const net = s.profit - s.loss;
-    pnlEl.textContent = (net >= 0 ? '+' : '') + net.toFixed(2) + ' ' + (State.account ? State.account.currency : '');
-    pnlEl.className = 'huge-num ' + (net >= 0 ? 'profit' : 'loss');
+    pnlEl.textContent = (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + ' ' + (State.account ? State.account.currency : '');
+    pnlEl.className = 'huge-num ' + (pnl >= 0 ? 'profit' : 'loss');
   }
   render();
   onChange(render);
 
-  root.appendChild(el('div', { class: 'metric-grid' }, [
+  root.appendChild(el('div', { class: 'grid-2' }, [
     el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Total Trades']), totalEl]),
     el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Wins']), winsEl]),
     el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Losses']), lossesEl]),
     el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Win Rate']), wrEl])
   ]));
-  root.appendChild(el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Net P/L']), pnlEl]));
+  root.appendChild(el('div', { class: 'card' }, [el('div', { class: 'card-title' }, ['Net P/L (from journal)']), pnlEl]));
 });
 
-// ===== Journal View =====
-route('journal', function(root) {
+// ============================================
+// JOURNAL
+// ============================================
+route('journal', root => {
   const list = el('div', { class: 'journal-list' });
+  const filter = el('select', {}, [['all','All'],['win','Wins'],['loss','Losses'],['today','Today']].map(([v,l]) => el('option', { value: v }, [l])));
   const exportBtn = el('button', { class: 'btn' }, ['Export CSV']);
   const clearBtn = el('button', { class: 'btn btn-danger' }, ['Clear']);
-  exportBtn.onclick = function() {
+  exportBtn.onclick = () => {
     const rows = [['time','contractId','symbol','stake','payout','profit','win']];
-    Journal.all().forEach(function(x) { rows.push([new Date(x.time).toISOString(), x.contractId, x.symbol, x.stake, x.payout, x.profit, x.win]); });
-    const csv = rows.map(function(r) { return r.map(function(v) { return '"' + String(v==null?'':v).replace(/"/g,'""') + '"'; }).join(','); }).join('\n');
-    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'journal.csv'; a.click();
+    Journal.all().forEach(x => rows.push([new Date(x.time).toISOString(), x.contractId, x.symbol, x.stake, x.payout, x.profit, x.win]));
+    const csv = rows.map(r => r.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(',')).join('\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'over0-journal-' + Date.now() + '.csv'; a.click();
   };
-  clearBtn.onclick = function() { if (confirm('Clear journal?')) { Journal.clear(); render(); } };
+  clearBtn.onclick = () => { if (confirm('Delete all journal entries?')) { Journal.clear(); render(); } };
 
   function render() {
+    const f = filter.value;
+    let items = Journal.all();
+    if (f === 'win') items = items.filter(x => x.win);
+    else if (f === 'loss') items = items.filter(x => !x.win);
+    else if (f === 'today') items = items.filter(x => new Date(x.time).toDateString() === new Date().toDateString());
     list.innerHTML = '';
-    if (!Journal.all().length) { list.appendChild(el('div', { class: 'muted center', style: { padding: '32px' } }, ['No trades yet'])); return; }
-    Journal.all().forEach(function(x) {
+    if (!items.length) { list.appendChild(el('div', { class: 'muted center', style: { padding: '32px' } }, ['No trades yet'])); return; }
+    items.forEach(x => {
       list.appendChild(el('div', { class: 'journal-item' }, [
         el('div', { class: 'digit-badge ' + (x.win ? 'win' : 'loss') }, [x.win ? 'W' : 'L']),
-        el('div', { style: { flex: 1 } }, [
-          el('div', { style: { fontWeight: 600 } }, [x.type + ' ' + x.barrier + ' · #' + x.contractId]),
+        el('div', { style: { flex: '1' } }, [
+          el('div', { style: { fontWeight: 600 } }, [(x.type || '') + ' ' + (x.barrier || '') + ' · #' + x.contractId]),
           el('div', { class: 'muted', style: { fontSize: '12px' } }, [new Date(x.time).toLocaleString()])
         ]),
         el('div', { style: { textAlign: 'right' } }, [
@@ -629,44 +873,50 @@ route('journal', function(root) {
     });
   }
   render();
+  filter.onchange = render;
 
-  root.appendChild(el('div', { class: 'card' }, [el('div', { class: 'row' }, [el('div', { style: { flex: 1 } }, []), exportBtn, clearBtn])]));
+  root.appendChild(el('div', { class: 'card' }, [el('div', { class: 'row' }, [el('div', { style: { flex: '1' } }, [el('div', { class: 'label' }, ['Filter']), filter]), exportBtn, clearBtn])]));
   root.appendChild(list);
 });
 
-// ===== Settings View =====
-route('settings', function(root) {
+// ============================================
+// SETTINGS
+// ============================================
+route('settings', root => {
   const appIdIn = el('input', { type: 'text', value: APP_ID, readonly: true });
   const logoutBtn = el('button', { class: 'btn btn-danger' }, ['Logout & Clear Token']);
-  logoutBtn.onclick = function() { if (confirm('Disconnect?')) { Storage.del('token'); update({ loggedIn: false, account: null }); WS.ws && WS.ws.close(); go('login'); } };
+  logoutBtn.onclick = () => { if (confirm('Disconnect and remove stored token?')) { Storage.del('token'); update({ loggedIn: false, account: null }); WS.disconnect(); go('login'); } };
 
   root.appendChild(el('div', { class: 'card' }, [
     el('h3', { style: { marginBottom: '12px' } }, ['Connection']),
-    el('div', { class: 'settings-row' }, [el('div', {}, ['App ID (get free at api.deriv.com)']), appIdIn]),
-    el('div', { class: 'divider', style: { height: '1px', background: 'rgba(255,255,255,.05)', margin: '16px 0' } }),
+    el('div', { class: 'settings-row' }, [el('div', {}, ['App ID (change on login page)']), appIdIn]),
+    el('div', { class: 'divider' }),
     el('h3', { style: { marginBottom: '12px', color: '#ff4d6d' } }, ['Danger Zone']),
     logoutBtn
   ]));
 });
 
-// ===== Help View =====
-route('help', function(root) {
+// ============================================
+// HELP
+// ============================================
+route('help', root => {
   root.appendChild(el('div', { class: 'card' }, [
     el('h3', { style: { color: '#00ff88', marginBottom: '12px' } }, ['Getting Started']),
     el('ol', { style: { paddingLeft: '20px', lineHeight: '1.8' } }, [
       el('li', {}, ['Register an App ID at api.deriv.com (free)']),
-      el('li', {}, ['Create an API token with Trade scope enabled']),
-      el('li', {}, ['Open Settings and paste your App ID']),
-      el('li', {}, ['Login with your token']),
-      el('li', {}, ['Go to Trade → set stake → click Start'])
+      el('li', {}, ['In your Deriv account, create an API token with Trade scope']),
+      el('li', {}, ['Open this app and paste your App ID + Token']),
+      el('li', {}, ['Go to Trade → set stake → click Start Trading'])
     ]),
     el('h3', { style: { color: '#ffa500', marginTop: '24px' } }, ['⚠️ Risk Warning']),
-    el('p', {}, ['Trading involves significant risk. Test on demo account first. You can lose your entire stake.'])
+    el('p', { style: { color: '#ffa500' } }, ['Trading involves significant risk. Test on demo first. You can lose your entire stake.'])
   ]));
 });
 
-// ===== About View =====
-route('about', function(root) {
+// ============================================
+// ABOUT
+// ============================================
+route('about', root => {
   root.appendChild(el('div', { class: 'card center' }, [
     el('div', { style: { fontSize: '28px', fontWeight: 900, marginBottom: '8px' } }, ['OVER0 PRO AI']),
     el('div', { class: 'muted' }, ['v1.0 · Professional Digit Trading Platform']),
@@ -674,7 +924,9 @@ route('about', function(root) {
   ]));
 });
 
-// ===== Nav =====
+// ============================================
+// NAV
+// ============================================
 const NAV = [
   { id: 'dashboard', icon: '📊', label: 'Dashboard' },
   { id: 'trade', icon: '💹', label: 'Trade' },
@@ -688,21 +940,55 @@ const NAV = [
 ];
 
 const navEl = document.getElementById('nav');
-NAV.forEach(function(item) {
+NAV.forEach(item => {
   const b = el('button', { 'data-route': item.id }, [el('span', {}, [item.icon + ' ']), el('span', {}, [item.label])]);
-  b.onclick = function() { go(item.id); };
+  b.onclick = () => go(item.id);
   navEl.appendChild(b);
 });
 
-// ===== Clock =====
-setInterval(function() {
+// ============================================
+// CLOCK
+// ============================================
+setInterval(() => {
   const el = document.getElementById('server-time');
   if (el && State.serverTime) el.textContent = new Date(State.serverTime * 1000).toTimeString().slice(0, 8);
 }, 1000);
 
-// ===== Boot =====
-setTimeout(function() { go('login'); }, 100);
+// ============================================
+// BOOT
+// ============================================
+(async function boot() {
+  const strat = Storage.get('strategy');
+  if (strat) update({ strategyParams: strat.params });
+  const token = Storage.get('token');
+  if (token) {
+    try {
+      WS.connect();
+      await new Promise((res, rej) => {
+        const t = setTimeout(() => rej(new Error('Connection timeout')), 12000);
+        const i = setInterval(() => { if (WS.connected) { clearTimeout(t); clearInterval(i); res(); } }, 200);
+      });
+      const auth = await apiAuthorize(token);
+      const bal = await apiBalance();
+      const cur = (bal.balance && bal.balance.balance) ? +bal.balance.balance : +auth.balance;
+      update({
+        loggedIn: true,
+        account: { loginid: auth.loginid, currency: auth.currency || 'USD', balance: cur, name: auth.loginid, type: auth.is_virtual ? 'Demo' : 'Real' },
+        session: Object.assign({}, State.session, { startBalance: cur })
+      });
+      await apiTicks(State.symbol);
+      go('dashboard');
+    } catch (e) {
+      console.warn('Auto-login failed', e);
+      go('login');
+    }
+  } else {
+    go('login');
+  }
+})();
 
+// Expose for debugging
+window.OVER0 = { State, WS, Engine, update, go };
 </script>
 </body>
 </html>

@@ -20,7 +20,7 @@
   --red: #ef4444; --red-glow: rgba(239, 68, 68, 0.4);
   --yellow: #fbbf24; --purple: #8b5cf6;
   --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 20px;
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
   --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -37,130 +37,55 @@ input { user-select: text; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
 
-/* LOGIN */
-#login-screen {
-  position: fixed; inset: 0; z-index: 10000;
-  background: radial-gradient(ellipse at center, #111827 0%, #0a0e1a 100%);
-  display: flex; align-items: center; justify-content: center; padding: 20px;
-}
+#login-screen { position: fixed; inset: 0; z-index: 10000; background: radial-gradient(ellipse at center, #111827 0%, #0a0e1a 100%); display: flex; align-items: center; justify-content: center; padding: 20px; }
 #login-screen.hidden { display: none; }
-.login-card {
-  width: 100%; max-width: 420px; padding: 40px;
-  background: var(--bg-secondary); border: 1px solid var(--border);
-  border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); text-align: center;
-}
-.login-logo {
-  width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 16px;
-  background: linear-gradient(135deg, var(--accent), var(--purple));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 26px; color: #fff; font-weight: 800;
-  box-shadow: 0 0 40px var(--accent-glow);
-}
-.login-title { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
-.login-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 32px; line-height: 1.6; }
-.login-input {
-  width: 100%; padding: 12px 16px; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 12px; text-align: left;
-  font-family: 'Courier New', monospace; letter-spacing: 0.5px;
-}
+.login-card { width: 100%; max-width: 440px; padding: 36px 32px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); }
+.login-logo { width: 60px; height: 60px; margin: 0 auto 16px; border-radius: 16px; background: linear-gradient(135deg, var(--accent), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; font-weight: 800; box-shadow: 0 0 40px var(--accent-glow); }
+.login-title { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 4px; }
+.login-sub { font-size: 12px; color: var(--text-secondary); text-align: center; margin-bottom: 24px; line-height: 1.6; }
+.login-input { width: 100%; padding: 11px 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 10px; }
 .login-input:focus { border-color: var(--accent); }
 .login-input::placeholder { color: var(--text-muted); }
-.login-btn {
-  width: 100%; padding: 14px; border-radius: var(--radius-md); font-size: 14px; font-weight: 700;
-  background: linear-gradient(135deg, #ff444f, #d43646); color: #fff;
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  transition: var(--transition); text-transform: uppercase; letter-spacing: 0.5px;
-  box-shadow: 0 4px 20px rgba(255, 68, 79, 0.4); margin-top: 8px;
-}
+.login-btn { width: 100%; padding: 13px; border-radius: var(--radius-md); font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #ff444f, #d43646); color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition); text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 20px rgba(255, 68, 79, 0.4); margin-top: 8px; }
 .login-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(255, 68, 79, 0.5); }
 .login-btn:active { transform: scale(0.98); }
-.login-tabs { display: flex; gap: 4px; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 4px; border-radius: var(--radius-sm); }
-.login-tab { flex: 1; padding: 8px; font-size: 12px; font-weight: 600; color: var(--text-secondary); border-radius: 6px; transition: var(--transition); }
-.login-tab.active { background: var(--accent); color: #001218; }
-.login-help { font-size: 11px; color: var(--text-muted); margin-top: 16px; line-height: 1.6; }
+.login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.login-help { font-size: 11px; color: var(--text-muted); margin-top: 14px; line-height: 1.6; text-align: center; }
 .login-help a { color: var(--accent); text-decoration: none; }
-.login-disclaimer { font-size: 11px; color: var(--text-muted); margin-top: 24px; line-height: 1.6; }
-.app-id-row { display: flex; gap: 8px; margin-bottom: 12px; }
-.app-id-row input { flex: 1; }
-.app-id-row button { padding: 0 12px; background: rgba(0, 212, 255, 0.1); border: 1px solid var(--accent); border-radius: var(--radius-sm); color: var(--accent); font-size: 11px; font-weight: 600; }
-.app-id-row button:hover { background: rgba(0, 212, 255, 0.2); }
+.login-disclaimer { font-size: 10px; color: var(--text-muted); margin-top: 18px; line-height: 1.6; text-align: center; padding-top: 16px; border-top: 1px solid var(--border); }
+.error-msg { color: var(--red); font-size: 12px; margin-top: 8px; text-align: center; min-height: 16px; }
 
-/* PRELOADER */
-#preloader {
-  position: fixed; inset: 0; z-index: 9999;
-  background: radial-gradient(ellipse at center, #111827 0%, #0a0e1a 100%);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  transition: opacity 0.6s ease, visibility 0.6s ease;
-}
+#preloader { position: fixed; inset: 0; z-index: 9999; background: radial-gradient(ellipse at center, #111827 0%, #0a0e1a 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s ease, visibility 0.6s ease; }
 #preloader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-.preloader-logo {
-  width: 80px; height: 80px; border-radius: 20px;
-  background: linear-gradient(135deg, var(--accent), #8b5cf6);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 32px; color: #fff; font-weight: 800;
-  box-shadow: 0 0 60px var(--accent-glow);
-  animation: logoPulse 1.5s ease-in-out infinite; margin-bottom: 24px;
-}
-@keyframes logoPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); box-shadow: 0 0 100px var(--accent-glow); }
-}
-.preloader-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-.preloader-sub { font-size: 11px; color: var(--text-secondary); letter-spacing: 2px; text-transform: uppercase; }
-.preloader-bar-wrap { width: 200px; height: 2px; background: rgba(255,255,255,0.08); border-radius: 1px; overflow: hidden; margin-top: 24px; }
-.preloader-bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--purple)); transition: width 0.3s ease; }
+.preloader-logo { width: 80px; height: 80px; border-radius: 20px; background: linear-gradient(135deg, var(--accent), #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 32px; color: #fff; font-weight: 800; box-shadow: 0 0 60px var(--accent-glow); animation: logoPulse 1.5s ease-in-out infinite; margin-bottom: 24px; }
+@keyframes logoPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); box-shadow: 0 0 100px var(--accent-glow); } }
+.preloader-title { font-size: 20px; font-weight: 700; }
+.preloader-sub { font-size: 11px; color: var(--text-secondary); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
 
-/* APP LAYOUT */
-#app {
-  height: 100vh; width: 100vw;
-  display: grid;
-  grid-template-rows: 56px 1fr 32px;
-  grid-template-columns: 280px 1fr 320px;
-  grid-template-areas: "header header header" "sidebar chart trade" "status status status";
-  opacity: 0; transition: opacity 0.5s ease 0.2s; visibility: hidden;
-}
+#app { height: 100vh; width: 100vw; display: grid; grid-template-rows: 56px 1fr 32px; grid-template-columns: 280px 1fr 320px; grid-template-areas: "header header header" "sidebar chart trade" "status status status"; opacity: 0; transition: opacity 0.5s ease 0.2s; visibility: hidden; }
 #app.visible { opacity: 1; visibility: visible; }
 
-/* HEADER */
-.header {
-  grid-area: header; background: var(--bg-glass); backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; padding: 0 16px; gap: 12px; z-index: 100;
-}
+.header { grid-area: header; background: var(--bg-glass); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; gap: 12px; z-index: 100; }
 .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 6px 10px; border-radius: var(--radius-sm); transition: var(--transition); }
 .logo:hover { background: rgba(255, 255, 255, 0.05); }
-.logo-icon {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: linear-gradient(135deg, var(--accent), var(--purple));
-  display: flex; align-items: center; justify-content: center;
-  color: #fff; font-weight: 800; font-size: 14px;
-  box-shadow: 0 0 16px var(--accent-glow);
-}
+.logo-icon { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--accent), var(--purple)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 14px; box-shadow: 0 0 16px var(--accent-glow); }
 .logo-text { font-size: 15px; font-weight: 700; }
 .logo-sub { font-size: 10px; color: var(--text-secondary); letter-spacing: 1px; text-transform: uppercase; }
 .header-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-left: 8px; padding-left: 12px; border-left: 1px solid var(--border); }
 .header-spacer { flex: 1; }
-.account-selector {
-  display: flex; align-items: center; gap: 8px; padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition); font-size: 12px; position: relative;
-}
+.account-selector { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition); font-size: 12px; position: relative; }
 .account-selector:hover { border-color: var(--border-hover); background: rgba(255, 255, 255, 0.06); }
 .account-flag { width: 18px; height: 18px; border-radius: 50%; background: linear-gradient(135deg, #1e40af, #3b82f6); display: flex; align-items: center; justify-content: center; font-size: 9px; color: #fff; font-weight: 700; }
 .account-flag.demo { background: linear-gradient(135deg, #10b981, #059669); }
 .account-flag.real { background: linear-gradient(135deg, #f59e0b, #d97706); }
 .user-name { font-size: 11px; color: var(--text-secondary); max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.account-dropdown {
-  position: absolute; top: calc(100% + 8px); right: 0; min-width: 240px;
-  background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: var(--radius-md);
-  box-shadow: var(--shadow-soft); padding: 6px; display: none; z-index: 200;
-}
+.account-dropdown { position: absolute; top: calc(100% + 8px); right: 0; min-width: 240px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-soft); padding: 6px; display: none; z-index: 200; }
 .account-dropdown.open { display: block; animation: fadeIn 0.2s ease; }
 .account-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; cursor: pointer; transition: var(--transition); }
 .account-item:hover { background: rgba(255, 255, 255, 0.06); }
 .account-item.active { background: rgba(0, 212, 255, 0.1); }
 .account-item-info { flex: 1; }
-.account-item-id { font-size: 12px; font-weight: 600; }
+.account-item-id { font-size: 12px; font-weight: 600; font-family: monospace; }
 .account-item-type { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
 .balance { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; font-variant-numeric: tabular-nums; }
 .balance-amount { color: var(--green); }
@@ -169,19 +94,14 @@ input { user-select: text; }
 .connection-dot.online { background: var(--green); box-shadow: 0 0 8px var(--green-glow); animation: pulseDot 2s ease-in-out infinite; }
 .connection-dot.offline { background: var(--red); }
 @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-.header-icon-btn {
-  width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
-  border-radius: var(--radius-sm); color: var(--text-secondary); transition: var(--transition); position: relative;
-}
+.header-icon-btn { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); color: var(--text-secondary); transition: var(--transition); }
 .header-icon-btn:hover { background: rgba(255, 255, 255, 0.08); color: var(--text-primary); }
 .mobile-only { display: none; }
 
-/* SIDEBAR */
 .sidebar { grid-area: sidebar; background: var(--bg-secondary); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
 .sidebar-tabs { display: flex; border-bottom: 1px solid var(--border); }
 .sidebar-tab { flex: 1; padding: 12px 8px; font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; transition: var(--transition); border-bottom: 2px solid transparent; }
 .sidebar-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-.sidebar-tab:hover { color: var(--text-primary); }
 .sidebar-content { flex: 1; overflow-y: auto; padding: 12px; }
 .sidebar-section { display: none; }
 .sidebar-section.active { display: block; animation: fadeIn 0.3s ease; }
@@ -189,10 +109,7 @@ input { user-select: text; }
 .empty-state { text-align: center; padding: 40px 16px; color: var(--text-muted); }
 .empty-state i { font-size: 32px; margin-bottom: 12px; opacity: 0.4; }
 .empty-state p { font-size: 12px; line-height: 1.6; }
-.position-card, .history-card {
-  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md);
-  padding: 12px; margin-bottom: 8px; transition: var(--transition); cursor: pointer; position: relative; overflow: hidden;
-}
+.position-card, .history-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; margin-bottom: 8px; transition: var(--transition); cursor: pointer; position: relative; overflow: hidden; }
 .position-card:hover, .history-card:hover { border-color: var(--border-hover); transform: translateY(-1px); box-shadow: var(--shadow-soft); }
 .position-card::before, .history-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); }
 .position-card.down::before, .history-card.down::before { background: var(--red); }
@@ -203,15 +120,14 @@ input { user-select: text; }
 .card-value.up { color: var(--green); }
 .card-value.down { color: var(--red); }
 .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-.card-symbol { font-weight: 700; font-size: 13px; font-family: 'Courier New', monospace; }
-.card-badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(0, 212, 255, 0.15); color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.card-symbol { font-weight: 700; font-size: 13px; font-family: monospace; }
+.card-badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(0, 212, 255, 0.15); color: var(--accent); font-weight: 600; text-transform: uppercase; }
 .card-badge.down { background: rgba(239, 68, 68, 0.15); color: var(--red); }
 .card-badge.up { background: rgba(16, 185, 129, 0.15); color: var(--green); }
 .card-actions { display: flex; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
-.mini-btn { flex: 1; padding: 6px; font-size: 10px; font-weight: 600; border-radius: 4px; background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.3); transition: var(--transition); }
+.mini-btn { flex: 1; padding: 6px; font-size: 10px; font-weight: 600; border-radius: 4px; background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.3); }
 .mini-btn:hover { background: rgba(239, 68, 68, 0.25); }
 
-/* CHART */
 .chart-area { grid-area: chart; display: flex; flex-direction: column; background: var(--bg-primary); overflow: hidden; position: relative; }
 .chart-topbar { height: 48px; display: flex; align-items: center; padding: 0 12px; gap: 10px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); flex-shrink: 0; }
 .market-selector { display: flex; align-items: center; gap: 10px; padding: 6px 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition); font-size: 13px; font-weight: 600; }
@@ -220,7 +136,6 @@ input { user-select: text; }
 .market-price { font-variant-numeric: tabular-nums; font-weight: 700; }
 .market-change { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
 .market-change.up { color: var(--green); background: rgba(16, 185, 129, 0.1); }
-.market-change.down { color: var(--red); background: rgba(239, 68, 68, 0.1); }
 .chart-intervals { display: flex; gap: 2px; margin-left: auto; background: rgba(0,0,0,0.2); padding: 3px; border-radius: var(--radius-sm); }
 .interval-btn { padding: 5px 10px; font-size: 11px; font-weight: 600; color: var(--text-secondary); border-radius: 6px; transition: var(--transition); }
 .interval-btn:hover { color: var(--text-primary); }
@@ -235,14 +150,12 @@ input { user-select: text; }
 .tool-btn { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); border-radius: 6px; transition: var(--transition); font-size: 13px; position: relative; }
 .tool-btn:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.08); }
 .tool-btn.active { color: var(--accent); background: rgba(0, 212, 255, 0.15); box-shadow: inset 0 0 0 1px var(--accent); }
-.tool-btn[data-tooltip]:hover::after { content: attr(data-tooltip); position: absolute; left: calc(100% + 8px); top: 50%; transform: translateY(-50%); background: var(--bg-tertiary); color: var(--text-primary); padding: 4px 8px; border-radius: 4px; font-size: 11px; white-space: nowrap; pointer-events: none; border: 1px solid var(--border); }
 .tool-divider { height: 1px; background: var(--border); margin: 2px 4px; }
 .chart-time-gmt { position: absolute; left: 12px; bottom: 12px; display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: var(--bg-glass); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 11px; color: var(--text-secondary); z-index: 10; }
 .gmt-time { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; }
 .tv-credit { position: absolute; right: 12px; bottom: 6px; font-size: 10px; color: var(--text-muted); z-index: 10; }
 .tv-credit a { color: var(--text-secondary); text-decoration: none; }
 
-/* TRADE PANEL */
 .trade-panel { grid-area: trade; background: var(--bg-secondary); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
 .panel-section { padding: 14px 16px; border-bottom: 1px solid var(--border); }
 .panel-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
@@ -250,21 +163,19 @@ input { user-select: text; }
 .trade-type-btn:hover { border-color: var(--border-hover); }
 .duration-tabs { display: flex; gap: 4px; margin-bottom: 10px; background: rgba(0,0,0,0.2); padding: 3px; border-radius: var(--radius-sm); }
 .duration-tab { flex: 1; padding: 8px; font-size: 11px; font-weight: 600; color: var(--text-secondary); border-radius: 6px; transition: var(--transition); text-align: center; }
-.duration-tab:hover { color: var(--text-primary); }
 .duration-tab.active { background: var(--accent); color: #001218; box-shadow: 0 0 8px var(--accent-glow); }
 .duration-input { position: relative; }
 .duration-input input { width: 100%; padding: 10px 36px 10px 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.duration-input input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1); }
-.duration-input .unit { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 11px; color: var(--text-secondary); pointer-events: none; }
+.duration-input input:focus { border-color: var(--accent); }
+.duration-input .unit { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 11px; color: var(--text-secondary); }
 .duration-quick { display: flex; gap: 4px; margin-top: 6px; }
 .quick-btn { flex: 1; padding: 5px; font-size: 10px; color: var(--text-secondary); background: rgba(255,255,255,0.03); border-radius: 4px; transition: var(--transition); border: 1px solid transparent; }
-.quick-btn:hover { color: var(--text-primary); }
 .quick-btn.active { color: var(--accent); border-color: var(--accent); background: rgba(0, 212, 255, 0.1); }
 .input-group { position: relative; }
 .input-group input { width: 100%; padding: 10px 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.input-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1); }
+.input-group input:focus { border-color: var(--accent); }
 .input-group input[readonly] { opacity: 0.7; cursor: not-allowed; }
-.currency-select { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); padding: 6px 8px; background: rgba(0,0,0,0.3); border-radius: 4px; font-size: 11px; color: var(--text-secondary); cursor: pointer; }
+.currency-select { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); padding: 6px 8px; background: rgba(0,0,0,0.3); border-radius: 4px; font-size: 11px; color: var(--text-secondary); }
 .allow-equals { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; font-size: 12px; }
 .switch { position: relative; width: 36px; height: 20px; background: rgba(255,255,255,0.1); border-radius: 10px; transition: var(--transition); cursor: pointer; }
 .switch::after { content: ''; position: absolute; left: 2px; top: 2px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: var(--transition); }
@@ -279,39 +190,29 @@ input { user-select: text; }
 .summary-row.calculating .val { color: var(--text-muted); font-style: italic; font-size: 11px; }
 .trade-buttons { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
 .trade-btn { width: 100%; padding: 14px; border-radius: var(--radius-md); font-size: 15px; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition); position: relative; overflow: hidden; text-transform: uppercase; }
-.trade-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, transparent, rgba(255,255,255,0.2), transparent); transform: translateX(-100%); transition: transform 0.6s; }
-.trade-btn:hover::before { transform: translateX(100%); }
 .trade-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .trade-btn.rise { background: linear-gradient(135deg, #10b981, #059669); color: #fff; box-shadow: 0 4px 20px var(--green-glow); }
 .trade-btn.rise:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 28px var(--green-glow); }
 .trade-btn.fall { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; box-shadow: 0 4px 20px var(--red-glow); }
 .trade-btn.fall:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 28px var(--red-glow); }
-.trade-btn:active:not(:disabled) { transform: scale(0.98); }
 .btn-ripple { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.4); pointer-events: none; transform: scale(0); animation: rippleAnim 0.6s ease-out; }
 @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
 
-/* STATUS BAR */
 .status-bar { grid-area: status; background: var(--bg-secondary); border-top: 1px solid var(--border); display: flex; align-items: center; padding: 0 12px; gap: 14px; font-size: 11px; color: var(--text-secondary); }
 .status-item { display: flex; align-items: center; gap: 6px; }
 .status-spacer { flex: 1; }
 
-/* MODAL */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.25s ease; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.active { display: flex; }
-.modal { width: 100%; max-width: 480px; max-height: 80vh; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6); display: flex; flex-direction: column; overflow: hidden; animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-@keyframes modalIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.modal { width: 100%; max-width: 480px; max-height: 80vh; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6); display: flex; flex-direction: column; overflow: hidden; }
 .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
-.modal-close { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 6px; color: var(--text-secondary); transition: var(--transition); }
+.modal-close { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 6px; color: var(--text-secondary); }
 .modal-close:hover { background: rgba(255, 255, 255, 0.08); color: var(--text-primary); }
 .modal-title { font-size: 15px; font-weight: 700; flex: 1; }
 .search-box { position: relative; padding: 12px 20px; border-bottom: 1px solid var(--border); }
 .search-box i { position: absolute; left: 30px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 13px; }
 .search-box input { width: 100%; padding: 10px 12px 10px 36px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; }
 .search-box input:focus { border-color: var(--accent); }
-.modal-categories { display: flex; gap: 6px; padding: 12px 20px; overflow-x: auto; border-bottom: 1px solid var(--border); }
-.cat-chip { padding: 6px 14px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); border-radius: 16px; font-size: 11px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; cursor: pointer; transition: var(--transition); }
-.cat-chip:hover { color: var(--text-primary); }
-.cat-chip.active { background: var(--accent); color: #001218; border-color: var(--accent); }
 .modal-list { flex: 1; overflow-y: auto; padding: 8px 12px; }
 .trade-type-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition); margin-bottom: 2px; }
 .trade-type-item:hover { background: rgba(255, 255, 255, 0.05); }
@@ -330,10 +231,9 @@ input { user-select: text; }
 .market-item.selected { background: rgba(0, 212, 255, 0.1); }
 .market-item-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px; color: #fff; flex-shrink: 0; }
 .market-item-info { flex: 1; }
-.market-item-name { font-size: 13px; font-weight: 600; font-family: 'Courier New', monospace; }
+.market-item-name { font-size: 13px; font-weight: 600; font-family: monospace; }
 .market-item-desc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
 
-/* TOASTS */
 .toast-container { position: fixed; top: 70px; right: 16px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
 .toast { min-width: 240px; max-width: 340px; padding: 12px 16px; background: var(--bg-glass); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: var(--radius-md); display: flex; align-items: center; gap: 10px; font-size: 12px; pointer-events: auto; animation: toastIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: var(--shadow-soft); }
 .toast.out { animation: toastOut 0.3s ease forwards; }
@@ -341,94 +241,59 @@ input { user-select: text; }
 .toast.success i { color: var(--green); }
 .toast.error i { color: var(--red); }
 .toast.info i { color: var(--accent); }
-.toast.warning i { color: var(--yellow); }
 @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes toastOut { to { opacity: 0; transform: translateX(20px); } }
 
-/* DRAWER */
 .drawer-backdrop { position: fixed; inset: 56px 0 32px 0; background: rgba(0, 0, 0, 0.5); z-index: 150; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
 .drawer-backdrop.active { opacity: 1; pointer-events: auto; }
 
-/* RESPONSIVE */
-@media (max-width: 1100px) {
-  #app { grid-template-columns: 240px 1fr 300px; }
-  .header-title { display: none; }
-}
+@media (max-width: 1100px) { #app { grid-template-columns: 240px 1fr 300px; } .header-title { display: none; } }
 @media (max-width: 768px) {
   #app { grid-template-rows: 56px 1fr 32px; grid-template-columns: 1fr; grid-template-areas: "header" "chart" "status"; }
   .mobile-only { display: flex; }
   .header { padding: 0 8px; gap: 6px; }
   .logo-text, .logo-sub, .balance, .header-title, .user-name, .header-icon-btn.hide-mobile { display: none; }
   .account-selector { padding: 6px 8px; }
-  .sidebar, .trade-panel { position: fixed; top: 56px; bottom: 32px; width: 86%; max-width: 320px; z-index: 200; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 40px rgba(0, 0, 0, 0.5); }
+  .sidebar, .trade-panel { position: fixed; top: 56px; bottom: 32px; width: 86%; max-width: 320px; z-index: 200; transition: transform 0.3s; box-shadow: 0 0 40px rgba(0, 0, 0, 0.5); }
   .sidebar { left: 0; transform: translateX(-100%); }
   .sidebar.open { transform: translateX(0); }
   .trade-panel { right: 0; transform: translateX(100%); }
   .trade-panel.open { transform: translateX(0); }
-  .chart-topbar { padding: 0 8px; gap: 6px; flex-wrap: nowrap; overflow-x: auto; }
+  .chart-topbar { padding: 0 8px; gap: 6px; }
   .chart-intervals { display: none; }
   .drawing-toolbar { left: 6px; top: 6px; }
-  .tool-btn { width: 30px; height: 30px; font-size: 11px; }
   .market-selector { padding: 5px 8px; font-size: 12px; }
   .market-selector .market-name-full { display: none; }
-  .status-bar { padding: 0 8px; gap: 8px; }
-  .status-item.hide-mobile { display: none; }
-  .modal { max-width: 95vw; max-height: 85vh; }
+  .modal { max-width: 95vw; }
 }
 </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
 <div id="login-screen">
   <div class="login-card">
     <div class="login-logo">TH</div>
     <div class="login-title">Trader's Hub</div>
-    <div class="login-sub">Connect directly to Deriv WebSocket. Enter your API token to start trading on real markets.</div>
-    
-    <div class="login-tabs">
-      <div class="login-tab active" data-method="token">API Token</div>
-      <div class="login-tab" data-method="oauth">OAuth Login</div>
+    <div class="login-sub">Connect to Deriv WebSocket using your API token. No OAuth redirects needed.</div>
+    <input type="text" class="login-input" id="app-id" placeholder="App ID — try 1089 for testing" />
+    <input type="password" class="login-input" id="api-token" placeholder="API Token from app.deriv.com/account/api-token" style="font-family: monospace;" />
+    <div class="error-msg" id="login-error"></div>
+    <button class="login-btn" id="connect-btn"><i class="fas fa-plug"></i> Connect to Deriv</button>
+    <div class="login-help">
+      Don't have these? Get them here:<br>
+      <a href="https://api.deriv.com" target="_blank">App ID → api.deriv.com</a><br>
+      <a href="https://app.deriv.com/account/api-token" target="_blank">Token → app.deriv.com/account/api-token</a>
     </div>
-    
-    <!-- TOKEN METHOD -->
-    <div id="token-form">
-      <div class="app-id-row">
-        <input type="text" class="login-input" id="app-id" placeholder="App ID (from api.deriv.com)" />
-      </div>
-      <input type="text" class="login-input" id="api-token" placeholder="API Token (from app.deriv.com/account/api-token)" style="font-family: 'Courier New', monospace;" />
-      <div class="login-help">
-        Get token: <a href="https://app.deriv.com/account/api-token" target="_blank">app.deriv.com/account/api-token</a> → Create token with Read, Trade, Trading info, Payments scopes.
-      </div>
-      <button class="login-btn" id="connect-btn"><i class="fas fa-plug"></i> Connect</button>
-    </div>
-    
-    <!-- OAUTH METHOD -->
-    <div id="oauth-form" style="display: none;">
-      <div class="app-id-row">
-        <input type="text" class="login-input" id="app-id-oauth" placeholder="App ID (from api.deriv.com)" />
-      </div>
-      <button class="login-btn" id="oauth-btn" style="background: linear-gradient(135deg, #00d4ff, #3b82f6); box-shadow: 0 4px 20px var(--accent-glow);"><i class="fas fa-right-to-bracket"></i> Login with Deriv</button>
-      <div class="login-help">
-        OAuth requires the app to be registered at <a href="https://api.deriv.com" target="_blank">api.deriv.com</a>. Note: browser-to-Deriv OAuth may have CORS issues; API Token method is more reliable.
-      </div>
-    </div>
-    
-    <div class="login-disclaimer">
-      ⚠️ Trading involves risk. Start with a <strong>demo account</strong>. By connecting you accept Deriv's <a href="https://deriv.com/terms-and-conditions" target="_blank" style="color: var(--accent);">Terms</a>.
-    </div>
+    <div class="login-disclaimer">⚠️ Start with a <strong>demo account</strong>. Trading carries risk.</div>
   </div>
 </div>
 
-<!-- PRELOADER -->
 <div id="preloader">
   <div class="preloader-logo">TH</div>
   <div class="preloader-title">Trader's Hub</div>
   <div class="preloader-sub">Connecting to Deriv</div>
-  <div class="preloader-bar-wrap"><div class="preloader-bar" id="preloader-bar"></div></div>
 </div>
 
-<!-- APP -->
 <div id="app">
   <header class="header">
     <button class="header-icon-btn mobile-only" id="sidebar-toggle"><i class="fas fa-bars"></i></button>
@@ -443,7 +308,7 @@ input { user-select: text; }
     <div class="header-spacer"></div>
     <div class="account-selector" id="account-selector">
       <div class="account-flag demo" id="account-flag">D</div>
-      <span class="account-id" id="account-id" style="font-family: 'Courier New', monospace; font-size: 11px;">VRTC...</span>
+      <span class="account-id" id="account-id" style="font-family: monospace; font-size: 11px;">---</span>
       <span class="user-name" id="user-name">User</span>
       <i class="fas fa-chevron-down" style="font-size: 9px; color: var(--text-muted);"></i>
       <div class="account-dropdown" id="account-dropdown"></div>
@@ -468,17 +333,11 @@ input { user-select: text; }
     </div>
     <div class="sidebar-content">
       <div class="sidebar-section active" id="sec-positions">
-        <div class="empty-state" id="positions-empty">
-          <i class="fas fa-inbox"></i>
-          <p>No open positions.</p>
-        </div>
+        <div class="empty-state" id="positions-empty"><i class="fas fa-inbox"></i><p>No open positions.</p></div>
         <div id="positions-list"></div>
       </div>
       <div class="sidebar-section" id="sec-history">
-        <div class="empty-state" id="history-empty">
-          <i class="fas fa-clock-rotate-left"></i>
-          <p>No trade history yet.</p>
-        </div>
+        <div class="empty-state" id="history-empty"><i class="fas fa-clock-rotate-left"></i><p>No history yet.</p></div>
         <div id="history-list"></div>
       </div>
     </div>
@@ -492,7 +351,6 @@ input { user-select: text; }
           <div class="market-price" id="market-price">--</div>
           <div class="market-name-full" style="font-size: 10px; color: var(--text-muted);" id="market-subtitle">Select market</div>
         </div>
-        <div class="market-change up" id="market-change">+0.00%</div>
         <i class="fas fa-chevron-down" style="font-size: 10px; color: var(--text-muted); margin-left: 4px;"></i>
       </div>
       <div class="chart-intervals">
@@ -510,17 +368,17 @@ input { user-select: text; }
     </div>
     <div class="chart-container">
       <div class="drawing-toolbar">
-        <button class="tool-btn active" data-tool="cursor" data-tooltip="Cursor"><i class="fas fa-arrow-pointer"></i></button>
-        <button class="tool-btn" data-tool="crosshair" data-tooltip="Crosshair"><i class="fas fa-crosshairs"></i></button>
+        <button class="tool-btn active" data-tool="cursor"><i class="fas fa-arrow-pointer"></i></button>
+        <button class="tool-btn" data-tool="crosshair"><i class="fas fa-crosshairs"></i></button>
         <div class="tool-divider"></div>
-        <button class="tool-btn" data-tool="trendline" data-tooltip="Trend Line"><i class="fas fa-arrow-trend-up"></i></button>
-        <button class="tool-btn" data-tool="hline" data-tooltip="Horizontal Line"><i class="fas fa-minus"></i></button>
-        <button class="tool-btn" data-tool="rect" data-tooltip="Rectangle"><i class="far fa-square"></i></button>
-        <button class="tool-btn" data-tool="arrow" data-tooltip="Arrow"><i class="fas fa-arrow-up-long"></i></button>
-        <button class="tool-btn" data-tool="text" data-tooltip="Text"><i class="fas fa-font"></i></button>
+        <button class="tool-btn" data-tool="trendline"><i class="fas fa-arrow-trend-up"></i></button>
+        <button class="tool-btn" data-tool="hline"><i class="fas fa-minus"></i></button>
+        <button class="tool-btn" data-tool="rect"><i class="far fa-square"></i></button>
+        <button class="tool-btn" data-tool="arrow"><i class="fas fa-arrow-up-long"></i></button>
+        <button class="tool-btn" data-tool="text"><i class="fas fa-font"></i></button>
         <div class="tool-divider"></div>
-        <button class="tool-btn" data-tool="zoom" data-tooltip="Zoom"><i class="fas fa-magnifying-glass-plus"></i></button>
-        <button class="tool-btn" data-tool="reset" data-tooltip="Reset"><i class="fas fa-rotate-left"></i></button>
+        <button class="tool-btn" data-tool="zoom"><i class="fas fa-magnifying-glass-plus"></i></button>
+        <button class="tool-btn" data-tool="reset"><i class="fas fa-rotate-left"></i></button>
       </div>
       <div id="chart-canvas"></div>
       <div class="chart-time-gmt">
@@ -542,7 +400,7 @@ input { user-select: text; }
     </div>
     <div class="panel-section">
       <div class="panel-label">Duration</div>
-      <div class="duration-tabs" id="duration-tabs">
+      <div class="duration-tabs">
         <div class="duration-tab" data-dur="t">Ticks</div>
         <div class="duration-tab active" data-dur="m">Minutes</div>
         <div class="duration-tab" data-dur="h">Hours</div>
@@ -596,7 +454,6 @@ input { user-select: text; }
 
 <div class="drawer-backdrop" id="drawer-backdrop"></div>
 
-<!-- TRADE TYPE MODAL -->
 <div class="modal-overlay" id="trade-type-modal">
   <div class="modal">
     <div class="modal-header">
@@ -607,17 +464,10 @@ input { user-select: text; }
       <i class="fas fa-magnifying-glass"></i>
       <input type="text" id="trade-search" placeholder="Search..." />
     </div>
-    <div class="modal-categories" id="trade-categories">
-      <div class="cat-chip active" data-cat="all">All</div>
-      <div class="cat-chip" data-cat="options">Options</div>
-      <div class="cat-chip" data-cat="ups">Ups & Downs</div>
-      <div class="cat-chip" data-cat="digits">Digits</div>
-    </div>
     <div class="modal-list" id="trade-type-list"></div>
   </div>
 </div>
 
-<!-- MARKET MODAL -->
 <div class="modal-overlay" id="market-modal">
   <div class="modal">
     <div class="modal-header">
@@ -635,17 +485,13 @@ input { user-select: text; }
 <div class="toast-container" id="toast-container"></div>
 
 <script>
-/* ============================================================
-   STATE
-   ============================================================ */
 const App = {
-  appId: localStorage.getItem('deriv_app_id') || '1089', // Default to public demo App ID
+  appId: localStorage.getItem('deriv_app_id') || '1089',
   token: localStorage.getItem('deriv_token') || null,
   ws: null,
   reqId: 0,
   pending: new Map(),
-  subs: new Map(), // subscription_id -> type
-  connected: false,
+  subs: new Map(),
   authorized: false,
   user: null,
   accounts: [],
@@ -653,7 +499,6 @@ const App = {
   markets: [],
   market: null,
   marketPrice: 0,
-  marketBase: 0,
   chart: null,
   series: null,
   interval: 300,
@@ -664,42 +509,87 @@ const App = {
   allowEquals: false,
   proposals: {},
   selectedTradeName: 'Rise',
-  selectedContract: 'CALL',
-  
   contractTypes: [
-    { name: 'Rise', id: 'CALL', desc: 'Price rises from entry', icon: 'fas fa-arrow-up', cls: 'up', cat: ['options','ups'] },
-    { name: 'Fall', id: 'PUT', desc: 'Price falls from entry', icon: 'fas fa-arrow-down', cls: 'down', cat: ['options','ups'] },
-    { name: 'Higher', id: 'CALL', barrier: '>', desc: 'Price ends higher than barrier', icon: 'fas fa-greater-than', cls: 'up', cat: ['options','ups'] },
-    { name: 'Lower', id: 'PUT', barrier: '<', desc: 'Price ends lower than barrier', icon: 'fas fa-less-than', cls: 'down', cat: ['options','ups'] },
-    { name: 'Touch', id: 'TOUCH', desc: 'Price touches barrier', icon: 'fas fa-hand-pointer', cls: 'purple', cat: 'options' },
-    { name: 'No Touch', id: 'NOTOUCH', desc: 'Price never touches barrier', icon: 'fas fa-ban', cls: 'down', cat: 'options' },
-    { name: 'Matches', id: 'DIGITMATCH', desc: 'Last digit matches prediction', icon: 'fas fa-equals', cls: 'purple', cat: 'digits' },
-    { name: 'Differs', id: 'DIGITDIFF', desc: 'Last digit differs', icon: 'fas fa-not-equal', cls: 'yellow', cat: 'digits' },
-    { name: 'Even', id: 'DIGITEVEN', desc: 'Last digit is even', icon: 'fas fa-divide', cls: 'yellow', cat: 'digits' },
-    { name: 'Odd', id: 'DIGITODD', desc: 'Last digit is odd', icon: 'fas fa-odd', cls: 'purple', cat: 'digits' },
-    { name: 'Over', id: 'DIGITOVER', desc: 'Last digit is over target', icon: 'fas fa-arrow-up', cls: 'purple', cat: 'digits' },
-    { name: 'Under', id: 'DIGITUNDER', desc: 'Last digit is under target', icon: 'fas fa-arrow-down', cls: 'yellow', cat: 'digits' },
-    { name: 'Multiplier Up', id: 'MULTUP', desc: 'Profit as price rises', icon: 'fas fa-xmark', cls: 'purple', cat: 'multipliers' },
-    { name: 'Multiplier Down', id: 'MULTDOWN', desc: 'Profit as price falls', icon: 'fas fa-xmark', cls: 'yellow', cat: 'multipliers' },
-    { name: 'Accumulator', id: 'ACCU', desc: 'Grow stake on consecutive rises', icon: 'fas fa-layer-group', cls: 'yellow', cat: 'accumulators' }
+    { name: 'Rise/Fall', id: 'CALL_PUT', desc: 'Predict price direction', icon: 'fas fa-arrow-up', cls: 'up' },
+    { name: 'Touch', id: 'TOUCH', desc: 'Price touches barrier', icon: 'fas fa-hand-pointer', cls: 'purple' },
+    { name: 'No Touch', id: 'NOTOUCH', desc: 'Price never touches barrier', icon: 'fas fa-ban', cls: 'down' },
+    { name: 'Matches', id: 'DIGITMATCH', desc: 'Last digit matches', icon: 'fas fa-equals', cls: 'purple' },
+    { name: 'Differs', id: 'DIGITDIFF', desc: 'Last digit differs', icon: 'fas fa-not-equal', cls: 'yellow' },
+    { name: 'Even', id: 'DIGITEVEN', desc: 'Last digit is even', icon: 'fas fa-divide', cls: 'yellow' },
+    { name: 'Odd', id: 'DIGITODD', desc: 'Last digit is odd', icon: 'fas fa-odd', cls: 'purple' },
+    { name: 'Over', id: 'DIGITOVER', desc: 'Last digit over target', icon: 'fas fa-arrow-up', cls: 'purple' },
+    { name: 'Under', id: 'DIGITUNDER', desc: 'Last digit under target', icon: 'fas fa-arrow-down', cls: 'yellow' }
   ]
 };
 
-/* ============================================================
-   DERIV WEBSOCKET (direct browser connection)
-   ============================================================ */
-function connectDeriv() {
+function showToast(type, msg) {
+  const cont = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  const icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', info: 'fa-circle-info', warning: 'fa-triangle-exclamation' };
+  t.innerHTML = `<i class="fas ${icons[type] || 'fa-circle-info'}"></i><span>${msg}</span>`;
+  cont.appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, 4000);
+}
+
+function setConnStatus(online) {
+  const cls = online ? 'online' : 'offline';
+  document.getElementById('connection-dot').className = 'connection-dot ' + cls;
+  document.getElementById('status-dot').className = 'connection-dot ' + cls;
+  document.getElementById('connection-text').textContent = online ? 'Live' : 'Offline';
+  document.getElementById('status-text').textContent = online ? 'Connected' : 'Disconnected';
+}
+
+function updateClock() {
+  const gmt = new Date().toUTCString().split(' ')[4];
+  document.querySelectorAll('.gmt-time').forEach(el => el.textContent = gmt);
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+function connectDeriv(appId, token) {
   if (App.ws) try { App.ws.close(); } catch(e) {}
-  App.ws = new WebSocket(`wss://ws.derivws.com/websockets/v3?app_id=${App.appId}`);
+  document.getElementById('login-error').textContent = '';
+  document.getElementById('connect-btn').disabled = true;
+  document.getElementById('connect-btn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+  
+  App.ws = new WebSocket(`wss://ws.derivws.com/websockets/v3?app_id=${appId}`);
+  
+  const timeout = setTimeout(() => {
+    document.getElementById('login-error').textContent = 'Connection timeout. Check your App ID.';
+    document.getElementById('connect-btn').disabled = false;
+    document.getElementById('connect-btn').innerHTML = '<i class="fas fa-plug"></i> Connect to Deriv';
+    try { App.ws.close(); } catch(e) {}
+  }, 15000);
   
   App.ws.onopen = () => {
-    setConnectionStatus(true);
-    showToast('info', 'Connected to Deriv');
-    if (App.token) {
-      send({ authorize: App.token })
-        .then(r => handleAuthorize(r))
-        .catch(e => { showToast('error', 'Auth failed: ' + e.message); showLogin(); });
-    }
+    setConnStatus(true);
+    send({ authorize: token })
+      .then(r => {
+        clearTimeout(timeout);
+        App.authorized = true;
+        App.user = r.authorize;
+        App.accounts = r.authorize.account_list;
+        App.currentAccount = App.accounts.find(a => a.loginid === r.authorize.loginid) || App.accounts[0];
+        App.appId = appId;
+        App.token = token;
+        localStorage.setItem('deriv_app_id', appId);
+        localStorage.setItem('deriv_token', token);
+        showApp();
+        updateUI();
+        loadMarkets();
+        subscribePortfolio();
+        loadHistory();
+        showToast('success', 'Welcome ' + (App.user.fullname || App.user.email));
+      })
+      .catch(e => {
+        clearTimeout(timeout);
+        document.getElementById('login-error').textContent = 'Auth failed: ' + e.message;
+        document.getElementById('connect-btn').disabled = false;
+        document.getElementById('connect-btn').innerHTML = '<i class="fas fa-plug"></i> Connect to Deriv';
+        setConnStatus(false);
+        showLogin();
+      });
   };
   
   App.ws.onmessage = (ev) => {
@@ -710,20 +600,21 @@ function connectDeriv() {
       if (msg.error) p.reject(new Error(msg.error.message));
       else p.resolve(msg);
     } else {
-      handleSubscription(msg);
+      handleSub(msg);
     }
   };
   
-  App.ws.onerror = (err) => {
-    showToast('error', 'Connection error');
+  App.ws.onerror = () => {
+    clearTimeout(timeout);
+    document.getElementById('login-error').textContent = 'Connection error. Check internet.';
+    document.getElementById('connect-btn').disabled = false;
+    document.getElementById('connect-btn').innerHTML = '<i class="fas fa-plug"></i> Connect to Deriv';
   };
   
   App.ws.onclose = () => {
-    setConnectionStatus(false);
-    App.connected = false;
+    setConnStatus(false);
     App.authorized = false;
-    // Auto-reconnect after 3s
-    setTimeout(() => { if (App.token) connectDeriv(); }, 3000);
+    if (App.token) setTimeout(() => connectDeriv(App.appId, App.token), 3000);
   };
 }
 
@@ -739,22 +630,9 @@ function send(req) {
   });
 }
 
-function handleAuthorize(r) {
-  App.authorized = true;
-  App.user = r.authorize;
-  App.accounts = r.authorize.account_list;
-  App.currentAccount = App.accounts.find(a => a.loginid === r.authorize.loginid) || App.accounts[0];
-  updateUI();
-  showApp();
-  loadMarkets();
-  subscribePortfolio();
-  loadHistory();
-  showToast('success', 'Welcome ' + (App.user.fullname || App.user.email));
-}
-
-function handleSubscription(msg) {
-  const type = msg.msg_type;
-  if (type === 'ohlc' && App.series && msg.ohlc.symbol === App.market) {
+function handleSub(msg) {
+  const t = msg.msg_type;
+  if (t === 'ohlc' && App.series && msg.ohlc.symbol === App.market) {
     App.series.update({
       time: msg.ohlc.open_time || msg.ohlc.epoch,
       open: parseFloat(msg.ohlc.open),
@@ -763,83 +641,31 @@ function handleSubscription(msg) {
       close: parseFloat(msg.ohlc.close)
     });
     App.marketPrice = parseFloat(msg.ohlc.close);
-    updateMarketDisplay();
-  } else if (type === 'tick' && msg.tick.symbol === App.market) {
+    document.getElementById('market-price').textContent = App.marketPrice.toFixed(App.market && App.market.length === 7 ? 4 : 2);
+  } else if (t === 'tick' && msg.tick.symbol === App.market) {
     App.marketPrice = parseFloat(msg.tick.quote);
-    updateMarketDisplay();
-  } else if (type === 'portfolio' && msg.portfolio) {
+    document.getElementById('market-price').textContent = App.marketPrice.toFixed(App.market && App.market.length === 7 ? 4 : 2);
+  } else if (t === 'portfolio' && msg.portfolio) {
     renderPositions(msg.portfolio.contracts || []);
-  } else if (type === 'proposal' && msg.proposal) {
+  } else if (t === 'proposal' && msg.proposal) {
     if (msg.proposal.contract_type === 'CALL') App.proposals.CALL = msg.proposal;
     else if (msg.proposal.contract_type === 'PUT') App.proposals.PUT = msg.proposal;
     updateProposalUI();
   }
 }
 
-function subscribeCandles(symbol, granularity) {
-  return send({
-    ticks_history: symbol,
-    adjust_start_time: 1,
-    count: 180,
-    end: 'latest',
-    style: 'candles',
-    granularity,
-    subscribe: 1
-  });
-}
-
-function subscribeTicks(symbol) {
-  return send({ ticks: symbol, subscribe: 1 });
-}
-
-function subscribePortfolio() {
-  return send({ portfolio: 1, subscribe: 1 }).then(r => {
-    if (r.portfolio) renderPositions(r.portfolio.contracts || []);
-  });
-}
-
-/* ============================================================
-   UI HELPERS
-   ============================================================ */
-function showToast(type, msg) {
-  const cont = document.getElementById('toast-container');
-  const t = document.createElement('div');
-  t.className = 'toast ' + type;
-  const icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', info: 'fa-circle-info', warning: 'fa-triangle-exclamation' };
-  t.innerHTML = `<i class="fas ${icons[type] || 'fa-circle-info'}"></i><span>${msg}</span>`;
-  cont.appendChild(t);
-  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, 3500);
-}
-
-function setConnectionStatus(online) {
-  App.connected = online;
-  const cls = online ? 'online' : 'offline';
-  document.getElementById('connection-dot').className = 'connection-dot ' + cls;
-  document.getElementById('status-dot').className = 'connection-dot ' + cls;
-  document.getElementById('connection-text').textContent = online ? 'Live' : 'Offline';
-  document.getElementById('status-text').textContent = online ? 'Connected' : 'Disconnected';
-}
-
-function updateClock() {
-  const gmt = new Date().toUTCString().split(' ')[4];
-  document.querySelectorAll('.gmt-time').forEach(el => el.textContent = gmt);
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-/* ============================================================
-   LOGIN / INIT
-   ============================================================ */
 function showLogin() {
   document.getElementById('preloader').classList.add('hidden');
   document.getElementById('login-screen').classList.remove('hidden');
   document.getElementById('app').classList.remove('visible');
+  document.getElementById('connect-btn').disabled = false;
+  document.getElementById('connect-btn').innerHTML = '<i class="fas fa-plug"></i> Connect to Deriv';
 }
 
 function showApp() {
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('app').classList.add('visible');
-  setTimeout(() => document.getElementById('preloader').classList.add('hidden'), 400);
+  document.getElementById('preloader').classList.add('hidden');
 }
 
 function updateUI() {
@@ -862,10 +688,10 @@ function renderAccountDropdown() {
   App.accounts.forEach(a => {
     const div = document.createElement('div');
     div.className = 'account-item' + (a.loginid === App.currentAccount.loginid ? ' active' : '');
-    const flagClass = a.is_virtual ? 'demo' : 'real';
-    const flagChar = a.is_virtual ? 'D' : 'R';
+    const fc = a.is_virtual ? 'demo' : 'real';
+    const ch = a.is_virtual ? 'D' : 'R';
     div.innerHTML = `
-      <div class="account-flag ${flagClass}">${flagChar}</div>
+      <div class="account-flag ${fc}">${ch}</div>
       <div class="account-item-info">
         <div class="account-item-id">${a.loginid}</div>
         <div class="account-item-type">${a.currency} ${a.is_virtual ? 'Demo' : 'Real'}</div>
@@ -896,79 +722,26 @@ document.getElementById('account-selector').addEventListener('click', e => {
 });
 document.addEventListener('click', () => document.getElementById('account-dropdown').classList.remove('open'));
 
-// LOGIN TABS
-document.querySelectorAll('.login-tab').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('.login-tab').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    if (t.dataset.method === 'token') {
-      document.getElementById('token-form').style.display = 'block';
-      document.getElementById('oauth-form').style.display = 'none';
-    } else {
-      document.getElementById('token-form').style.display = 'none';
-      document.getElementById('oauth-form').style.display = 'block';
-    }
-  });
-});
-
-// CONNECT (TOKEN)
 document.getElementById('connect-btn').addEventListener('click', () => {
   const appId = document.getElementById('app-id').value.trim();
   const token = document.getElementById('api-token').value.trim();
   if (!appId) { showToast('error', 'Enter App ID'); return; }
   if (!token) { showToast('error', 'Enter API Token'); return; }
-  App.appId = appId;
-  App.token = token;
-  localStorage.setItem('deriv_app_id', appId);
-  localStorage.setItem('deriv_token', token);
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('preloader').classList.remove('hidden');
-  connectDeriv();
+  connectDeriv(appId, token);
 });
 
-// OAUTH
-document.getElementById('oauth-btn').addEventListener('click', () => {
-  const appId = document.getElementById('app-id-oauth').value.trim();
-  if (!appId) { showToast('error', 'Enter App ID'); return; }
-  localStorage.setItem('deriv_app_id', appId);
-  App.appId = appId;
-  const redirect = encodeURIComponent(window.location.origin + window.location.pathname);
-  const oauthUrl = `https://oauth.deriv.com/oauth2/authorize?app_id=${appId}&redirect_uri=${redirect}&response_type=token&scope=read,trade,trading_information,payments`;
-  window.location.href = oauthUrl;
-});
-
-// OAuth callback handler
-async function handleOAuthCallback() {
-  const hash = window.location.hash;
-  if (hash && hash.includes('access_token')) {
-    const params = new URLSearchParams(hash.substring(1));
-    const access_token = params.get('access_token');
-    if (access_token) {
-      App.token = access_token;
-      localStorage.setItem('deriv_token', access_token);
-      history.replaceState(null, '', window.location.pathname);
-      document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('preloader').classList.remove('hidden');
-      connectDeriv();
-      return true;
-    }
-  }
-  return false;
-}
-
-// LOGOUT
 document.getElementById('logout-btn').addEventListener('click', () => {
   if (confirm('Logout and clear saved credentials?')) {
     localStorage.removeItem('deriv_token');
+    localStorage.removeItem('deriv_app_id');
     App.token = null;
     if (App.ws) try { App.ws.close(); } catch(e) {}
     location.reload();
   }
 });
 
-/* ============================================================
-   MARKETS
-   ============================================================ */
 async function loadMarkets() {
   try {
     const r = await send({ active_symbols: 'brief', product_type: 'basic' });
@@ -987,10 +760,7 @@ async function loadMarkets() {
 function renderMarkets(filter = '') {
   const list = document.getElementById('market-list');
   list.innerHTML = '';
-  if (!App.markets) return;
-  const items = App.markets.filter(m => 
-    !filter || m.display_name.toLowerCase().includes(filter.toLowerCase()) || m.symbol.toLowerCase().includes(filter.toLowerCase())
-  );
+  const items = App.markets.filter(m => !filter || m.display_name.toLowerCase().includes(filter.toLowerCase()) || m.symbol.toLowerCase().includes(filter.toLowerCase()));
   items.forEach(m => {
     const div = document.createElement('div');
     div.className = 'market-item' + (m.symbol === App.market ? ' selected' : '');
@@ -1012,10 +782,8 @@ function renderMarkets(filter = '') {
 
 async function selectMarket(m) {
   App.market = m.symbol;
-  App.marketBase = 0;
   document.getElementById('market-icon').textContent = m.symbol.substring(0, 2).toUpperCase();
   document.getElementById('market-subtitle').textContent = m.display_name;
-  // Forget old subs
   for (const id of App.subs.keys()) {
     if (App.subs.get(id) === 'candles' || App.subs.get(id) === 'ticks') {
       try { await send({ forget: id }); } catch(e) {}
@@ -1023,21 +791,16 @@ async function selectMarket(m) {
     }
   }
   try {
-    const r = await subscribeCandles(m.symbol, App.interval);
+    const r = await send({ ticks_history: m.symbol, adjust_start_time: 1, count: 180, end: 'latest', style: 'candles', granularity: App.interval, subscribe: 1 });
     if (r.subscription) App.subs.set(r.subscription.id, 'candles');
     if (App.series && r.candles) {
       App.series.setData(r.candles.map(c => ({
         time: c.epoch || c.open_time,
-        open: parseFloat(c.open),
-        high: parseFloat(c.high),
-        low: parseFloat(c.low),
-        close: parseFloat(c.close)
+        open: parseFloat(c.open), high: parseFloat(c.high), low: parseFloat(c.low), close: parseFloat(c.close)
       })));
       App.chart.timeScale().fitContent();
     }
-  } catch (e) {
-    showToast('error', 'Failed to load candles: ' + e.message);
-  }
+  } catch (e) { showToast('error', 'Candles failed: ' + e.message); }
   requestProposal();
 }
 
@@ -1047,13 +810,10 @@ document.getElementById('market-selector').addEventListener('click', () => {
 });
 document.getElementById('market-search').addEventListener('input', e => renderMarkets(e.target.value));
 
-/* ============================================================
-   CHART
-   ============================================================ */
 function initChart() {
-  const container = document.getElementById('chart-canvas');
-  App.chart = LightweightCharts.createChart(container, {
-    width: container.clientWidth, height: container.clientHeight,
+  const c = document.getElementById('chart-canvas');
+  App.chart = LightweightCharts.createChart(c, {
+    width: c.clientWidth, height: c.clientHeight,
     layout: { background: { type: 'solid', color: 'transparent' }, textColor: '#9ca3af', fontSize: 11, fontFamily: 'inherit', attributionLogo: false },
     grid: { vertLines: { color: 'rgba(255,255,255,0.04)' }, horzLines: { color: 'rgba(255,255,255,0.04)' } },
     crosshair: { mode: LightweightCharts.CrosshairMode.Normal, vertLine: { color: 'rgba(0,212,255,0.4)', width: 1, style: 3, labelBackgroundColor: '#00d4ff' }, horzLine: { color: 'rgba(0,212,255,0.4)', width: 1, style: 3, labelBackgroundColor: '#00d4ff' } },
@@ -1064,12 +824,12 @@ function initChart() {
   App.series = App.chart.addCandlestickSeries({ upColor: '#10b981', downColor: '#ef4444', borderUpColor: '#10b981', borderDownColor: '#ef4444', wickUpColor: '#10b981', wickDownColor: '#ef4444' });
   if (window.ResizeObserver) new ResizeObserver(entries => {
     for (const e of entries) App.chart.applyOptions({ width: Math.floor(e.contentRect.width), height: Math.floor(e.contentRect.height) });
-  }).observe(container);
+  }).observe(c);
 }
 
 function switchChartType(type) {
   if (!App.chart) return;
-  if (App.series) { try { App.chart.removeSeries(App.series); } catch (e) {} }
+  if (App.series) try { App.chart.removeSeries(App.series); } catch (e) {}
   if (type === 'candle') {
     App.series = App.chart.addCandlestickSeries({ upColor: '#10b981', downColor: '#ef4444', borderUpColor: '#10b981', borderDownColor: '#ef4444', wickUpColor: '#10b981', wickDownColor: '#ef4444' });
   } else if (type === 'line') {
@@ -1077,7 +837,16 @@ function switchChartType(type) {
   } else if (type === 'area') {
     App.series = App.chart.addAreaSeries({ lineColor: '#00d4ff', topColor: 'rgba(0,212,255,0.4)', bottomColor: 'rgba(0,212,255,0.02)', lineWidth: 2 });
   }
-  if (App.market) selectMarket(App.markets.find(m => m.symbol === App.market));
+  if (App.market) {
+    send({ ticks_history: App.market, adjust_start_time: 1, count: 180, end: 'latest', style: 'candles', granularity: App.interval, subscribe: 1 }).then(r => {
+      if (r.subscription) App.subs.set(r.subscription.id, 'candles');
+      if (r.candles) {
+        if (type === 'candle') App.series.setData(r.candles.map(c => ({ time: c.epoch, open: parseFloat(c.open), high: parseFloat(c.high), low: parseFloat(c.low), close: parseFloat(c.close) })));
+        else App.series.setData(r.candles.map(c => ({ time: c.epoch, value: parseFloat(c.close) })));
+        App.chart.timeScale().fitContent();
+      }
+    }).catch(e => showToast('error', e.message));
+  }
 }
 
 document.querySelectorAll('.chart-type-btn').forEach(btn => btn.addEventListener('click', () => {
@@ -1097,39 +866,14 @@ document.querySelectorAll('.interval-btn').forEach(btn => btn.addEventListener('
 document.querySelectorAll('.tool-btn').forEach(btn => btn.addEventListener('click', () => {
   document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  if (btn.dataset.tool === 'reset' && App.chart) { App.chart.timeScale().fitContent(); showToast('info', 'Chart reset'); }
+  if (btn.dataset.tool === 'reset' && App.chart) App.chart.timeScale().fitContent();
 }));
 
-function updateMarketDisplay() {
-  const el = document.getElementById('market-price');
-  const chg = document.getElementById('market-change');
-  const dec = App.market && App.market.endsWith('USD') && App.marketPrice < 10 ? 4 : 2;
-  el.textContent = App.marketPrice.toFixed(dec);
-  // We don't have a real "open" without history, show 0
-  chg.textContent = '+0.00%';
-  chg.className = 'market-change up';
-}
-
-/* ============================================================
-   TRADE TYPE MODAL
-   ============================================================ */
-function renderTradeTypes(filter = '', cat = 'all') {
+function renderTradeTypes(filter = '') {
   const list = document.getElementById('trade-type-list');
   list.innerHTML = '';
-  const items = App.contractTypes.filter(t => {
-    const matchSearch = !filter || t.name.toLowerCase().includes(filter.toLowerCase());
-    const cats = Array.isArray(t.cat) ? t.cat : [t.cat];
-    const matchCat = cat === 'all' || cats.includes(cat);
-    return matchSearch && matchCat;
-  });
-  if (items.length === 0) {
-    list.innerHTML = '<div class="empty-state"><i class="fas fa-magnifying-glass"></i><p>No results</p></div>';
-    return;
-  }
-  const seen = new Set();
+  const items = App.contractTypes.filter(t => !filter || t.name.toLowerCase().includes(filter.toLowerCase()));
   items.forEach(t => {
-    if (seen.has(t.name)) return;
-    seen.add(t.name);
     const div = document.createElement('div');
     div.className = 'trade-type-item' + (t.name === App.selectedTradeName ? ' selected' : '');
     div.innerHTML = `
@@ -1141,7 +885,6 @@ function renderTradeTypes(filter = '', cat = 'all') {
     `;
     div.addEventListener('click', () => {
       App.selectedTradeName = t.name;
-      App.selectedContract = t.id;
       document.getElementById('trade-type-icon').className = t.icon;
       document.getElementById('trade-type-icon').style.color = t.cls === 'up' ? 'var(--green)' : t.cls === 'down' ? 'var(--red)' : t.cls === 'purple' ? 'var(--purple)' : 'var(--yellow)';
       document.getElementById('trade-type-name').textContent = t.name;
@@ -1153,23 +896,11 @@ function renderTradeTypes(filter = '', cat = 'all') {
 }
 
 document.getElementById('trade-type-btn').addEventListener('click', () => {
-  renderTradeTypes('', 'all');
+  renderTradeTypes('');
   document.getElementById('trade-type-modal').classList.add('active');
 });
-document.getElementById('trade-search').addEventListener('input', e => {
-  const active = document.querySelector('.cat-chip.active');
-  renderTradeTypes(e.target.value, active ? active.dataset.cat : 'all');
-});
-document.getElementById('trade-categories').addEventListener('click', e => {
-  if (!e.target.classList.contains('cat-chip')) return;
-  document.querySelectorAll('#trade-categories .cat-chip').forEach(c => c.classList.remove('active'));
-  e.target.classList.add('active');
-  renderTradeTypes(document.getElementById('trade-search').value, e.target.dataset.cat);
-});
+document.getElementById('trade-search').addEventListener('input', e => renderTradeTypes(e.target.value));
 
-/* ============================================================
-   DURATION / STAKE / PROPOSAL
-   ============================================================ */
 const durMap = {
   t: { unit: 'ticks', min: 1, max: 10, def: 5, quick: [[1,'1t'],[2,'2t'],[3,'3t'],[5,'5t'],[10,'10t']] },
   m: { unit: 'min', min: 1, max: 60, def: 5, quick: [[1,'1m'],[5,'5m'],[15,'15m'],[30,'30m'],[60,'1h']] },
@@ -1231,13 +962,30 @@ function requestProposal() {
     try {
       document.getElementById('btn-rise').disabled = true;
       document.getElementById('btn-fall').disabled = true;
-      const [rise, fall] = await Promise.all([
-        send({ proposal: 1, amount: App.stake, basis: 'stake', contract_type: 'CALL', currency: App.currentAccount.currency, duration: App.duration, duration_unit: App.durationType, symbol: App.market, allow_equals: App.allowEquals ? 1 : 0 }),
-        send({ proposal: 1, amount: App.stake, basis: 'stake', contract_type: 'PUT', currency: App.currentAccount.currency, duration: App.duration, duration_unit: App.durationType, symbol: App.market, allow_equals: App.allowEquals ? 1 : 0 })
-      ]);
-      App.proposals.CALL = rise.proposal;
-      App.proposals.PUT = fall.proposal;
-      updateProposalUI();
+      const cur = App.selectedTradeName;
+      let calls = ['CALL', 'PUT'];
+      if (cur === 'Touch' || cur === 'No Touch') calls = ['TOUCH', 'NOTOUCH'];
+      else if (cur === 'Matches' || cur === 'Differs') calls = ['DIGITMATCH', 'DIGITDIFF'];
+      else if (cur === 'Even' || cur === 'Odd') calls = ['DIGITEVEN', 'DIGITODD'];
+      else if (cur === 'Over' || cur === 'Under') calls = ['DIGITOVER', 'DIGITUNDER'];
+      
+      const proposals = await Promise.all(calls.map(ct => send({
+        proposal: 1, amount: App.stake, basis: 'stake', contract_type: ct,
+        currency: App.currentAccount.currency, duration: App.duration,
+        duration_unit: App.durationType, symbol: App.market, allow_equals: App.allowEquals ? 1 : 0
+      })));
+      
+      App.proposals = {};
+      calls.forEach((ct, i) => { App.proposals[ct] = proposals[i].proposal; });
+      
+      const isFirst = ['Rise', 'Touch', 'Matches', 'Even', 'Over'].includes(cur);
+      const p = isFirst ? proposals[0].proposal : proposals[1].proposal;
+      const profit = parseFloat(p.payout) - parseFloat(p.ask_price);
+      document.getElementById('sum-stake').textContent = parseFloat(p.ask_price).toFixed(2) + ' ' + App.currentAccount.currency;
+      document.getElementById('sum-payout').textContent = parseFloat(p.payout).toFixed(2) + ' ' + App.currentAccount.currency;
+      document.getElementById('sum-profit').textContent = '+' + profit.toFixed(2) + ' ' + App.currentAccount.currency;
+      document.getElementById('sum-expected').textContent = parseFloat(p.payout).toFixed(2) + ' ' + App.currentAccount.currency;
+      document.getElementById('payout-input').value = parseFloat(p.payout).toFixed(2);
       document.getElementById('btn-rise').disabled = false;
       document.getElementById('btn-fall').disabled = false;
       document.querySelectorAll('.summary-row').forEach(r => r.classList.remove('calculating'));
@@ -1247,31 +995,29 @@ function requestProposal() {
   }, 300);
 }
 
-function updateProposalUI() {
-  const isRise = ['Rise','Higher','Touch','Matches','Even','Over','Multiplier Up','Accumulator'].includes(App.selectedTradeName);
-  const p = isRise ? App.proposals.CALL : App.proposals.PUT;
-  if (!p) return;
-  const profit = parseFloat(p.payout) - parseFloat(p.ask_price);
-  document.getElementById('sum-stake').textContent = parseFloat(p.ask_price).toFixed(2) + ' ' + App.currentAccount.currency;
-  document.getElementById('sum-payout').textContent = parseFloat(p.payout).toFixed(2) + ' ' + App.currentAccount.currency;
-  document.getElementById('sum-profit').textContent = '+' + profit.toFixed(2) + ' ' + App.currentAccount.currency;
-  document.getElementById('sum-expected').textContent = parseFloat(p.payout).toFixed(2) + ' ' + App.currentAccount.currency;
-  document.getElementById('payout-input').value = parseFloat(p.payout).toFixed(2);
-}
-
-/* ============================================================
-   TRADE EXECUTION
-   ============================================================ */
 async function executeTrade(direction) {
-  if (!App.proposals[direction === 'rise' ? 'CALL' : 'PUT']) { showToast('error', 'No proposal'); requestProposal(); return; }
+  if (!App.authorized) return;
+  const cur = App.selectedTradeName;
+  let ct;
+  if (cur === 'Rise/Fall') ct = direction === 'rise' ? 'CALL' : 'PUT';
+  else if (cur === 'Touch') ct = 'TOUCH';
+  else if (cur === 'No Touch') ct = 'NOTOUCH';
+  else if (cur === 'Matches') ct = 'DIGITMATCH';
+  else if (cur === 'Differs') ct = 'DIGITDIFF';
+  else if (cur === 'Even') ct = 'DIGITEVEN';
+  else if (cur === 'Odd') ct = 'DIGITODD';
+  else if (cur === 'Over') ct = 'DIGITOVER';
+  else if (cur === 'Under') ct = 'DIGITUNDER';
+  
+  const proposal = App.proposals[ct];
+  if (!proposal) { showToast('error', 'No proposal, retrying...'); requestProposal(); return; }
+  
   try {
     document.getElementById('btn-rise').disabled = true;
     document.getElementById('btn-fall').disabled = true;
-    const proposal = App.proposals[direction === 'rise' ? 'CALL' : 'PUT'];
     const r = await send({ buy: proposal.id, price: App.stake });
     addRippleEffect(direction === 'rise' ? 'btn-rise' : 'btn-fall');
-    showToast('success', 'Contract #' + r.buy.contract_id + ' purchased');
-    // Update balance
+    showToast('success', 'Contract #' + r.buy.contract_id + ' bought!');
     const auth = await send({ authorize: App.token });
     App.user = auth.authorize;
     updateUI();
@@ -1299,9 +1045,12 @@ function addRippleEffect(btnId) {
   setTimeout(() => ripple.remove(), 600);
 }
 
-/* ============================================================
-   POSITIONS / HISTORY
-   ============================================================ */
+function subscribePortfolio() {
+  return send({ portfolio: 1, subscribe: 1 }).then(r => {
+    if (r.portfolio) renderPositions(r.portfolio.contracts || []);
+  }).catch(() => {});
+}
+
 function renderPositions(contracts) {
   const list = document.getElementById('positions-list');
   const empty = document.getElementById('positions-empty');
@@ -1310,21 +1059,18 @@ function renderPositions(contracts) {
   empty.style.display = 'none';
   contracts.forEach(c => {
     const isUp = ['CALL','MULTUP','TOUCH','DIGITMATCH','DIGITEVEN','DIGITOVER','ACCU'].includes(c.contract_type);
-    const dirClass = isUp ? 'up' : 'down';
     const isOpen = c.is_open === 1;
     const div = document.createElement('div');
-    div.className = 'position-card ' + dirClass;
+    div.className = 'position-card ' + (isUp ? 'up' : 'down');
     div.innerHTML = `
       <div class="card-header">
         <div class="card-symbol">${c.symbol}</div>
-        <div class="card-badge ${dirClass}">${c.contract_type}</div>
+        <div class="card-badge ${isUp ? 'up' : 'down'}">${c.contract_type}</div>
       </div>
       <div class="card-row"><span class="card-label">Buy</span><span class="card-value">${parseFloat(c.buy_price).toFixed(2)} ${c.currency}</span></div>
       <div class="card-row"><span class="card-label">Payout</span><span class="card-value">${parseFloat(c.payout).toFixed(2)} ${c.currency}</span></div>
       <div class="card-row"><span class="card-label">Entry</span><span class="card-value">${parseFloat(c.entry_spot).toFixed(4)}</span></div>
-      ${isOpen ? `<div class="card-actions">
-        <button class="mini-btn" data-sell="${c.contract_id}">Sell at Market</button>
-      </div>` : ''}
+      ${isOpen ? `<div class="card-actions"><button class="mini-btn" data-sell="${c.contract_id}">Sell</button></div>` : ''}
     `;
     list.appendChild(div);
   });
@@ -1364,7 +1110,7 @@ async function loadHistory() {
       `;
       list.appendChild(div);
     });
-  } catch (e) { console.warn('History load failed:', e); }
+  } catch (e) {}
 }
 
 document.querySelectorAll('.sidebar-tab').forEach(tab => tab.addEventListener('click', () => {
@@ -1382,7 +1128,6 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => overlay.addEventL
   if (e.target === overlay) overlay.classList.remove('active');
 }));
 
-// MOBILE
 document.getElementById('sidebar-toggle').addEventListener('click', () => { document.getElementById('sidebar').classList.add('open'); document.getElementById('drawer-backdrop').classList.add('active'); });
 document.getElementById('trade-toggle').addEventListener('click', () => { document.getElementById('trade-panel').classList.add('open'); document.getElementById('drawer-backdrop').classList.add('active'); });
 document.getElementById('drawer-backdrop').addEventListener('click', () => {
@@ -1391,34 +1136,18 @@ document.getElementById('drawer-backdrop').addEventListener('click', () => {
   document.getElementById('drawer-backdrop').classList.remove('active');
 });
 
-/* ============================================================
-   INIT
-   ============================================================ */
-(async function init() {
-  // Pre-fill saved App ID
-  if (App.appId) {
-    document.getElementById('app-id').value = App.appId;
-    document.getElementById('app-id-oauth').value = App.appId;
-  }
-  // Hide login if OAuth callback present
-  if (window.location.hash.includes('access_token')) {
+// INIT
+(function init() {
+  if (App.appId) document.getElementById('app-id').value = App.appId;
+  if (App.token) {
     document.getElementById('login-screen').classList.add('hidden');
-  } else if (!App.token) {
-    showLogin();
+    document.getElementById('preloader').classList.remove('hidden');
+    connectDeriv(App.appId, App.token);
   } else {
-    document.getElementById('login-screen').classList.add('hidden');
+    showLogin();
   }
-  
   renderQuickBtns();
   initChart();
-  
-  // Handle OAuth callback
-  if (await handleOAuthCallback()) return;
-  
-  // Connect if we have a token
-  if (App.token) {
-    connectDeriv();
-  }
 })();
 </script>
 </body>

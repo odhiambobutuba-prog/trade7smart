@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <title>Butuba | Deriv Control</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: #0e1b2d;
+      --panel-2: #12233a;
+      --line: #253a58;
+      --muted: #9bb0ca;
+      --text: #f4f7fb;
+      --blue: #2d8cff;
+      --green: #25d695;
+      --red: #ff5e78;
+      --amber: #ffb020;
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: radial-gradient(circle at top right, #102a4c 0, var(--bg) 42rem);
+      color: var(--text);
+      font: 15px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .48; }
+    code { background: #081526; padding: 1px 6px; border-radius: 6px; }
+    .shell { width: min(1120px, calc(100% - 28px)); margin: 0 auto; padding: 20px 0 42px; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 800; letter-spacing: .2px; }
+    .brand-mark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #2d8cff, #7166ff); box-shadow: 0 10px 30px #2d8cff42; }
+    .status { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .86rem; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 4px #ffb0201c; }
+    .dot.live { background: var(--green); box-shadow: 0 0 0 4px #25d6951c; }
+    .card { background: linear-gradient(145deg, #102039, #0c1829); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 20px 48px #00000024; }
+    .login { padding: 20px; margin-bottom: 16px; }
+    h1, h2, p { margin-top: 0; }
+    h1 { font-size: clamp(1.35rem, 4vw, 1.85rem); margin-bottom: 6px; }
+    h2 { font-size: 1rem; margin-bottom: 14px; }
+    .hint, .subtle { color: var(--muted); }
+    .hint { margin-bottom: 16px; font-size: .9rem; }
+    .login-grid, .trade-grid { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    label { display: grid; gap: 7px; color: var(--muted); font-size: .82rem; font-weight: 650; }
+    input, select { width: 100%; min-height: 45px; padding: 0 12px; border: 1px solid var(--line); border-radius: 11px; background: #081526; color: var(--text); outline: none; }
+    input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px #2d8cff22; }
+    .actions { display: flex; gap: 10px; align-items: end; }
+    .btn { min-height: 45px; padding: 0 15px; border: 0; border-radius: 11px; color: white; font-weight: 750; }
+    .primary { background: linear-gradient(135deg, #2086ff, #536dff); }
+    .secondary { background: #1b304d; border: 1px solid var(--line); }
+    .danger { background: #522638; color: #ffdbe2; }
+    .notice { display: flex; gap: 9px; padding: 12px; margin: 14px 0 0; border: 1px solid #745a20; background: #352a13; border-radius: 11px; color: #ffe0a0; font-size: .86rem; }
+    .dashboard { display: grid; grid-template-columns: 1.2fr .8fr; gap: 16px; }
+    .main-card, .side-card { padding: 18px; }
+    .dashboard[hidden] { display: none; }
+    .metric-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .metric { padding: 13px; border: 1px solid var(--line); border-radius: 13px; background: #091628; }
+    .metric small { display: block; color: var(--muted); margin-bottom: 4px; }
+    .metric strong { font-size: 1.04rem; }
+    .tick-panel { min-height: 170px; padding: 18px; display: grid; place-items: center; text-align: center; border: 1px solid var(--line); border-radius: 15px; background: radial-gradient(circle at top, #193c69, #091628 70%); }
+    .quote { font-size: clamp(2rem, 7vw, 3.4rem); font-weight: 850; letter-spacing: -1.5px; }
+    .digits { display: flex; justify-content: center; gap: 7px; margin: 13px 0; flex-wrap: wrap; }
+    .digit { display: grid; width: 30px; height: 34px; place-items: center; border-radius: 9px; background: #173050; color: #dbe9ff; font-weight: 800; }
+    .digit.pattern { background: #1f745a; color: #e6fff6; }
+    .recommendation { font-weight: 750; color: #dceaff; }
+    .trade-card { margin-top: 16px; padding: 18px; }
+    .trade-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .trade-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .auto-state { display: block; margin-top: 8px; color: var(--muted); font-size: .82rem; }
+    .auto-state.running { color: var(--green); font-weight: 700; }
+    .trade-buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .proposal { min-height: 52px; padding: 13px; margin-top: 13px; border-radius: 11px; background: #091628; border: 1px solid var(--line); color: var(--muted); }
+    .proposal strong { color: var(--text); }
+    .journal { max-height: 400px; overflow: auto; display: grid; gap: 8px; padding-right: 3px; }
+    .entry { padding: 11px; border: 1px solid var(--line); border-radius: 11px; background: #091628; font-size: .87rem; }
+    .entry time { display: block; margin-bottom: 3px; color: var(--muted); font-size: .75rem; }
+    .entry.error { border-color: #713347; color: #ffd2db; }
+    .entry.good { border-color: #286c56; color: #c9ffe9; }
+    .footer-note { margin-top: 16px; color: var(--muted); font-size: .79rem; }
+    .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .tab-btn { padding: 10px 16px; border-radius: 11px; border: 1px solid var(--line); background: #0e1b2d; color: var(--muted); font-weight: 700; }
+    .tab-btn.active { background: linear-gradient(135deg, #2086ff, #536dff); color: #fff; border-color: transparent; }
+    .tab-panel[hidden] { display: none; }
+    .account-option { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 11px; background: #081526; cursor: pointer; }
+    .account-option input { width: auto; min-height: auto; }
+    .account-option .badge { margin-left: auto; font-size: .74rem; font-weight: 800; padding: 3px 8px; border-radius: 999px; background: #1b304d; color: var(--muted); }
+    .account-option .badge.demo { background: #2a3a1f; color: #d4ffb0; }
+    .account-option .badge.real { background: #3a1f22; color: #ffc4cd; }
+    .history-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+    .history-table th, .history-table td { padding: 9px 8px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+    .history-table td.desc { white-space: normal; max-width: 320px; }
+    .history-table .pos { color: var(--green); font-weight: 700; }
+    .history-table .neg { color: var(--red); font-weight: 700; }
+    .table-wrap { overflow: auto; margin-top: 12px; }
+    @media (max-width: 820px) { .login-grid, .trade-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dashboard { grid-template-columns: 1fr; } }
+    @media (max-width: 560px) { .shell { width: min(100% - 20px, 1120px); padding-top: 12px; } .login, .main-card, .side-card, .trade-card { padding: 15px; } .login-grid, .trade-grid, .metric-row { grid-template-columns: 1fr; } .actions { align-items: stretch; } .actions .btn { flex: 1; } header { align-items: flex-start; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="brand"><span class="brand-mark">B</span><span>Butuba Deriv Control</span></div>
+      <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">Not connected</span></div>
+    </header>
+
+    <section class="card login" id="loginCard">
+      <h1>Connect your Deriv account</h1>
+      <p class="hint">Sign in with Deriv's own login page. This app never asks for your account ID or a personal access token — Deriv authenticates you and hands this page a session token directly.</p>
+
+      <div id="appIdStep">
+        <div class="login-grid" style="grid-template-columns: 2fr 1fr;">
+          <label>Deriv App ID<input id="appId" inputmode="numeric" autocomplete="off" placeholder="Your registered App ID"></label>
+          <div class="actions"><button class="btn primary" id="loginWithDerivButton" type="button" style="width:100%;">Login with Deriv</button></div>
+        </div>
+        <p class="hint" style="margin-top:12px; margin-bottom:0;">Don't have an App ID yet? Register a free app at <strong>api.deriv.com</strong>. Set the app's Website/Redirect URL to this page's address, and add <code>?app_id=YOUR_APP_ID</code> to the end of it — that way your ID survives the redirect back here.</p>
+      </div>
+
+      <div id="accountStep" hidden>
+        <h2>Choose an account</h2>
+        <div class="login-grid" id="accountList" style="grid-template-columns: 1fr;"></div>
+        <div class="actions" style="margin-top: 12px;">
+          <button class="btn primary" id="continueWithAccountButton" type="button">Continue</button>
+          <button class="btn secondary" id="cancelAccountButton" type="button">Start over</button>
+        </div>
+      </div>
+
+      <div class="notice"><span aria-hidden="true">!</span><span>Your Deriv password is never seen or stored by this page — only a session token comes back from Deriv's login. Start on a <strong>demo (virtual)</strong> account before pointing Auto AI at real funds. This page gives you execution tooling, not predictions or profit guarantees.</span></div>
+    </section>
+
+    <section class="dashboard" id="dashboard" hidden>
+      <div>
+        <div class="tabs" role="tablist">
+          <button class="tab-btn active" data-tab="dashboardTab" type="button">Dashboard</button>
+          <button class="tab-btn" data-tab="autoaiTab" type="button">Auto AI</button>
+          <button class="tab-btn" data-tab="historyTab" type="button">History</button>
+        </div>
+
+        <div class="tab-panel" id="dashboardTab">
+          <section class="card main-card">
+            <div class="metric-row">
+              <div class="metric"><small>Balance</small><strong id="balanceValue">—</strong></div>
+              <div class="metric"><small>Market</small><strong id="marketValue">—</strong></div>
+              <div class="metric"><small>Server candle clock</small><strong id="candleClock">—</strong></div>
+            </div>
+            <div class="tick-panel">
+              <div>
+                <div class="subtle">Live last quote</div>
+                <div class="quote" id="quoteValue">Waiting for ticks</div>
+                <div class="digits" id="digits" aria-label="Recent last digits"></div>
+                <div class="recommendation" id="recommendation">Waiting for a rule match</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card trade-card">
+            <h2>Manual trade</h2>
+            <div class="trade-grid">
+              <label>Market symbol<input id="market" value="1HZ100V" autocomplete="off" spellcheck="false" list="marketOptions"><datalist id="marketOptions"></datalist></label>
+              <label>Stake<input id="stake" value="0.35" type="number" min="0.01" step="0.01"></label>
+              <label>Contract<select id="barrier"><option value="0">Digit Over 0</option><option value="1">Digit Over 1</option></select></label>
+              <label>Duration<input value="1 tick" disabled aria-label="Duration is one tick"></label>
+            </div>
+            <div class="trade-buttons">
+              <button class="btn secondary" id="changeMarketButton" type="button">Load market</button>
+              <button class="btn primary" id="proposalButton" type="button">Get price</button>
+              <button class="btn danger" id="buyButton" type="button" disabled>Buy manually</button>
+            </div>
+            <div class="proposal" id="proposalBox">Connect, then select a contract and choose <strong>Get price</strong>.</div>
+          </section>
+        </div>
+
+        <div class="tab-panel" id="autoaiTab" hidden>
+          <section class="card trade-card">
+            <h2>Auto AI — 1-minute candle engine</h2>
+            <p class="hint">Auto AI watches the live server-timestamped tick clock for the selected market. When the countdown reaches your trigger second inside each 1-minute candle, it requests a fresh price and buys automatically for the configured number of ticks. Nothing here is simulated — every buy is a real contract on your connected account.</p>
+            <fieldset id="aiConfig" style="border:0; padding:0; margin:0;">
+              <div class="trade-grid cols-3">
+                <label>Market<select id="aiMarket"><option value="">Loading markets from Deriv…</option></select></label>
+                <label>Contract<select id="aiBarrier"><option value="0">Digit Over 0</option><option value="1">Digit Over 1</option></select></label>
+                <label>Stake (base)<input id="aiStake" type="number" min="0.01" step="0.01" value="0.35"></label>
+                <label>Ticks (duration)<input id="aiTicks" type="number" min="1" max="10" step="1" value="1"></label>
+                <label>Trigger second<input id="aiSecond" type="number" min="1" max="59" step="1" value="57"></label>
+                <label>Martingale multiplier<input id="aiMartingale" type="number" min="1" step="0.1" value="2"></label>
+              </div>
+            </fieldset>
+            <div class="metric-row" style="margin-top:16px;">
+              <div class="metric"><small>Candle countdown</small><strong id="aiCountdown">—</strong></div>
+              <div class="metric"><small>Next stake (after martingale)</small><strong id="aiNextStake">—</strong></div>
+              <div class="metric"><small>Session profit/loss</small><strong id="aiSessionPL">0.00</strong></div>
+            </div>
+            <div class="trade-buttons">
+              <button class="btn secondary" id="aiRefreshMarketsButton" type="button">Refresh markets</button>
+              <button class="btn primary" id="autoAiButton" type="button">Start Auto AI</button>
+            </div>
+            <span class="auto-state" id="aiState">Auto AI is off. Nothing will be bought until you start it.</span>
+            <div class="notice"><span aria-hidden="true">!</span><span>Martingale multiplies your stake after every loss to try to recover it in one win. A losing streak grows your stake exponentially and can drain your balance fast — there is no built‑in stop‑loss, so watch the History tab and stop the engine yourself if it's not going the way you want.</span></div>
+          </section>
+        </div>
+
+        <div class="tab-panel" id="historyTab" hidden>
+          <section class="card trade-card">
+            <h2>Trade history</h2>
+            <p class="hint">Closed contracts, pulled from your Deriv account's real profit table and updated live as new contracts settle — from manual trades and Auto AI alike.</p>
+            <button class="btn secondary" id="refreshHistoryButton" type="button">Refresh from Deriv</button>
+            <div class="table-wrap">
+              <table class="history-table">
+                <thead><tr><th>Time</th><th>Contract</th><th>Buy price</th><th>Sell price</th><th>P/L</th><th>Source</th></tr></thead>
+                <tbody id="historyBody"><tr><td colspan="6" class="subtle">No settled trades yet.</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <aside class="card side-card">
+        <h2>Journal</h2>
+        <div class="journal" id="journal" aria-live="polite"></div>
+        <button class="btn secondary" id="disconnectButton" type="button" style="width:100%; margin-top:14px;">Disconnect</button>
+        <p class="footer-note">Every quote, price, buy, and settlement here comes from Deriv's live API — nothing is generated locally. The candle clock uses the connected tick's own server timestamp.</p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const WS_ENDPOINT = 'wss://ws.derivws.com/websockets/v3';
+
+      // ---- Elements ----
+      const loginCard = document.querySelector('#loginCard');
+      const appIdStep = document.querySelector('#appIdStep');
+      const accountStep = document.querySelector('#accountStep');
+      const accountList = document.querySelector('#accountList');
+      const appIdInput = document.querySelector('#appId');
+      const loginWithDerivButton = document.querySelector('#loginWithDerivButton');
+      const continueWithAccountButton = document.querySelector('#continueWithAccountButton');
+      const cancelAccountButton = document.querySelector('#cancelAccountButton');
+
+      const dashboard = document.querySelector('#dashboard');
+      const statusDot = document.querySelector('#statusDot');
+      const statusText = document.querySelector('#statusText');
+      const balanceValue = document.querySelector('#balanceValue');
+      const marketValue = document.querySelector('#marketValue');
+      const candleClock = document.querySelector('#candleClock');
+      const quoteValue = document.querySelector('#quoteValue');
+      const digitsElement = document.querySelector('#digits');
+      const recommendation = document.querySelector('#recommendation');
+      const journal = document.querySelector('#journal');
+      const marketOptions = document.querySelector('#marketOptions');
+
+      const marketInput = document.querySelector('#market');
+      const stakeInput = document.querySelector('#stake');
+      const barrierInput = document.querySelector('#barrier');
+      const proposalBox = document.querySelector('#proposalBox');
+      const buyButton = document.querySelector('#buyButton');
+
+      const aiMarketSelect = document.querySelector('#aiMarket');
+      const aiBarrierSelect = document.querySelector('#aiBarrier');
+      const aiStakeInput = document.querySelector('#aiStake');
+      const aiTicksInput = document.querySelector('#aiTicks');
+      const aiSecondInput = document.querySelector('#aiSecond');
+      const aiMartingaleInput = document.querySelector('#aiMartingale');
+      const aiConfig = document.querySelector('#aiConfig');
+      const aiCountdownEl = document.querySelector('#aiCountdown');
+      const aiNextStakeEl = document.querySelector('#aiNextStake');
+      const aiSessionPLEl = document.querySelector('#aiSessionPL');
+      const autoAiButton = document.querySelector('#autoAiButton');
+      const aiStateEl = document.querySelector('#aiState');
+      const aiRefreshMarketsButton = document.querySelector('#aiRefreshMarketsButton');
+
+      const historyBody = document.querySelector('#historyBody');
+      const refreshHistoryButton = document.querySelector('#refreshHistoryButton');
+
+      // ---- State ----
+      let socket;
+      let isConnected = false;
+      let latestProposal;
+      let latestAutoProposal;
+      let recentDigits = [];
+      let activeSymbol = '';
+      let aiSymbol = '';
+      let aiRunning = false;
+      let autoTradeInFlight = false;
+      let lastAutoMinuteBucket = null;
+      let currentAutoStake = 0;
+      let autoSessionPL = 0;
+      const settledContracts = new Set();
+      const contractSourceMap = new Map();
+      const historyRows = new Map();
+
+      // ---- Journal / status helpers ----
+      function addJournal(message, tone = '') {
+        const entry = document.createElement('article');
+        entry.className = `entry ${tone}`;
+        const time = document.createElement('time');
+        time.textContent = new Date().toLocaleTimeString();
+        const content = document.createElement('div');
+        content.textContent = message;
+        entry.append(time, content);
+        journal.prepend(entry);
+      }
+
+      function setStatus(message, connected = false) {
+        statusText.textContent = message;
+        statusDot.classList.toggle('live', connected);
+      }
+
+      function send(payload) {
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+          addJournal('Connection is not ready.', 'error');
+          return false;
+        }
+        socket.send(JSON.stringify(payload));
+        return true;
+      }
+
+      function lastDigit(quote) {
+        const cleanQuote = String(quote).replace(/[^0-9]/g, '');
+        return cleanQuote.slice(-1) || '—';
+      }
+
+      // ---- OAuth (login with Deriv) ----
+      function parseOauthAccounts() {
+        const params = new URLSearchParams(window.location.search);
+        const accounts = [];
+        for (let i = 1; params.has(`acct${i}`); i += 1) {
+          accounts.push({
+            id: params.get(`acct${i}`) || '',
+            token: params.get(`token${i}`) || '',
+            currency: (params.get(`cur${i}`) || '').toUpperCase(),
+          });
+        }
+        return { accounts, appIdFromUrl: params.get('app_id') };
+      }
+
+      function isDemoAccount(id) {
+        return /^(VRTC|VRW)/i.test(id);
+      }
+
+      function showAccountStep(accounts) {
+        appIdStep.hidden = true;
+        accountStep.hidden = false;
+        accountList.innerHTML = '';
+        accounts.forEach((account, index) => {
+          const label = document.createElement('label');
+          label.className = 'account-option';
+          const radio = document.createElement('input');
+          radio.type = 'radio';
+          radio.name = 'account';
+          radio.value = String(index);
+          if (index === 0) radio.checked = true;
+          const demo = isDemoAccount(account.id);
+          const text = document.createElement('span');
+          text.textContent = `${account.id} · ${account.currency || 'N/A'}`;
+          const badge = document.createElement('span');
+          badge.className = `badge ${demo ? 'demo' : 'real'}`;
+          badge.textContent = demo ? 'Demo' : 'Real';
+          label.append(radio, text, badge);
+          accountList.appendChild(label);
+        });
+        window.__oauthAccounts = accounts;
+      }
+
+      function resetToAppIdStep() {
+        appIdStep.hidden = false;
+        accountStep.hidden = true;
+        const url = new URL(window.location.href);
+        url.search = appIdInput.value.trim() ? `?app_id=${encodeURIComponent(appIdInput.value.trim())}` : '';
+        window.history.replaceState({}, '', url.toString());
+      }
+
+      loginWithDerivButton.addEventListener('click', () => {
+        const appId = appIdInput.value.trim();
+        if (!appId) {
+          addJournal('Enter your Deriv App ID first.', 'error');
+          return;
+        }
+        const url = new URL('https://oauth.deriv.com/oauth2/authorize');
+        url.searchParams.set('app_id', appId);
+        window.location.href = url.toString();
+      });
+
+      cancelAccountButton.addEventListener('click', resetToAppIdStep);
+
+      continueWithAccountButton.addEventListener('click', () => {
+        const accounts = window.__oauthAccounts || [];
+        const selected = accountList.querySelector('input[name="account"]:checked');
+        if (!selected || !accounts[Number(selected.value)]) {
+          addJournal('Choose an account to continue.', 'error');
+          return;
+        }
+        const appId = appIdInput.value.trim();
+        if (!appId) {
+          addJournal('Your App ID was lost after the redirect — re-enter it above, then press Continue again.', 'error');
+          appIdStep.hidden = false;
+          return;
+        }
+        const account = accounts[Number(selected.value)];
+        authorizeWithToken(appId, account.token);
+      });
+
+      // ---- Connection ----
+      function openSocket(appId) {
+        return new Promise((resolve, reject) => {
+          const ws = new WebSocket(`${WS_ENDPOINT}?app_id=${encodeURIComponent(appId)}`);
+          ws.addEventListener('open', () => resolve(ws), { once: true });
+          ws.addEventListener('error', () => reject(new Error('Could not reach Deriv — check the App ID and your connection.')), { once: true });
+        });
+      }
+
+      async function authorizeWithToken(appId, token) {
+        setStatus('Connecting to Deriv…');
+        try {
+          socket = await openSocket(appId);
+          socket.addEventListener('message', onMessage);
+          socket.addEventListener('close', () => {
+            isConnected = false;
+            setStatus('Disconnected');
+            addJournal('Deriv connection closed.', 'error');
+          });
+          socket.addEventListener('error', () => addJournal('WebSocket connection error.', 'error'));
+          send({ authorize: token, req_id: Date.now() });
+        } catch (error) {
+          setStatus('Connection failed');
+          addJournal(error.message || 'Unable to connect.', 'error');
+        }
+      }
+
+      function disconnect() {
+        if (socket) socket.close();
+        socket = undefined;
+        isConnected = false;
+        latestProposal = undefined;
+        latestAutoProposal = undefined;
+        aiRunning = false;
+        autoTradeInFlight = false;
+        buyButton.disabled = true;
+        autoAiButton.textContent = 'Start Auto AI';
+        aiStateEl.textContent = 'Auto AI is off. Nothing will be bought until you start it.';
+        aiStateEl.classList.remove('running');
+        aiConfig.disabled = false;
+        setStatus('Disconnected');
+        dashboard.hidden = true;
+        loginCard.hidden = false;
+        resetToAppIdStep();
+      }
+
+      // ---- Rule alert (manual dashboard) ----
+      function updateRuleAlert() {
+        const pair = recentDigits.slice(-2).join('');
+        digitsElement.replaceChildren(...recentDigits.map((digit, index) => {
+          const item = document.createElement('span');
+          item.className = `digit ${index >= recentDigits.length - 2 && (pair === '00' || pair === '11') ? 'pattern' : ''}`;
+          item.textContent = digit;
+          return item;
+        }));
+
+        if (pair === '00') {
+          barrierInput.value = '0';
+          recommendation.textContent = 'Rule alert: 00 detected — Digit Over 0 selected.';
+        } else if (pair === '11') {
+          barrierInput.value = '1';
+          recommendation.textContent = 'Rule alert: 11 detected — Digit Over 1 selected.';
+        } else {
+          recommendation.textContent = 'No selected digit rule is active.';
+        }
+      }
+
+      function subscribeToMarket() {
+        const symbol = marketInput.value.trim().toUpperCase();
+        if (!/^[A-Z0-9_]{2,30}$/.test(symbol)) {
+          addJournal('Enter a valid Deriv market symbol.', 'error');
+          return;
+        }
+        activeSymbol = symbol;
+        recentDigits = [];
+        latestProposal = undefined;
+        buyButton.disabled = true;
+        proposalBox.textContent = 'Live market loaded. Get a fresh price before buying.';
+        marketValue.textContent = symbol;
+        quoteValue.textContent = 'Waiting for ticks';
+        updateRuleAlert();
+        send({ ticks: symbol, subscribe: 1, req_id: Date.now(), passthrough: { source: 'manualTick' } });
+        addJournal(`Subscribed to ${symbol}.`);
+      }
+
+      function requestProposal() {
+        const stake = Number(stakeInput.value);
+        const barrier = barrierInput.value;
+        if (!Number.isFinite(stake) || stake <= 0) {
+          addJournal('Stake must be greater than zero.', 'error');
+          return;
+        }
+        if (!activeSymbol) subscribeToMarket();
+        latestProposal = undefined;
+        buyButton.disabled = true;
+        proposalBox.textContent = 'Getting a fresh price…';
+        send({
+          proposal: 1,
+          amount: stake,
+          basis: 'stake',
+          contract_type: 'DIGITOVER',
+          currency: window.accountCurrency || 'USD',
+          duration: 1,
+          duration_unit: 't',
+          barrier,
+          symbol: activeSymbol || marketInput.value.trim().toUpperCase(),
+          req_id: Date.now(),
+          passthrough: { source: 'manual' },
+        });
+      }
+
+      function buyProposal() {
+        if (!latestProposal) {
+          addJournal('Get a fresh price first.', 'error');
+          return;
+        }
+        const detail = `Buy Digit Over ${barrierInput.value} on ${activeSymbol} for ${latestProposal.ask_price} ${window.accountCurrency || 'USD'}?`;
+        if (!window.confirm(detail)) return;
+        buyButton.disabled = true;
+        send({ buy: latestProposal.id, price: latestProposal.ask_price, req_id: Date.now(), passthrough: { source: 'manual' } });
+      }
+
+      // ---- Auto AI ----
+      function loadActiveSymbols() {
+        aiMarketSelect.innerHTML = '<option value="">Loading markets from Deriv…</option>';
+        send({ active_symbols: 'brief', product_type: 'basic', req_id: Date.now(), passthrough: { source: 'symbols' } });
+      }
+
+      function populateMarkets(symbols) {
+        const groups = new Map();
+        symbols.forEach((sym) => {
+          const groupName = sym.market_display_name || 'Other';
+          if (!groups.has(groupName)) groups.set(groupName, []);
+          groups.get(groupName).push(sym);
+        });
+
+        aiMarketSelect.innerHTML = '';
+        marketOptions.innerHTML = '';
+        groups.forEach((list, groupName) => {
+          const group = document.createElement('optgroup');
+          group.label = groupName;
+          list.forEach((sym) => {
+            const opt = document.createElement('option');
+            opt.value = sym.symbol;
+            opt.textContent = sym.display_name;
+            group.appendChild(opt);
+
+            const dataOpt = document.createElement('option');
+            dataOpt.value = sym.symbol;
+            dataOpt.label = sym.display_name;
+            marketOptions.appendChild(dataOpt);
+          });
+          aiMarketSelect.appendChild(group);
+        });
+        if (aiMarketSelect.options.length && !aiMarketSelect.value) {
+          const preferred = Array.from(aiMarketSelect.options).find((opt) => opt.value === '1HZ100V');
+          aiMarketSelect.value = preferred ? preferred.value : aiMarketSelect.options[0].value;
+        }
+      }
+
+      function subscribeAiMarket(symbol) {
+        if (!symbol) return;
+        aiSymbol = symbol;
+        send({ ticks: symbol, subscribe: 1, req_id: Date.now(), passthrough: { source: 'aiTick' } });
+      }
+
+      function handleAiTick(tick) {
+        const epoch = Number(tick.epoch);
+        if (!Number.isFinite(epoch)) return;
+        const second = epoch % 60;
+        const minuteBucket = Math.floor(epoch / 60);
+        aiCountdownEl.textContent = `${second.toString().padStart(2, '0')} / 60s`;
+        if (!aiRunning || autoTradeInFlight) return;
+        const triggerSecond = Math.min(59, Math.max(1, Number(aiSecondInput.value) || 57));
+        if (second >= triggerSecond && lastAutoMinuteBucket !== minuteBucket) {
+          lastAutoMinuteBucket = minuteBucket;
+          fireAutoTrade();
+        }
+      }
+
+      function fireAutoTrade() {
+        if (!aiSymbol) {
+          addJournal('Auto AI: choose a market first.', 'error');
+          return;
+        }
+        autoTradeInFlight = true;
+        latestAutoProposal = undefined;
+        send({
+          proposal: 1,
+          amount: currentAutoStake,
+          basis: 'stake',
+          contract_type: 'DIGITOVER',
+          currency: window.accountCurrency || 'USD',
+          duration: Math.max(1, Number(aiTicksInput.value) || 1),
+          duration_unit: 't',
+          barrier: aiBarrierSelect.value,
+          symbol: aiSymbol,
+          req_id: Date.now(),
+          passthrough: { source: 'auto' },
+        });
+      }
+
+      function sendAutoBuy() {
+        if (!latestAutoProposal) {
+          addJournal('Auto AI: no price came back in time, skipping this candle.', 'error');
+          autoTradeInFlight = false;
+          return;
+        }
+        addJournal(`Auto AI buying Digit Over ${aiBarrierSelect.value} on ${aiSymbol} for ${latestAutoProposal.ask_price} ${window.accountCurrency || 'USD'}.`);
+        send({ buy: latestAutoProposal.id, price: latestAutoProposal.ask_price, req_id: Date.now(), passthrough: { source: 'auto' } });
+      }
+
+      function settleAutoTrade(profit) {
+        autoSessionPL += profit;
+        aiSessionPLEl.textContent = `${autoSessionPL >= 0 ? '+' : ''}${autoSessionPL.toFixed(2)} ${window.accountCurrency || ''}`;
+        aiSessionPLEl.style.color = autoSessionPL >= 0 ? 'var(--green)' : 'var(--red)';
+        if (profit < 0) {
+          const multiplier = Math.max(1, Number(aiMartingaleInput.value) || 1);
+          currentAutoStake = Math.round(currentAutoStake * multiplier * 100) / 100;
+        } else {
+          currentAutoStake = Number(aiStakeInput.value) || currentAutoStake;
+        }
+        aiNextStakeEl.textContent = `${currentAutoStake.toFixed(2)} ${window.accountCurrency || ''}`;
+        autoTradeInFlight = false;
+      }
+
+      autoAiButton.addEventListener('click', () => {
+        if (!isConnected) {
+          addJournal('Connect to Deriv first.', 'error');
+          return;
+        }
+        aiRunning = !aiRunning;
+        if (aiRunning) {
+          if (!aiMarketSelect.value) {
+            addJournal('Auto AI: choose a market first.', 'error');
+            aiRunning = false;
+            return;
+          }
+          currentAutoStake = Number(aiStakeInput.value) || 0.35;
+          autoSessionPL = 0;
+          lastAutoMinuteBucket = null;
+          autoTradeInFlight = false;
+          aiSessionPLEl.textContent = `0.00 ${window.accountCurrency || ''}`;
+          aiSessionPLEl.style.color = '';
+          aiNextStakeEl.textContent = `${currentAutoStake.toFixed(2)} ${window.accountCurrency || ''}`;
+          autoAiButton.textContent = 'Stop Auto AI';
+          aiStateEl.textContent = 'Auto AI is ON — it will buy automatically at the trigger second of every 1-minute candle.';
+          aiStateEl.classList.add('running');
+          aiConfig.disabled = true;
+          subscribeAiMarket(aiMarketSelect.value);
+          addJournal(`Auto AI started on ${aiMarketSelect.value} — trigger at ${aiSecondInput.value}s, stake ${currentAutoStake}, martingale x${aiMartingaleInput.value}.`, 'good');
+        } else {
+          autoAiButton.textContent = 'Start Auto AI';
+          aiStateEl.textContent = 'Auto AI is off. Nothing will be bought until you start it.';
+          aiStateEl.classList.remove('running');
+          aiConfig.disabled = false;
+          addJournal('Auto AI stopped.');
+        }
+      });
+
+      aiRefreshMarketsButton.addEventListener('click', loadActiveSymbols);
+
+      // ---- History ----
+      function formatMoney(value) {
+        return Number(value || 0).toFixed(2);
+      }
+
+      function addHistoryRow(entry) {
+        historyRows.set(entry.id, entry);
+        renderHistoryTable();
+      }
+
+      function renderHistoryTable() {
+        const rows = Array.from(historyRows.values()).sort((a, b) => b.time - a.time);
+        if (!rows.length) {
+          historyBody.innerHTML = '<tr><td colspan="6" class="subtle">No settled trades yet.</td></tr>';
+          return;
+        }
+        historyBody.innerHTML = '';
+        rows.forEach((row) => {
+          const tr = document.createElement('tr');
+          const sourceLabel = row.source === 'auto' ? 'Auto AI' : row.source === 'manual' ? 'Manual' : 'Deriv history';
+          tr.innerHTML = `
+            <td>${row.time.toLocaleString()}</td>
+            <td class="desc">${row.description || '—'}</td>
+            <td>${formatMoney(row.buyPrice)}</td>
+            <td>${formatMoney(row.sellPrice)}</td>
+            <td class="${row.profit >= 0 ? 'pos' : 'neg'}">${row.profit >= 0 ? '+' : ''}${formatMoney(row.profit)}</td>
+            <td>${sourceLabel}</td>
+          `;
+          historyBody.appendChild(tr);
+        });
+      }
+
+      function loadProfitTable() {
+        send({ profit_table: 1, description: 1, limit: 50, sort: 'DESC', req_id: Date.now(), passthrough: { source: 'profitTable' } });
+      }
+
+      refreshHistoryButton.addEventListener('click', loadProfitTable);
+
+      // ---- Incoming messages ----
+      function onMessage(event) {
+        const message = JSON.parse(event.data);
+        if (message.error) {
+          addJournal(message.error.message || 'Deriv API request failed.', 'error');
+          if (message.msg_type === 'proposal') proposalBox.textContent = message.error.message || 'Request failed.';
+          const source = message.passthrough?.source || message.echo_req?.passthrough?.source;
+          if (source === 'auto') autoTradeInFlight = false;
+          return;
+        }
+
+        if (message.msg_type === 'authorize') {
+          isConnected = true;
+          window.accountCurrency = message.authorize.currency || 'USD';
+          dashboard.hidden = false;
+          loginCard.hidden = true;
+          setStatus(`Connected · ${message.authorize.loginid}`, true);
+          addJournal(`Authorized as ${message.authorize.loginid}.`, 'good');
+          send({ balance: 1, subscribe: 1, req_id: Date.now() });
+          loadActiveSymbols();
+          loadProfitTable();
+          return;
+        }
+
+        if (message.msg_type === 'balance') {
+          const balance = message.balance;
+          window.accountCurrency = balance.currency || window.accountCurrency || 'USD';
+          balanceValue.textContent = `${Number(balance.balance).toFixed(2)} ${window.accountCurrency}`;
+          return;
+        }
+
+        if (message.msg_type === 'active_symbols') {
+          populateMarkets(message.active_symbols || []);
+          addJournal(`Loaded ${(message.active_symbols || []).length} markets from Deriv.`);
+          return;
+        }
+
+        if (message.msg_type === 'profit_table') {
+          const transactions = message.profit_table?.transactions || [];
+          transactions.forEach((tx) => {
+            addHistoryRow({
+              id: `pt-${tx.contract_id || tx.transaction_id}`,
+              time: tx.sell_time ? new Date(tx.sell_time * 1000) : new Date((tx.purchase_time || 0) * 1000),
+              description: tx.longcode || 'Closed contract',
+              buyPrice: Number(tx.buy_price || 0),
+              sellPrice: Number(tx.sell_price || 0),
+              profit: Number(tx.sell_price || 0) - Number(tx.buy_price || 0),
+              source: 'history',
+            });
+          });
+          return;
+        }
+
+        if (message.msg_type === 'tick') {
+          const tick = message.tick;
+          if (tick.symbol === activeSymbol) {
+            quoteValue.textContent = Number(tick.quote).toLocaleString(undefined, { maximumFractionDigits: 5 });
+            recentDigits = [...recentDigits, lastDigit(tick.quote)].slice(-8);
+            updateRuleAlert();
+            candleClock.textContent = `${(Number(tick.epoch) % 60).toString().padStart(2, '0')} / 60 seconds`;
+          }
+          if (tick.symbol === aiSymbol) {
+            handleAiTick(tick);
+          }
+          return;
+        }
+
+        if (message.msg_type === 'proposal') {
+          const source = message.passthrough?.source || message.echo_req?.passthrough?.source || 'manual';
+          if (source === 'auto') {
+            latestAutoProposal = message.proposal;
+            sendAutoBuy();
+          } else {
+            latestProposal = message.proposal;
+            proposalBox.textContent = `Price ready: ${latestProposal.ask_price} ${window.accountCurrency || 'USD'} · Payout: ${latestProposal.payout}`;
+            buyButton.disabled = false;
+            addJournal(`Price ready for Digit Over ${barrierInput.value}.`);
+          }
+          return;
+        }
+
+        if (message.msg_type === 'buy') {
+          const contract = message.buy;
+          const source = message.passthrough?.source || message.echo_req?.passthrough?.source || 'manual';
+          contractSourceMap.set(contract.contract_id, source);
+          addJournal(`Contract ${contract.contract_id} purchased${source === 'auto' ? ' by Auto AI' : ''}. Monitoring its result.`, 'good');
+          send({ proposal_open_contract: 1, contract_id: contract.contract_id, subscribe: 1, req_id: Date.now(), passthrough: { source } });
+          return;
+        }
+
+        if (message.msg_type === 'proposal_open_contract') {
+          const contract = message.proposal_open_contract;
+          if (contract.is_sold && !settledContracts.has(contract.contract_id)) {
+            settledContracts.add(contract.contract_id);
+            const profit = Number(contract.profit || 0);
+            const source = message.passthrough?.source || contractSourceMap.get(contract.contract_id) || 'manual';
+            addJournal(`Contract ${contract.contract_id} closed: ${profit >= 0 ? '+' : ''}${profit.toFixed(2)} ${window.accountCurrency || ''}.`, profit >= 0 ? 'good' : 'error');
+            addHistoryRow({
+              id: `live-${contract.contract_id}`,
+              time: contract.sell_time ? new Date(contract.sell_time * 1000) : new Date(),
+              description: contract.longcode || `${contract.display_name || contract.underlying || ''} ${contract.contract_type || ''}`.trim(),
+              buyPrice: Number(contract.buy_price || 0),
+              sellPrice: Number(contract.sell_price || 0),
+              profit,
+              source,
+            });
+            if (source === 'auto') settleAutoTrade(profit);
+          }
+          return;
+        }
+      }
+
+      // ---- Tabs ----
+      document.querySelectorAll('.tab-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+          document.querySelectorAll('.tab-panel').forEach((p) => { p.hidden = true; });
+          btn.classList.add('active');
+          document.getElementById(btn.dataset.tab).hidden = false;
+        });
+      });
+
+      // ---- Wire up ----
+      document.querySelector('#changeMarketButton').addEventListener('click', subscribeToMarket);
+      document.querySelector('#proposalButton').addEventListener('click', requestProposal);
+      buyButton.addEventListener('click', buyProposal);
+      document.querySelector('#disconnectButton').addEventListener('click', disconnect);
+
+      // ---- Boot: handle OAuth redirect back from Deriv ----
+      (function boot() {
+        const { accounts, appIdFromUrl } = parseOauthAccounts();
+        if (appIdFromUrl) appIdInput.value = appIdFromUrl;
+        if (accounts.length) {
+          showAccountStep(accounts);
+        }
+        // Strip tokens from the address bar immediately so they don't linger in browser history.
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.search = appIdFromUrl ? `?app_id=${encodeURIComponent(appIdFromUrl)}` : '';
+        window.history.replaceState({}, '', cleanUrl.toString());
+      })();
+    })();
+  </script>
+</body>
+</html>

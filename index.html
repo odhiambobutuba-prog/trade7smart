@@ -1,60 +1,409 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Butuba Trade7Smart</title><style>
-:root{--bg:#07111f;--card:#0e1b2e;--line:#203a59;--text:#edf6ff;--muted:#91a5be;--cyan:#63d9ff;--green:#46d69d;--red:#fa7185;--amber:#ffc268}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 85% 0,#193962,transparent 35rem),var(--bg);color:var(--text);font:14px Arial,sans-serif}.loader{position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:var(--bg)}.loader b{font-size:42px}.loader b span,.cyan{color:var(--cyan)}.loader i{display:block;background:var(--cyan);height:4px;width:70px;margin:15px auto;animation:p 1s infinite}@keyframes p{50%{transform:scaleX(.3)}}.app{display:flex;min-height:100vh}.side{width:230px;padding:22px 12px;background:#06101e;border-right:1px solid var(--line);position:fixed;inset:0 auto 0 0}.brand{font-weight:900;font-size:19px;padding:10px}.brand span{color:var(--cyan)}.nav{margin-top:30px}.nav button{display:block;width:100%;text-align:left;padding:13px;border:0;border-radius:9px;background:none;color:var(--muted);font-weight:bold}.nav button.active,.nav button:hover{color:var(--cyan);background:#102842}.main{margin-left:230px;width:calc(100% - 230px);padding:25px;max-width:1500px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:16px}.top strong{font-family:monospace;font-size:18px}.view{display:none}.view.active{display:block}.heading{margin:25px 0 16px}.heading h1{margin:4px 0;font-size:27px}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:13px}.card{background:linear-gradient(135deg,#102139,#0b1728);border:1px solid var(--line);border-radius:13px;padding:16px}.card h2{margin:4px 0 14px;font-size:17px}.label,label{display:grid;gap:6px;color:var(--muted);font-size:11px;font-weight:bold;margin:12px 0}input,select,button{font:inherit}input,select{color:var(--text);background:#0a1525;border:1px solid var(--line);padding:10px;border-radius:8px;width:100%}button.primary,.primary{border:0;background:linear-gradient(135deg,var(--cyan),#5d86ff);color:#06101e;padding:11px;border-radius:8px;font-weight:900;cursor:pointer;width:100%}button.danger{background:var(--red)}button.secondary{padding:9px;border:1px solid var(--line);border-radius:8px;background:#102139;color:var(--text);cursor:pointer}.notice{padding:11px;background:#342916;border:1px solid #685528;color:#ffdfa5;border-radius:9px;font-size:12px}.price{font:34px monospace;margin:10px 0}.meter{height:8px;border-radius:8px;background:#07101d;overflow:hidden}.meter i{display:block;background:linear-gradient(90deg,var(--cyan),var(--green));height:100%;width:0}.chart{height:250px;width:100%;background:#081526;border-radius:8px}.clock{font:48px monospace;color:var(--cyan);text-align:center;margin:16px}.row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px}.ok{color:var(--green)}.bad{color:var(--red)}.log{max-height:420px;overflow:auto}.log .row strong{max-width:60%;text-align:right}.file{display:none}.pick{display:block;text-align:center;padding:13px;border:1px dashed var(--cyan);border-radius:10px;color:var(--cyan);cursor:pointer;margin-top:12px}.bottom{display:none}@media(max-width:720px){.side{display:none}.main{margin:0;width:100%;padding:15px 15px 80px}.top{font-size:11px}.heading h1{font-size:23px}.bottom{display:flex;position:fixed;bottom:0;inset-inline:0;height:66px;background:#07111f;border-top:1px solid var(--line);justify-content:space-around;z-index:8}.bottom button{background:none;border:0;color:var(--muted);font-size:10px}.bottom button.active{color:var(--cyan)}}
-</style></head><body><div class="loader" id="load"><div><b>Bu<span>tuba</span></b><p class="muted">Trade7Smart terminal</p><i></i></div></div><div class="app"><aside class="side"><div class="brand">Bu<span>tuba</span> Trade7</div><div class="nav" id="nav"></div></aside><main class="main"><header class="top"><span id="status">● Disconnected</span><span id="marketTop">Volatility 100 (1s)</span><strong id="priceTop">—</strong><button class="secondary" id="connect">Connect Deriv</button></header>
-<section class="view active" id="home"><div class="heading"><span class="cyan">LIVE WORKSPACE</span><h1>Market overview</h1><p class="muted">Live data when connected; rule score is not a prediction.</p></div><div class="grid"><div class="card"><span class="muted">Last digit</span><div class="price" id="digit">—</div><span id="tickTime" class="muted">Waiting for ticks</span></div><div class="card"><span class="muted">One-minute candle</span><div class="price" id="candleState">—</div><span id="candleRange" class="muted">Open — · High/Low —</span></div><div class="card"><span class="muted">Account balance</span><div class="price" id="balance">—</div><span class="muted">Deriv authorized account</span></div></div><div class="card" style="margin-top:14px"><h2>Selected market chart</h2><canvas class="chart" id="chart"></canvas></div></section>
-<section class="view" id="trade"><div class="heading"><span class="cyan">MANUAL TRADE</span><h1>One-tick contract</h1></div><div class="grid"><div class="card"><h2>Order settings</h2><label>Market<select id="market"></select></label><label>Contract<select id="contract"><option value="DIGITOVER:0">OVER 0</option><option value="DIGITOVER:1">OVER 1</option><option value="DIGITUNDER:7">UNDER 7</option><option value="DIGITOVER:2">OVER 2</option></select></label><label>Stake<input id="stake" type="number" min="0.35" step="0.01" value="1"></label><button class="primary" id="proposal">Get live proposal</button></div><div class="card"><h2>Live proposal</h2><div class="row"><span>Price</span><strong id="proposalPrice">—</strong></div><div class="row"><span>Payout</span><strong id="proposalPayout">—</strong></div><div class="row"><span>One tick</span><strong>Yes</strong></div><p id="proposalMsg" class="muted">Connect and request a proposal.</p><button class="primary" id="buy" disabled>Buy contract</button></div><div class="card"><h2>Open contract</h2><div id="open" class="muted">No open contract.</div></div></div></section>
-<section class="view" id="auto"><div class="heading"><span class="cyan">AUTO ENGINE</span><h1>Previous candle, 57-second one tick</h1><p class="muted">The engine keeps the previous completed one-minute candle, then submits your selected contract at 00:57.</p></div><div class="notice">Auto orders can use real money. Enable only after checking your Deriv account, market, stake, contract, and martingale.</div><div class="grid" style="margin-top:14px"><div class="card"><h2>Auto settings</h2><label>Market<select id="autoMarket"></select></label><label>Contract to buy at 57 seconds<select id="autoContract"><option value="DIGITOVER:1">OVER 1</option><option value="DIGITOVER:0">OVER 0</option><option value="DIGITUNDER:7">UNDER 7</option><option value="DIGITOVER:2">OVER 2</option></select></label><label>Stake<input id="autoStake" type="number" min="0.35" step="0.01" value="1"></label><label>Martingale after loss (1 disables)<input id="martingale" type="number" min="1" step="0.1" value="1"></label><label>Previous candle condition<select id="candleFilter"><option value="any">Any completed candle</option><option value="bull">Previous candle bullish</option><option value="bear">Previous candle bearish</option></select></label><button class="primary" id="run">Enable Auto Engine</button><p id="runMsg" class="muted">Stopped.</p></div><div class="card"><h2>57-second decision</h2><div class="clock" id="clock">01:00</div><div class="row"><span>Previous candle</span><strong id="pattern">Waiting</strong></div><div class="row"><span>Current candle</span><strong id="score">Waiting</strong></div><div class="row"><span>Candle filter</span><strong id="filterResult">Waiting</strong></div><div class="row"><span>Next action</span><strong id="action">WAIT</strong></div></div><div class="card"><h2>1s scanner · selected market</h2><canvas class="chart" id="autoChart" style="height:180px"></canvas><p class="muted">Live one-minute view from Deriv ticks for the selected market.</p><div id="scanner">Waiting for live ticks.</div></div></div></section>
-<section class="view" id="import"><div class="heading"><span class="cyan">DBOT IMPORT</span><h1>Import Dbot XML</h1><p class="muted">The XML is read locally in this browser and is never executed automatically.</p></div><div class="card"><input class="file" id="xml" type="file" accept=".xml,text/xml"><label class="pick" for="xml">Choose Dbot XML File</label><div id="xmlResult" class="muted" style="margin-top:18px">No file selected.</div></div></section>
-<section class="view" id="history"><div class="heading"><span class="cyan">HISTORY</span><h1>Trades and engine activity</h1></div><div class="card log" id="historyLog">No activity yet.</div></section>
-</main></div><nav class="bottom" id="bottom"></nav><script>
-const markets={'Volatility 10 (1s)':'1HZ10V','Volatility 25 (1s)':'1HZ25V','Volatility 50 (1s)':'1HZ50V','Volatility 75 (1s)':'1HZ75V','Volatility 100 (1s)':'1HZ100V'};let ws,authorized=false,currency='USD',proposalData=null,history=JSON.parse(localStorage.getItem('butuba_history')||'[]'),ticks=[],candle={},auto={on:false,lastMinute:-1,stake:1,base:1};const $=id=>document.getElementById(id);const nav=['home','trade','auto','import','history'];function log(type,detail){history.unshift({time:new Date().toLocaleTimeString(),type,detail});history=history.slice(0,100);localStorage.setItem('butuba_history',JSON.stringify(history));$('historyLog').innerHTML=history.map(x=>`<div class="row"><span>${x.time} · ${x.type}</span><strong>${x.detail}</strong></div>`).join('')}function page(id){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===id))}function makeNav(){nav.forEach(id=>{let name={home:'Home',trade:'Trade',auto:'Auto Engine',import:'Import Dbot',history:'History'}[id];['nav','bottom'].forEach(target=>{let b=document.createElement('button');b.dataset.page=id;b.textContent=name;b.onclick=()=>page(id);$(target).append(b)})})}function fill(){let o=Object.keys(markets).map(x=>`<option value="${x}">${x}</option>`).join('');$('market').innerHTML=o;$('autoMarket').innerHTML=o}function send(o){if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))}function connect(){let token=prompt('Paste your Deriv API token with trade permission:');if(!token)return;ws=new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');$('status').textContent='● Connecting';ws.onopen=()=>send({authorize:token});ws.onmessage=e=>handle(JSON.parse(e.data));ws.onclose=()=>{$('status').textContent='● Disconnected';authorized=false}}function symbol(name){return markets[name]}function subscribe(){let s=symbol($('market').value);send({forget_all:'ticks'});send({ticks:s,subscribe:1});$('marketTop').textContent=$('market').value;ticks=[];candle={}}function handle(d){if(d.error){$('proposalMsg').textContent=d.error.message;log('Error',d.error.message);return}if(d.msg_type==='authorize'){authorized=true;currency=d.authorize.currency||'USD';$('status').textContent='● Connected '+d.authorize.loginid;send({balance:1,subscribe:1});subscribe();log('Connected',d.authorize.loginid)}if(d.msg_type==='balance')$('balance').textContent=`${d.balance.currency} ${Number(d.balance.balance).toFixed(2)}`;if(d.msg_type==='tick')tick(d.tick);if(d.msg_type==='proposal'){proposalData=d.proposal;$('proposalPrice').textContent=`${currency} ${d.proposal.ask_price}`;$('proposalPayout').textContent=`${currency} ${d.proposal.payout}`;$('proposalMsg').textContent='Live proposal ready.';$('buy').disabled=false;if(auto.waiting){auto.waiting=false;buy(true)}}if(d.msg_type==='buy'){log('Buy submitted',`Contract #${d.buy.contract_id} · ${currency} ${d.buy.buy_price}`);send({proposal_open_contract:1,contract_id:d.buy.contract_id,subscribe:1})}if(d.msg_type==='proposal_open_contract'){let c=d.proposal_open_contract;$('open').textContent=`${c.status||'open'} · P/L ${c.profit||0}`;if(c.is_sold||c.status==='won'||c.status==='lost'){log('Contract settled',`${c.status} · P/L ${c.profit||0}`);if(c.status==='lost')auto.stake*=Number($('martingale').value)||1;else auto.stake=auto.base}}}function tick(t){let p=Number(t.quote),d=String(t.quote).slice(-1),m=Math.floor(t.epoch/60);$('priceTop').textContent=p.toFixed(2);$('digit').textContent=d;$('tickTime').textContent=new Date(t.epoch*1000).toLocaleTimeString();ticks.push({p,d});if(ticks.length>120)ticks.shift();if(candle.m!==m)candle={m,open:p,high:p,low:p,current:p};else{candle.current=p;candle.high=Math.max(candle.high,p);candle.low=Math.min(candle.low,p)}let state=p>candle.open?'BULLISH':p<candle.open?'BEARISH':'NEUTRAL';$('candleState').textContent=state;$('candleRange').textContent=`Open ${candle.open.toFixed(2)} · High/Low ${candle.high.toFixed(2)} / ${candle.low.toFixed(2)}`;draw();$('scanner').textContent=ticks.slice(-12).map(x=>x.d).join(' · ')}function draw(){let c=$('chart'),r=c.getBoundingClientRect(),x=c.getContext('2d');c.width=r.width*devicePixelRatio;c.height=r.height*devicePixelRatio;x.scale(devicePixelRatio,devicePixelRatio);x.clearRect(0,0,r.width,r.height);let a=ticks.slice(-60).map(z=>z.p);if(a.length<2)return;let mn=Math.min(...a),mx=Math.max(...a),range=mx-mn||1;x.strokeStyle='#63d9ff';x.lineWidth=2;x.beginPath();a.forEach((p,i)=>{let xx=i/(a.length-1)*r.width,yy=r.height-((p-mn)/range*(r.height-20)+10);i?x.lineTo(xx,yy):x.moveTo(xx,yy)});x.stroke()}function getProposal(){if(!authorized)return connect();let [type,barrier]=$('contract').value.split(':');send({proposal:1,amount:$('stake').value,basis:'stake',contract_type:type,currency,duration:1,duration_unit:'t',symbol:symbol($('market').value),barrier})}function buy(autoBuy=false){if(!proposalData)return;if(!autoBuy&&!confirm(`Buy this one-tick contract for ${proposalData.ask_price}?`))return;send({buy:proposalData.id,price:proposalData.ask_price});$('buy').disabled=true}function decision(){let s=ticks.slice(-3).map(x=>x.d).join(''),res=s.endsWith('000')?['DIGITOVER:0',100,'000 → OVER 0']:s.endsWith('111')?['DIGITOVER:1',100,'111 → OVER 1']:s.endsWith('00')?['DIGITOVER:0',90,'00 → OVER 0']:s.endsWith('11')?['DIGITOVER:1',90,'11 → OVER 1']:['',0,'No repeated rule'];$('pattern').textContent=res[2];$('score').textContent=res[1];let st=candle.current>candle.open?'bull':candle.current<candle.open?'bear':'neutral',need=$('candleFilter').value,pass=need==='any'||need===st;$('filterResult').textContent=pass?'PASS':'BLOCKED';$('action').textContent=res[0]?res[2]:'WAIT';return{contract:res[0],score:res[1],pass}}function clock(){let n=new Date(),sec=n.getSeconds();$('clock').textContent=`00:${String(60-sec).padStart(2,'0')}`;let d=decision();if(auto.on&&sec===57&&auto.lastMinute!==n.getMinutes()){auto.lastMinute=n.getMinutes();if(d.contract&&d.score>=Number($('threshold').value)&&d.pass){$('market').value=$('autoMarket').value;$('contract').value=d.contract;$('stake').value=auto.stake.toFixed(2);auto.waiting=true;getProposal();log('Auto signal',`${d.contract} score ${d.score}; proposal requested`)}else log('Auto skipped','Rule score or candle filter did not pass')}}$('connect').onclick=connect;$('market').onchange=subscribe;$('proposal').onclick=getProposal;$('buy').onclick=()=>buy(false);$('run').onclick=()=>{auto.on=!auto.on;auto.base=Number($('autoStake').value);if(!auto.stake)auto.stake=auto.base;$('run').textContent=auto.on?'Stop Auto Engine':'Enable Auto Engine';$('run').classList.toggle('danger',auto.on);$('runMsg').textContent=auto.on?'Enabled: checks at 57 seconds.':'Stopped.';log(auto.on?'Auto enabled':'Auto stopped','57-second candle and digit rules')};$('xml').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{let text=String(r.result),ok=text.includes('<xml')||text.includes('<block');$('xmlResult').innerHTML=`<strong class="${ok?'ok':'bad'}">${ok?'Dbot XML imported for inspection':'XML format not confirmed'}</strong><p>${f.name} · ${text.length.toLocaleString()} characters</p>`;log('XML import',f.name)};r.readAsText(f)};makeNav();fill();log('Ready','Butuba Trade7Smart loaded');setInterval(clock,250);setTimeout(()=>$('load').remove(),900);
-</script><script>
-/* Butuba Auto Engine: completed-candle scheduler */
-(() => {
-  const byId = id => document.getElementById(id);
-  if (!byId('autoContract')) return;
-  if (!byId('threshold')) { const hidden = document.createElement('input'); hidden.id = 'threshold'; hidden.type = 'hidden'; hidden.value = '1'; document.body.append(hidden); }
-  const state = { enabled:false, lastMinute:-1, current:null, previous:null, stake:1, points:[] };
-  const oldRun = byId('run'); const run = oldRun.cloneNode(true); oldRun.replaceWith(run);
-  const describe = candle => !candle ? 'Waiting for a completed candle' : candle.close > candle.open ? 'BULLISH' : candle.close < candle.open ? 'BEARISH' : 'NEUTRAL';
-  const updateCandle = () => { const price = Number(byId('priceTop').textContent.replace(/[^0-9.-]/g,'')); if (!price) return; const minute = Math.floor(Date.now()/60000); if (!state.current || state.current.minute !== minute) { if (state.current) state.previous = { ...state.current }; state.current = { minute, open:price, high:price, low:price, close:price }; } else { state.current.close=price; state.current.high=Math.max(state.current.high,price); state.current.low=Math.min(state.current.low,price); } state.points.push(price); if(state.points.length>60)state.points.shift(); byId('pattern').textContent = describe(state.previous); byId('score').textContent = describe(state.current); drawAuto(); };
-  const drawAuto = () => { const canvas=byId('autoChart'); if(!canvas||state.points.length<2)return; const box=canvas.getBoundingClientRect(), ctx=canvas.getContext('2d'), ratio=devicePixelRatio||1; canvas.width=box.width*ratio;canvas.height=box.height*ratio;ctx.scale(ratio,ratio);ctx.clearRect(0,0,box.width,box.height);const min=Math.min(...state.points),max=Math.max(...state.points),range=max-min||1;ctx.strokeStyle='#63d9ff';ctx.lineWidth=2;ctx.beginPath();state.points.forEach((p,i)=>{const x=i/(state.points.length-1)*box.width,y=box.height-((p-min)/range*(box.height-18)+9);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke(); };
-  const candlePass = () => { const condition=byId('candleFilter').value, direction=describe(state.previous); const pass=condition==='any'||condition==='bull'&&direction==='BULLISH'||condition==='bear'&&direction==='BEARISH'; byId('filterResult').textContent=pass?'PASS':`BLOCKED (${direction})`; return pass; };
-  const submit = () => { const [type,barrier]=byId('autoContract').value.split(':'); byId('market').value=byId('autoMarket').value;byId('market').dispatchEvent(new Event('change'));byId('contract').value=`${type}:${barrier}`;byId('stake').value=state.stake.toFixed(2);byId('action').textContent=`BUY ${type==='DIGITOVER'?'OVER':'UNDER'} ${barrier}`;byId('proposal').click();setTimeout(()=>{if(!byId('buy').disabled)byId('buy').click();},1200); };
-  run.addEventListener('click',()=>{state.enabled=!state.enabled;state.stake=Number(byId('autoStake').value)||1;run.textContent=state.enabled?'Stop Auto Engine':'Enable Auto Engine';run.classList.toggle('danger',state.enabled);byId('runMsg').textContent=state.enabled?'Enabled: uses the previous completed candle and buys at 00:57.':'Stopped.';});
-  setInterval(()=>{updateCandle();const now=new Date(),sec=now.getSeconds();byId('clock').textContent=`00:${String(60-sec).padStart(2,'0')}`;if(state.enabled&&sec===57&&state.lastMinute!==now.getMinutes()){state.lastMinute=now.getMinutes();if(candlePass())submit();else byId('action').textContent='SKIPPED: candle filter';}},250);
-  const importCard=byId('import').querySelector('.card');const handoff=document.createElement('a');handoff.href='https://app.deriv.com/bot.html';handoff.target='_blank';handoff.className='pick';handoff.textContent='Open Deriv Dbot to run imported XML';importCard.append(handoff);
-})();
-</script><script>
-/* Reliable Auto execution and candlestick renderer */
-(() => {
-  const $ = id => document.getElementById(id);
-  const bars = [], active = { minute:null, open:0, high:0, low:0, close:0 };
-  let pendingAutoBuy = false;
-  const buyButton = $('buy');
-  new MutationObserver(() => { if (pendingAutoBuy && !buyButton.disabled) { pendingAutoBuy = false; buyButton.click(); $('action').textContent = 'AUTO BUY SENT'; } }).observe(buyButton, { attributes:true, attributeFilter:['disabled'] });
-  const proposalButton = $('proposal'); const originalProposalClick = proposalButton.onclick;
-  proposalButton.addEventListener('click', () => { if (window.butubaAutoRequest) { pendingAutoBuy = true; window.butubaAutoRequest = false; } });
-  const originalRun = $('run'); originalRun.addEventListener('click', () => { $('runMsg').textContent = originalRun.textContent.includes('Stop') ? 'Enabled: a fresh proposal will be bought automatically at 00:57.' : 'Stopped.'; });
-  const selectedAuto = () => { const [type,barrier] = $('autoContract').value.split(':'); $('market').value = $('autoMarket').value; $('market').dispatchEvent(new Event('change')); $('contract').value = `${type}:${barrier}`; $('stake').value = $('autoStake').value; window.butubaAutoRequest = true; proposalButton.click(); };
-  const oldAction = $('action'); const autoTick = () => { const now=new Date(), sec=now.getSeconds(); if (sec===57 && $('run').textContent.includes('Stop') && window.butubaLastAutoMinute !== now.getMinutes()) { window.butubaLastAutoMinute=now.getMinutes(); const condition=$('candleFilter').value; const prev=bars.at(-1); const direction=!prev?'NEUTRAL':prev.close>prev.open?'BULLISH':prev.close<prev.open?'BEARISH':'NEUTRAL'; const pass=condition==='any'||condition==='bull'&&direction==='BULLISH'||condition==='bear'&&direction==='BEARISH'; $('filterResult').textContent=pass?'PASS':'BLOCKED'; if(pass){oldAction.textContent='GETTING FRESH PROPOSAL…'; selectedAuto();}else oldAction.textContent='SKIPPED: PREVIOUS CANDLE FILTER'; } };
-  const draw = () => { const canvas=$('autoChart'); if(!canvas)return; const rect=canvas.getBoundingClientRect(),ctx=canvas.getContext('2d'),ratio=devicePixelRatio||1; canvas.width=rect.width*ratio;canvas.height=rect.height*ratio;ctx.scale(ratio,ratio);ctx.clearRect(0,0,rect.width,rect.height); const all=[...bars,active].filter(x=>x.minute!==null); if(!all.length)return; const min=Math.min(...all.map(x=>x.low)),max=Math.max(...all.map(x=>x.high)),range=max-min||1,w=Math.max(8,rect.width/Math.max(1,all.length)*.58); all.forEach((bar,i)=>{const x=(i+.5)*rect.width/all.length,y=v=>rect.height-((v-min)/range*(rect.height-18)+9),up=bar.close>=bar.open;ctx.strokeStyle=up?'#46d69d':'#fa7185';ctx.fillStyle=ctx.strokeStyle;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y(bar.high));ctx.lineTo(x,y(bar.low));ctx.stroke();const top=Math.min(y(bar.open),y(bar.close)),height=Math.max(2,Math.abs(y(bar.open)-y(bar.close)));ctx.fillRect(x-w/2,top,w,height);}); };
-  setInterval(() => { const price=Number($('priceTop').textContent.replace(/[^0-9.-]/g,'')); if(!price)return; const minute=Math.floor(Date.now()/60000); if(active.minute===null){Object.assign(active,{minute,open:price,high:price,low:price,close:price});} else if(active.minute!==minute){bars.push({...active});if(bars.length>40)bars.shift();Object.assign(active,{minute,open:price,high:price,low:price,close:price});} else {active.close=price;active.high=Math.max(active.high,price);active.low=Math.min(active.low,price);} $('pattern').textContent=bars.length?(bars.at(-1).close>bars.at(-1).open?'BULLISH':'BEARISH'):'Waiting for previous candle'; $('score').textContent=active.close>active.open?'BULLISH':'BEARISH'; draw(); autoTick(); },250);
-})();
-</script><script>
-/* Final single Auto Engine controller */
-(() => {
-  const $ = id => document.getElementById(id), button = $('run');
-  const cleanButton = button.cloneNode(true); button.replaceWith(cleanButton);
-  const engine = { enabled:false, minute:-1, pending:false, bars:[], bar:null, stake:1 };
-  function candleName(bar){return !bar?'WAITING':bar.close>bar.open?'BULLISH':bar.close<bar.open?'BEARISH':'NEUTRAL'}
-  function renderCandles(){const c=$('autoChart');if(!c)return;const r=c.getBoundingClientRect(),x=c.getContext('2d'),d=devicePixelRatio||1;c.width=r.width*d;c.height=r.height*d;x.scale(d,d);x.clearRect(0,0,r.width,r.height);const data=[...engine.bars,engine.bar].filter(Boolean);if(!data.length)return;const lo=Math.min(...data.map(b=>b.low)),hi=Math.max(...data.map(b=>b.high)),span=hi-lo||1,w=Math.max(9,r.width/data.length*.58),y=v=>r.height-((v-lo)/span*(r.height-18)+9);data.forEach((b,i)=>{const px=(i+.5)*r.width/data.length,up=b.close>=b.open;x.strokeStyle=x.fillStyle=up?'#46d69d':'#fa7185';x.beginPath();x.moveTo(px,y(b.high));x.lineTo(px,y(b.low));x.stroke();x.fillRect(px-w/2,Math.min(y(b.open),y(b.close)),w,Math.max(2,Math.abs(y(b.open)-y(b.close))))})}
-  function updateBar(){const price=Number($('priceTop').textContent.replace(/[^0-9.-]/g,''));if(!price)return;const minute=Math.floor(Date.now()/60000);if(!engine.bar||engine.bar.minute!==minute){if(engine.bar){engine.bars.push({...engine.bar});if(engine.bars.length>30)engine.bars.shift()}engine.bar={minute,open:price,high:price,low:price,close:price}}else{engine.bar.close=price;engine.bar.high=Math.max(engine.bar.high,price);engine.bar.low=Math.min(engine.bar.low,price)}$('pattern').textContent=`Previous: ${candleName(engine.bars.at(-1))}`;$('score').textContent=`Current: ${candleName(engine.bar)}`;renderCandles()}
-  function readyToBuy(){const previous=engine.bars.at(-1),need=$('candleFilter').value,dir=candleName(previous),pass=need==='any'||need==='bull'&&dir==='BULLISH'||need==='bear'&&dir==='BEARISH';$('filterResult').textContent=pass?'PASS':`BLOCKED (${dir})`;return pass}
-  const buy=$('buy');new MutationObserver(()=>{if(engine.pending&&!buy.disabled){engine.pending=false;buy.click();$('action').textContent='AUTO BUY SENT'}}).observe(buy,{attributes:true,attributeFilter:['disabled']});
-  function fire(){const [type,barrier]=$('autoContract').value.split(':');$('market').value=$('autoMarket').value;$('market').dispatchEvent(new Event('change'));$('contract').value=`${type}:${barrier}`;$('stake').value=engine.stake.toFixed(2);$('action').textContent='REQUESTING LIVE PROPOSAL';engine.pending=true;$('proposal').click()}
-  cleanButton.onclick=()=>{engine.enabled=!engine.enabled;engine.stake=Number($('autoStake').value)||1;cleanButton.textContent=engine.enabled?'Stop Auto Engine':'Enable Auto Engine';cleanButton.classList.toggle('danger',engine.enabled);$('runMsg').textContent=engine.enabled?'Enabled. It will submit the selected one-tick contract at 00:57.':'Stopped.'};
-  setInterval(()=>{updateBar();const now=new Date(),second=now.getSeconds();$('clock').textContent=`00:${String(60-second).padStart(2,'0')}`;if(engine.enabled&&second===57&&engine.minute!==now.getMinutes()){engine.minute=now.getMinutes();readyToBuy()?fire():$('action').textContent='SKIPPED: CANDLE FILTER'}},250);
-})();
-</script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <title>Butuba | Deriv Control</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: #0e1b2d;
+      --panel-2: #12233a;
+      --line: #253a58;
+      --muted: #9bb0ca;
+      --text: #f4f7fb;
+      --blue: #2d8cff;
+      --green: #25d695;
+      --red: #ff5e78;
+      --amber: #ffb020;
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: radial-gradient(circle at top right, #102a4c 0, var(--bg) 42rem);
+      color: var(--text);
+      font: 15px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .48; }
+    .shell { width: min(1120px, calc(100% - 28px)); margin: 0 auto; padding: 20px 0 42px; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 800; letter-spacing: .2px; }
+    .brand-mark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #2d8cff, #7166ff); box-shadow: 0 10px 30px #2d8cff42; }
+    .status { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .86rem; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 4px #ffb0201c; }
+    .dot.live { background: var(--green); box-shadow: 0 0 0 4px #25d6951c; }
+    .card { background: linear-gradient(145deg, #102039, #0c1829); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 20px 48px #00000024; }
+    .login { padding: 20px; margin-bottom: 16px; }
+    h1, h2, p { margin-top: 0; }
+    h1 { font-size: clamp(1.35rem, 4vw, 1.85rem); margin-bottom: 6px; }
+    h2 { font-size: 1rem; margin-bottom: 14px; }
+    .hint, .subtle { color: var(--muted); }
+    .hint { margin-bottom: 16px; font-size: .9rem; }
+    .login-grid, .trade-grid { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    label { display: grid; gap: 7px; color: var(--muted); font-size: .82rem; font-weight: 650; }
+    input, select { width: 100%; min-height: 45px; padding: 0 12px; border: 1px solid var(--line); border-radius: 11px; background: #081526; color: var(--text); outline: none; }
+    input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px #2d8cff22; }
+    .actions { display: flex; gap: 10px; align-items: end; }
+    .btn { min-height: 45px; padding: 0 15px; border: 0; border-radius: 11px; color: white; font-weight: 750; }
+    .primary { background: linear-gradient(135deg, #2086ff, #536dff); }
+    .secondary { background: #1b304d; border: 1px solid var(--line); }
+    .danger { background: #522638; color: #ffdbe2; }
+    .notice { display: flex; gap: 9px; padding: 12px; margin: 14px 0 0; border: 1px solid #745a20; background: #352a13; border-radius: 11px; color: #ffe0a0; font-size: .86rem; }
+    .dashboard { display: grid; grid-template-columns: 1.2fr .8fr; gap: 16px; }
+    .main-card, .side-card { padding: 18px; }
+    .dashboard[hidden] { display: none; }
+    .metric-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .metric { padding: 13px; border: 1px solid var(--line); border-radius: 13px; background: #091628; }
+    .metric small { display: block; color: var(--muted); margin-bottom: 4px; }
+    .metric strong { font-size: 1.04rem; }
+    .tick-panel { min-height: 170px; padding: 18px; display: grid; place-items: center; text-align: center; border: 1px solid var(--line); border-radius: 15px; background: radial-gradient(circle at top, #193c69, #091628 70%); }
+    .quote { font-size: clamp(2rem, 7vw, 3.4rem); font-weight: 850; letter-spacing: -1.5px; }
+    .digits { display: flex; justify-content: center; gap: 7px; margin: 13px 0; flex-wrap: wrap; }
+    .digit { display: grid; width: 30px; height: 34px; place-items: center; border-radius: 9px; background: #173050; color: #dbe9ff; font-weight: 800; }
+    .digit.pattern { background: #1f745a; color: #e6fff6; }
+    .recommendation { font-weight: 750; color: #dceaff; }
+    .trade-card { margin-top: 16px; padding: 18px; }
+    .trade-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .auto-state { display: block; margin-top: 8px; color: var(--muted); font-size: .82rem; }
+    .auto-state.running { color: var(--green); font-weight: 700; }
+    .trade-buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .proposal { min-height: 52px; padding: 13px; margin-top: 13px; border-radius: 11px; background: #091628; border: 1px solid var(--line); color: var(--muted); }
+    .proposal strong { color: var(--text); }
+    .journal { max-height: 400px; overflow: auto; display: grid; gap: 8px; padding-right: 3px; }
+    .entry { padding: 11px; border: 1px solid var(--line); border-radius: 11px; background: #091628; font-size: .87rem; }
+    .entry time { display: block; margin-bottom: 3px; color: var(--muted); font-size: .75rem; }
+    .entry.error { border-color: #713347; color: #ffd2db; }
+    .entry.good { border-color: #286c56; color: #c9ffe9; }
+    .footer-note { margin-top: 16px; color: var(--muted); font-size: .79rem; }
+    .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    @media (max-width: 820px) { .login-grid, .trade-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dashboard { grid-template-columns: 1fr; } }
+    @media (max-width: 560px) { .shell { width: min(100% - 20px, 1120px); padding-top: 12px; } .login, .main-card, .side-card, .trade-card { padding: 15px; } .login-grid, .trade-grid, .metric-row { grid-template-columns: 1fr; } .actions { align-items: stretch; } .actions .btn { flex: 1; } header { align-items: flex-start; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="brand"><span class="brand-mark">B</span><span>Butuba Deriv Control</span></div>
+      <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">Not connected</span></div>
+    </header>
+
+    <section class="card login" id="loginCard">
+      <h1>Connect your Deriv account</h1>
+      <p class="hint">Your token stays only in this browser tab. It is not saved by this page.</p>
+      <form id="loginForm">
+        <div class="login-grid">
+          <label>Deriv App ID<input id="appId" inputmode="numeric" autocomplete="off" placeholder="Your registered App ID" required></label>
+          <label>Trading Account ID<input id="accountId" autocomplete="off" placeholder="Example: DOT..." required></label>
+          <label>Personal Access Token<input id="token" type="password" autocomplete="off" placeholder="Trade-scoped PAT" required></label>
+          <div class="actions">
+            <button class="btn primary" id="connectButton" type="submit">Connect</button>
+            <button class="btn secondary" id="showTokenButton" type="button">Show token</button>
+          </div>
+        </div>
+      </form>
+      <div class="notice"><span aria-hidden="true">!</span><span>Use a Deriv Personal Access Token with the <strong>trade</strong> permission and test on a demo account first. This page provides rule alerts, not predictions or profit guarantees.</span></div>
+    </section>
+
+    <section class="dashboard" id="dashboard" hidden>
+      <div>
+        <section class="card main-card">
+          <div class="metric-row">
+            <div class="metric"><small>Balance</small><strong id="balanceValue">—</strong></div>
+            <div class="metric"><small>Market</small><strong id="marketValue">—</strong></div>
+            <div class="metric"><small>Server candle clock</small><strong id="candleClock">—</strong></div>
+          </div>
+          <div class="tick-panel">
+            <div>
+              <div class="subtle">Live last quote</div>
+              <div class="quote" id="quoteValue">Waiting for ticks</div>
+              <div class="digits" id="digits" aria-label="Recent last digits"></div>
+              <div class="recommendation" id="recommendation">Waiting for a rule match</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card trade-card">
+          <h2>Contract and Auto Engine</h2>
+          <div class="trade-grid">
+            <label>Market symbol<input id="market" value="1HZ100V" autocomplete="off" spellcheck="false"></label>
+            <label>Stake<input id="stake" value="0.35" type="number" min="0.01" step="0.01"></label>
+            <label>Contract<select id="barrier"><option value="0">Digit Over 0</option><option value="1">Digit Over 1</option></select></label>
+            <label>Buy at second<input id="executionSecond" value="57" type="number" min="1" max="59" step="1"></label>
+            <label>Duration<input value="1 tick" disabled aria-label="Duration is one tick"></label>
+          </div>
+          <div class="trade-buttons">
+            <button class="btn secondary" id="changeMarketButton" type="button">Load market</button>
+            <button class="btn primary" id="proposalButton" type="button">Get price</button>
+            <button class="btn danger" id="buyButton" type="button" disabled>Buy manually</button>
+            <button class="btn primary" id="autoButton" type="button">Enable Auto Engine</button>
+          </div>
+          <span class="auto-state" id="autoState">Auto Engine is off. It will only buy when you enable it.</span>
+          <div class="proposal" id="proposalBox">Connect, then select a contract and choose <strong>Get price</strong>.</div>
+        </section>
+      </div>
+
+      <aside class="card side-card">
+        <h2>Journal</h2>
+        <div class="journal" id="journal" aria-live="polite"></div>
+        <button class="btn secondary" id="disconnectButton" type="button" style="width:100%; margin-top:14px;">Disconnect</button>
+        <p class="footer-note">The timer uses the live tick’s Deriv server timestamp. When Auto Engine is on, it requests a fresh price and buys once at the selected second of each new 1-minute candle.</p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const apiBase = 'https://api.derivws.com';
+      const form = document.querySelector('#loginForm');
+      const dashboard = document.querySelector('#dashboard');
+      const appIdInput = document.querySelector('#appId');
+      const accountIdInput = document.querySelector('#accountId');
+      const tokenInput = document.querySelector('#token');
+      const connectButton = document.querySelector('#connectButton');
+      const showTokenButton = document.querySelector('#showTokenButton');
+      const statusDot = document.querySelector('#statusDot');
+      const statusText = document.querySelector('#statusText');
+      const balanceValue = document.querySelector('#balanceValue');
+      const marketValue = document.querySelector('#marketValue');
+      const candleClock = document.querySelector('#candleClock');
+      const quoteValue = document.querySelector('#quoteValue');
+      const digitsElement = document.querySelector('#digits');
+      const recommendation = document.querySelector('#recommendation');
+      const journal = document.querySelector('#journal');
+      const marketInput = document.querySelector('#market');
+      const stakeInput = document.querySelector('#stake');
+      const barrierInput = document.querySelector('#barrier');
+      const proposalBox = document.querySelector('#proposalBox');
+      const buyButton = document.querySelector('#buyButton');
+
+      let socket;
+      let isConnected = false;
+      let latestProposal;
+      let recentDigits = [];
+      let activeSymbol = '';
+      const settledContracts = new Set();
+
+      function addJournal(message, tone = '') {
+        const entry = document.createElement('article');
+        entry.className = `entry ${tone}`;
+        const time = document.createElement('time');
+        time.textContent = new Date().toLocaleTimeString();
+        const content = document.createElement('div');
+        content.textContent = message;
+        entry.append(time, content);
+        journal.prepend(entry);
+      }
+
+      function setStatus(message, connected = false) {
+        statusText.textContent = message;
+        statusDot.classList.toggle('live', connected);
+      }
+
+      function send(payload) {
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+          addJournal('Connection is not ready.', 'error');
+          return false;
+        }
+        socket.send(JSON.stringify(payload));
+        return true;
+      }
+
+      function lastDigit(quote) {
+        const cleanQuote = String(quote).replace(/[^0-9]/g, '');
+        return cleanQuote.slice(-1) || '—';
+      }
+
+      function updateRuleAlert() {
+        const pair = recentDigits.slice(-2).join('');
+        digitsElement.replaceChildren(...recentDigits.map((digit, index) => {
+          const item = document.createElement('span');
+          item.className = `digit ${index >= recentDigits.length - 2 && (pair === '00' || pair === '11') ? 'pattern' : ''}`;
+          item.textContent = digit;
+          return item;
+        }));
+
+        if (pair === '00') {
+          barrierInput.value = '0';
+          recommendation.textContent = 'Rule alert: 00 detected — Digit Over 0 selected.';
+        } else if (pair === '11') {
+          barrierInput.value = '1';
+          recommendation.textContent = 'Rule alert: 11 detected — Digit Over 1 selected.';
+        } else {
+          recommendation.textContent = 'No selected digit rule is active.';
+        }
+      }
+
+      function subscribeToMarket() {
+        const symbol = marketInput.value.trim().toUpperCase();
+        if (!/^[A-Z0-9_]{2,30}$/.test(symbol)) {
+          addJournal('Enter a valid Deriv market symbol.', 'error');
+          return;
+        }
+        activeSymbol = symbol;
+        recentDigits = [];
+        latestProposal = undefined;
+        buyButton.disabled = true;
+        proposalBox.textContent = 'Live market loaded. Get a fresh price before buying.';
+        marketValue.textContent = symbol;
+        quoteValue.textContent = 'Waiting for ticks';
+        updateRuleAlert();
+        send({ ticks: symbol, subscribe: 1, req_id: Date.now() });
+        addJournal(`Subscribed to ${symbol}.`);
+      }
+
+      function requestProposal() {
+        const stake = Number(stakeInput.value);
+        const barrier = barrierInput.value;
+        if (!Number.isFinite(stake) || stake <= 0) {
+          addJournal('Stake must be greater than zero.', 'error');
+          return;
+        }
+        if (!activeSymbol) subscribeToMarket();
+        latestProposal = undefined;
+        buyButton.disabled = true;
+        proposalBox.textContent = 'Getting a fresh price…';
+        send({
+          proposal: 1,
+          amount: stake,
+          basis: 'stake',
+          contract_type: 'DIGITOVER',
+          currency: window.accountCurrency || 'USD',
+          duration: 1,
+          duration_unit: 't',
+          barrier,
+          underlying_symbol: activeSymbol || marketInput.value.trim().toUpperCase(),
+          req_id: Date.now(),
+        });
+      }
+
+      function buyProposal() {
+        if (!latestProposal) {
+          addJournal('Get a fresh price first.', 'error');
+          return;
+        }
+        const detail = `Buy Digit Over ${barrierInput.value} on ${activeSymbol} for ${latestProposal.ask_price} ${window.accountCurrency || 'USD'}?`;
+        if (!window.confirm(detail)) return;
+        buyButton.disabled = true;
+        send({ buy: latestProposal.id, price: latestProposal.ask_price, req_id: Date.now() });
+      }
+
+      function onMessage(event) {
+        const message = JSON.parse(event.data);
+        if (message.error) {
+          addJournal(message.error.message || 'Deriv API request failed.', 'error');
+          proposalBox.textContent = message.error.message || 'Request failed.';
+          return;
+        }
+        if (message.msg_type === 'balance') {
+          const balance = message.balance;
+          window.accountCurrency = balance.currency || window.accountCurrency || 'USD';
+          balanceValue.textContent = `${Number(balance.balance).toFixed(2)} ${window.accountCurrency}`;
+          return;
+        }
+        if (message.msg_type === 'tick') {
+          const tick = message.tick;
+          if (tick.symbol && tick.symbol !== activeSymbol) return;
+          quoteValue.textContent = Number(tick.quote).toLocaleString(undefined, { maximumFractionDigits: 5 });
+          recentDigits = [...recentDigits, lastDigit(tick.quote)].slice(-8);
+          updateRuleAlert();
+          return;
+        }
+        if (message.msg_type === 'proposal') {
+          latestProposal = message.proposal;
+          proposalBox.textContent = `Price ready: ${latestProposal.ask_price} ${window.accountCurrency || 'USD'} · Payout: ${latestProposal.payout}`;
+          buyButton.disabled = false;
+          addJournal(`Price ready for Digit Over ${barrierInput.value}.`);
+          return;
+        }
+        if (message.msg_type === 'buy') {
+          const contract = message.buy;
+          addJournal(`Contract ${contract.contract_id} purchased. Monitoring its result.`, 'good');
+          send({ proposal_open_contract: 1, contract_id: contract.contract_id, subscribe: 1, req_id: Date.now() });
+          return;
+        }
+        if (message.msg_type === 'proposal_open_contract') {
+          const contract = message.proposal_open_contract;
+          if (contract.is_sold && !settledContracts.has(contract.contract_id)) {
+            settledContracts.add(contract.contract_id);
+            const profit = Number(contract.profit || 0);
+            addJournal(`Contract ${contract.contract_id} closed: ${profit >= 0 ? '+' : ''}${profit.toFixed(2)} ${window.accountCurrency || ''}.`, profit >= 0 ? 'good' : 'error');
+          }
+        }
+      }
+
+      async function connect(event) {
+        event.preventDefault();
+        const appId = appIdInput.value.trim();
+        const accountId = accountIdInput.value.trim();
+        const token = tokenInput.value.trim();
+        if (!appId || !accountId || !token) return;
+        connectButton.disabled = true;
+        setStatus('Requesting secure connection…');
+        try {
+          const response = await fetch(`${apiBase}/trading/v1/options/accounts/${encodeURIComponent(accountId)}/otp`, {
+            method: 'POST',
+            headers: { 'Deriv-App-ID': appId, Authorization: `Bearer ${token}` },
+          });
+          const result = await response.json();
+          const wsUrl = result?.data?.url;
+          if (!response.ok || !wsUrl) throw new Error(result?.errors?.[0]?.message || 'Deriv did not provide a WebSocket URL.');
+          socket = new WebSocket(wsUrl);
+          socket.addEventListener('open', () => {
+            isConnected = true;
+            dashboard.hidden = false;
+            setStatus('Connected', true);
+            addJournal('Secure Deriv connection opened.', 'good');
+            send({ balance: 1, subscribe: 1, req_id: Date.now() });
+            subscribeToMarket();
+          });
+          socket.addEventListener('message', onMessage);
+          socket.addEventListener('close', () => {
+            isConnected = false;
+            setStatus('Disconnected');
+            addJournal('Deriv connection closed.', 'error');
+          });
+          socket.addEventListener('error', () => addJournal('WebSocket connection error.', 'error'));
+        } catch (error) {
+          setStatus('Connection failed');
+          addJournal(error.message || 'Unable to connect.', 'error');
+        } finally {
+          connectButton.disabled = false;
+        }
+      }
+
+      function disconnect() {
+        if (socket) socket.close();
+        socket = undefined;
+        isConnected = false;
+        latestProposal = undefined;
+        buyButton.disabled = true;
+        setStatus('Disconnected');
+      }
+
+      function updateClock() {
+        const seconds = new Date().getSeconds();
+        candleClock.textContent = `${seconds.toString().padStart(2, '0')} / 60 seconds`;
+      }
+
+      form.addEventListener('submit', connect);
+      showTokenButton.addEventListener('click', () => {
+        tokenInput.type = tokenInput.type === 'password' ? 'text' : 'password';
+        showTokenButton.textContent = tokenInput.type === 'password' ? 'Show token' : 'Hide token';
+      });
+      document.querySelector('#changeMarketButton').addEventListener('click', subscribeToMarket);
+      document.querySelector('#proposalButton').addEventListener('click', requestProposal);
+      buyButton.addEventListener('click', buyProposal);
+      document.querySelector('#disconnectButton').addEventListener('click', disconnect);
+      window.setInterval(updateClock, 250);
+      updateClock();
+    })();
+  </script>
+</body>
+</html>

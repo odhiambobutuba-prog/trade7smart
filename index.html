@@ -40,16 +40,14 @@
     @keyframes pulse { 0%,100% { box-shadow: 0 0 0 4px #25d6951c; } 50% { box-shadow: 0 0 0 8px #25d69510; } }
     .card { background: linear-gradient(145deg, #102039, #0c1829); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 20px 48px #00000024; }
 
-    /* Home page */
     .home-hero { padding: 38px 28px; text-align: center; margin-bottom: 18px; }
     .home-hero h1 { font-size: clamp(1.7rem, 4.5vw, 2.4rem); margin-bottom: 8px; }
-    .home-hero p { max-width: 620px; margin: 0 auto 18px; color: var(--muted); }
+    .home-hero p { max-width: 640px; margin: 0 auto 18px; color: var(--muted); }
     .home-features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
     .feature { padding: 18px; }
     .feature h3 { margin: 0 0 6px; font-size: 1.05rem; }
     .feature p { margin: 0; color: var(--muted); font-size: .9rem; }
 
-    /* Connect section */
     .connect-card { padding: 24px; }
     .connect-card h2 { font-size: 1.2rem; }
     .login-grid, .trade-grid { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -67,7 +65,19 @@
     .notice.info { border-color: #2a5a8a; background: #0f2742; color: #b8d8ff; }
     .notice.danger { border-color: #8a2a3a; background: #2e0f1a; color: #ffb8c4; }
 
-    /* Trading dashboard */
+    /* VISIBLE status box on the home page */
+    .home-status {
+      margin-top: 16px; padding: 12px 14px; border-radius: 11px;
+      font-size: .9rem; line-height: 1.5; text-align: left;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .home-status.error { border: 1px solid #8a2a3a; background: #2e0f1a; color: #ffb8c4; }
+    .home-status.info  { border: 1px solid #2a5a8a; background: #0f2742; color: #b8d8ff; }
+    .home-status.warn  { border: 1px solid #745a20; background: #352a13; color: #ffe0a0; }
+    .home-status.good  { border: 1px solid #286c56; background: #0e2a1f; color: #c9ffe9; }
+    .home-status strong { display: block; margin-bottom: 4px; }
+    .home-status code { display: inline-block; margin: 1px 0; }
+
     .dashboard { display: grid; grid-template-columns: 1.2fr .8fr; gap: 16px; }
     .dashboard[hidden] { display: none; }
     .main-card, .side-card { padding: 18px; }
@@ -131,8 +141,6 @@
     .badge-auto { background: #1f3a5a; color: #8ec5ff; }
     .badge-manual { background: #3a1f22; color: #ffc4cd; }
     .badge-history { background: #2a3a1f; color: #d4ffb0; }
-    .locked-msg { padding: 60px 24px; text-align: center; color: var(--muted); }
-    .locked-msg .lock-icon { font-size: 2.4rem; margin-bottom: 10px; }
 
     @media (max-width: 820px) { .login-grid, .trade-grid, .summary-strip, .home-features { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dashboard { grid-template-columns: 1fr; } .metric-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 560px) { .shell { width: min(100% - 20px, 1180px); padding-top: 12px; } .connect-card, .main-card, .side-card, .trade-card, .home-hero { padding: 18px; } .login-grid, .trade-grid, .metric-row, .summary-strip, .home-features { grid-template-columns: 1fr; } .actions { align-items: stretch; } .actions .btn { flex: 1; } header { align-items: flex-start; } }
@@ -145,7 +153,6 @@
       <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">Not connected</span></div>
     </header>
 
-    <!-- =================== HOME PAGE =================== -->
     <section id="homePage">
       <div class="card home-hero">
         <h1>Butuba — Deriv Auto AI</h1>
@@ -153,7 +160,14 @@
         <div class="actions" style="justify-content:center; margin-top: 8px;">
           <button class="btn primary big-btn" id="homeConnectButton" type="button">🔐 Connect with Deriv</button>
         </div>
-        <p class="subtle" style="margin-top: 12px; font-size: .85rem;">You'll sign in on Deriv's own login page — your password is never typed here.</p>
+        <!-- ALWAYS-VISIBLE status / error box -->
+        <div id="homeStatus" class="home-status info" hidden>
+          <div>
+            <strong id="homeStatusTitle">Welcome</strong>
+            <span id="homeStatusBody">Click <strong>Connect with Deriv</strong> to begin. You'll sign in on Deriv's own page.</span>
+          </div>
+        </div>
+        <p class="subtle" style="margin-top: 12px; font-size: .85rem; color: var(--muted);">Your password is never typed here — Deriv handles authentication on their own page.</p>
       </div>
 
       <div class="home-features">
@@ -171,7 +185,6 @@
         </div>
       </div>
 
-      <!-- Connect form (collapsed by default; expands on button click) -->
       <div class="card connect-card" id="connectCard" hidden>
         <h2>Connect to Deriv</h2>
         <p class="hint" style="color: var(--muted); margin-bottom: 16px;">Enter your Deriv <strong>App ID</strong> (free at api.deriv.com). When you click <em>Login with Deriv</em>, Deriv authenticates you and brings you back to this same page.</p>
@@ -179,7 +192,7 @@
         <div id="appIdStep">
           <div class="login-grid" style="grid-template-columns: 2fr 1fr;">
             <label>Deriv App ID
-              <input id="appId" inputmode="numeric" autocomplete="off" placeholder="Your registered App ID (saved automatically)">
+              <input id="appId" inputmode="numeric" autocomplete="off" placeholder="e.g. 12345">
             </label>
             <div class="actions"><button class="btn primary" id="loginWithDerivButton" type="button" style="width:100%;">Login with Deriv</button></div>
           </div>
@@ -194,12 +207,9 @@
             <button class="btn secondary" id="cancelAccountButton" type="button">Start over</button>
           </div>
         </div>
-
-        <div class="notice"><span aria-hidden="true">!</span><span>Your Deriv password is never seen or stored by this page — only a session token comes back from Deriv's login. Start on a <strong>demo (virtual)</strong> account before pointing Auto AI at real funds.</span></div>
       </div>
     </section>
 
-    <!-- =================== TRADING DASHBOARD =================== -->
     <section class="dashboard" id="dashboard" hidden>
       <div>
         <div class="tabs" role="tablist">
@@ -246,7 +256,7 @@
         <div class="tab-panel" id="autoaiTab" hidden>
           <section class="card trade-card">
             <h2>⚡ Auto AI — 1-minute candle engine</h2>
-            <p class="hint" style="color: var(--muted);">Auto AI streams live ticks from Deriv, uses the server's own epoch timestamp to track every 1-minute candle, and fires a real contract buy the moment the candle clock hits your trigger second. Every proposal, buy, and settlement is a real transaction on your connected Deriv account — nothing is simulated locally.</p>
+            <p class="hint" style="color: var(--muted);">Auto AI streams live ticks from Deriv, uses the server's own epoch timestamp to track every 1-minute candle, and fires a real contract buy the moment the candle clock hits your trigger second.</p>
 
             <fieldset id="aiConfig" style="border:0; padding:0; margin:0;">
               <div class="trade-grid">
@@ -330,13 +340,14 @@
         <h2>Live journal</h2>
         <div class="journal" id="journal" aria-live="polite"></div>
         <button class="btn danger" id="disconnectButton" type="button" style="width:100%; margin-top:14px;">Disconnect & return home</button>
-        <p class="footer-note">Every quote, price, buy and settlement on this page comes from Deriv's live WebSocket API — no values are generated locally. The candle clock uses the epoch timestamp returned by Deriv's tick stream, not your computer clock.</p>
+        <p class="footer-note">Every quote, price, buy and settlement on this page comes from Deriv's live WebSocket API — no values are generated locally.</p>
       </aside>
     </section>
   </main>
 
   <script>
   (() => {
+    'use strict';
     const WS_ENDPOINT = 'wss://ws.derivws.com/websockets/v3';
     const APP_ID_STORAGE = 'butuba_deriv_app_id';
 
@@ -344,6 +355,9 @@
     const $ = (id) => document.getElementById(id);
     const homePage = $('homePage');
     const homeConnectButton = $('homeConnectButton');
+    const homeStatus = $('homeStatus');
+    const homeStatusTitle = $('homeStatusTitle');
+    const homeStatusBody = $('homeStatusBody');
     const connectCard = $('connectCard');
     const appIdStep = $('appIdStep');
     const accountStep = $('accountStep');
@@ -436,6 +450,15 @@
     const saveAppId = (id) => { try { localStorage.setItem(APP_ID_STORAGE, id); } catch (_) {} };
     const loadAppId = () => { try { return localStorage.getItem(APP_ID_STORAGE) || ''; } catch (_) { return ''; } };
 
+    // ---- Always-visible status on home page ----
+    function showHomeStatus(title, body, type = 'info') {
+      homeStatus.className = `home-status ${type}`;
+      homeStatusTitle.textContent = title;
+      homeStatusBody.innerHTML = body;
+      homeStatus.hidden = false;
+    }
+    function hideHomeStatus() { homeStatus.hidden = true; }
+
     // ---- Journal / status ----
     function addJournal(message, tone = '') {
       const entry = document.createElement('article');
@@ -474,7 +497,6 @@
     function showHome() {
       homePage.hidden = false;
       dashboard.hidden = true;
-      // Lock the trading tabs visually while disconnected
       document.querySelectorAll('.tab-btn').forEach((b) => b.disabled = true);
       setStatus('Not connected');
     }
@@ -534,38 +556,82 @@
       window.history.replaceState({}, '', cleanUrl.toString());
     }
 
-    // Home page → reveals the connect form
-    homeConnectButton.addEventListener('click', () => {
-      connectCard.hidden = false;
-      connectCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      appIdInput.focus();
+    // ---- The actual OAuth start function (single source of truth) ----
+    function startOAuth(appId) {
+      try {
+        const cleanAppId = String(appId || '').trim();
+        if (!cleanAppId) {
+          showHomeStatus('App ID required', 'Please enter your Deriv <strong>App ID</strong> and try again.', 'error');
+          return;
+        }
+        saveAppId(cleanAppId);
+
+        // Warn if the page is opened from the file system
+        if (window.location.protocol === 'file:') {
+          showHomeStatus(
+            'This page is opened from your computer',
+            `Deriv's login redirects you to a real web address. Open this file through a local web server instead, for example:<br>
+             <code>cd &lt;this folder&gt;</code> &nbsp; <code>python -m http.server 8000</code><br>
+             then visit <code>http://localhost:8000</code> in your browser.`,
+            'warn'
+          );
+          return;
+        }
+
+        const redirectUri = `${window.location.origin}${window.location.pathname}?app_id=${encodeURIComponent(cleanAppId)}`;
+        const url = new URL('https://oauth.deriv.com/oauth2/authorize');
+        url.searchParams.set('app_id', cleanAppId);
+        url.searchParams.set('redirect_uri', redirectUri);
+
+        showHomeStatus('Redirecting to Deriv…', `You'll be sent to <code>oauth.deriv.com</code> to sign in. After login you'll return to this same page automatically.`, 'info');
+        homeConnectButton.disabled = true;
+        homeConnectButton.textContent = 'Redirecting…';
+
+        // small delay so the status box is rendered before navigation
+        setTimeout(() => { window.location.href = url.toString(); }, 80);
+      } catch (e) {
+        showHomeStatus('Could not start login', (e && e.message) || String(e), 'error');
+        homeConnectButton.disabled = false;
+        homeConnectButton.textContent = '🔐 Connect with Deriv';
+      }
+    }
+
+    // ---- Wire up buttons (defensive) ----
+    function bind(id, event, handler) {
+      const el = $(id);
+      if (!el) { console.error('Missing element:', id); return; }
+      el.addEventListener(event, handler);
+    }
+
+    bind('homeConnectButton', 'click', () => {
+      const saved = loadAppId();
+      if (saved) {
+        appIdInput.value = saved;
+        startOAuth(saved);
+      } else {
+        connectCard.hidden = false;
+        connectCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        appIdInput.focus();
+        showHomeStatus('Enter your App ID', 'Type your registered Deriv <strong>App ID</strong> in the box below, then click <strong>Login with Deriv</strong>.', 'info');
+      }
     });
 
-    loginWithDerivButton.addEventListener('click', () => {
-      const appId = appIdInput.value.trim();
-      if (!appId) { addJournal('Enter your Deriv App ID first.', 'error'); return; }
-      if (!/^\d{5,10}$/.test(appId)) { addJournal('That App ID looks wrong — it should be digits only.', 'error'); return; }
-      saveAppId(appId);
-      const redirectUri = `${window.location.origin}${window.location.pathname}?app_id=${encodeURIComponent(appId)}`;
-      const url = new URL('https://oauth.deriv.com/oauth2/authorize');
-      url.searchParams.set('app_id', appId);
-      url.searchParams.set('redirect_uri', redirectUri);
-      addJournal('Redirecting to Deriv to sign in…');
-      window.location.href = url.toString();
+    bind('loginWithDerivButton', 'click', () => {
+      startOAuth(appIdInput.value.trim());
     });
 
-    cancelAccountButton.addEventListener('click', resetToAppIdStep);
+    bind('cancelAccountButton', 'click', resetToAppIdStep);
 
-    continueWithAccountButton.addEventListener('click', () => {
+    bind('continueWithAccountButton', 'click', () => {
       const accounts = window.__oauthAccounts || [];
       const selected = accountList.querySelector('input[name="account"]:checked');
       if (!selected || !accounts[Number(selected.value)]) {
-        addJournal('Choose an account to continue.', 'error');
+        showHomeStatus('Pick an account', 'Select one of your Deriv accounts to continue.', 'error');
         return;
       }
       const appId = appIdInput.value.trim();
       if (!appId) {
-        addJournal('Your App ID was lost after the redirect — re-enter it above, then press Continue again.', 'error');
+        showHomeStatus('App ID missing', 'Your App ID was lost — re-enter it, then press <strong>Continue</strong> again.', 'error');
         appIdStep.hidden = false;
         return;
       }
@@ -588,9 +654,7 @@
             clearTimeout(openTimer);
             reject(new Error('Could not reach Deriv — verify the App ID and your network.'));
           }, { once: true });
-        } catch (e) {
-          reject(e);
-        }
+        } catch (e) { reject(e); }
       });
     }
 
@@ -1081,28 +1145,50 @@
     });
 
     // ---- Wire up ----
-    $('changeMarketButton').addEventListener('click', subscribeToMarket);
-    $('proposalButton').addEventListener('click', requestProposal);
+    bind('changeMarketButton', 'click', subscribeToMarket);
+    bind('proposalButton', 'click', requestProposal);
     buyButton.addEventListener('click', buyProposal);
-    $('disconnectButton').addEventListener('click', disconnect);
+    bind('disconnectButton', 'click', disconnect);
 
     // ---- Boot ----
     (function boot() {
-      showHome();
-      const stored = loadAppId();
-      const { accounts, appIdFromUrl } = parseOauthAccounts();
-      if (appIdFromUrl) appIdInput.value = appIdFromUrl;
-      else if (stored) appIdInput.value = stored;
-      if (accounts.length) {
-        // Came back from Deriv OAuth — show account picker
-        connectCard.hidden = false;
-        showAccountStep(accounts);
+      try {
+        showHome();
+        const stored = loadAppId();
+        const { accounts, appIdFromUrl } = parseOauthAccounts();
+        if (appIdFromUrl) appIdInput.value = appIdFromUrl;
+        else if (stored) appIdInput.value = stored;
+
+        if (accounts.length) {
+          // Came back from Deriv OAuth
+          connectCard.hidden = false;
+          showAccountStep(accounts);
+          showHomeStatus('Pick an account', 'Deriv sent you back. Choose which account to trade with, then press <strong>Continue to dashboard</strong>.', 'good');
+        } else {
+          // Fresh page load
+          if (window.location.protocol === 'file:') {
+            showHomeStatus(
+              'Heads up',
+              `You're opening this file directly from disk (<code>file://</code>). Deriv's login requires a real web address. See the box below — run a quick local server and reload.`,
+              'warn'
+            );
+          } else {
+            showHomeStatus('Welcome', `Click <strong>🔐 Connect with Deriv</strong> to sign in on Deriv's own page. After login you'll return here.`, 'info');
+          }
+        }
+
+        // Strip tokens from URL
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.search = (appIdFromUrl || stored) ? `?app_id=${encodeURIComponent(appIdFromUrl || stored)}` : '';
+        window.history.replaceState({}, '', cleanUrl.toString());
+        updateAutoStats();
+      } catch (e) {
+        // Last-resort visible error
+        document.body.insertAdjacentHTML('afterbegin',
+          `<div style="padding:16px;background:#2e0f1a;color:#ffb8c4;border-bottom:2px solid #8a2a3a;font-family:monospace;">
+             <strong>Page failed to start:</strong> ${(e && e.message) || e}
+           </div>`);
       }
-      // Strip tokens from URL
-      const cleanUrl = new URL(window.location.href);
-      cleanUrl.search = (appIdFromUrl || stored) ? `?app_id=${encodeURIComponent(appIdFromUrl || stored)}` : '';
-      window.history.replaceState({}, '', cleanUrl.toString());
-      updateAutoStats();
     })();
   })();
   </script>

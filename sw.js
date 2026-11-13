@@ -1,10 +1,10 @@
-const CACHE = "trade7smart-round6-proai-20260620";
+const CACHE = "trade7smart-cursor-ai-20260620";
 const FILES = [
   "./",
   "./index.html",
-  "./styles.css?v=round6-proai-20260620",
-  "./app.js?v=round6-proai-20260620",
-  "./manifest.webmanifest?v=round6-proai-20260620",
+  "./styles.css?v=cursor-ai-20260620",
+  "./app.js?v=cursor-ai-20260620",
+  "./manifest.webmanifest?v=cursor-ai-20260620",
   "./icon.svg"
 ];
 

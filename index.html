@@ -1,524 +1,514 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#07111f">
-  <title>Butuba | Deriv Trader</title>
-  <style>
-    :root { color-scheme: dark; --bg:#07111f; --line:#253a58; --muted:#9bb0ca; --text:#f4f7fb;
-      --blue:#2d8cff; --green:#25d695; --red:#ff5e78; --amber:#ffb020; --radius:14px; }
-    * { box-sizing: border-box; }
-    body { margin:0; min-width:320px; background:radial-gradient(circle at top right,#102a4c 0,#07111f 40rem);
-      color:var(--text); font:15px/1.45 Inter,system-ui,-apple-system,sans-serif; }
-    button,input,select { font:inherit; }
-    button { cursor:pointer; border:0; }
-    button:disabled { cursor:not-allowed; opacity:.5; }
-    code { background:#081526; padding:1px 6px; border-radius:6px; }
-    .shell { width:min(1100px, calc(100% - 24px)); margin:0 auto; padding:18px 0 40px; }
-    header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
-    .brand { display:flex; align-items:center; gap:10px; font-weight:800; }
-    .brand-mark { display:grid; place-items:center; width:36px; height:36px; border-radius:11px;
-      background:linear-gradient(135deg,#2d8cff,#7166ff); }
-    .status { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:.85rem; }
-    .dot { width:9px; height:9px; border-radius:50%; background:var(--amber); }
-    .dot.live { background:var(--green); box-shadow:0 0 0 4px #25d69522; }
-    .card { background:linear-gradient(145deg,#102039,#0c1829); border:1px solid var(--line);
-      border-radius:var(--radius); box-shadow:0 16px 40px #00000024; padding:22px; }
-    h1 { font-size:1.4rem; margin:0 0 6px; }
-    h2 { font-size:1rem; margin:0 0 10px; }
-    .subtle { color:var(--muted); }
-    .login { margin-bottom:16px; }
-    .login-grid { display:grid; gap:10px; grid-template-columns: 1fr 1fr auto; align-items:end; }
-    label { display:grid; gap:6px; color:var(--muted); font-size:.82rem; font-weight:650; }
-    input, select { min-height:42px; padding:0 12px; border:1px solid var(--line); border-radius:10px;
-      background:#081526; color:var(--text); outline:none; }
-    input:focus, select:focus { border-color:var(--blue); box-shadow:0 0 0 3px #2d8cff22; }
-    .btn { min-height:42px; padding:0 16px; border-radius:10px; color:#fff; font-weight:750; }
-    .primary { background:linear-gradient(135deg,#2086ff,#536dff); }
-    .secondary { background:#1b304d; border:1px solid var(--line); }
-    .danger { background:#522638; color:#ffdbe2; }
-    .success { background:linear-gradient(135deg,#1d9c6c,#25d695); }
-    .row { display:grid; grid-template-columns:1.3fr .7fr; gap:14px; }
-    .dashboard[hidden] { display:none; }
-    .metric-row { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; margin-bottom:14px; }
-    .metric { padding:11px; border:1px solid var(--line); border-radius:11px; background:#091628; }
-    .metric small { display:block; color:var(--muted); margin-bottom:3px; }
-    .metric strong { font-size:1rem; word-break:break-all; }
-    .metric strong.pos { color:var(--green); } .metric strong.neg { color:var(--red); }
-    .tick-panel { padding:18px; text-align:center; border:1px solid var(--line); border-radius:13px;
-      background:radial-gradient(circle at top,#193c69,#091628 70%); }
-    .quote { font-size:clamp(1.8rem,6vw,3rem); font-weight:850; letter-spacing:-1px; margin:6px 0; }
-    .trade-grid { display:grid; gap:10px; grid-template-columns:repeat(4, minmax(0,1fr)); margin-top:14px; }
-    .trade-buttons { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
-    .proposal { margin-top:12px; padding:11px; border-radius:10px; background:#091628; border:1px solid var(--line); color:var(--muted); min-height:46px; }
-    .proposal strong { color:var(--text); }
-    .journal { display:grid; gap:6px; max-height:380px; overflow:auto; }
-    .entry { padding:9px; border:1px solid var(--line); border-radius:10px; background:#091628; font-size:.85rem; }
-    .entry time { display:block; color:var(--muted); font-size:.72rem; margin-bottom:2px; }
-    .entry.error { border-color:#713347; color:#ffd2db; }
-    .entry.good { border-color:#286c56; color:#c9ffe9; }
-    .countdown { margin:12px 0; padding:12px; border:1px solid var(--line); border-radius:11px; background:#091628; }
-    .bar { height:9px; border-radius:6px; background:#173050; overflow:hidden; }
-    .bar > div { height:100%; width:0; background:linear-gradient(90deg,#25d695,#2d8cff); transition:width .25s linear; }
-    .bar.warn > div { background:linear-gradient(90deg,#ffb020,#ff5e78); }
-    .bar.fire > div { background:linear-gradient(90deg,#ff5e78,#ff3060); }
-    .bar-row { display:flex; justify-content:space-between; font-size:.85rem; color:var(--muted); margin-top:6px; }
-    .bar-row strong { color:var(--text); }
-    .notice { display:flex; gap:8px; padding:10px 12px; margin-top:12px; border:1px solid #745a20; background:#352a13;
-      border-radius:10px; color:#ffe0a0; font-size:.84rem; }
-    .notice.danger { border-color:#8a2a3a; background:#2e0f1a; color:#ffb8c4; }
-    .status-msg { margin-top:10px; padding:10px 12px; border-radius:10px; font-size:.85rem; }
-    .status-msg.error { background:#2e0f1a; color:#ffb8c4; border:1px solid #8a2a3a; }
-    .status-msg.good { background:#0e2a1f; color:#c9ffe9; border:1px solid #286c56; }
-    .status-msg.info { background:#0f2742; color:#b8d8ff; border:1px solid #2a5a8a; }
-    .history-table { width:100%; border-collapse:collapse; font-size:.82rem; margin-top:10px; }
-    .history-table th, .history-table td { padding:8px 6px; border-bottom:1px solid var(--line); text-align:left; }
-    .history-table .pos { color:var(--green); font-weight:700; }
-    .history-table .neg { color:var(--red); font-weight:700; }
-    .table-wrap { overflow:auto; }
-    .badge { display:inline-block; padding:2px 7px; border-radius:999px; font-size:.7rem; font-weight:700; }
-    .badge-auto { background:#1f3a5a; color:#8ec5ff; }
-    .badge-manual { background:#3a1f22; color:#ffc4cd; }
-    .tabs { display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
-    .tab-btn { padding:9px 14px; border-radius:10px; background:#0e1b2d; color:var(--muted); font-weight:700; border:1px solid var(--line); }
-    .tab-btn.active { background:linear-gradient(135deg,#2086ff,#536dff); color:#fff; border-color:transparent; }
-    .tab-panel[hidden] { display:none; }
-    @media (max-width:760px) {
-      .login-grid, .trade-grid, .metric-row { grid-template-columns:1fr 1fr; }
-      .row { grid-template-columns:1fr; }
-    }
-  </style>
-</head>
-<body>
-  <main class="shell">
-    <header>
-      <div class="brand"><span class="brand-mark">B</span><span>Butuba Deriv Trader</span></div>
-      <div class="status"><span class="dot" id="dot"></span><span id="statusText">Not connected</span></div>
-    </header>
-
-    <!-- LOGIN -->
-    <section class="card login" id="loginCard">
-      <h1>Connect to Deriv</h1>
-      <p class="subtle">Log in with your Deriv API token. Get one at <code>api.deriv.com → Manage API token</code>. Choose scope: <strong>Read, Trade, Account information, Payments</strong>.</p>
-
-      <div class="login-grid">
-        <label>Deriv App ID
-          <input id="appId" inputmode="numeric" placeholder="e.g. 12345" autocomplete="off">
-        </label>
-        <label>API Token
-          <input id="token" type="password" placeholder="Paste your Deriv API token here" autocomplete="off">
-        </label>
-        <div><button class="btn primary" id="connectBtn" type="button" style="width:100%;">Connect</button></div>
-      </div>
-      <div id="loginStatus" class="status-msg info" style="display:none;"></div>
-    </section>
-
-    <!-- DASHBOARD -->
-    <section class="dashboard" id="dashboard" hidden>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#060a10" />
+    <title>Trade7Smart — AI Volatility Console</title>
+    <link rel="manifest" href="./manifest.webmanifest?v=cursor-ai-20260620" />
+    <link rel="stylesheet" href="./styles.css?v=cursor-ai-20260620" />
+  </head>
+  <body>
+    <div id="app-loader" class="app-loader">
       <div>
-        <div class="tabs">
-          <button class="tab-btn active" data-tab="dashTab" type="button">Dashboard</button>
-          <button class="tab-btn" data-tab="aiTab" type="button">⚡ Auto AI</button>
-          <button class="tab-btn" data-tab="histTab" type="button">History</button>
-        </div>
-
-        <div class="tab-panel" id="dashTab">
-          <div class="card">
-            <div class="metric-row">
-              <div class="metric"><small>Balance</small><strong id="bal">—</strong></div>
-              <div class="metric"><small>Market</small><strong id="mkt">—</strong></div>
-              <div class="metric"><small>Candle clock</small><strong id="clk">—</strong></div>
-              <div class="metric"><small>Account</small><strong id="acct">—</strong></div>
-            </div>
-            <div class="tick-panel">
-              <div class="subtle">Live last quote</div>
-              <div class="quote" id="quote">—</div>
-              <div class="subtle" id="rec">Pick a market and load it</div>
-            </div>
-          </div>
-
-          <div class="card" style="margin-top:14px;">
-            <h2>Manual trade</h2>
-            <div class="trade-grid">
-              <label>Market<input id="market" value="1HZ100V" list="mktList" autocomplete="off"><datalist id="mktList"></datalist></label>
-              <label>Stake<input id="stake" type="number" min="0.01" step="0.01" value="0.35"></label>
-              <label>Contract<select id="barrier"><option value="0">Digit Over 0</option><option value="1">Digit Over 1</option><option value="2">Digit Over 2</option><option value="3">Digit Over 3</option><option value="4">Digit Over 4</option></select></label>
-              <label>Duration<input value="1 tick" disabled></label>
-            </div>
-            <div class="trade-buttons">
-              <button class="btn secondary" id="loadBtn" type="button">Load market</button>
-              <button class="btn primary" id="priceBtn" type="button">Get price</button>
-              <button class="btn danger" id="buyBtn" type="button" disabled>Buy</button>
-            </div>
-            <div class="proposal" id="prop">Connect, load a market, then get a price.</div>
-          </div>
-        </div>
-
-        <div class="tab-panel" id="aiTab" hidden>
-          <div class="card">
-            <h2>⚡ Auto AI — 1-minute candle engine</h2>
-            <p class="subtle">Auto AI watches the live server candle clock. When the second hits your trigger (default 57), it requests a real price and buys on your account.</p>
-
-            <div class="trade-grid">
-              <label>Market<select id="aiMkt"><option>Loading markets…</option></select></label>
-              <label>Contract<select id="aiBar"><option value="0">Digit Over 0</option><option value="1">Digit Over 1</option><option value="2">Digit Over 2</option><option value="3">Digit Over 3</option><option value="4">Digit Over 4</option><option value="5">Digit Over 5</option><option value="6">Digit Over 6</option><option value="7">Digit Over 7</option></select></label>
-              <label>Stake (base)<input id="aiStake" type="number" min="0.01" step="0.01" value="0.35"></label>
-              <label>Ticks<input id="aiTicks" type="number" min="1" max="10" value="1"></label>
-              <label>Trigger second<input id="aiSec" type="number" min="0" max="59" value="57"></label>
-              <label>Martingale x<input id="aiMult" type="number" min="1" step="0.1" value="2"></label>
-              <label>Max martingale steps<input id="aiMaxSteps" type="number" min="1" max="20" value="5"></label>
-              <label>Stop after N losses<input id="aiStop" type="number" min="0" value="0" placeholder="0=never"></label>
-            </div>
-
-            <div class="countdown">
-              <div class="bar-row"><span>Candle</span><strong id="cdTxt">00 / 60s</strong></div>
-              <div class="bar" id="cdBar"><div></div></div>
-              <div class="bar-row"><span>Next buy in <strong id="cdNext">—</strong></span><span id="cdTrig">Trigger at 57s</span></div>
-            </div>
-
-            <div class="metric-row">
-              <div class="metric"><small>Wins / Losses</small><strong id="aiWL">0 / 0</strong></div>
-              <div class="metric"><small>Win rate</small><strong id="aiWR">—</strong></div>
-              <div class="metric"><small>Session P/L</small><strong id="aiPL">0.00</strong></div>
-              <div class="metric"><small>Next stake</small><strong id="aiNS">0.35</strong></div>
-            </div>
-
-            <div class="trade-buttons">
-              <button class="btn secondary" id="aiRefresh" type="button">Refresh markets</button>
-              <button class="btn success" id="aiBtn" type="button">▶ Start Auto AI</button>
-            </div>
-            <div class="notice danger">⚠ Martingale is high risk. A long losing streak can wipe your balance. Set a Stop-after-N-losses to protect yourself.</div>
-          </div>
-        </div>
-
-        <div class="tab-panel" id="histTab" hidden>
-          <div class="card">
-            <h2>Trade history</h2>
-            <div class="metric-row">
-              <div class="metric"><small>Total</small><strong id="hT">0</strong></div>
-              <div class="metric"><small>Wins</small><strong id="hW" class="pos">0</strong></div>
-              <div class="metric"><small>Losses</small><strong id="hL" class="neg">0</strong></div>
-              <div class="metric"><small>Net P/L</small><strong id="hP">0.00</strong></div>
-            </div>
-            <button class="btn secondary" id="refHist" type="button">Refresh from Deriv</button>
-            <div class="table-wrap">
-              <table class="history-table">
-                <thead><tr><th>Time</th><th>Contract</th><th>Buy</th><th>Sell</th><th>P/L</th><th>Source</th></tr></thead>
-                <tbody id="hBody"><tr><td colspan="6" class="subtle">No trades yet.</td></tr></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        <strong>Trade7Smart</strong>
+        <span>Initializing AI volatility scanner</span>
+        <i></i>
       </div>
+    </div>
+    <main class="terminal-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <p class="eyebrow">Trade7Smart by Butuba</p>
+          <h1>AI Volatility Command</h1>
+          <div class="brand-meta">
+            <small class="build-badge">Pro AI build</small>
+            <small id="active-contract-badge" class="mode-badge">Odd / Even</small>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button id="compact-toggle" class="text-button" type="button">Compact</button>
+          <button id="mini-toggle" class="text-button" type="button">Mini</button>
+          <button id="sound-toggle" class="text-button" type="button">Sound On</button>
+          <button id="notify-toggle" class="text-button" type="button">Notify</button>
+          <button id="ai-auto-toggle" class="text-button" type="button">AI Auto</button>
+          <div class="status-pill" id="connection-state">Offline</div>
+        </div>
+      </header>
 
-      <aside class="card">
-        <h2>Journal</h2>
-        <div class="journal" id="journal"></div>
-        <button class="btn danger" id="discBtn" type="button" style="width:100%; margin-top:14px;">Disconnect</button>
-      </aside>
-    </section>
-  </main>
+      <section class="control-strip">
+        <label>
+          <span>Account</span>
+          <select id="account-target">
+            <option value="demo" selected>Demo account</option>
+            <option value="real">Real account</option>
+          </select>
+        </label>
+        <label class="token-field">
+          <span>Deriv API token</span>
+          <input id="api-token" type="password" autocomplete="off" placeholder="Paste demo or real token" />
+        </label>
+        <label class="save-token">
+          <input id="save-token" type="checkbox" />
+          <span>Save token</span>
+        </label>
+        <input id="app-id" type="hidden" value="1089" />
+        <label>
+          <span>Market</span>
+          <select id="symbol">
+            <option value="R_100">Volatility 100</option>
+            <option value="R_75">Volatility 75</option>
+            <option value="R_50">Volatility 50</option>
+            <option value="R_25">Volatility 25</option>
+            <option value="R_10">Volatility 10</option>
+          </select>
+        </label>
+        <button id="connect-button" class="ghost-button" type="button">Connect</button>
+      </section>
 
-  <script>
-  (() => {
-    'use strict';
-    const WS = 'wss://ws.derivws.com/websockets/v3';
+      <section class="ai-scanner-hero">
+        <article class="panel ai-scanner-panel">
+          <div class="panel-head">
+            <div>
+              <span>Smart AI scanner</span>
+              <strong>All volatility markets</strong>
+            </div>
+            <b id="scanner-live-count">5 markets</b>
+          </div>
+          <p class="panel-intro">Live ranking across Vol 10–100. Best entry quality, signal type, and recovery readiness.</p>
+          <div id="ai-market-grid" class="ai-market-grid"></div>
+        </article>
+      </section>
 
-    // --- state ---
-    let ws, ping, connected = false, currency = 'USD', loginId = '';
-    let activeSym = '', aiSym = '', latest, latestAuto;
-    let aiRunning = false, aiBusy = false, aiLastMin = null;
-    let stakeBase = 0.35, stakeNext = 0.35;
-    let aiPL = 0, aiW = 0, aiL = 0, aiStep = 0, aiMaxSteps = 5, aiStop = 0, aiBuys = 0;
-    const hist = new Map(), sources = new Map(), settled = new Set();
+      <section class="hero-grid">
+        <article class="panel signal-panel ai-analyzer-panel">
+          <div class="analyzer-head">
+            <div class="score-ring-wrap">
+              <div class="score-ring" id="score-ring">
+                <svg viewBox="0 0 120 120" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#3b82f6" />
+                      <stop offset="50%" stop-color="#8b5cf6" />
+                      <stop offset="100%" stop-color="#22d3ee" />
+                    </linearGradient>
+                  </defs>
+                  <circle class="ring-track" cx="60" cy="60" r="52" />
+                  <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52" />
+                </svg>
+                <div class="score-ring-center">
+                  <b id="signal-score">0%</b>
+                  <small>AI score</small>
+                </div>
+              </div>
+            </div>
+            <div class="analyzer-copy">
+              <span class="analyzer-label">Neural signal engine</span>
+              <strong id="signal-title">Scanning volatility pressure</strong>
+              <p id="signal-copy">Waiting for a clean setup before entry.</p>
+              <div class="signal-tags">
+                <span id="signal-type-tag" class="signal-tag">ODDS</span>
+                <span id="signal-market-tag" class="signal-tag muted">R_100</span>
+                <span id="entry-ready" class="entry-state">WAITING</span>
+              </div>
+            </div>
+          </div>
+          <div class="tick-readout">
+            <span id="tick-display">----.--</span>
+            <b id="digit-display">Digit --</b>
+          </div>
+          <div class="digit-cursor-wrap">
+            <div id="digit-cursor-track" class="digit-cursor-track"></div>
+            <div class="digit-cursor-meta">
+              <span id="contract-cursor-copy">Waiting for contract entry</span>
+              <b id="contract-end-digit">End digit --</b>
+            </div>
+          </div>
+          <div class="streak-visual">
+            <div id="streak-digits" class="streak-digits"></div>
+            <strong id="streak-progress">0/5 Odds Found</strong>
+          </div>
+          <div id="ou-analysis" class="ou-analysis hidden">
+            <div class="ou-bar">
+              <span>Under barrier</span>
+              <i id="ou-under-bar"></i>
+              <b id="ou-under-pct">0%</b>
+            </div>
+            <div class="ou-bar">
+              <span>Over barrier</span>
+              <i id="ou-over-bar"></i>
+              <b id="ou-over-pct">0%</b>
+            </div>
+            <p id="ou-analysis-copy">Barrier bias analysis</p>
+          </div>
+        </article>
 
-    // --- helpers ---
-    const $ = id => document.getElementById(id);
-    const show = (el, on) => el.hidden = !on;
-    const showLogin = (msg, type='info') => {
-      const el = $('loginStatus');
-      el.className = 'status-msg ' + type;
-      el.textContent = msg;
-      el.style.display = 'block';
-    };
-    const log = (m, t='') => {
-      const e = document.createElement('article');
-      e.className = 'entry ' + t;
-      e.innerHTML = `<time>${new Date().toLocaleTimeString()}</time>${m}`;
-      $('journal').prepend(e);
-      while ($('journal').children.length > 80) $('journal').lastChild.remove();
-    };
-    const send = o => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(o)); };
-    const isDemo = id => /^(VRTC|VRW)/i.test(id);
+        <article class="panel account-panel">
+          <div class="panel-head">
+            <div>
+              <span>Account balance</span>
+              <strong id="balance">--</strong>
+            </div>
+            <b id="account-badge">DEMO</b>
+          </div>
+          <div class="mini-stats">
+            <div><span>Odd streak</span><strong id="odd-streak">0</strong></div>
+            <div><span>Digit repeat</span><strong id="digit-streak">0</strong></div>
+            <div><span>Loss count</span><strong id="loss-count">0</strong></div>
+            <div><span>Cumulative loss</span><strong id="cum-loss">0.00</strong></div>
+            <div><span>Next stake</span><strong id="next-stake">0.35</strong></div>
+            <div><span>AI rank</span><strong id="market-rank">--</strong></div>
+          </div>
+        </article>
 
-    // --- connect ---
-    $('connectBtn').onclick = () => {
-      const appId = $('appId').value.trim();
-      const token = $('token').value.trim();
-      if (!appId) return showLogin('Enter your App ID.', 'error');
-      if (!token) return showLogin('Paste your API token.', 'error');
-      try { localStorage.setItem('butuba_app', appId); } catch(_){}
-      showLogin('Connecting to Deriv…', 'info');
-      try {
-        ws = new WebSocket(`${WS}?app_id=${encodeURIComponent(appId)}`);
-      } catch(e) { return showLogin(e.message, 'error'); }
-      const t = setTimeout(() => { try{ws.close();}catch(_){} showLogin('Deriv took too long to respond.', 'error'); }, 15000);
-      ws.onopen = () => { clearTimeout(t); send({ authorize: token, req_id: Date.now() }); startPing(); };
-      ws.onerror = () => { clearTimeout(t); showLogin('Could not reach Deriv. Check your App ID and internet.', 'error'); };
-      ws.onclose = () => { connected = false; stopPing(); $('statusText').textContent = 'Disconnected'; document.title = 'Butuba | Deriv Trader'; show($('loginCard'), true); show($('dashboard'), false); };
-    };
+        <article class="panel bot-panel">
+          <div class="panel-head">
+            <div>
+              <span>Bot controls</span>
+              <strong id="bot-state">Waiting</strong>
+            </div>
+          </div>
+          <div class="contract-tabs" id="contract-tabs">
+            <button type="button" class="contract-tab active" data-mode="odds_even">Odd / Even</button>
+            <button type="button" class="contract-tab" data-mode="over_under">Over / Under</button>
+            <button type="button" class="contract-tab" data-mode="differ">Differ</button>
+          </div>
+          <input id="contract-mode" type="hidden" value="odds_even" />
+          <div class="settings-grid mode-panel" id="mode-odds_even">
+            <label>
+              <span>PreferredOdds</span>
+              <select id="preferred-odds">
+                <option value="3">3 Odds</option>
+                <option value="4">4 Odds</option>
+                <option value="5" selected>5 Odds</option>
+                <option value="6">6 Odds</option>
+                <option value="7">7 Odds</option>
+                <option value="8">8 Odds</option>
+                <option value="9">9 Odds</option>
+              </select>
+            </label>
+            <label>
+              <span>Trade Direction</span>
+              <select id="trade-direction">
+                <option value="DIGITEVEN" selected>Even</option>
+                <option value="DIGITODD">Odd</option>
+              </select>
+            </label>
+          </div>
+          <div class="settings-grid mode-panel hidden" id="mode-over_under">
+            <label>
+              <span>Barrier digit</span>
+              <select id="ou-barrier">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5" selected>5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+              </select>
+            </label>
+            <label>
+              <span>Direction</span>
+              <select id="ou-direction">
+                <option value="DIGITOVER" selected>Over</option>
+                <option value="DIGITUNDER">Under</option>
+              </select>
+            </label>
+            <label>
+              <span>Min bias %</span>
+              <input id="ou-min-bias" type="number" min="50" max="90" step="5" value="58" />
+            </label>
+            <label>
+              <span>Sample ticks</span>
+              <input id="ou-sample" type="number" min="10" max="50" step="5" value="20" />
+            </label>
+          </div>
+          <div class="settings-grid mode-panel hidden" id="mode-differ">
+            <label>
+              <span>Repeat trigger</span>
+              <select id="differ-trigger">
+                <option value="3">3 repeats</option>
+                <option value="4" selected>4 repeats</option>
+                <option value="5">5 repeats</option>
+                <option value="6">6 repeats</option>
+              </select>
+            </label>
+            <label>
+              <span>Repeat digit</span>
+              <strong id="differ-repeat-digit" class="inline-value">--</strong>
+            </label>
+          </div>
+          <div class="settings-grid shared-settings">
+            <label>
+              <span>Stake</span>
+              <input id="stake" type="number" inputmode="decimal" min="0.35" step="0.01" value="0.35" />
+            </label>
+            <label>
+              <span>Shield</span>
+              <input id="shield" type="number" inputmode="decimal" min="1" step="1" value="50" />
+            </label>
+            <label>
+              <span>Execution</span>
+              <select id="execution-mode">
+                <option value="live" selected>Trade selected Deriv account</option>
+                <option value="paper">Paper test only</option>
+              </select>
+            </label>
+            <label>
+              <span>Profit Buffer</span>
+              <input id="profit-buffer" type="number" inputmode="decimal" min="0" step="0.01" value="0.35" />
+            </label>
+            <label>
+              <span>Recovery Start</span>
+              <input id="recovery-start-losses" type="number" inputmode="numeric" min="0" max="5" step="1" value="4" />
+            </label>
+            <label>
+              <span>Max Recovery</span>
+              <input id="max-recovery-steps" type="number" inputmode="numeric" min="1" step="1" value="7" />
+            </label>
+            <label>
+              <span>Max Stake</span>
+              <input id="max-stake" type="number" inputmode="decimal" min="0.35" step="0.01" value="100" />
+            </label>
+          </div>
+          <label class="real-confirm">
+            <input id="real-confirm" type="checkbox" />
+            <span>I understand Real account trades use real money.</span>
+          </label>
+          <div class="action-row">
+            <button id="start-bot" class="run-button" type="button">Run Bot</button>
+            <button id="ai-run-bot" class="run-button ai-run-button" type="button">AI Run</button>
+            <button id="stop-bot" class="stop-button" type="button">Stop</button>
+          </div>
+        </article>
+      </section>
 
-    function startPing() { stopPing(); ping = setInterval(() => send({ ping:1, req_id: Date.now() }), 30000); }
-    function stopPing() { if (ping) clearInterval(ping); ping = null; }
+      <section class="pro-grid">
+        <article class="panel best-market-panel">
+          <div class="panel-head">
+            <div><span>Best market auto-pick</span><strong id="best-market-title">Scanning markets</strong></div>
+            <button id="use-best-market" class="text-button" type="button">Use</button>
+          </div>
+          <p id="best-market-copy">The scanner will recommend the closest market to entry.</p>
+        </article>
 
-    // --- disconnect ---
-    $('discBtn').onclick = () => { if (ws) ws.close(); $('token').value=''; };
+        <article class="panel session-panel">
+          <div class="panel-head">
+            <div><span>Session goal mode</span><strong>Auto stop targets</strong></div>
+          </div>
+          <div class="settings-grid">
+            <label>
+              <span>Target Profit</span>
+              <input id="session-target-profit" type="number" inputmode="decimal" step="0.01" value="2" />
+            </label>
+            <label>
+              <span>Max Loss</span>
+              <input id="session-max-loss" type="number" inputmode="decimal" step="0.01" value="5" />
+            </label>
+          </div>
+          <p id="session-copy">Bot will stop when the session target or max loss is reached.</p>
+        </article>
 
-    // --- tabs ---
-    document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => {
-      document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(x => x.hidden = true);
-      b.classList.add('active');
-      $(b.dataset.tab).hidden = false;
-    });
+        <article class="panel replay-panel">
+          <div class="panel-head">
+            <div><span>Trade replay</span><strong id="replay-title">No completed cycle yet</strong></div>
+          </div>
+          <div id="trade-replay" class="trade-replay"></div>
+        </article>
 
-    // --- dashboard market ---
-    $('loadBtn').onclick = () => {
-      const s = $('market').value.trim().toUpperCase();
-      if (!/^[A-Z0-9_]{2,30}$/.test(s)) return log('Bad symbol.', 'error');
-      activeSym = s; $('mkt').textContent = s; $('quote').textContent = '—'; $('rec').textContent = 'Waiting…';
-      send({ ticks: s, subscribe: 1, req_id: Date.now(), passthrough: { src: 'mt' } });
-      log('Subscribed to ' + s);
-    };
-    $('priceBtn').onclick = () => {
-      const stake = +$('stake').value, bar = $('barrier').value;
-      if (!(stake > 0)) return log('Bad stake.', 'error');
-      if (!activeSym) { $('loadBtn').click(); }
-      latest = null; $('buyBtn').disabled = true; $('prop').textContent = 'Getting price…';
-      send({ proposal:1, amount:stake, basis:'stake', contract_type:'DIGITOVER', currency, duration:1, duration_unit:'t', barrier:bar, symbol:activeSym || $('market').value.toUpperCase(), req_id:Date.now(), passthrough:{src:'mn'} });
-    };
-    $('buyBtn').onclick = () => {
-      if (!latest) return;
-      if (!confirm(`Buy Digit Over ${$('barrier').value} on ${activeSym} for ${latest.ask_price} ${currency}?`)) return;
-      $('buyBtn').disabled = true;
-      send({ buy: latest.id, price: latest.ask_price, req_id: Date.now(), passthrough: { src: 'mn' } });
-    };
+        <article class="panel real-lock-panel">
+          <div class="panel-head">
+            <div><span>Real account lock</span><strong id="real-lock-title">Protected</strong></div>
+            <b id="real-countdown">--</b>
+          </div>
+          <p id="real-lock-copy">Real trading requires checkbox confirmation and a countdown before start.</p>
+        </article>
+      </section>
 
-    // --- markets for AI ---
-    function loadMkt() {
-      send({ active_symbols:'brief', product_type:'basic', req_id:Date.now(), passthrough:{src:'sym'} });
-    }
-    function fillMkt(list) {
-      const g = new Map();
-      list.forEach(s => { const k = s.market_display_name || 'Other'; if (!g.has(k)) g.set(k, []); g.get(k).push(s); });
-      const sel = $('aiMkt'), dl = $('mktList');
-      sel.innerHTML = ''; dl.innerHTML = '';
-      g.forEach((arr, name) => {
-        const og = document.createElement('optgroup'); og.label = name;
-        arr.forEach(s => {
-          const o = document.createElement('option'); o.value = s.symbol; o.textContent = s.display_name; og.appendChild(o);
-          const d = document.createElement('option'); d.value = s.symbol; d.label = s.display_name; dl.appendChild(d);
-        });
-        sel.appendChild(og);
-      });
-      if (!sel.value) {
-        const pref = [...sel.options].find(o => o.value === '1HZ100V');
-        sel.value = pref ? pref.value : sel.options[0].value;
-      }
-    }
-    $('aiRefresh').onclick = loadMkt;
+      <section class="risk-grid">
+        <article class="panel recovery-settings-panel">
+          <div class="panel-head">
+            <div><span>Recovery settings</span><strong>Risk boundaries</strong></div>
+          </div>
+          <div class="settings-grid">
+            <label>
+              <span>Daily Profit Target</span>
+              <input id="daily-profit-target" type="number" inputmode="decimal" step="0.01" value="10" />
+            </label>
+            <label>
+              <span>Daily Loss Limit</span>
+              <input id="daily-loss-limit" type="number" inputmode="decimal" step="0.01" value="10" />
+            </label>
+            <label>
+              <span>Min Balance Protection</span>
+              <input id="min-balance-protection" type="number" inputmode="decimal" step="0.01" value="5" />
+            </label>
+            <label>
+              <span>Preset</span>
+              <select id="strategy-preset">
+                <option value="custom" selected>Custom</option>
+                <option value="immediate">Immediate recovery after loss</option>
+                <option value="verysafe">Very Safe</option>
+                <option value="normal">Normal</option>
+                <option value="fast">Fast</option>
+                <option value="conservative">Conservative</option>
+                <option value="balanced">Balanced</option>
+                <option value="aggressive">Aggressive</option>
+                <option value="recovery3">Recovery 3</option>
+                <option value="recovery5">Recovery 5</option>
+              </select>
+            </label>
+          </div>
+        </article>
 
-    // --- auto AI ---
-    function subAI(s) { if (!s) return; aiSym = s; send({ ticks:s, subscribe:1, req_id:Date.now(), passthrough:{src:'ai'} }); }
+        <article class="panel ladder-panel">
+          <div class="panel-head">
+            <div><span>Recovery ladder</span><strong id="ladder-summary">Base stake ready</strong></div>
+          </div>
+          <div id="recovery-ladder" class="ladder-list"></div>
+          <div class="ladder-meta">
+            <span>Current <b id="ladder-current">0.35</b></span>
+            <span>Next <b id="ladder-next">0.35</b></span>
+            <span>Cycle losses <b id="ladder-losses">0.00</b></span>
+          </div>
+        </article>
 
-    function updateAI() {
-      $('aiWL').textContent = `${aiW} / ${aiL}`;
-      $('aiWR').textContent = (aiW+aiL) ? ((aiW/(aiW+aiL))*100).toFixed(1)+'%' : '—';
-      $('aiPL').textContent = (aiPL>=0?'+':'') + aiPL.toFixed(2) + ' ' + currency;
-      $('aiPL').className = aiPL >= 0 ? 'pos' : 'neg';
-      $('aiNS').textContent = stakeNext.toFixed(2) + ' ' + currency;
-    }
+        <article class="panel risk-panel">
+          <div class="panel-head">
+            <div><span>Risk meter</span><strong id="risk-label">LOW</strong></div>
+            <b id="risk-score">0%</b>
+          </div>
+          <div class="risk-meter"><i id="risk-bar"></i></div>
+          <p id="risk-copy">Exposure is inside the configured limits.</p>
+        </article>
+      </section>
 
-    function aiTick(t) {
-      const ep = +t.epoch; if (!isFinite(ep)) return;
-      const sec = ep % 60, mb = Math.floor(ep/60);
-      const trig = Math.min(59, Math.max(0, +$('aiSec').value || 57));
-      $('cdTxt').textContent = String(sec).padStart(2,'0') + ' / 60s';
-      const bar = $('cdBar').firstElementChild;
-      if (bar) bar.style.width = Math.min(100, (sec/60)*100) + '%';
-      $('cdBar').classList.toggle('warn', sec >= 50 && sec < trig);
-      $('cdBar').classList.toggle('fire', sec >= trig);
-      $('cdNext').textContent = aiRunning ? ((sec<trig?(trig-sec):(60-sec+trig))+'s') : '—';
-      $('cdTrig').textContent = 'Trigger at '+trig+'s';
-      if (aiRunning && !aiBusy && sec >= trig && aiLastMin !== mb) {
-        aiLastMin = mb; fireAI();
-      }
-    }
+      <section class="analytics-grid">
+        <article class="panel stats-panel">
+          <div class="panel-head">
+            <div><span>Statistics</span><strong>Session performance</strong></div>
+          </div>
+          <div class="stats-grid">
+            <div><span>Total Trades</span><strong id="stat-total-trades">0</strong></div>
+            <div><span>Wins</span><strong id="stat-wins">0</strong></div>
+            <div><span>Losses</span><strong id="stat-losses">0</strong></div>
+            <div><span>Win Rate</span><strong id="stat-win-rate">0%</strong></div>
+            <div><span>Net Profit</span><strong id="stat-net-profit">0.00</strong></div>
+            <div><span>Longest Recovery</span><strong id="stat-longest-recovery">0</strong></div>
+            <div><span>Average Recovery</span><strong id="stat-average-recovery">0.0</strong></div>
+            <div><span>Cycles Completed</span><strong id="stat-cycles">0</strong></div>
+          </div>
+        </article>
 
-    function fireAI() {
-      if (!aiSym) return;
-      aiBusy = true; latestAuto = null;
-      send({ proposal:1, amount:stakeNext, basis:'stake', contract_type:'DIGITOVER', currency, duration:Math.max(1,+$('aiTicks').value||1), duration_unit:'t', barrier:$('aiBar').value, symbol:aiSym, req_id:Date.now(), passthrough:{src:'ai'} });
-    }
-    function buyAI() {
-      if (!latestAuto) { log('AI: no price back, skip.', 'error'); aiBusy = false; return; }
-      log('AI buying Digit Over '+$('aiBar').value+' on '+aiSym+' for '+latestAuto.ask_price+' '+currency, 'good');
-      send({ buy:latestAuto.id, price:latestAuto.ask_price, req_id:Date.now(), passthrough:{src:'ai'} });
-    }
-    function settleAI(p) {
-      aiPL += p; aiBuys++;
-      if (p > 0) { aiW++; aiStep = 0; stakeNext = stakeBase; }
-      else if (p < 0) { aiL++; aiStep++;
-        if (aiStep > aiMaxSteps) { aiStep = 0; stakeNext = stakeBase; log('AI: max martingale steps hit — stake reset.', 'error'); }
-        else { stakeNext = Math.round(stakeNext * Math.max(1, +$('aiMult').value || 1) * 100) / 100; }
-      } else { aiStep = 0; stakeNext = stakeBase; }
-      updateAI(); aiBusy = false;
-      if (aiStop > 0 && aiL >= aiStop) { log('AI: stop-loss hit ('+aiL+' losses) — stopping.', 'error'); stopAI(); }
-    }
+        <article class="panel strategy-panel">
+          <div class="panel-head">
+            <div><span>Strategy builder</span><strong>Trigger and recovery</strong></div>
+          </div>
+          <div class="settings-grid">
+            <label>
+              <span>Trigger Count</span>
+              <select id="trigger-count">
+                <option value="3">3 Odds</option>
+                <option value="4">4 Odds</option>
+                <option value="5" selected>5 Odds</option>
+                <option value="6">6 Odds</option>
+                <option value="7">7 Odds</option>
+                <option value="8">8 Odds</option>
+                <option value="9">9 Odds</option>
+              </select>
+            </label>
+            <label>
+              <span>Contract mode</span>
+              <select id="strategy-contract-mode">
+                <option value="odds_even" selected>Odd / Even</option>
+                <option value="over_under">Over / Under</option>
+                <option value="differ">Differ</option>
+              </select>
+            </label>
+            <label>
+              <span>Recovery Start</span>
+              <input id="strategy-recovery-start" type="number" inputmode="numeric" min="0" max="5" value="4" />
+            </label>
+            <label>
+              <span>Max Recovery</span>
+              <input id="strategy-max-recovery" type="number" inputmode="numeric" min="1" value="7" />
+            </label>
+            <label>
+              <span>Profit Buffer</span>
+              <input id="strategy-profit-buffer" type="number" inputmode="decimal" min="0" step="0.01" value="0.35" />
+            </label>
+          </div>
+        </article>
 
-    function startAI() {
-      if (!connected) return log('Connect first.', 'error');
-      if (!$('aiMkt').value) return log('Pick a market.', 'error');
-      stakeBase = +$('aiStake').value || 0.35; stakeNext = stakeBase;
-      aiMaxSteps = Math.max(1, +$('aiMaxSteps').value || 5);
-      aiStop = Math.max(0, +$('aiStop').value || 0);
-      aiPL = 0; aiW = 0; aiL = 0; aiStep = 0; aiBuys = 0; aiLastMin = null; aiBusy = false;
-      updateAI();
-      aiRunning = true;
-      $('aiBtn').textContent = '■ Stop Auto AI';
-      $('aiBtn').classList.remove('success'); $('aiBtn').classList.add('danger');
-      subAI($('aiMkt').value);
-      log('Auto AI started on '+$('aiMkt').value, 'good');
-    }
-    function stopAI() {
-      aiRunning = false;
-      $('aiBtn').textContent = '▶ Start Auto AI';
-      $('aiBtn').classList.add('success'); $('aiBtn').classList.remove('danger');
-      log('Auto AI stopped.');
-    }
-    $('aiBtn').onclick = () => aiRunning ? stopAI() : startAI();
-    $('aiSec').oninput = () => $('cdTrig').textContent = 'Trigger at '+$('aiSec').value+'s';
+        <article class="panel simulator-panel">
+          <div class="panel-head">
+            <div><span>Recovery simulator</span><strong>Exposure plan</strong></div>
+          </div>
+          <div class="sim-grid">
+            <div><span>Maximum Exposure</span><strong id="sim-max-exposure">0.00</strong></div>
+            <div><span>Recommended Balance</span><strong id="sim-recommended-balance">0.00</strong></div>
+          </div>
+          <div id="sim-ladder" class="sim-ladder"></div>
+        </article>
+      </section>
 
-    // --- history ---
-    $('refHist').onclick = () => send({ profit_table:1, description:1, limit:50, sort:'DESC', req_id:Date.now(), passthrough:{src:'pt'} });
-    function addHist(id, time, desc, buy, sell, profit, src) {
-      hist.set(id, { id, time, desc, buy, sell, profit, src }); renderHist();
-    }
-    function renderHist() {
-      const rows = [...hist.values()].sort((a,b) => b.time - a.time);
-      const all = [...hist.values()];
-      const wins = all.filter(r => r.profit > 0).length;
-      const losses = all.filter(r => r.profit < 0).length;
-      const pl = all.reduce((s,r) => s + r.profit, 0);
-      $('hT').textContent = all.length;
-      $('hW').textContent = wins;
-      $('hL').textContent = losses;
-      $('hP').textContent = (pl>=0?'+':'')+pl.toFixed(2)+' '+currency;
-      $('hP').className = pl>=0?'pos':'neg';
-      const body = $('hBody');
-      if (!rows.length) { body.innerHTML = '<tr><td colspan="6" class="subtle">No trades yet.</td></tr>'; return; }
-      body.innerHTML = '';
-      rows.forEach(r => {
-        const tag = r.src === 'ai' ? '<span class="badge badge-auto">Auto AI</span>' : r.src === 'mn' ? '<span class="badge badge-manual">Manual</span>' : '<span class="badge badge-auto" style="background:#2a3a1f;color:#d4ffb0">History</span>';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${r.time.toLocaleString()}</td><td>${r.desc||'—'}</td><td>${(+r.buy).toFixed(2)}</td><td>${(+r.sell).toFixed(2)}</td><td class="${r.profit>=0?'pos':'neg'}">${r.profit>=0?'+':''}${(+r.profit).toFixed(2)}</td><td>${tag}</td>`;
-        body.appendChild(tr);
-      });
-    }
+      <section class="scanner-grid">
+        <article class="panel scanner-panel">
+          <div class="panel-head">
+            <div><span>Market scanner</span><strong>Volatility rank table</strong></div>
+          </div>
+          <div id="scanner-list" class="scanner-list"></div>
+        </article>
+        <article class="panel queue-panel">
+          <div class="panel-head">
+            <div><span>Live setup queue</span><strong>Closest to entry</strong></div>
+          </div>
+          <div id="setup-queue" class="setup-queue"></div>
+        </article>
+        <article class="panel backtest-panel">
+          <div class="panel-head">
+            <div><span>Backtest mode</span><strong>Historical tick sample</strong></div>
+            <button id="run-backtest" class="text-button" type="button">Run</button>
+          </div>
+          <div id="backtest-results" class="backtest-results">
+            <span>Triggers --</span>
+            <span>Wins --</span>
+            <span>Losses --</span>
+            <span>Win Rate --</span>
+            <span>Net Profit --</span>
+            <span>Max Drawdown --</span>
+          </div>
+        </article>
+      </section>
 
-    // --- incoming ---
-    ws && ws.addEventListener;
-    function onMsg(ev) {
-      let m; try { m = JSON.parse(ev.data); } catch(_) { return; }
-      if (m.error) {
-        log(m.error.message || 'Deriv error', 'error');
-        if (m.msg_type === 'proposal') $('prop').textContent = m.error.message || 'Failed.';
-        if ((m.passthrough||{}).src === 'ai' || (m.echo_req||{}).passthrough?.src === 'ai') aiBusy = false;
-        return;
-      }
-      if (m.msg_type === 'authorize') {
-        connected = true; currency = m.authorize.currency || 'USD'; loginId = m.authorize.loginid;
-        $('statusText').textContent = 'Connected · ' + loginId;
-        $('dot').classList.add('live');
-        $('acct').textContent = (isDemo(loginId) ? 'Demo · ' : 'Real · ') + currency;
-        show($('loginCard'), false); show($('dashboard'), true);
-        log('Authorized as ' + loginId, 'good');
-        send({ balance:1, subscribe:1, req_id:Date.now() });
-        loadMkt();
-        send({ profit_table:1, description:1, limit:50, sort:'DESC', req_id:Date.now(), passthrough:{src:'pt'} });
-        return;
-      }
-      if (m.msg_type === 'balance') {
-        currency = m.balance.currency || currency;
-        $('bal').textContent = (+m.balance.balance).toFixed(2) + ' ' + currency;
-        return;
-      }
-      if (m.msg_type === 'active_symbols') { fillMkt(m.active_symbols || []); log('Loaded '+ (m.active_symbols||[]).length +' markets', 'good'); return; }
-      if (m.msg_type === 'profit_table') {
-        (m.profit_table?.transactions || []).forEach(tx => {
-          addHist('pt-'+(tx.contract_id||tx.transaction_id),
-            new Date((tx.sell_time||tx.purchase_time||0)*1000),
-            tx.longcode||'Closed',
-            +tx.buy_price||0, +tx.sell_price||0, (+tx.sell_price||0)-(+tx.buy_price||0),
-            'pt');
-        });
-        return;
-      }
-      if (m.msg_type === 'tick') {
-        const t = m.tick;
-        if (t.symbol === activeSym) {
-          $('quote').textContent = (+t.quote).toLocaleString(undefined,{maximumFractionDigits:5});
-          $('clk').textContent = String(+t.epoch % 60).padStart(2,'0') + ' / 60s';
-          const d = String(t.quote).replace(/\D/g,'').slice(-1);
-          $('rec').textContent = d ? 'Last digit: ' + d : '';
-        }
-        if (t.symbol === aiSym) aiTick(t);
-        return;
-      }
-      if (m.msg_type === 'proposal') {
-        const src = (m.passthrough||{}).src || (m.echo_req||{}).passthrough?.src || 'mn';
-        if (src === 'ai') { latestAuto = m.proposal; buyAI(); }
-        else { latest = m.proposal; $('prop').innerHTML = `Price: <strong>${latest.ask_price} ${currency}</strong> · Payout: <strong>${latest.payout}</strong>`; $('buyBtn').disabled = false; }
-        return;
-      }
-      if (m.msg_type === 'buy') {
-        const c = m.buy; const src = (m.passthrough||{}).src || 'mn';
-        sources.set(c.contract_id, src);
-        log(`Contract ${c.contract_id} bought`+(src==='ai'?' (Auto AI)':''), 'good');
-        send({ proposal_open_contract:1, contract_id:c.contract_id, subscribe:1, req_id:Date.now(), passthrough:{src} });
-        return;
-      }
-      if (m.msg_type === 'proposal_open_contract') {
-        const c = m.proposal_open_contract;
-        if (c.is_sold && !settled.has(c.contract_id)) {
-          settled.add(c.contract_id);
-          const p = +c.profit || 0;
-          const src = (m.passthrough||{}).src || sources.get(c.contract_id) || 'mn';
-          log(`Contract ${c.contract_id} closed: ${p>=0?'+':''}${p.toFixed(2)} ${currency}`, p>=0?'good':'error');
-          addHist('lv-'+c.contract_id, new Date((c.sell_time||Date.now()/1000)*1000),
-            c.longcode || ((c.display_name||c.underlying||'')+' '+(c.contract_type||'')).trim(),
-            +c.buy_price||0, +c.sell_price||0, p, src);
-          if (src === 'ai') settleAI(p);
-        }
-        return;
-      }
-    }
+      <section class="bottom-grid">
+        <article class="panel market-panel">
+          <div class="panel-head">
+            <div><span>Watchlist</span><strong>Market pulse</strong></div>
+          </div>
+          <div id="watchlist" class="watchlist"></div>
+        </article>
+        <article class="panel journal-panel">
+          <div class="journal-header">
+            <div><span>Bot journal</span><strong>Live events</strong></div>
+            <button id="clear-journal" class="text-button" type="button">Clear</button>
+          </div>
+          <ol id="journal" class="journal"></ol>
+        </article>
+      </section>
+    </main>
 
-    // attach msg handler each time we open
-    const _origOpen = Object.getOwnPropertyDescriptor(WebSocket.prototype, 'onmessage');
-    // Instead, monkey-patch connectBtn to set handler:
-    const origHandler = $('connectBtn').onclick;
-    $('connectBtn').onclick = function() {
-      origHandler.call(this);
-      // wait one tick for ws to be assigned
-      setTimeout(() => { if (ws) ws.onmessage = onMsg; }, 0);
-    };
+    <aside class="performance-float">
+      <span>Today</span>
+      <strong id="float-profit">0.00</strong>
+      <small>Win <b id="float-win-rate">0%</b> | Cycles <b id="float-cycles">0</b></small>
+    </aside>
 
-    // Pre-fill app id if saved
-    try { const s = localStorage.getItem('butuba_app'); if (s) $('appId').value = s; } catch(_){}
-    updateAI();
-  })();
-  </script>
-</body>
+    <div id="toast-layer" class="toast-layer" aria-live="polite"></div>
+    <script src="./app.js?v=cursor-ai-20260620"></script>
+  </body>
 </html>

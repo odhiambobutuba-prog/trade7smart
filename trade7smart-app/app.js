@@ -1,19 +1,20 @@
 const WS_URL = "wss://ws.derivws.com/websockets/v3";
 const WATCHLIST = [
-  ["R_100", "Volatility 100"],
-  ["R_75", "Volatility 75"],
-  ["R_50", "Volatility 50"],
-  ["R_25", "Volatility 25"],
-  ["R_10", "Volatility 10"],
+  ["1HZ100V", "Volatility 100 (1s)"],
+  ["1HZ75V", "Volatility 75 (1s)"],
+  ["1HZ50V", "Volatility 50 (1s)"],
+  ["1HZ25V", "Volatility 25 (1s)"],
+  ["1HZ10V", "Volatility 10 (1s)"],
 ];
 
 const state = {
   ws: null,
+  scannerOnly: false,
   authorized: false,
   running: false,
   activeTrade: false,
   appId: "1089",
-  symbol: "R_100",
+  symbol: "1HZ100V",
   loginid: "",
   currency: "USD",
   balance: null,
@@ -181,16 +182,35 @@ function bindSocket() {
     if (data.msg_type === "proposal") handleProposal(data.proposal);
     if (data.msg_type === "buy") handleBuy(data.buy);
     if (data.msg_type === "proposal_open_contract") handleContract(data.proposal_open_contract);
+    if (data.msg_type === "candles") handleCandles(data);
     updateDashboard();
   };
 
   state.ws.onclose = () => {
+    const wasScannerOnly = state.scannerOnly;
     state.authorized = false;
+    state.scannerOnly = false;
     state.running = false;
     state.activeTrade = false;
     updateDashboard();
-    toast("Connection closed.", "danger");
+    if (!wasScannerOnly) toast("Connection closed.", "danger");
+    if (!state.authorized) setTimeout(connectPublicScanner, 1800);
   };
+}
+
+async function connectPublicScanner() {
+  if (state.ws && state.ws.readyState === WebSocket.OPEN) return;
+  state.appId = $("app-id").value.trim() || "1089";
+  try {
+    state.ws = await connectWebSocket();
+    bindSocket();
+    state.scannerOnly = true;
+    WATCHLIST.forEach(([symbol]) => send({ ticks: symbol, subscribe: 1 }, `watch:${symbol}`));
+    hideLoader();
+    updateDashboard();
+  } catch (error) {
+    setTimeout(connectPublicScanner, 3000);
+  }
 }
 
 async function connectAccount() {
@@ -217,6 +237,7 @@ async function connectAccount() {
       localStorage.removeItem("trade7smart_token");
     }
     if (state.ws) state.ws.close();
+    state.scannerOnly = false;
     state.ws = await connectWebSocket();
     bindSocket();
     send({ authorize: token }, "authorize");
@@ -228,6 +249,7 @@ async function connectAccount() {
 }
 
 function handleAuthorize(authorize) {
+  state.scannerOnly = false;
   state.authorized = true;
   state.loginid = authorize.loginid || "";
   state.currency = authorize.currency || "USD";
@@ -264,6 +286,9 @@ function subscribeCoreStreams() {
   send({ balance: 1, subscribe: 1 }, "balance");
   send({ forget_all: "ticks" }, "forget");
   WATCHLIST.forEach(([symbol]) => send({ ticks: symbol, subscribe: 1 }, `watch:${symbol}`));
+  refreshRiseFallSignals();
+  if (state.riseFallTimer) clearInterval(state.riseFallTimer);
+  state.riseFallTimer = setInterval(refreshRiseFallSignals, 45000);
 }
 
 function handleBalance(balance) {
@@ -278,7 +303,9 @@ function handleTick(tick) {
   const digit = Number(display.replace(".", "").slice(-1));
 
   updateWatch(symbol, display, digit);
+  pushTickToCandle(symbol, quote, Number(tick.epoch) || Math.floor(Date.now() / 1000));
   maybeTradeAiMarket(symbol);
+  maybeTriggerOverUnderTriple(symbol);
   if (symbol !== state.symbol) return;
 
   state.lastQuote = display;
@@ -308,8 +335,9 @@ function handleTick(tick) {
   state.replayDigits = state.recentOdds.slice();
   if ($("differ-repeat-digit")) $("differ-repeat-digit").textContent = state.repeatDigit ?? "--";
 
-  journal(`Tick digit ${digit} | ${display}`);
-  showStreakPrompt(display);
+  if (state.oddStreak >= 4 || state.digitStreak >= 3 || checkEntryReady()) {
+    showStreakPrompt(display);
+  }
 
   if (state.running && !state.activeTrade && checkEntryReady()) {
     triggerTrade(false);
@@ -383,6 +411,60 @@ function showStreakPrompt(display) {
   }
 }
 
+function maybeTriggerOverUnderTriple(symbol) {
+  const settings = getSettings();
+  if (settings.contractMode !== "over_under" || !settings.ouAutoTripleEnabled) return;
+  if (!state.running || state.activeTrade || !state.authorized) return;
+  const stat = state.marketStats.get(symbol);
+  if (!stat) return;
+  const last3 = (stat.recentDigits || []).slice(-3);
+  if (last3.length < 3) return;
+  const isTriple1 = last3.every((d) => d === 1);
+  const isTriple0 = last3.every((d) => d === 0);
+  if (!isTriple1 && !isTriple0) return;
+  const matchedDigit = isTriple1 ? 1 : 0;
+
+  const key = `${symbol}:${matchedDigit}:${stat.recentDigits.length}`;
+  if (state.lastTripleKey === key) return;
+  state.lastTripleKey = key;
+
+  state.symbol = symbol;
+  if ($("symbol")) $("symbol").value = symbol;
+  $("ou-barrier").value = "1";
+  $("ou-direction").value = "DIGITOVER";
+  state.currentStake = settings.stake;
+  journal(`Triple-repeat: ${symbol} printed ${matchedDigit},${matchedDigit},${matchedDigit}. Firing OVER 1 for 1 tick.`, "trade");
+  toast(`Found ${matchedDigit},${matchedDigit},${matchedDigit} on ${symbol} — buying Over 1.`, "good");
+  if ($("digit-strip")) {
+    const banner = $("triple-detect-banner");
+    if (banner) {
+      banner.textContent = `Detected ${matchedDigit},${matchedDigit},${matchedDigit} on ${symbol} → OVER 1 fired`;
+      banner.classList.add("flash");
+      setTimeout(() => banner.classList.remove("flash"), 1600);
+    }
+  }
+
+  const stake = Number(settings.stake.toFixed(2));
+  state.activeTrade = true;
+  state.tradeEntryDigit = stat.digit;
+  state.tradeEndDigit = null;
+  startContractCursor();
+  send(
+    {
+      proposal: 1,
+      amount: stake,
+      basis: "stake",
+      currency: state.currency,
+      duration: 1,
+      duration_unit: "t",
+      symbol,
+      contract_type: "DIGITOVER",
+      barrier: "1",
+    },
+    "proposal"
+  );
+}
+
 function maybeTradeAiMarket(symbol) {
   const settings = getSettings();
   const stat = state.marketStats.get(symbol);
@@ -432,12 +514,17 @@ function getSettings() {
     differTrigger: Number($("differ-trigger").value || 4),
     sessionTargetProfit: Math.max(Number($("session-target-profit").value) || 0, 0),
     sessionMaxLoss: Math.max(Number($("session-max-loss").value) || 0, 0),
+    ticks: Math.min(10, Math.max(1, Number($("trade-ticks").value) || 1)),
+    bulkCount: Math.min(9, Math.max(1, Number($("bulk-trade-count")?.value) || 1)),
+    ouAutoTripleEnabled: $("ou-auto-triple-enable")?.checked || false,
+    ouAutoTripleDigit: Number($("ou-auto-triple-digit")?.value ?? 1),
   };
 }
 
 function contractModeLabel(mode) {
   if (mode === "over_under") return "Over / Under";
   if (mode === "differ") return "Differ";
+  if (mode === "rise_fall") return "Rise / Fall";
   return "Odd / Even";
 }
 
@@ -517,6 +604,13 @@ function checkEntryReady(settings = getSettings()) {
   if (settings.contractMode === "differ") {
     return state.digitStreak >= settings.differTrigger;
   }
+  if (settings.contractMode === "rise_fall") {
+    return false; // rise_fall entries are driven by maybeTradeRiseFall(), not the tick-by-tick loop
+  }
+  if (settings.contractMode === "over_under" && settings.barrier === 0 && settings.ouDirection === "DIGITOVER") {
+    // Over 0 wins on any digit 1-9 (only loses on 0) — no need to wait for bias, fire on every tick.
+    return true;
+  }
   const sample = state.digitHistory.slice(-settings.ouSample);
   if (sample.length < settings.ouSample) return false;
   const under = sample.filter((d) => d < settings.barrier).length;
@@ -533,7 +627,7 @@ function buildProposalPayload(stake, settings) {
     amount: stake,
     basis: "stake",
     currency: state.currency,
-    duration: 1,
+    duration: settings.ticks || 1,
     duration_unit: "t",
     symbol: state.symbol,
   };
@@ -541,7 +635,10 @@ function buildProposalPayload(stake, settings) {
     return { ...base, contract_type: settings.tradeDirection };
   }
   if (settings.contractMode === "differ") {
-    return { ...base, contract_type: "DIGITDIFF" };
+    return { ...base, contract_type: "DIGITDIFF", barrier: String(state.repeatDigit ?? state.lastDigit ?? 0) };
+  }
+  if (settings.contractMode === "rise_fall") {
+    return { ...base, contract_type: state.riseFallDirection === "FALL" ? "PUT" : "CALL" };
   }
   return { ...base, contract_type: settings.ouDirection, barrier: String(settings.barrier) };
 }
@@ -551,6 +648,7 @@ function contractLabel(settings) {
     return settings.tradeDirection === "DIGITEVEN" ? "EVEN" : "ODD";
   }
   if (settings.contractMode === "differ") return "DIFFER";
+  if (settings.contractMode === "rise_fall") return state.riseFallDirection === "FALL" ? "FALL" : "RISE";
   return settings.ouDirection === "DIGITOVER" ? `OVER ${settings.barrier}` : `UNDER ${settings.barrier}`;
 }
 
@@ -563,6 +661,7 @@ function simulateContractWin(digit, settings) {
     const reference = state.tradeEntryDigit ?? state.repeatDigit;
     return digit !== reference;
   }
+  if (settings.contractMode === "rise_fall") return Math.random() > 0.48;
   if (settings.ouDirection === "DIGITOVER") return digit > settings.barrier;
   return digit < settings.barrier;
 }
@@ -577,6 +676,7 @@ function setContractMode(mode) {
     panel.classList.toggle("hidden", panel.id !== `mode-${mode}`);
   });
   if ($("ou-analysis")) $("ou-analysis").classList.toggle("hidden", mode !== "over_under");
+  if ($("differ-analysis")) $("differ-analysis").classList.toggle("hidden", mode !== "differ");
   if ($("active-contract-badge")) $("active-contract-badge").textContent = contractModeLabel(mode);
   localStorage.setItem("trade7smart_contract_mode", mode);
   updateDashboard();
@@ -662,6 +762,13 @@ function stopBot() {
   $("bot-state").textContent = "Stopped";
   toast("Bot stopped.");
   journal("Bot stopped.");
+  if (state.activeStrategyId) {
+    state.activeStrategyId = null;
+    state.activeStrategyName = null;
+    const tag = $("strategy-watch-tag");
+    if (tag) tag.classList.add("hidden");
+    renderStrategyBotGrid();
+  }
   updateDashboard();
 }
 
@@ -697,6 +804,14 @@ function triggerTrade(isRecovery) {
   }
 
   send(buildProposalPayload(stake, settings), "proposal");
+
+  const bulkCount = Math.min(9, Math.max(1, settings.bulkCount || 1));
+  if (bulkCount > 1) {
+    journal(`Bulk purchase: firing ${bulkCount} trades at once (${label}, ${stake.toFixed(2)} ${state.currency} each).`, "trade");
+    for (let i = 1; i < bulkCount; i++) {
+      send(buildProposalPayload(stake, settings), "proposal");
+    }
+  }
 }
 
 function canPlaceTrade(stake, settings) {
@@ -848,10 +963,9 @@ function settleTrade(profit, endDigit = state.lastDigit) {
 function enforceSessionAfterSettle() {
   const settings = getSettings();
   if (settings.sessionTargetProfit > 0 && state.dailyProfit >= settings.sessionTargetProfit) {
-    state.running = false;
-    $("bot-state").textContent = "Target hit";
-    toast("Session profit target reached. Bot stopped.", "good");
-    journal("Session target reached. Bot stopped.", "win");
+    toast(`Session profit target of ${settings.sessionTargetProfit.toFixed(2)} reached! Resetting session to 0.`, "good");
+    journal(`Session target reached (+${state.dailyProfit.toFixed(2)}). Session profit reset to 0.`, "win");
+    state.dailyProfit = 0;
   }
   if (settings.sessionMaxLoss > 0 && state.dailyProfit <= -settings.sessionMaxLoss) {
     state.running = false;
@@ -888,7 +1002,7 @@ function updateDashboard() {
     status.textContent = state.accountTarget === "demo" ? "Demo online" : "Real online";
     status.classList.add("online");
   } else if (state.ws && state.ws.readyState === WebSocket.OPEN) {
-    status.textContent = "Scanning";
+    status.textContent = state.scannerOnly ? "Scanner live" : "Scanning";
     status.classList.add("scanning");
   } else {
     status.textContent = "Offline";
@@ -911,7 +1025,14 @@ function updateDashboard() {
   renderRecoveryLadder();
   renderStats();
   if ($("digit-heatmap")) renderDigitHeatmap();
+  if ($("digit-strip")) renderDigitAnalysis();
+  if ($("price-chart-container")) renderPriceChart();
+  if ($("digit-prob-row")) renderDigitProbabilityRow();
+  syncHomeTab();
+  syncAnalyzerContractBadge();
   renderAiMarketGrid(settings);
+  renderScannerInsight(settings);
+  renderDifferAnalysis(settings);
   renderScanner();
   renderSetupQueue();
   renderSimulator();
@@ -983,6 +1104,10 @@ function updateAnalyzer(settings) {
     if ($("ou-analysis-copy")) {
       $("ou-analysis-copy").textContent = `Barrier ${settings.barrier}: under ${underPct}% | over ${overPct}%. Target ${contractLabel(settings)}.`;
     }
+    if ($("ou-recommendation")) {
+      const rec = suggestOverUnder(settings, sample);
+      $("ou-recommendation").textContent = rec;
+    }
     $("signal-title").textContent = ready ? "Barrier bias confirmed" : "Over/Under analysis";
     $("signal-copy").textContent = ai.signal + (ready ? " — entry quality is high." : " — waiting for stronger bias.");
   }
@@ -990,6 +1115,89 @@ function updateAnalyzer(settings) {
   const ranked = getRankedMarkets(settings);
   const rankIndex = ranked.findIndex((item) => item.symbol === state.symbol);
   if ($("market-rank")) $("market-rank").textContent = rankIndex >= 0 ? `#${rankIndex + 1}` : "--";
+}
+
+function suggestOverUnder(settings, sample = state.digitHistory.slice(-settings.ouSample)) {
+  if (sample.length < 10) return "Collecting tick sample for AI barrier analysis…";
+  let best = { barrier: 5, side: "OVER", pct: 0 };
+  for (let barrier = 0; barrier <= 9; barrier += 1) {
+    const under = sample.filter((d) => d < barrier).length;
+    const over = sample.filter((d) => d > barrier).length;
+    const underPct = (under / sample.length) * 100;
+    const overPct = (over / sample.length) * 100;
+    if (underPct > best.pct) best = { barrier, side: "OVER", pct: underPct };
+    if (overPct > best.pct) best = { barrier, side: "UNDER", pct: overPct };
+  }
+  const contract = best.side === "OVER" ? `OVER ${best.barrier}` : `UNDER ${best.barrier}`;
+  return `AI recommends ${contract} at ${Math.round(best.pct)}% bias (${sample.length} ticks).`;
+}
+
+function pickAutoBarrier() {
+  const settings = getSettings();
+  const sample = state.digitHistory.slice(-settings.ouSample);
+  if (sample.length < 10) {
+    toast("Need more ticks before AI can pick a barrier.", "warn");
+    return;
+  }
+  let best = { barrier: 5, side: "DIGITOVER", pct: 0 };
+  for (let barrier = 0; barrier <= 9; barrier += 1) {
+    const under = sample.filter((d) => d < barrier).length;
+    const over = sample.filter((d) => d > barrier).length;
+    const underPct = (under / sample.length) * 100;
+    const overPct = (over / sample.length) * 100;
+    if (underPct > best.pct) best = { barrier, side: "DIGITOVER", pct: underPct };
+    if (overPct > best.pct) best = { barrier, side: "DIGITUNDER", pct: overPct };
+  }
+  $("ou-barrier").value = String(best.barrier);
+  $("ou-direction").value = best.side;
+  toast(`AI picked ${best.side === "DIGITOVER" ? "OVER" : "UNDER"} ${best.barrier} (${Math.round(best.pct)}% bias).`, "good");
+  updateDashboard();
+}
+
+function renderScannerInsight(settings) {
+  const el = $("scanner-insight");
+  if (!el) return;
+  const ranked = getRankedMarkets(settings);
+  const ready = ranked.filter((item) => item.ai.ready);
+  const best = ranked[0];
+  if (!best || !best.watch) {
+    el.textContent = "Connecting to Deriv volatility tick stream… Scanner loads Vol 10–100 automatically.";
+    return;
+  }
+  if (ready.length) {
+    el.textContent = `${ready.length} market${ready.length > 1 ? "s" : ""} at ENTRY READY — top pick ${ready[0].name}: ${ready[0].ai.signal}. Tap a card or Use best market.`;
+    return;
+  }
+  el.textContent = `Best setup: ${best.name} at ${best.ai.score}% — ${best.ai.signal}. ${contractModeLabel(settings.contractMode)} mode active.`;
+}
+
+function renderDifferAnalysis(settings) {
+  if (!$("differ-analysis")) return;
+  const trigger = settings.differTrigger;
+  const ready = state.digitStreak >= trigger;
+  if ($("differ-display-digit")) $("differ-display-digit").textContent = state.repeatDigit ?? "--";
+  if ($("differ-display-count")) $("differ-display-count").textContent = `${state.digitStreak}/${trigger}`;
+  if ($("differ-recovery-step")) $("differ-recovery-step").textContent = String(state.lossCount);
+  const pill = $("differ-status-pill");
+  if (pill) {
+    pill.textContent = ready ? "TRIGGER READY" : state.digitStreak >= trigger - 1 ? "Almost" : "Watching";
+    pill.classList.toggle("ready", ready);
+  }
+  const visual = $("differ-repeat-visual");
+  if (visual) {
+    visual.innerHTML = "";
+    for (let i = 0; i < state.digitStreak; i += 1) {
+      const chip = document.createElement("i");
+      chip.textContent = state.repeatDigit ?? "?";
+      if (i === state.digitStreak - 1 && ready) chip.classList.add("trigger");
+      visual.appendChild(chip);
+    }
+  }
+  if ($("differ-analysis-copy")) {
+    $("differ-analysis-copy").textContent = ready
+      ? `Digit ${state.repeatDigit} hit ${trigger}x — Differ entry armed. Recovery step ${state.lossCount} uses ladder stake ${state.currentStake.toFixed(2)}.`
+      : `When digit ${state.repeatDigit ?? "--"} hits ${trigger} times, bot trades DIFFER with recovery from step ${settings.recoveryStartLosses}.`;
+  }
 }
 
 function renderAiMarketGrid(settings) {
@@ -1045,9 +1253,7 @@ function renderContractCursor() {
   const holder = $("digit-cursor-track");
   if (!holder) return;
   holder.innerHTML = "";
-  const activeDigit = state.activeTrade
-    ? state.tradeCursorDigit
-    : state.tradeEndDigit ?? state.lastDigit;
+  const activeDigit = state.activeTrade ? state.tradeCursorDigit : null;
   for (let digit = 0; digit <= 9; digit += 1) {
     const item = document.createElement("i");
     item.textContent = digit;
@@ -1057,7 +1263,7 @@ function renderContractCursor() {
       state.tradeEndDigit === digit ? "ended" : "",
     ].filter(Boolean).join(" ");
     if (state.activeTrade && activeDigit === digit) {
-      item.setAttribute("data-badge", "1/1");
+      item.setAttribute("data-badge", "•");
     } else if (!state.activeTrade && state.tradeEndDigit === digit) {
       item.setAttribute("data-badge", state.tradeEndDigit % 2 === 0 ? "EVEN" : "ODD");
     }
@@ -1082,7 +1288,7 @@ function startContractCursor() {
     }
     state.tradeCursorDigit = ((Number(state.tradeCursorDigit) || 0) + 1) % 10;
     renderContractCursor();
-  }, 120);
+  }, 450);
 }
 
 function stopContractCursor() {
@@ -1102,6 +1308,7 @@ function renderSessionGoal() {
 
 function renderWatchlist() {
   const list = $("watchlist");
+  if (!list) return;
   list.innerHTML = "";
   WATCHLIST.forEach(([symbol, name]) => {
     const row = document.createElement("div");
@@ -1179,6 +1386,618 @@ function renderStats() {
   $("stat-longest-recovery").textContent = state.longestRecovery;
   $("stat-average-recovery").textContent = avgRecovery.toFixed(1);
   $("stat-cycles").textContent = state.cyclesCompleted;
+}
+
+const RISEFALL_TIMEFRAMES = [
+  { granularity: 60, label: "1m" },
+  { granularity: 120, label: "2m" },
+  { granularity: 180, label: "3m" },
+  { granularity: 300, label: "5m" },
+  { granularity: 600, label: "10m" },
+];
+
+state.riseFallData = state.riseFallData || {}; // { symbol: { granularity: candles[] } }
+state.riseFallReqMeta = state.riseFallReqMeta || {}; // { reqId: {symbol, granularity} }
+state.lastCleanSignalKey = state.lastCleanSignalKey || null;
+
+function requestCandles(symbol, granularity) {
+  if (!state.ws || state.ws.readyState !== WebSocket.OPEN) return;
+  const reqId = send(
+    {
+      ticks_history: symbol,
+      style: "candles",
+      granularity,
+      count: 60,
+      end: "latest",
+    },
+    "candles"
+  );
+  if (reqId) state.riseFallReqMeta[reqId] = { symbol, granularity };
+}
+
+function refreshRiseFallSignals() {
+  if (!state.ws || state.ws.readyState !== WebSocket.OPEN) return;
+  WATCHLIST.forEach(([symbol]) => {
+    RISEFALL_TIMEFRAMES.forEach(({ granularity }) => {
+      requestCandles(symbol, granularity);
+    });
+  });
+}
+
+function handleCandles(data) {
+  const meta = state.riseFallReqMeta[data.req_id];
+  if (!meta || !data.candles) return;
+  delete state.riseFallReqMeta[data.req_id];
+  state.riseFallData[meta.symbol] = state.riseFallData[meta.symbol] || {};
+  state.riseFallData[meta.symbol][meta.granularity] = data.candles;
+  renderRiseFallPanel();
+}
+
+function emaSeries(values, period) {
+  const k = 2 / (period + 1);
+  const out = [values[0]];
+  for (let i = 1; i < values.length; i++) {
+    out.push(values[i] * k + out[i - 1] * (1 - k));
+  }
+  return out;
+}
+
+function computeMacd(closes) {
+  if (closes.length < 30) return null;
+  const ema12 = emaSeries(closes, 12);
+  const ema26 = emaSeries(closes, 26);
+  const macdLine = ema12.map((v, i) => v - ema26[i]);
+  const signalLine = emaSeries(macdLine, 9);
+  const histogram = macdLine.map((v, i) => v - signalLine[i]);
+  const last = histogram.length - 1;
+  const direction = histogram[last] > 0 ? "RISE" : "FALL";
+  const strengthening = Math.abs(histogram[last]) > Math.abs(histogram[last - 1] || 0);
+  return { direction, histogram: histogram[last], strengthening };
+}
+
+function analyzeSymbolTimeframes(symbol) {
+  const data = state.riseFallData[symbol] || {};
+  const frames = RISEFALL_TIMEFRAMES.map(({ granularity, label }) => {
+    const candles = data[granularity];
+    if (!candles || candles.length < 30) return { label, signal: null };
+    const closes = candles.map((c) => Number(c.close));
+    const macd = computeMacd(closes);
+    return { label, signal: macd };
+  });
+  const valid = frames.filter((f) => f.signal);
+  const riseCount = valid.filter((f) => f.signal.direction === "RISE").length;
+  const fallCount = valid.length - riseCount;
+  const agreement = valid.length ? Math.max(riseCount, fallCount) / valid.length : 0;
+  const direction = riseCount >= fallCount ? "RISE" : "FALL";
+  const cleanSignal = valid.length === RISEFALL_TIMEFRAMES.length && agreement >= 0.8;
+  return { frames, direction, agreement, cleanSignal, validCount: valid.length };
+}
+
+function renderRiseFallPanel() {
+  const holder = $("risefall-grid");
+  if (!holder) return;
+
+  let best = null;
+  const rows = WATCHLIST.map(([symbol, name]) => {
+    const analysis = analyzeSymbolTimeframes(symbol);
+    if (!best || analysis.agreement > best.analysis.agreement) best = { symbol, name, analysis };
+    return { symbol, name, analysis };
+  });
+
+  holder.innerHTML = "";
+  rows.forEach(({ symbol, name, analysis }) => {
+    const row = document.createElement("div");
+    row.className = "rf-row";
+    const tfCells = RISEFALL_TIMEFRAMES.map(({ label }) => {
+      const f = analysis.frames.find((x) => x.label === label);
+      const cls = !f?.signal ? "rf-pending" : f.signal.direction === "RISE" ? "rf-rise" : "rf-fall";
+      const txt = !f?.signal ? "..." : f.signal.direction === "RISE" ? "↑" : "↓";
+      return `<span class="rf-tf ${cls}" title="${label}">${txt}</span>`;
+    }).join("");
+    row.innerHTML = `
+      <span class="rf-name">${name}</span>
+      <span class="rf-tfs">${tfCells}</span>
+      <span class="rf-verdict ${analysis.direction === "RISE" ? "rf-rise" : "rf-fall"}">${analysis.direction}</span>
+      <span class="rf-agreement">${Math.round(analysis.agreement * 100)}%</span>
+    `;
+    holder.appendChild(row);
+  });
+
+  if (best && $("rf-best-market")) {
+    $("rf-best-market").textContent = best.name;
+    $("rf-best-direction").textContent = best.analysis.direction;
+    $("rf-best-direction").className = best.analysis.direction === "RISE" ? "rf-rise" : "rf-fall";
+    $("rf-best-confidence").textContent = `${Math.round(best.analysis.agreement * 100)}% agreement across ${best.analysis.validCount}/5 timeframes`;
+  }
+
+  if (best && $("rf-engine-market")) {
+    $("rf-engine-market").textContent = `${best.name} (${Math.round(best.analysis.agreement * 100)}% match)`;
+    $("rf-engine-direction").textContent = best.analysis.cleanSignal
+      ? `Clean ${best.analysis.direction} signal ready`
+      : `Leaning ${best.analysis.direction}, waiting for full agreement`;
+  }
+
+  if (best && best.analysis.cleanSignal) {
+    const key = `${best.symbol}:${best.analysis.direction}`;
+    if (state.lastCleanSignalKey !== key) {
+      state.lastCleanSignalKey = key;
+      toast(`Clean ${best.analysis.direction} signal on ${best.name} (all 5 timeframes agree).`, "good");
+      if (state.notificationsEnabled) {
+        phoneNotify("Clean Rise/Fall entry", `${best.name}: ${best.analysis.direction} confirmed on 1m-10m MACD.`, "good");
+      }
+    }
+    maybeTradeRiseFall(best);
+  }
+}
+
+function maybeTradeRiseFall(best) {
+  const settings = getSettings();
+  if (settings.contractMode !== "rise_fall" || !state.running || state.activeTrade) return;
+  if (!state.authorized) return;
+  state.symbol = best.symbol;
+  if ($("symbol")) $("symbol").value = best.symbol;
+  state.riseFallDirection = best.analysis.direction;
+  journal(`AI Run selected ${best.name}: clean ${best.analysis.direction} signal (1m-10m MACD agree).`, "trade");
+  toast(`AI Run trading ${best.analysis.direction} on ${best.name}.`, "good");
+  triggerTrade(false);
+}
+
+function buyRiseFall(direction) {
+  if (!state.authorized) {
+    toast("Connect your account first.", "danger");
+    return;
+  }
+  if (state.activeTrade) {
+    toast("Wait for the current contract to finish.", "warn");
+    return;
+  }
+  const settings = getSettings();
+  const stake = Math.max(settings.stake || 0.35, 0.35);
+  state.currentStake = stake;
+  state.activeTrade = true;
+  state.tradeEndDigit = null;
+  state.riseFallDirection = direction;
+  startContractCursor();
+  send(
+    {
+      proposal: 1,
+      amount: stake,
+      basis: "stake",
+      currency: state.currency,
+      duration: settings.ticks || 1,
+      duration_unit: "t",
+      symbol: state.symbol,
+      contract_type: direction === "RISE" ? "CALL" : "PUT",
+    },
+    "proposal"
+  );
+  toast(`Buying ${direction} on ${state.symbol}...`, "good");
+  journal(`Manual ${direction} (Rise/Fall) buy on ${state.symbol}, stake ${stake.toFixed(2)}.`, "trade");
+  updateDashboard();
+}
+
+function renderAiRecommendation(digits) {
+  const last20 = digits.slice(-20);
+  const evenPct = (last20.filter((d) => d % 2 === 0).length / last20.length) * 100;
+  const underPct = (last20.filter((d) => d <= 4).length / last20.length) * 100;
+
+  let eoStreak = 1;
+  const lastParity = digits[digits.length - 1] % 2;
+  for (let i = digits.length - 2; i >= 0; i--) {
+    if (digits[i] % 2 === lastParity) eoStreak++;
+    else break;
+  }
+
+  const eoSkew = Math.abs(evenPct - 50);
+  const ouSkew = Math.abs(underPct - 50);
+  const streakBoost = Math.min(eoStreak * 6, 30);
+  const score = Math.min(96, Math.round(eoSkew * 1.2 + ouSkew * 0.6 + streakBoost));
+
+  let recommend = "WAITING";
+  let reason = "No strong pattern yet — keep scanning.";
+  if (score >= 55) {
+    if (eoStreak >= 4) {
+      recommend = lastParity === 1 ? "EVEN (streak break)" : "ODD (streak break)";
+      reason = `${eoStreak} consecutive ${lastParity === 1 ? "odd" : "even"} digits — reversal likely.`;
+    } else if (eoSkew >= ouSkew) {
+      recommend = evenPct > 50 ? "EVEN" : "ODD";
+      reason = `${evenPct > 50 ? evenPct.toFixed(0) : (100 - evenPct).toFixed(0)}% bias over last 20 ticks.`;
+    } else {
+      recommend = underPct > 50 ? "UNDER (0-4)" : "OVER (5-9)";
+      reason = `${underPct > 50 ? underPct.toFixed(0) : (100 - underPct).toFixed(0)}% bias over last 20 ticks.`;
+    }
+  }
+
+  $("da-ai-score").textContent = `${score}%`;
+  $("da-ai-recommend").textContent = `Recommend: ${recommend}`;
+  $("da-ai-reason").textContent = reason;
+  $("da-ai-confidence-tag").textContent = score >= 70 ? "HIGH" : score >= 45 ? "MEDIUM" : "BETA";
+
+  const ring = $("da-ai-ring");
+  const circumference = 2 * Math.PI * 34;
+  ring.style.strokeDasharray = `${circumference}`;
+  ring.style.strokeDashoffset = `${circumference - (score / 100) * circumference}`;
+
+  const card = $("da-ai-card");
+  card.classList.toggle("ready", score >= 55);
+}
+
+function renderDigitAnalysis() {
+  const digits = state.digitHistory.slice(-100);
+  if (!digits.length) return;
+
+  renderAiRecommendation(digits);
+
+  // recent digit strip (last 30, newest on the right)
+  const strip = $("digit-strip");
+  strip.innerHTML = "";
+  digits.slice(-30).forEach((d) => {
+    const cell = document.createElement("span");
+    cell.className = `da-digit ${d % 2 === 1 ? "odd" : "even"} ${d >= 5 ? "high" : "low"}`;
+    cell.textContent = d;
+    strip.appendChild(cell);
+  });
+
+  // even/odd streak
+  let eoStreak = 1;
+  const lastParity = digits[digits.length - 1] % 2;
+  for (let i = digits.length - 2; i >= 0; i--) {
+    if (digits[i] % 2 === lastParity) eoStreak++;
+    else break;
+  }
+  $("da-eo-streak").textContent = `${eoStreak}x ${lastParity === 1 ? "Odd" : "Even"}`;
+
+  // high/low streak
+  let hlStreak = 1;
+  const lastHL = digits[digits.length - 1] >= 5 ? "high" : "low";
+  for (let i = digits.length - 2; i >= 0; i--) {
+    const hl = digits[i] >= 5 ? "high" : "low";
+    if (hl === lastHL) hlStreak++;
+    else break;
+  }
+  $("da-hl-streak").textContent = `${hlStreak}x ${lastHL === "high" ? "High" : "Low"}`;
+
+  // even/odd prediction
+  const evenCount = digits.filter((d) => d % 2 === 0).length;
+  const oddCount = digits.length - evenCount;
+  const evenPct = Math.round((evenCount / digits.length) * 100);
+  const oddPct = 100 - evenPct;
+  $("da-even-bar").style.width = `${evenPct}%`;
+  $("da-odd-bar").style.width = `${oddPct}%`;
+  $("da-even-pct").textContent = `${evenPct}%`;
+  $("da-odd-pct").textContent = `${oddPct}%`;
+  const eoSkew = Math.abs(evenPct - 50);
+  $("da-eo-confidence").textContent = `Confidence: ${eoSkew >= 15 ? "High" : eoSkew >= 7 ? "Medium" : "Low"}`;
+
+  // over/under prediction
+  const underCount = digits.filter((d) => d <= 4).length;
+  const overCount = digits.length - underCount;
+  const underPct = Math.round((underCount / digits.length) * 100);
+  const overPct = 100 - underPct;
+  $("da-under-bar").style.width = `${underPct}%`;
+  $("da-over-bar").style.width = `${overPct}%`;
+  $("da-under-pct").textContent = `${underPct}%`;
+  $("da-over-pct").textContent = `${overPct}%`;
+  const ouSkew = Math.abs(underPct - 50);
+  $("da-ou-confidence").textContent = `Confidence: ${ouSkew >= 15 ? "High" : ouSkew >= 7 ? "Medium" : "Low"}`;
+
+  // trend
+  const last10 = digits.slice(-10);
+  const avg = last10.reduce((a, b) => a + b, 0) / last10.length;
+  const counts = {};
+  digits.forEach((d) => (counts[d] = (counts[d] || 0) + 1));
+  const mode = Object.keys(counts).reduce((a, b) => (counts[a] > counts[b] ? a : b));
+  $("da-last-digit").textContent = digits[digits.length - 1];
+  $("da-avg-digit").textContent = avg.toFixed(1);
+  $("da-mode-digit").textContent = mode;
+  const firstHalfAvg = last10.slice(0, 5).reduce((a, b) => a + b, 0) / 5;
+  const secondHalfAvg = last10.slice(5).reduce((a, b) => a + b, 0) / 5;
+  const diff = secondHalfAvg - firstHalfAvg;
+  $("da-trend-copy").textContent =
+    diff > 0.8 ? "Rising trend - digits trending higher" : diff < -0.8 ? "Falling trend - digits trending lower" : "Flat trend - no clear direction";
+
+  renderDigitPatternHeatmap(digits);
+}
+
+function renderDigitPatternHeatmap(digits) {
+  const holder = $("digit-pattern-heatmap");
+  if (!holder) return;
+  const pairCounts = {};
+  for (let i = 0; i < digits.length - 1; i++) {
+    const key = `${digits[i]}${digits[i + 1]}`;
+    pairCounts[key] = (pairCounts[key] || 0) + 1;
+  }
+  const max = Math.max(...Object.values(pairCounts), 1);
+  holder.innerHTML = "";
+  for (let row = 0; row <= 9; row++) {
+    for (let col = 0; col <= 9; col++) {
+      const key = `${row}${col}`;
+      const count = pairCounts[key] || 0;
+      const intensity = count / max;
+      const cell = document.createElement("div");
+      cell.className = "pattern-cell";
+      cell.style.background = count ? `rgba(34, 211, 238, ${0.15 + intensity * 0.7})` : "rgba(255,255,255,0.03)";
+      cell.title = `${key}: ${count}x`;
+      cell.textContent = count > 0 ? count : "";
+      holder.appendChild(cell);
+    }
+  }
+}
+
+
+state.chartType = state.chartType || "candles";
+state.liveCandles = state.liveCandles || {}; // { symbol: [{time,open,high,low,close,volume}] }
+state.lwChart = null;
+state.lwSeries = null;
+state.lwVolumeSeries = null;
+state.lwMacdChart = null;
+state.lwMacdLineSeries = null;
+state.lwMacdSignalSeries = null;
+state.lwMacdHistSeries = null;
+
+function getLiveCandleBucket(symbol, epochSeconds, granularity = 5) {
+  state.liveCandles[symbol] = state.liveCandles[symbol] || [];
+  const arr = state.liveCandles[symbol];
+  const bucketTime = Math.floor(epochSeconds / granularity) * granularity;
+  const last = arr[arr.length - 1];
+  if (last && last.time === bucketTime) return last;
+  return null;
+}
+
+function pushTickToCandle(symbol, price, epochSeconds) {
+  const granularity = 5;
+  state.liveCandles[symbol] = state.liveCandles[symbol] || [];
+  const arr = state.liveCandles[symbol];
+  const bucketTime = Math.floor(epochSeconds / granularity) * granularity;
+  let last = arr[arr.length - 1];
+  if (last && last.time === bucketTime) {
+    last.high = Math.max(last.high, price);
+    last.low = Math.min(last.low, price);
+    last.close = price;
+    last.volume = (last.volume || 0) + 1;
+  } else {
+    arr.push({ time: bucketTime, open: price, high: price, low: price, close: price, volume: 1 });
+    if (arr.length > 300) arr.shift();
+    last = arr[arr.length - 1];
+  }
+  if (symbol === state.symbol) updateLiveChart(last, arr.length === 1);
+}
+
+function initLightweightChart() {
+  const container = $("price-chart-container");
+  const macdContainer = $("macd-chart-container");
+  if (!container || typeof LightweightCharts === "undefined") return;
+
+  state.lwChart = LightweightCharts.createChart(container, {
+    layout: { background: { color: "transparent" }, textColor: "#8b95a7" },
+    grid: {
+      vertLines: { color: "rgba(255,255,255,0.05)" },
+      horzLines: { color: "rgba(255,255,255,0.05)" },
+    },
+    timeScale: { timeVisible: true, secondsVisible: true, borderColor: "rgba(255,255,255,0.08)" },
+    rightPriceScale: { borderColor: "rgba(255,255,255,0.08)" },
+    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+    handleScroll: true,
+    handleScale: true,
+  });
+
+  state.lwSeries = state.lwChart.addCandlestickSeries({
+    upColor: "#22c55e",
+    downColor: "#f87171",
+    borderUpColor: "#22c55e",
+    borderDownColor: "#f87171",
+    wickUpColor: "#22c55e",
+    wickDownColor: "#f87171",
+  });
+
+  state.lwVolumeSeries = state.lwChart.addHistogramSeries({
+    priceFormat: { type: "volume" },
+    priceScaleId: "",
+    scaleMargins: { top: 0.85, bottom: 0 },
+    color: "rgba(34, 211, 238, 0.35)",
+  });
+
+  state.lwSmaSeries = state.lwChart.addLineSeries({
+    color: "#fbbf24",
+    lineWidth: 2,
+    priceLineVisible: false,
+    lastValueVisible: false,
+  });
+
+  state.lwChart.subscribeCrosshairMove((param) => {
+    const readout = $("chart-crosshair-readout");
+    if (!readout) return;
+    if (!param.time || !param.seriesData?.size) {
+      readout.classList.remove("visible");
+      return;
+    }
+    const bar = param.seriesData.get(state.lwSeries);
+    if (!bar) {
+      readout.classList.remove("visible");
+      return;
+    }
+    readout.classList.add("visible");
+    readout.innerHTML = `O <b>${bar.open?.toFixed(2)}</b> H <b>${bar.high?.toFixed(2)}</b> L <b>${bar.low?.toFixed(2)}</b> C <b style="color:${bar.close >= bar.open ? "#22c55e" : "#f87171"}">${bar.close?.toFixed(2)}</b>`;
+  });
+
+  if (macdContainer) {
+    state.lwMacdChart = LightweightCharts.createChart(macdContainer, {
+      layout: { background: { color: "transparent" }, textColor: "#8b95a7" },
+      grid: {
+        vertLines: { color: "rgba(255,255,255,0.04)" },
+        horzLines: { color: "rgba(255,255,255,0.04)" },
+      },
+      timeScale: { visible: false },
+      rightPriceScale: { borderColor: "rgba(255,255,255,0.08)" },
+      handleScroll: true,
+      handleScale: true,
+    });
+    state.lwMacdHistSeries = state.lwMacdChart.addHistogramSeries({ color: "rgba(139, 92, 246, 0.5)" });
+    state.lwMacdLineSeries = state.lwMacdChart.addLineSeries({ color: "#3b82f6", lineWidth: 1 });
+    state.lwMacdSignalSeries = state.lwMacdChart.addLineSeries({ color: "#f59e0b", lineWidth: 1 });
+
+    state.lwChart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
+      if (range) state.lwMacdChart.timeScale().setVisibleLogicalRange(range);
+    });
+  }
+
+  new ResizeObserver(() => {
+    if (state.lwChart) state.lwChart.resize(container.clientWidth, container.clientHeight);
+    if (state.lwMacdChart && macdContainer) state.lwMacdChart.resize(macdContainer.clientWidth, macdContainer.clientHeight);
+  }).observe(container);
+}
+
+function applyChartTypeSeries() {
+  if (!state.lwChart) return;
+  if (state.lwSeries) state.lwChart.removeSeries(state.lwSeries);
+  if (state.chartType === "candles") {
+    state.lwSeries = state.lwChart.addCandlestickSeries({
+      upColor: "#22c55e", downColor: "#f87171",
+      borderUpColor: "#22c55e", borderDownColor: "#f87171",
+      wickUpColor: "#22c55e", wickDownColor: "#f87171",
+    });
+  } else if (state.chartType === "area") {
+    state.lwSeries = state.lwChart.addAreaSeries({
+      lineColor: "#22d3ee", topColor: "rgba(34,211,238,0.3)", bottomColor: "rgba(34,211,238,0)",
+    });
+  } else {
+    state.lwSeries = state.lwChart.addLineSeries({ color: "#22d3ee", lineWidth: 2 });
+  }
+  loadFullChartHistory();
+}
+
+function seriesPoint(candle) {
+  if (state.chartType === "candles") return candle;
+  return { time: candle.time, value: candle.close };
+}
+
+function smaSeries(closes, period) {
+  const out = [];
+  for (let i = 0; i < closes.length; i++) {
+    if (i < period - 1) {
+      out.push(null);
+      continue;
+    }
+    let sum = 0;
+    for (let j = i - period + 1; j <= i; j++) sum += closes[j];
+    out.push(sum / period);
+  }
+  return out;
+}
+
+function renderSmaSeries(arr) {
+  if (!state.lwSmaSeries || !arr || arr.length < 20) return;
+  const closes = arr.map((c) => c.close);
+  const sma = smaSeries(closes, 20);
+  state.lwSmaSeries.setData(
+    arr.map((c, i) => ({ time: c.time, value: sma[i] })).filter((p) => p.value !== null)
+  );
+}
+
+function loadFullChartHistory() {
+  const arr = state.liveCandles[state.symbol] || [];
+  if (!state.lwSeries || !arr.length) return;
+  state.lwSeries.setData(arr.map(seriesPoint));
+  if (state.lwVolumeSeries) {
+    state.lwVolumeSeries.setData(arr.map((c) => ({ time: c.time, value: c.volume || 1, color: c.close >= c.open ? "rgba(34,197,94,0.4)" : "rgba(248,113,113,0.4)" })));
+  }
+  renderMacdSeries(arr);
+  renderSmaSeries(arr);
+}
+
+function updateLiveChart(candle, isNewBar) {
+  if (!state.lwSeries) return;
+  state.lwSeries.update(seriesPoint(candle));
+  if (state.lwVolumeSeries) {
+    state.lwVolumeSeries.update({ time: candle.time, value: candle.volume || 1, color: candle.close >= candle.open ? "rgba(34,197,94,0.4)" : "rgba(248,113,113,0.4)" });
+  }
+  if (isNewBar || (state.liveCandles[state.symbol]?.length || 0) % 5 === 0) {
+    renderMacdSeries(state.liveCandles[state.symbol]);
+    renderSmaSeries(state.liveCandles[state.symbol]);
+  }
+}
+
+function renderMacdSeries(arr) {
+  if (!state.lwMacdLineSeries || !arr || arr.length < 30) return;
+  const closes = arr.map((c) => c.close);
+  const ema12 = emaSeries(closes, 12);
+  const ema26 = emaSeries(closes, 26);
+  const macdLine = ema12.map((v, i) => v - ema26[i]);
+  const signalLine = emaSeries(macdLine, 9);
+  const histogram = macdLine.map((v, i) => v - signalLine[i]);
+  state.lwMacdLineSeries.setData(arr.map((c, i) => ({ time: c.time, value: macdLine[i] })));
+  state.lwMacdSignalSeries.setData(arr.map((c, i) => ({ time: c.time, value: signalLine[i] })));
+  state.lwMacdHistSeries.setData(
+    arr.map((c, i) => ({ time: c.time, value: histogram[i], color: histogram[i] >= 0 ? "rgba(34,197,94,0.5)" : "rgba(248,113,113,0.5)" }))
+  );
+}
+
+function renderPriceChart() {
+  if ($("price-chart-symbol-label")) {
+    $("price-chart-symbol-label").textContent = `Live market chart — ${state.symbol}`;
+  }
+  if (!state.lwChart) return;
+  if (state.lastChartSymbol !== state.symbol) {
+    state.lastChartSymbol = state.symbol;
+    loadFullChartHistory();
+  }
+}
+
+function initChartTypeToggle() {
+  document.querySelectorAll(".chart-type-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".chart-type-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      state.chartType = btn.dataset.chartType;
+      applyChartTypeSeries();
+    });
+  });
+}
+
+
+
+function renderDigitProbabilityRow() {
+  const row = $("digit-prob-row");
+  if (!row) return;
+  const total = state.digitCounts.reduce((a, b) => a + b, 0) || 1;
+  const existing = row.querySelectorAll(".digit-prob-cell");
+  if (existing.length !== 10) {
+    row.querySelectorAll(".digit-prob-cell").forEach((el) => el.remove());
+    for (let d = 0; d <= 9; d++) {
+      const cell = document.createElement("div");
+      cell.className = "digit-prob-cell";
+      cell.id = `digit-prob-${d}`;
+      cell.innerHTML = `
+        <svg viewBox="0 0 44 44">
+          <circle class="dp-track" cx="22" cy="22" r="18" />
+          <circle class="dp-fill" cx="22" cy="22" r="18" />
+        </svg>
+        <span class="dp-digit">${d}</span>
+        <small class="dp-pct">--</small>
+      `;
+      row.appendChild(cell);
+    }
+  }
+  for (let d = 0; d <= 9; d++) {
+    const pct = (state.digitCounts[d] / total) * 100;
+    const cell = $(`digit-prob-${d}`);
+    if (!cell) continue;
+    const fill = cell.querySelector(".dp-fill");
+    const circumference = 2 * Math.PI * 18;
+    fill.style.strokeDasharray = `${circumference}`;
+    fill.style.strokeDashoffset = `${circumference - (Math.min(pct, 100) / 100) * circumference}`;
+    fill.style.stroke = pct >= 12 ? "#22d3ee" : pct <= 8 ? "#f87171" : "#475569";
+    cell.querySelector(".dp-pct").textContent = `${pct.toFixed(1)}%`;
+  }
+
+  const cursor = $("digit-prob-cursor");
+  if (cursor && state.lastDigit !== undefined && state.lastDigit !== null) {
+    const targetCell = $(`digit-prob-${state.lastDigit}`);
+    if (targetCell) {
+      cursor.style.left = `${targetCell.offsetLeft + targetCell.offsetWidth / 2}px`;
+      cursor.classList.add("visible");
+    }
+  }
 }
 
 function renderDigitHeatmap() {
@@ -1481,14 +2300,16 @@ function runBacktest() {
   });
 
   const total = wins + losses;
-  $("backtest-results").innerHTML = `
-    <span>Triggers ${triggers}</span>
-    <span>Wins ${wins}</span>
-    <span>Losses ${losses}</span>
-    <span>Win Rate ${total ? ((wins / total) * 100).toFixed(1) : "0.0"}%</span>
-    <span>Net Profit ${net.toFixed(2)}</span>
-    <span>Max Drawdown ${maxDrawdown.toFixed(2)}</span>
-  `;
+  if ($("backtest-results")) {
+    $("backtest-results").innerHTML = `
+      <span>Triggers ${triggers}</span>
+      <span>Wins ${wins}</span>
+      <span>Losses ${losses}</span>
+      <span>Win Rate ${total ? ((wins / total) * 100).toFixed(1) : "0.0"}%</span>
+      <span>Net Profit ${net.toFixed(2)}</span>
+      <span>Max Drawdown ${maxDrawdown.toFixed(2)}</span>
+    `;
+  }
   journal(`Backtest complete: ${triggers} triggers, net ${net.toFixed(2)} ${state.currency}.`, "trade");
 }
 
@@ -1546,8 +2367,176 @@ function forceBestAiEntry() {
   }
 }
 
+function startLiveClock() {
+  const tick = () => {
+    const el = $("live-clock");
+    if (el) el.textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  };
+  tick();
+  setInterval(tick, 1000);
+}
+
+const TAB_GROUPS = {
+  "home-tab-key": ["home-tab"],
+  "ai-scanner-hero": ["ai-scanner-hero"],
+  "hero-grid": ["hero-grid"],
+  "charts-section": ["charts-section"],
+  recovery: ["pro-grid", "risk-grid"],
+  stats: ["analytics-grid", "scanner-grid", "bottom-grid"],
+  strategy: ["strategy"],
+  "pro-ai": ["pro-ai"],
+};
+
+function initSectionNav() {
+  const allSectionIds = Object.values(TAB_GROUPS).flat();
+
+  function showTab(tabKey) {
+    const activeIds = TAB_GROUPS[tabKey] || [];
+    allSectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle("tab-hidden", !activeIds.includes(id));
+    });
+    document.querySelectorAll(".nav-pill").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
+    document.querySelectorAll(".bt-tab").forEach((p) => p.classList.toggle("active", p.dataset.tab === tabKey));
+    const shell = document.querySelector(".terminal-shell");
+    if (shell) shell.scrollTo({ top: 0 });
+  }
+
+  document.querySelectorAll(".nav-pill, .bt-tab").forEach((pill) => {
+    pill.addEventListener("click", () => showTab(pill.dataset.tab));
+  });
+
+  showTab("home-tab-key");
+}
+
+
+
 function hideLoader() {
   document.body.classList.add("loaded");
+}
+
+function initButubaPreloader() {
+  const letters = "BUTUBA".split("");
+  const holder = $("bp-letters");
+  if (!holder) return;
+  letters.forEach((ch, i) => {
+    const span = document.createElement("span");
+    span.textContent = ch;
+    span.style.animationDelay = `${i * 0.12}s`;
+    holder.appendChild(span);
+  });
+  setTimeout(() => {
+    const pre = $("butuba-preloader");
+    if (pre) {
+      pre.classList.add("hide");
+      setTimeout(() => pre.remove(), 600);
+    }
+  }, 5000);
+}
+
+function initConnectionDrawer() {
+  const toggle = $("connection-drawer-toggle");
+  const drawer = $("connection-drawer");
+  if (!toggle || !drawer) return;
+  toggle.addEventListener("click", () => drawer.classList.toggle("open"));
+  const homeBtn = $("home-connect-button");
+  if (homeBtn) {
+    homeBtn.addEventListener("click", () => {
+      drawer.classList.add("open");
+      const real = $("connect-button");
+      if (real) real.click();
+    });
+  }
+}
+
+function initOptionsMenu() {
+  const toggle = $("options-menu-toggle");
+  const menu = $("options-menu");
+  if (!toggle || !menu) return;
+  toggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    menu.classList.toggle("open");
+  });
+  document.addEventListener("click", (e) => {
+    if (!menu.contains(e.target) && e.target !== toggle) menu.classList.remove("open");
+  });
+}
+
+function initThemeToggle() {
+  const btn = $("theme-toggle");
+  if (!btn) return;
+  const saved = localStorage.getItem("trade7smart_theme");
+  if (saved === "light") {
+    document.body.classList.add("light-theme");
+    btn.textContent = "☀️";
+  }
+  btn.addEventListener("click", () => {
+    document.body.classList.toggle("light-theme");
+    const isLight = document.body.classList.contains("light-theme");
+    btn.textContent = isLight ? "☀️" : "🌙";
+    localStorage.setItem("trade7smart_theme", isLight ? "light" : "dark");
+  });
+}
+
+function initQuickActions() {
+  const fab = $("quick-actions-toggle");
+  const menu = $("quick-actions-menu");
+  if (!fab || !menu) return;
+  fab.addEventListener("click", () => menu.classList.toggle("open"));
+
+  $("qa-buy-rise")?.addEventListener("click", () => {
+    buyRiseFall("RISE");
+    menu.classList.remove("open");
+  });
+  $("qa-buy-fall")?.addEventListener("click", () => {
+    buyRiseFall("FALL");
+    menu.classList.remove("open");
+  });
+  $("qa-stop-bot")?.addEventListener("click", () => {
+    state.running = false;
+    $("bot-state") && ($("bot-state").textContent = "Stopped");
+    toast("Bot stopped.", "warn");
+    journal("Bot stopped via Quick Actions.", "warn");
+    updateDashboard();
+    menu.classList.remove("open");
+  });
+}
+
+function updateRiskGauge(pct) {
+  const fill = $("risk-gauge-fill");
+  const label = $("risk-gauge-value");
+  if (!fill || !label) return;
+  const clamped = Math.max(0, Math.min(100, pct || 0));
+  const length = 157; // approx path length of the arc
+  fill.style.strokeDasharray = `${length}`;
+  fill.style.strokeDashoffset = `${length - (clamped / 100) * length}`;
+  fill.style.stroke = clamped > 70 ? "#f87171" : clamped > 40 ? "#fbbf24" : "#22d3ee";
+  label.textContent = `${Math.round(clamped)}%`;
+}
+
+function syncHomeTab() {
+  const balanceEl = $("balance");
+  if (balanceEl && $("home-balance")) $("home-balance").textContent = balanceEl.textContent;
+  if ($("home-account-type")) {
+    const acc = $("account-target");
+    $("home-account-type").textContent = acc && acc.value === "real" ? "Real account" : "Demo account";
+  }
+  if ($("da-ai-recommend") && $("home-ai-recommend")) {
+    $("home-ai-recommend").textContent = $("da-ai-recommend").textContent;
+  }
+  if ($("da-ai-confidence-tag") && $("home-ai-confidence")) {
+    $("home-ai-confidence").textContent = `Confidence: ${$("da-ai-confidence-tag").textContent}`;
+  }
+  if ($("signal-copy") && $("home-signal-copy")) {
+    $("home-signal-copy").textContent = $("signal-copy").textContent;
+  }
+  const maxLossEl = $("session-max-loss");
+  const lossSoFarEl = $("float-profit");
+  if (maxLossEl && lossSoFarEl) {
+    const maxLoss = parseFloat(maxLossEl.value) || 1;
+    const lossSoFar = Math.abs(Math.min(0, parseFloat(lossSoFarEl.textContent) || 0));
+    updateRiskGauge((lossSoFar / maxLoss) * 100);
+  }
 }
 
 function useBestMarket() {
@@ -1614,7 +2603,10 @@ $("start-bot").addEventListener("click", startBot);
 $("ai-run-bot").addEventListener("click", aiRunBot);
 $("stop-bot").addEventListener("click", stopBot);
 $("clear-journal").addEventListener("click", () => ($("journal").innerHTML = ""));
-$("symbol").addEventListener("change", applyConnectionSettings);
+$("symbol").addEventListener("change", () => {
+  applyConnectionSettings();
+  loadFullChartHistory();
+});
 $("account-target").addEventListener("change", applyConnectionSettings);
 $("app-id").addEventListener("change", applyConnectionSettings);
 $("preferred-odds").addEventListener("change", () => syncStrategyBuilder("main"));
@@ -1636,13 +2628,14 @@ $("trade-direction").addEventListener("change", updateDashboard);
 $("strategy-recovery-start").addEventListener("input", () => syncStrategyBuilder("builder"));
 $("strategy-max-recovery").addEventListener("input", () => syncStrategyBuilder("builder"));
 $("strategy-profit-buffer").addEventListener("input", () => syncStrategyBuilder("builder"));
-$("run-backtest").addEventListener("click", runBacktest);
+$("run-backtest")?.addEventListener("click", runBacktest);
 $("compact-toggle").addEventListener("click", toggleCompactMode);
 $("mini-toggle").addEventListener("click", toggleMiniMode);
 $("sound-toggle").addEventListener("click", toggleSound);
 $("notify-toggle").addEventListener("click", requestNotifications);
 $("ai-auto-toggle").addEventListener("click", toggleAiAuto);
 $("use-best-market").addEventListener("click", useBestMarket);
+if ($("ou-auto-barrier")) $("ou-auto-barrier").addEventListener("click", pickAutoBarrier);
 $("session-target-profit").addEventListener("input", updateDashboard);
 $("session-max-loss").addEventListener("input", updateDashboard);
 $("save-token").addEventListener("change", () => {
@@ -1656,6 +2649,392 @@ loadSavedSettings();
 renderWatchlist();
 syncStrategyBuilder("main");
 updateDashboard();
+startLiveClock();
+initSectionNav();
+initButubaPreloader();
+initConnectionDrawer();
+initOptionsMenu();
+initThemeToggle();
+initQuickActions();
+
+const STRATEGY_BOTS = [
+  {
+    id: "bearish_macd_grind",
+    name: "Bearish Rise/Fall MACD Progression Grind",
+    source: "bearish_rise_fall_macd_progression_grind.xml",
+    tags: ["Rise/Fall", "MACD", "Progression"],
+    description: "Watches MACD across timeframes for a bearish bias, grinds entries with a progression stake step.",
+    apply: () => {
+      setContractMode("rise_fall");
+      state.riseFallBias = "FALL";
+    },
+  },
+  {
+    id: "under9_filter",
+    name: "Under 9 Balanced 9-Count Filter",
+    source: "under9_balanced_9count_filter.xml",
+    tags: ["Over/Under", "V100 (1s)", "Filter"],
+    description: "Waits for a 9-count digit filter on Volatility 100 (1s) before buying Under 9.",
+    apply: () => {
+      setContractMode("over_under");
+      state.symbol = "1HZ100V";
+      if ($("symbol")) $("symbol").value = "1HZ100V";
+      $("ou-barrier").value = "9";
+      $("ou-direction").value = "DIGITUNDER";
+      $("ou-min-bias").value = "65";
+      $("ou-sample").value = "20";
+    },
+  },
+  {
+    id: "v100_progression_summary",
+    name: "Rise/Fall V100 (1s) Progression Daily Summary",
+    source: "rise_fall_v100_1s_progression_daily_summary.xml",
+    tags: ["Rise/Fall Equals", "V100 (1s)", "Progression"],
+    description: "Runs Rise/Fall Equals on Volatility 100 (1s) with a progression stake ladder and daily P&L summary.",
+    apply: () => {
+      setContractMode("rise_fall");
+      state.symbol = "1HZ100V";
+      if ($("symbol")) $("symbol").value = "1HZ100V";
+    },
+  },
+  {
+    id: "digit_momentum_balanced",
+    name: "Rise/Fall Digit Momentum Balanced",
+    source: "rise_fall_digit_momentum_balanced.xml",
+    tags: ["Rise/Fall Equals", "V100 (1s)", "Momentum"],
+    description: "Tracks digit momentum (current vs previous ticks) on V100 (1s) for balanced Rise/Fall entries.",
+    apply: () => {
+      setContractMode("rise_fall");
+      state.symbol = "1HZ100V";
+      if ($("symbol")) $("symbol").value = "1HZ100V";
+    },
+  },
+  {
+    id: "five_odds_pullback",
+    name: "Five Odds Break Pullback Even",
+    source: "use_trade7smart-five-odds-break-pullback-even-dbot.xml",
+    tags: ["Odd/Even", "5 Odds", "Pullback"],
+    description: "Classic 5-odds-streak pullback into Even — this matches Trade7Smart's built-in Odd/Even engine directly.",
+    apply: () => {
+      setContractMode("odds_even");
+      $("preferred-odds").value = "5";
+      $("trade-direction").value = "DIGITEVEN";
+    },
+  },
+  {
+    id: "i_digit_v2",
+    name: "I-Digit V2.0 Update",
+    source: "I_DIGIT_V2_0_UPDATE.xml",
+    tags: ["Over/Under", "R_100", "Prediction"],
+    description: "Digit-prediction Over/Under bot with martingale-style staking on R_100.",
+    apply: () => {
+      setContractMode("over_under");
+      $("ou-barrier").value = "5";
+      $("ou-direction").value = "DIGITOVER";
+      $("ou-min-bias").value = "60";
+    },
+  },
+  {
+    id: "tick_pip_rf",
+    name: "Tick-Pip Rise/Fall",
+    source: "Tick-Pip_Rf.xml",
+    tags: ["Rise/Fall", "Tick analysis"],
+    description: "Measures pip movement per tick to confirm direction before a Rise/Fall entry.",
+    apply: () => {
+      setContractMode("rise_fall");
+    },
+  },
+];
+
+function renderStrategyBotGrid() {
+  const holder = $("strategy-bot-grid");
+  if (!holder) return;
+  holder.innerHTML = "";
+  STRATEGY_BOTS.forEach((bot) => {
+    const card = document.createElement("article");
+    card.className = "panel strategy-card";
+    const isActive = state.activeStrategyId === bot.id;
+    card.innerHTML = `
+      <div class="strategy-card-head">
+        <strong>${bot.name}</strong>
+        ${isActive ? '<span class="strategy-live-tag">LIVE</span>' : ""}
+      </div>
+      <p class="strategy-card-desc">${bot.description}</p>
+      <div class="strategy-tags">${bot.tags.map((t) => `<span>${t}</span>`).join("")}</div>
+      <button type="button" class="ghost-button strategy-run-btn" data-bot="${bot.id}">${isActive ? "Stop" : "Run"}</button>
+    `;
+    holder.appendChild(card);
+  });
+
+  holder.querySelectorAll(".strategy-run-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const bot = STRATEGY_BOTS.find((b) => b.id === btn.dataset.bot);
+      if (!bot) return;
+      if (state.activeStrategyId === bot.id) {
+        stopStrategyBot();
+      } else {
+        runStrategyBot(bot);
+      }
+    });
+  });
+}
+
+function runStrategyBot(bot) {
+  if (!state.authorized) {
+    toast("Connect your account first.", "danger");
+    return;
+  }
+  bot.apply();
+  state.activeStrategyId = bot.id;
+  state.activeStrategyName = bot.name;
+  const tag = $("strategy-watch-tag");
+  if (tag) {
+    tag.textContent = `Watching: ${bot.name}`;
+    tag.classList.remove("hidden");
+  }
+  toast(`Running strategy: ${bot.name}`, "good");
+  journal(`Strategy Bot started: ${bot.name} (source: ${bot.source}).`, "trade");
+  startBot();
+  renderStrategyBotGrid();
+}
+
+function stopStrategyBot() {
+  state.activeStrategyId = null;
+  state.activeStrategyName = null;
+  const tag = $("strategy-watch-tag");
+  if (tag) tag.classList.add("hidden");
+  stopBot();
+  renderStrategyBotGrid();
+}
+
+function syncAnalyzerContractBadge() {
+  const activeEl = $("analyzer-active-contract");
+  const badgeEl = $("analyzer-sync-badge");
+  if (!activeEl || !badgeEl) return;
+  const mode = $("contract-mode")?.value || "odds_even";
+  const label = contractModeLabel(mode);
+  activeEl.textContent = `Analyzing: ${label} (${state.symbol})`;
+
+  const builderMode = $("strategy-contract-mode")?.value;
+  const symbolMismatch = $("symbol") && $("symbol").value !== state.symbol;
+  const builderMismatch = builderMode && builderMode !== mode;
+  const mismatch = symbolMismatch || builderMismatch;
+
+  badgeEl.textContent = mismatch ? "⚠️ Mismatch" : "✅ Synced";
+  badgeEl.classList.toggle("synced", !mismatch);
+  badgeEl.classList.toggle("mismatch", !!mismatch);
+}
+
+const PRO_AI_BOTS = [
+  {
+    id: "over1_pro",
+    name: "Over 1 Pro",
+    condition: "Waits for 3 digits at or below 1",
+    barrier: 1,
+    direction: "DIGITOVER",
+    match: (recent) => recent.slice(-3).every((d) => d <= 1),
+  },
+  {
+    id: "under8_pro",
+    name: "Under 8 Pro",
+    condition: "Waits for 3 digits at or above 8",
+    barrier: 8,
+    direction: "DIGITUNDER",
+    match: (recent) => recent.slice(-3).every((d) => d >= 8),
+  },
+  {
+    id: "over2_pro",
+    name: "Over 2 Pro",
+    condition: "Waits for 3 digits at or below 2",
+    barrier: 2,
+    direction: "DIGITOVER",
+    match: (recent) => recent.slice(-3).every((d) => d <= 2),
+  },
+  {
+    id: "under7_pro",
+    name: "Under 7 Pro",
+    condition: "Waits for 3 digits at or above 7",
+    barrier: 7,
+    direction: "DIGITUNDER",
+    match: (recent) => recent.slice(-3).every((d) => d >= 7),
+  },
+];
+
+state.proAiActive = false;
+state.proAiOpenBot = null;
+state.proAiScanning = false;
+
+function renderProAiBotGrid() {
+  const holder = $("pro-ai-bot-grid");
+  if (!holder) return;
+  holder.innerHTML = "";
+  PRO_AI_BOTS.forEach((bot) => {
+    const card = document.createElement("article");
+    card.className = "panel strategy-card";
+    card.innerHTML = `
+      <div class="strategy-card-head"><strong>${bot.name}</strong></div>
+      <p class="strategy-card-desc">${bot.condition}</p>
+      <div class="strategy-tags"><span>Over/Under</span><span>Barrier ${bot.barrier}</span></div>
+      <button type="button" class="ghost-button pro-ai-open-btn" data-bot="${bot.id}">Open</button>
+    `;
+    holder.appendChild(card);
+  });
+  holder.querySelectorAll(".pro-ai-open-btn").forEach((btn) => {
+    btn.addEventListener("click", () => openProAiBot(btn.dataset.bot));
+  });
+}
+
+function openProAiBot(botId) {
+  const bot = PRO_AI_BOTS.find((b) => b.id === botId);
+  if (!bot) return;
+  state.proAiOpenBot = bot;
+  $("pro-ai-scan-panel").classList.remove("hidden");
+  $("pro-ai-scan-title").textContent = bot.name;
+  $("pro-ai-scan-status").textContent = bot.condition;
+  $("pro-ai-feed").innerHTML = "";
+  $("pro-ai-progress-fill").style.width = "0%";
+  $("pro-ai-scan-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function proAiFeedLine(text, cls = "") {
+  const feed = $("pro-ai-feed");
+  if (!feed) return;
+  const line = document.createElement("div");
+  line.className = `pro-ai-feed-line ${cls}`;
+  line.textContent = text;
+  feed.prepend(line);
+  while (feed.children.length > 20) feed.removeChild(feed.lastChild);
+}
+
+function startProAiScan() {
+  const bot = state.proAiOpenBot;
+  if (!bot) return;
+  if (!state.authorized) {
+    $("pro-ai-scan-status").textContent = "Demo Offline — connect your account first";
+    proAiFeedLine("⚠️ Not connected. Tap Connection to authorize before scanning.", "warn");
+    return;
+  }
+  if (state.proAiScanning) return;
+  state.proAiScanning = true;
+  state.proAiActive = true;
+  updateProAiBadge();
+  $("pro-ai-scan-status").textContent = "Scanning...";
+  $("pro-ai-scan-btn").textContent = "Scanning...";
+  $("pro-ai-scan-btn").disabled = true;
+  let progress = 0;
+  proAiFeedLine(`🔍 Pro AI scan started: ${bot.name} across all 1s markets.`, "info");
+
+  state.proAiScanTimer = setInterval(() => {
+    progress = Math.min(96, progress + 4);
+    $("pro-ai-progress-fill").style.width = `${progress}%`;
+
+    let found = null;
+    WATCHLIST.forEach(([symbol, name]) => {
+      const stat = state.marketStats.get(symbol);
+      if (!stat || !stat.recentDigits || stat.recentDigits.length < 3) return;
+      const recent = stat.recentDigits.slice(-3);
+      proAiFeedLine(`${name}: last 3 digits ${recent.join(",")}`, "muted");
+      if (!found && bot.match(stat.recentDigits)) {
+        found = { symbol, name, stat };
+      }
+    });
+
+    if (found) {
+      clearInterval(state.proAiScanTimer);
+      $("pro-ai-progress-fill").style.width = "100%";
+      $("pro-ai-scan-status").textContent = `Best market found: ${found.name}`;
+      proAiFeedLine(`✅ Best market found: ${found.name} matches "${bot.condition}".`, "good");
+      executeProAiTrade(bot, found);
+    }
+  }, 700);
+
+  setTimeout(() => {
+    if (state.proAiScanning && state.proAiScanTimer) {
+      clearInterval(state.proAiScanTimer);
+      state.proAiScanning = false;
+      $("pro-ai-scan-btn").textContent = "🔍 Start Scanning";
+      $("pro-ai-scan-btn").disabled = false;
+      $("pro-ai-scan-status").textContent = "No clean match found — try again";
+      proAiFeedLine("⏱️ Scan timed out without a clean match.", "warn");
+    }
+  }, 20000);
+}
+
+function executeProAiTrade(bot, found) {
+  $("pro-ai-scan-status").textContent = `Executing trade on ${found.name}...`;
+  proAiFeedLine(`⚡ Executing trade: ${bot.direction === "DIGITOVER" ? "OVER" : "UNDER"} ${bot.barrier} on ${found.name}.`, "info");
+
+  setContractMode("over_under");
+  state.symbol = found.symbol;
+  if ($("symbol")) $("symbol").value = found.symbol;
+  $("ou-barrier").value = String(bot.barrier);
+  $("ou-direction").value = bot.direction;
+
+  const settings = getSettings();
+  const stake = Number(settings.stake.toFixed(2));
+  state.currentStake = stake;
+  state.activeTrade = true;
+  state.tradeEntryDigit = found.stat.digit;
+  state.tradeEndDigit = null;
+  startContractCursor();
+
+  send(
+    {
+      proposal: 1,
+      amount: stake,
+      basis: "stake",
+      currency: state.currency,
+      duration: settings.ticks || 1,
+      duration_unit: "t",
+      symbol: found.symbol,
+      contract_type: bot.direction,
+      barrier: String(bot.barrier),
+    },
+    "proposal"
+  );
+
+  journal(`Pro AI (${bot.name}) executed ${bot.direction === "DIGITOVER" ? "OVER" : "UNDER"} ${bot.barrier} on ${found.name} at ${new Date().toLocaleTimeString()}.`, "trade");
+  toast(`Pro AI trading ${bot.name} on ${found.name}.`, "good");
+
+  state.proAiScanning = false;
+  $("pro-ai-scan-btn").textContent = "🔍 Start Scanning";
+  $("pro-ai-scan-btn").disabled = false;
+
+  if (state.notificationsEnabled) {
+    phoneNotify("Pro AI trade executed", `${bot.name} on ${found.name}`, "good");
+  }
+}
+
+function updateProAiBadge() {
+  const badge = $("pro-ai-badge");
+  if (!badge) return;
+  badge.textContent = state.proAiActive ? "ON" : "OFF";
+  badge.classList.toggle("glowing", state.proAiActive);
+}
+
+function initProAi() {
+  renderProAiBotGrid();
+  $("pro-ai-scan-btn")?.addEventListener("click", startProAiScan);
+  $("pro-ai-close-scan")?.addEventListener("click", () => {
+    $("pro-ai-scan-panel").classList.add("hidden");
+    if (state.proAiScanTimer) clearInterval(state.proAiScanTimer);
+    state.proAiScanning = false;
+    state.proAiActive = false;
+    updateProAiBadge();
+  });
+}
+
+function initRiseFallButtons() {
+  $("rf-buy-rise")?.addEventListener("click", () => buyRiseFall("RISE"));
+  $("rf-buy-fall")?.addEventListener("click", () => buyRiseFall("FALL"));
+}
+initRiseFallButtons();
+renderStrategyBotGrid();
+initChartTypeToggle();
+initLightweightChart();
+initProAi();
+
+connectPublicScanner();
 setTimeout(hideLoader, 850);
 
 if ("serviceWorker" in navigator) {
